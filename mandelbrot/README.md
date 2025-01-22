@@ -8,3 +8,4 @@ Given enough resources, can be built and used in normal gameplay (outside sandbo
 
 Due to unresolved issues with parallel drawing operations, the display might not be updated when it is not visible on the screen, meaning the final image won't be complete.
 
+![Screenshot of the schematics in action](Mandelbrot.png)
