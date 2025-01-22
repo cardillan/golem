@@ -1,0 +1,63 @@
+    12 instructions before optimizations.
+     2 instructions eliminated by Temp Variables Elimination.
+     1 instructions eliminated by Jump Normalization (3 iterations).
+     1 instructions eliminated by Unreachable Code Elimination.
+     8 instructions after optimizations.
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 instructions):
+ 
+     3 label *label1
+     4 jump *label3 equal true false
+     5 op add *tmp0 :current 1
+-    * op mod *tmp1 *tmp0 50
+-    * set :current *tmp1
+-    * op add *tmp2 334 :current
+-    * set .SYNC *tmp2
++    6 op mod :current *tmp0 50
++    7 op add .SYNC 334 :current
+     8 write .SYNC bank1 73
+     9 wait 0.0001
+    10 label *label2
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+ 
+     1 jump *label0 equal bank1 null
+     2 set :current 0
+     3 label *label1
+-    * jump *label3 equal true false
+     4 op add *tmp0 :current 1
+     5 op mod :current *tmp0 50
+     6 op add .SYNC 334 :current
+
+Modifications by Final phase, Unreachable Code Elimination, iteration 1 (-1 instructions):
+ 
+     8 wait 0.0001
+     9 label *label2
+    10 jump *label1 always
+-    * label *label3
+-    * end
+
+Final code before resolving virtual instructions:
+
+        label *label0                                                mandelbrot-sync.mnd: allocate heap in bank1[VARIABLES ... BOOKMARKS];
+    0:  jump *label0 equal bank1 null                                ...
+    1:  set :current 0                                               mandelbrot-sync.mnd: var current = 0;
+        label *label1                                                mandelbrot-sync.mnd: while true do
+    2:  op add *tmp0 :current 1                                      mandelbrot-sync.mnd: current = (current + 1) % 50;
+    3:  op mod :current *tmp0 50                                     ...
+    4:  op add .SYNC 334 :current                                    mandelbrot-sync.mnd: SYNC = PROCESSORS + current;
+    5:  write .SYNC bank1 73                                         ...
+    6:  wait 0.0001                                                  mandelbrot-sync.mnd: wait(1e-4);
+    7:  jump *label1 always 0 0                                      mandelbrot-sync.mnd: while true do
+
+
+Performance: parsed in 100 ms, compiled in 162 ms, optimized in 54 ms, run in 4 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  No response from Mlog Watcher - maybe an old version is installed?
+
+Program output (7 steps):
+The program didn't generate any output.
+Execution exception at instruction 6: wait 0.0001:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

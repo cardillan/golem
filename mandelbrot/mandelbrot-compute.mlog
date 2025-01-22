@@ -1,0 +1,881 @@
+set *tmp10 @thisx
+set *tmp11 @thisy
+op mul *tmp12 10000 *tmp11
+op add .PROCESSOR_ID *tmp10 *tmp12
+set .PROC_ID_INDEX 334
+set .PROC_STATE_INDEX 335
+set .start 0
+set .display null
+set .memory null
+print "Mandelbrot Generator"
+set :fn1:n @links
+jump 22 lessThanEq :fn1:n 0
+op sub :fn1:n :fn1:n 1
+getlink :fn1:block :fn1:n
+print "\nFound: "
+print :fn1:block
+sensor :fn1:type :fn1:block @type
+jump 19 notEqual @large-logic-display :fn1:type
+set .display :fn1:block
+jump 21 notEqual @memory-bank :fn1:type
+set .memory :fn1:block
+jump 12 greaterThan :fn1:n 0
+print "\nDisplay: "
+print .display
+op and :fn1:foundAll 1 .display
+print "\nMemory: "
+print .memory
+op and :fn1:foundAll :fn1:foundAll .memory
+printflush null
+jump 7 equal :fn1:foundAll false
+set .BATCH 0
+jump 44 greaterThanEq .PROC_STATE_INDEX 512
+read *tmp129 .memory .PROC_ID_INDEX
+jump 36 notEqual *tmp129 .PROCESSOR_ID
+write 0 .memory .PROC_STATE_INDEX
+jump 44 always 0 0
+read *tmp135 .memory .PROC_ID_INDEX
+jump 41 notEqual *tmp135 0
+write .PROCESSOR_ID .memory .PROC_ID_INDEX
+write 0 .memory .PROC_STATE_INDEX
+jump 44 always 0 0
+op add .PROC_ID_INDEX .PROC_ID_INDEX 2
+op add .PROC_STATE_INDEX .PROC_STATE_INDEX 2
+jump 32 lessThan .PROC_STATE_INDEX 512
+read *tmp0 .memory 64
+jump 31 equal .start *tmp0
+read *tmp0 .memory 64
+set .start *tmp0
+read *tmp1 .memory 65
+set .stop *tmp1
+jump 63 greaterThanEq .PROC_STATE_INDEX 512
+read *tmp129 .memory .PROC_ID_INDEX
+jump 55 notEqual *tmp129 .PROCESSOR_ID
+write *tmp0 .memory .PROC_STATE_INDEX
+jump 63 always 0 0
+read *tmp135 .memory .PROC_ID_INDEX
+jump 60 notEqual *tmp135 0
+write .PROCESSOR_ID .memory .PROC_ID_INDEX
+write *tmp0 .memory .PROC_STATE_INDEX
+jump 63 always 0 0
+op add .PROC_ID_INDEX .PROC_ID_INDEX 2
+op add .PROC_STATE_INDEX .PROC_STATE_INDEX 2
+jump 51 lessThan .PROC_STATE_INDEX 512
+read .ZOOM .memory 68
+op div *tmp27 -88 .ZOOM
+read *tmp2 .memory 66
+op add .OFFSET_X *tmp27 *tmp2
+read *tmp3 .memory 67
+op add .OFFSET_Y *tmp27 *tmp3
+read .JULIA .memory 69
+read .JULIA_X .memory 70
+read .JULIA_Y .memory 71
+read .PALETTE .memory 72
+op greaterThan .SMOOTH .PALETTE 1
+set :line 8
+set :increment 8
+set :next_increment 16
+op rand *tmp32 0.1 0
+wait *tmp32
+set :lines 0
+op mul *tmp33 17 :line
+op mod :x *tmp33 176
+op add :position :x 158
+read *tmp37 .memory :position
+jump 870 notEqual *tmp37 0
+write .PROCESSOR_ID .memory :position
+set :y 0
+op div *tmp43 :x .ZOOM
+op add :fn2:zx *tmp43 .OFFSET_X
+op div *tmp45 :y .ZOOM
+op add :fn2:zy *tmp45 .OFFSET_Y
+jump 95 equal .JULIA false
+set :fn2:cx .JULIA_X
+set :fn2:cy .JULIA_Y
+jump 111 always 0 0
+set :fn2:cx :fn2:zx
+set :fn2:cy :fn2:zy
+op sub *tmp48 :fn2:zx 0.25
+op len :fn2:p *tmp48 :fn2:zy
+op mul *tmp50 2 :fn2:p
+op mul *tmp51 *tmp50 :fn2:p
+op sub *tmp52 :fn2:p *tmp51
+op add *tmp53 *tmp52 0.25
+jump 106 greaterThan :fn2:zx *tmp53
+set *tmp42 63
+jump 814 always 0 0
+op add *tmp56 :fn2:zx 1
+op len *tmp57 *tmp56 :fn2:zy
+jump 111 greaterThan *tmp57 0.25
+set *tmp42 63
+jump 814 always 0 0
+set :fn2:i 0
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+set :fn2:i 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 1 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 2 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 3 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 4 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 5 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 6 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 7 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 8 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 9 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 10 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 11 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 12 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 13 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 14 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 15 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 16 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 17 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 18 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 19 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 20 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 21 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 22 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 23 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 24 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 25 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 26 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 27 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 28 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 29 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 30 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 31 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 32 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 33 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 34 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 35 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 36 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 37 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 38 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 39 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 40 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 41 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 42 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 43 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 44 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 45 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 46 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 47 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 48 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 49 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 50 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 51 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 52 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 53 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 54 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 55 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 56 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 57 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 58 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 59 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 60 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 61 1
+set :fn2:x1 :fn2:zx
+op mul *tmp60 :fn2:zx :fn2:zx
+op mul *tmp61 :fn2:zy :fn2:zy
+op sub *tmp62 *tmp60 *tmp61
+op add :fn2:zx *tmp62 :fn2:cx
+op mul *tmp64 2 :fn2:x1
+op mul *tmp65 *tmp64 :fn2:zy
+op add :fn2:zy *tmp65 :fn2:cy
+op len :fn2:dist :fn2:zx :fn2:zy
+jump 805 greaterThanEq :fn2:dist 64
+op add :fn2:i 62 1
+op mul *tmp70 .SMOOTH 63
+jump 813 greaterThanEq :fn2:i *tmp70
+op log *tmp73 :fn2:dist 0
+op mul *tmp74 *tmp73 0.36067376022224085
+op log *tmp75 *tmp74 0
+op mul *tmp76 *tmp75 1.4426950408889634
+op sub :fn2:correction 4 *tmp76
+op add :fn2:i :fn2:i :fn2:correction
+set *tmp42 :fn2:i
+jump 853 equal .SMOOTH false
+jump 818 notEqual *tmp42 63
+draw color 0 0 0 255 0 0
+jump 855 always 0 0
+jump 831 notEqual .PALETTE 2
+op sub *tmp83 32 *tmp42
+op abs *tmp84 *tmp83 0
+op mul *tmp85 7 *tmp84
+op sub :fn3:r 255 *tmp85
+op sub *tmp87 *tmp42 32
+op abs *tmp88 *tmp87 0
+op mul *tmp89 6 *tmp88
+op sub :fn3:g 240 *tmp89
+op mul *tmp93 4 *tmp84
+op add :fn3:b 120 *tmp93
+draw color :fn3:r :fn3:g :fn3:b 255 0 0
+jump 855 always 0 0
+jump 843 notEqual .PALETTE 3
+op div *tmp96 *tmp42 0.175
+op sin *tmp97 *tmp96 0
+op mul :fn3:r 255 *tmp97
+op cos *tmp101 *tmp96 0
+op mul :fn3:g 255 *tmp101
+op sub *tmp103 *tmp42 32
+op abs *tmp104 *tmp103 0
+op mul *tmp105 4 *tmp104
+op add :fn3:b 100 *tmp105
+draw color :fn3:r :fn3:g :fn3:b 255 0 0
+jump 855 always 0 0
+jump 849 notEqual .PALETTE 4
+op mul :fn3:r 4 *tmp42
+op mul *tmp108 1.5 *tmp42
+op add :fn3:g 96 *tmp108
+draw color :fn3:r :fn3:g 0 255 0 0
+jump 855 always 0 0
+op mul *tmp110 4 *tmp42
+op sub :fn3:r 255 *tmp110
+draw color :fn3:r :fn3:r 0 255 0 0
+jump 855 always 0 0
+read *tmp113 .memory *tmp42
+draw col *tmp113 0 0 0 0 0
+draw rect :x :y 1 1 0 0
+op add .BATCH .BATCH 1
+jump 864 lessThan .BATCH 44
+read *tmp9 .memory 73
+jump 858 equal *tmp9 .PROC_ID_INDEX
+read *tmp9 .memory 73
+jump 860 notEqual *tmp9 .PROC_ID_INDEX
+drawflush .display
+set .BATCH 0
+read *tmp119 .memory :position
+jump 870 notEqual *tmp119 .PROCESSOR_ID
+read *tmp1 .memory 65
+jump 877 notEqual .stop *tmp1
+op add :y :y 1
+jump 87 lessThan :y 176
+op add :line :line :increment
+jump 875 lessThanEq :line 176
+op div :next_increment :next_increment 2
+set :increment :next_increment
+op div :line :next_increment 2
+op add :lines :lines 1
+jump 80 lessThan :lines 176
+drawflush .display
+jump 30 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

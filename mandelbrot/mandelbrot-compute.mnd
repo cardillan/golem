@@ -1,0 +1,223 @@
+require blocks;
+require "mandelbrot-common.mnd";
+
+const BATCH_SIZE = 176 / 4;
+
+var display, memory;
+allocate heap in memory[VARIABLES ... BOOKMARKS];
+
+external $START;        // Start signal
+external $STOP;         // Stop signal
+external $X;            // Coordinates and palette
+external $Y;
+external $ZOOM;
+external $JULIA;
+external $JULIA_X;
+external $JULIA_Y;
+external $PALETTE;
+external $SYNC;
+
+// Current coordinates
+var ZOOM, OFFSET_X, OFFSET_Y;
+var JULIA, JULIA_X, JULIA_Y;
+
+// Palette configuration
+var PALETTE, SMOOTH;
+const ONE_TO_LOG = 1 / log(2);
+const QUARTER_TO_LOG = 0.25 / log(2);
+
+// Processor ID and processor state indexes
+// Dynamically updated when a conflict with another processor is detected
+var PROCESSOR_ID = @this.@x + 10000 * @this.@y;
+var PROC_ID_INDEX = PROCESSORS;
+var PROC_STATE_INDEX = PROCESSORS + 1;
+
+// Batch drawing operations to limit drawflush frequency
+var BATCH = 0;
+var start = 0, stop;
+
+begin
+    findLinkedBlocks("Mandelbrot Generator", null,
+        @large-logic-display,   "Display",  out display,    true,
+        @memory-bank,           "Memory",   out memory,     true
+    );
+
+    while true do
+        BATCH = 0;
+
+        // Waiting for a start signal
+        do
+            // setState finds a non-conflicting processor slot
+            // Writing zero state means this processor is not computing.
+            setState(0);
+        while start == $START;
+
+        // New computation starts here
+        start = $START;
+        stop = $STOP;
+
+        // We're on our job
+        setState(start);
+
+        // Load positional information
+        ZOOM     = $ZOOM;
+        OFFSET_X = -HALF_SIZE / ZOOM + $X;
+        OFFSET_Y = -HALF_SIZE / ZOOM + $Y;
+        JULIA    = $JULIA;
+        JULIA_X  = $JULIA_X;
+        JULIA_Y  = $JULIA_Y;
+        PALETTE  = $PALETTE;
+        SMOOTH   = PALETTE > 1;
+
+        var line = 8;
+        var increment = 8;
+        var next_increment = 16;
+        wait(rand(0.1));
+
+    MasterLoop:
+        for var lines in 0 ... DISPLAY_SIZE_LARGE do
+            // Find a line
+            var x = (SKIP * line) % DISPLAY_SIZE_LARGE;
+            var position = x + SLOTS;
+
+            if memory[position] == 0 then
+                memory[position] = PROCESSOR_ID;
+
+                for var y in 0 ... DISPLAY_SIZE_LARGE do
+                    var iterations = compute(x, y);
+                    drawPixel(x, y, iterations);
+
+                    if memory[position] != PROCESSOR_ID then
+                        break;   // Another processor took over this line
+                    end;
+
+                    if stop != $STOP then
+                        break MasterLoop;        // Break is signalled
+                    end;
+                end;
+            end;
+
+            line += increment;
+            if line > DISPLAY_SIZE_LARGE then
+                increment = next_increment /= 2;
+                line = increment / 2;
+            end;
+        end;
+
+        drawflush(display);
+    end;
+end;
+
+def compute(x, y)
+    var zx = x / ZOOM + OFFSET_X;
+    var zy = y / ZOOM + OFFSET_Y;
+    var cx, cy;
+
+    if JULIA then
+        cx = JULIA_X;
+        cy = JULIA_Y;
+    else
+        cx = zx;
+        cy = zy;
+
+        // Cardioid test
+        var p = len(cx - 0.25, cy);
+        if cx <= p - 2 * p * p + 0.25 then
+            return MAX_DEPTH;
+        end;
+
+        // Bulb test
+        if len(cx + 1, cy) <= 0.25 then
+            return MAX_DEPTH;
+        end;
+    end;
+
+    var dist, i;
+    for i in 0 ... MAX_DEPTH do
+        var x1 = zx;
+        var y1 = zy;
+        zx = x1 * x1 - y1 * y1 + cx;
+        zy = 2 * x1 * y1 + cy;
+        dist = len(zx, zy);
+        if dist >= 64 then
+            break;
+        end;
+    end;
+
+    if i < SMOOTH * MAX_DEPTH then
+        // Correction only if we're smoothing and not at max iteration
+        var correction = 4 - log(log(dist) * QUARTER_TO_LOG) * ONE_TO_LOG;
+        i += correction;
+    end;
+
+    return i;
+end;
+
+void drawPixel(x, y, iterations)
+    if SMOOTH then
+        if iterations == MAX_DEPTH then
+            color(0, 0, 0, 255);
+        else
+            var r, g, b;
+            case PALETTE
+                when 2 then
+                    r = 255 - 7 * abs(32 - iterations);
+                    g = 240 - 6 * abs(iterations - 32);
+                    b = 120 + 4 * abs(32 - iterations);
+                    color(r, g, b, 255);
+
+                when 3 then
+                    r = 255 * sin(iterations / MAX_DEPTH * 360);
+                    g = 255 * cos(iterations / MAX_DEPTH * 360);
+                    b = 100 + 4 * abs(iterations - 32);
+                    color(r, g, b, 255);
+
+                when 4 then
+                    r = 4 * iterations;
+                    g = 96 + 1.5 * iterations;
+                    color(r, g, 0, 255);
+
+                else
+                    r = 255 - 4 * iterations;
+                    color(r, r, 0, 255);
+            end;
+        end;
+    else
+        col(memory[iterations]);
+    end;
+
+    rect(x, y, 1, 1);
+
+    if ++BATCH < BATCH_SIZE then
+//        // Compute another pixel if we're not close to our window
+//        var sync = $SYNC;
+//        if PROC_ID_INDEX >= sync then
+//            return;
+//        elsif PROC_ID_INDEX < sync - 2 then
+//            return;
+//        end;
+        return;
+    end;
+
+    do while $SYNC == PROC_ID_INDEX;
+    do while $SYNC != PROC_ID_INDEX;
+    drawflush(display);
+    BATCH = 0;
+end;
+
+void setState(state)
+    // At index 512, we exceed the memory bank capacity
+    while PROC_STATE_INDEX < 512 do
+        if memory[PROC_ID_INDEX] == PROCESSOR_ID then
+            memory[PROC_STATE_INDEX] = state;
+            break;
+        elsif memory[PROC_ID_INDEX] == 0 then
+            memory[PROC_ID_INDEX] = PROCESSOR_ID;
+            memory[PROC_STATE_INDEX] = state;
+            break;
+        else
+            PROC_ID_INDEX += 2;
+            PROC_STATE_INDEX += 2;
+        end;
+    end;
+end;
