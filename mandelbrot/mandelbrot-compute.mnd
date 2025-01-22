@@ -1,7 +1,7 @@
 require blocks;
 require "mandelbrot-common.mnd";
 
-const BATCH_SIZE = 176 / 4;
+const BATCH_SIZE = 4;
 
 var display, memory;
 allocate heap in memory[VARIABLES ... BOOKMARKS];
@@ -15,7 +15,6 @@ external $JULIA;
 external $JULIA_X;
 external $JULIA_Y;
 external $PALETTE;
-external $SYNC;
 
 // Current coordinates
 var ZOOM, OFFSET_X, OFFSET_Y;
@@ -33,7 +32,6 @@ var PROC_ID_INDEX = PROCESSORS;
 var PROC_STATE_INDEX = PROCESSORS + 1;
 
 // Batch drawing operations to limit drawflush frequency
-var BATCH = 0;
 var start = 0, stop;
 
 begin
@@ -43,8 +41,6 @@ begin
     );
 
     while true do
-        BATCH = 0;
-
         // Waiting for a start signal
         do
             // setState finds a non-conflicting processor slot
@@ -187,22 +183,7 @@ void drawPixel(x, y, iterations)
     end;
 
     rect(x, y, 1, 1);
-
-    if ++BATCH < BATCH_SIZE then
-//        // Compute another pixel if we're not close to our window
-//        var sync = $SYNC;
-//        if PROC_ID_INDEX >= sync then
-//            return;
-//        elsif PROC_ID_INDEX < sync - 2 then
-//            return;
-//        end;
-        return;
-    end;
-
-    do while $SYNC == PROC_ID_INDEX;
-    do while $SYNC != PROC_ID_INDEX;
     drawflush(display);
-    BATCH = 0;
 end;
 
 void setState(state)
