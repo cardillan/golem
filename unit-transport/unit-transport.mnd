@@ -1,0 +1,765 @@
+// Linked structures
+// switch1: increase count
+// switch2: decrease count
+// sorter1: item type selector
+// message1: global status
+// message2: unit status
+// The sixth block is the container
+
+//#set syntax = strict;
+//#set target = 8;
+#set remarks = active;
+#set optimization = experimental;
+
+require printing;
+
+// Compile-time constant. Set to false to speed up processing by not showing individual units distance from target.
+const SHOW_UNIT_DISTANCE = true;
+
+/// Configurable options:
+param UNIT                    = @mega;  /// Which unit type to use:
+param LINK_ID                 = 0;      /// Remote vault ID (1-99); if nonzero, items are moved to/from this vault instead of core:
+param AUTO_ALLOCATION         = true;   /// Start in auto allocation mode?
+param MAX_UNITS               = 24;     /// Max units to use, in both manual and auto allocation modes:
+param HOUSEKEEPING            = true;   /// Leave discarded units with nonzero flag for housekeeping (flag-clearing) processor to pick them up:
+param DROP_TO_AIR             = true;   /// Drop superfluous items to air, even when there's a core:
+
+// Local and remote limits can be used to reduce the amount of space used by this processor in the container/vault/core.
+// If the value is lower than 100, the capacity will be used up to that percent and the rest will be ignored.
+param LOCAL_LIMIT             = 100;    /// How much of local container capacity to use, in percents (20-100):
+param REMOTE_LIMIT            = 100;    /// How much of remote container capacity to use, in percents (20-100)
+
+param OVERALLOCATION_LOW      = 0.25;   /// Allocate at least this much more units than needed:
+param OVERALLOCATION_HIGH     = 0.75;   /// Allocate at most this much more units than needed:
+
+param STABILIZATION           = false;  /// Use average of last three flow rate values for better unit auto allocation stability:
+
+/// End of configurable options
+
+printflush();
+
+//  SETTINGS LOAD/SAVE
+/////////////////////////////////////////////////////////
+MESSAGE = "";
+
+EFF_LOCAL_LIMIT = max(LOCAL_LIMIT, 20);
+EFF_REMOTE_LIMIT = max(REMOTE_LIMIT, 20);
+EFF_AUTO_ALLOCATION = AUTO_ALLOCATION;
+
+//  BASIC INITIALIZATION
+/////////////////////////////////////////////////////////
+const RADIUS_WITHIN     = 8;
+const RADIUS_APPROACH   = 6;
+
+TRIGGER_LEVEL           = 0.9;          // When a container is this full (or this empty when unloading it) allocate two additional units
+
+const S_UNLOAD          = 1;            // Unloading wrong items held by unit/initializing unit
+const S_APPROACH_SRC    = 2;            // Approaching source block
+const S_LOAD_ITEMS      = 3;            // Loading items
+const S_APPROACH_DST    = 4;            // Approaching destination block
+const S_DROP_ITEMS      = 5;            // Dropping items at destination
+const S_DISCARD         = 6;            // Unit is being discarded. Cleanup operations are performed
+
+S_UNUSED = -1 * HOUSEKEEPING;           // Unit is not used. Regarded as a free unit even if controlled by this processor.
+const S_FIRST           = S_UNLOAD;     // State assigned to newly acquired units
+const S_LAST            = S_DISCARD;    // Last valid state
+
+CONTAINER_INDEX = CORE_X = CORE_Y = ITEM = ITEM_ICON = STATE_LIMIT = null;
+
+//  UNIT AUTO ALLOCATION INITIALIZATION
+/////////////////////////////////////////////////////////
+LOOPS                   = 1;                        // We spend this many additional loops on a turnaround
+LOOPS_TICKS_TO_MS       = LOOPS * 1000 / 60;        // Bake in the ticks-to-ms conversion into the multiplicator
+INC_OVERALLOCATION      = OVERALLOCATION_LOW;       // Allocate at least this much more units (additional factor)
+DEC_OVERALLOCATION      = 1 + OVERALLOCATION_HIGH;  // Deallocate on this much overcapacity (convert to multiplicational factor)
+TRIGGER_BOOST           = 2;                        // Add this many units on triggering container level
+INC_MAX                 = 6;                        // Max increase in one loop
+DEC_MAX                 = -1;                       // Max decrease in one loop
+
+//  DETERMINING NUMBER OF PREVIOUSLY ACTIVE UNITS
+//  Used when processor resets or buildings change
+/////////////////////////////////////////////////////////
+ubind(UNIT);
+while @unit == null do
+    print($"[salmon]No unit of type $UNIT found.");
+    printflush(message1);
+    ubind(UNIT);
+end;
+first_unit = @unit;
+SPEED_SEC = @unit.@speed / 10;
+SPEED = @unit.@speed / 1000;                         // Unit speed in tiles/ms
+TARGET = 0;
+do
+    if @unit.@controller == @this then
+        state = @unit.@flag;
+        // Don't count S_DISCARD units as active
+        TARGET += (state >= S_FIRST) && (state < S_LAST);
+    end;
+    ubind(UNIT);
+while (@unit != first_unit) and (first_unit.@dead == 0);    // Don't get stuck if the first unit is killed
+
+CHANGE = 0;
+active = TARGET;
+DEC_LIMIT = 0;
+INC_LIMIT = 0;
+UNIT_CAPACITY = @unit.@itemCapacity;
+first_unit = null;
+
+//  LOCAL CONTAINER INITIALIZATION
+/////////////////////////////////////////////////////////
+while true do
+    CONTAINER = null;
+    CONTAINERS = 0;
+    n = @links;
+    while n > 0 do
+        n = n - 1;
+        block = getlink(n);
+        case block.@type
+            when @vault, @container then
+                CONTAINER = block;
+                CONTAINERS += 1;
+                CONTAINER_INDEX = n;
+        end;
+    end;
+    if CONTAINER == null then
+        print("[salmon]No vault or container.");
+        printflush(message1);
+    else
+        break;
+    end;
+end;
+
+//  REMOTE CONTAINER/CORE INITIALIZATION
+//  Includes locating remote vault
+/////////////////////////////////////////////////////////
+CORE = null;
+if LINK_ID == 0 then
+    while CORE == null do
+        print("[green]Locating core...");
+        printflush(message1);
+        ubind(UNIT);
+        if @unit.@controlled == 0 then
+            CORE = ulocate(building, core, false, out CORE_X, out CORE_Y);
+            flag(S_UNUSED);
+        end;
+    end;
+    DISCARD_UNIT_MAX_ITEMS = UNIT_CAPACITY;       // Can discard anything to the core
+    DROP_TO_CORE = not DROP_TO_AIR;
+else
+    printflush(message2);
+    print($"[green]Locating vault #$LINK_ID...");
+    printflush(message1);
+    while CORE == null do
+        QUERY_FLAG = 99999900 + LINK_ID;
+        flag = QUERY_FLAG;
+        ubind(UNIT);
+        while @unit.@controlled != 0 do
+            ubind(UNIT);
+        end;
+        flag(flag);
+        while flag == QUERY_FLAG and @unit.@dead == 0 do
+            stop();                 // Keep controlling the unit
+            flag = @unit.@flag;
+        end;
+        if flag != QUERY_FLAG then
+            position = flag \ 100;
+            CORE_X = position % @mapw;
+            CORE_Y = position \ @mapw;
+            // §§§ B and not A --> B > A
+            while @unit.@dead == 0 and !within(CORE_X, CORE_Y, RADIUS_WITHIN) do
+                approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+            end;
+            CORE = getBlock(CORE_X, CORE_Y, out b_type);
+            if b_type != @vault then
+                print($"[salmon]Building at $CORE_X, $CORE_Y is not a vault!");
+                printflush(message2);
+                CORE = null;
+            end;
+        end;
+        flag(S_UNUSED);               // Free the unit
+    end;
+    DISCARD_UNIT_MAX_ITEMS = DROP_TO_AIR ? UNIT_CAPACITY : 0;       // Cannot drop items to the remote vault
+    DROP_TO_CORE = false;
+end;
+
+//  SORTER AND DIRECTION INITIALIZATION
+/////////////////////////////////////////////////////////
+SORTER = sorter1;
+sorter_type = SORTER.@type;
+while (sorter_type != @sorter) and (sorter_type != @inverted-sorter) do
+    println("[salmon]Block sorter1 is neither a sorter, nor an inverted sorter.");
+    if SORTER != null then
+        print("Block found: ", SORTER);
+    end;
+    printflush(message1);
+    SORTER = sorter1;
+    sorter_type = SORTER.@type;
+end;
+
+if sorter_type == @sorter then
+    SHOW_REMOTE_LEVEL = true;
+    SRC = CORE;
+    DST = CONTAINER;
+    src_capacity = SRC.@itemCapacity;
+    dst_capacity = DST.@itemCapacity;
+    LOAD_LEVEL = (src_capacity * (100 - EFF_REMOTE_LIMIT)) \ 100;
+    DROP_LEVEL = (dst_capacity * EFF_LOCAL_LIMIT) \ 100;
+    LOCAL_MARGIN = DROP_LEVEL;
+    REMOTE_MARGIN = LOAD_LEVEL;
+    LOW_LEVEL_TRIGGER = dst_capacity * (1 - TRIGGER_LEVEL);
+    HIGH_LEVEL_TRIGGER = dst_capacity;  // never triggers
+    FLOW_CORR_SIGN = 1;                 // sign of flow-rate correction computed from container level
+    SRC_REMOTE_WAIT = 1;
+    DST_REMOTE_WAIT = 0;
+
+    DIRECTION = (LINK_ID == 0) ? " from core"  : " from vault #";
+else
+    SHOW_REMOTE_LEVEL = LINK_ID > 0;
+    SRC = CONTAINER;
+    DST = CORE;
+    src_capacity = SRC.@itemCapacity;
+    dst_capacity = DST.@itemCapacity;
+    LOAD_LEVEL = (src_capacity * (100 - EFF_LOCAL_LIMIT)) \ 100;
+    // Add UNIT_CAPACITY to drop level if the taget is core to allow dropping to full core
+    DROP_LEVEL = (dst_capacity * EFF_REMOTE_LIMIT) \ 100 + ((LINK_ID == 0) * UNIT_CAPACITY);
+    LOCAL_MARGIN = LOAD_LEVEL;
+    REMOTE_MARGIN = DROP_LEVEL;
+    HIGH_LEVEL_TRIGGER = src_capacity * TRIGGER_LEVEL;
+    LOW_LEVEL_TRIGGER = 0;              // never triggers
+    FLOW_CORR_SIGN = -1;                // sign of flow-rate correction computed from container level
+    SRC_REMOTE_WAIT = 0;
+    DST_REMOTE_WAIT = 1;
+
+    DIRECTION = (LINK_ID == 0) ? " to core" : " to vault #";
+end;
+LINK_TXT = (LINK_ID == 0) ? ""  : LINK_ID;
+LOAD_PACK = min(UNIT_CAPACITY, src_capacity - LOAD_LEVEL);
+DROP_PACK = min(UNIT_CAPACITY, DROP_LEVEL);
+
+SRC_X = SRC.@x;
+SRC_Y = SRC.@y;
+DST_X = DST.@x;
+DST_Y = DST.@y;
+
+DISTANCE = len(DST_X - SRC_X, DST_Y - SRC_Y) - RADIUS_APPROACH - RADIUS_WITHIN;
+TRAVEL_TIME = (2 * max(DISTANCE, 10)) / SPEED;   // Travel time: both ways, in tiles/ms
+//DISTANCE = (len(DST_X - SRC_X, DST_Y - SRC_Y) - RADIUS_APPROACH) / 100;
+
+//  PARKING POSITION
+/////////////////////////////////////////////////////////
+
+// Leave parked units on the other side of the core
+// so that they aren't in the way of our traffic
+PARK_X = CORE_X + ((CONTAINER.@x < CORE_X) ? 15 : -15);
+PARK_Y = CORE_Y + ((CONTAINER.@y < CORE_Y) ? 15 : -15);
+// If the remote is core, allow parking units with items,
+// otherwise only units with zero items
+PARK_ITEM_LIMIT = (LINK_ID == 0) * UNIT_CAPACITY;
+
+//  MAIN LOOP INITIALIZATION
+/////////////////////////////////////////////////////////
+TRANSFER_START = @tick;             // Prevent completely nonsensical values
+LOOP_START = @tick - 60;            // Prevent completely nonsensical values
+LAST_ITEM = @mono;                  // Must not be null
+MESSAGE_TIMEOUT = @tick + 600;      // Ten seconds
+WAIT_LIMIT = 30000;                 // Good initial value: half a minute
+items_in_transit = 0;
+items_per_min_unit = "--";
+items_per_min = "-- ";
+turnaround_str = "--";
+elapsed_str = "--";
+wait_time_str = 0;
+
+last_level = loop_time_ms = max_level = min_level = remote_wait_time
+    = total_flow_1 = total_flow_2 = transferred = transfers = wait_time = 0;
+
+
+if EFF_AUTO_ALLOCATION then
+    CORR_SIGN = "[]([green]+";
+    corr_per_min = 0;
+    SPEED_UNIT_TXT = "[])/min";
+    AUTO_ALLOCATION_TXT = "\n=== [gold]Gathering statistics[] ===";
+else
+    CORR_SIGN = "[]";
+    corr_per_min = "";
+    SPEED_UNIT_TXT = "/min";
+    AUTO_ALLOCATION_TXT = "";
+end;
+
+//    MAIN LOOP
+/////////////////////////////////////////////////////////
+while true do
+    ubind(UNIT);
+    while @unit == null do
+        // All units have died, poor bastards
+        print($"No unit of type $UNIT found.");
+        printflush(message1);
+        ubind(UNIT);
+    end;
+
+    // Manipulate target
+    if switch1.@enabled then
+        switch1.enabled = false;
+        EFF_AUTO_ALLOCATION = false;
+        AUTO_ALLOCATION_TXT = "";
+        TARGET = min(TARGET + 1, MAX_UNITS);
+        CORR_SIGN = "[]";
+        corr_per_min = "";
+        SPEED_UNIT_TXT = "/min";
+        WAIT_LIMIT = 30000;
+    end;
+
+    if switch2.@enabled then
+        switch2.enabled = false;
+        if TARGET < 1 then
+            EFF_AUTO_ALLOCATION = true;
+            TARGET = 1;
+            DEC_LIMIT = 0;           // No change for next iteration
+            INC_LIMIT = 0;
+            CORR_SIGN = "[]([green]+";
+            corr_per_min = 0;
+            SPEED_UNIT_TXT = "[])/min";
+        else
+            EFF_AUTO_ALLOCATION = false;
+            TARGET = max(TARGET - 1, 0);
+            CORR_SIGN = "[]";
+            corr_per_min = "";
+            SPEED_UNIT_TXT = "/min";
+            AUTO_ALLOCATION_TXT = TARGET == 0 ? "\n=== [salmon]Transport deactivated[] ===" : "";
+        end;
+        WAIT_LIMIT = 30000;
+    end;
+
+    // Detect dead units
+    alive = first_unit.@dead == 0;
+
+    // We're at the beginning of the cycle, or the first unit was destroyed
+    // Do loop initializations
+    // Note: first unit is not necessarily controlled by us
+    // Condition equivalent to "not alive or (@unit === first_unit)", but shorter
+    if alive <= (@unit == first_unit) then
+        if active == 0 then
+            print("\n[salmon]No active units.[]");
+        end;
+        printflush(message2);
+
+        // Configure item to transport
+        STATE_LIMIT = S_LAST;
+        ITEM = SORTER.@config;
+        if ITEM != LAST_ITEM then
+            while ITEM == null do
+                print("[salmon]No item type selected for transport.[]");
+                printflush(message1);
+                ITEM = SORTER.@config;
+            end;
+            LAST_ITEM = ITEM;
+            ITEM_ICON = itemTypeToIcon(ITEM);
+            STATE_LIMIT = S_UNLOAD;   // Switches all units to S_UNLOAD state
+
+            // Reset container level tracking
+            last_level = CONTAINER.sensor(ITEM);
+            min_level = 999999;
+            max_level = 0;
+        end;
+
+        // Update min/max levels
+        container_items = CONTAINER.sensor(ITEM);
+        min_level = min(min_level, container_items);
+        max_level = max(max_level, container_items);
+
+        loop_time = @tick - LOOP_START;
+        LOOP_START = @tick;
+        loop_time_ms = (loop_time * 100) \ 6;
+
+        // Transfer speed calculation
+        if transfers >= active or wait_time > WAIT_LIMIT then
+            wait_time_str = ceil(wait_time / 100) / 10;
+            elapsed_ticks = @tick - TRANSFER_START;
+            TRANSFER_START = @tick;
+            elapsed_ms = elapsed_ticks / 0.06;
+            elapsed_str = (elapsed_ms \ 100) / 10;
+            items_per_ms = transferred / elapsed_ms;
+            items_per_min = items_per_ms \ (1.0 / 60000);    // save floor instruction; for display only
+            transferred = 0;
+            transfers = 0;
+
+            // Auto allocation uses computed transfer speed
+            if EFF_AUTO_ALLOCATION then
+                AUTO_ALLOCATION_TXT = "\n=== [gold]Unit auto allocation[] ===";
+                // Turnaround time in seconds
+                // Travel time (in ms) plus extra loop time (with ticks to ms converstion)
+                turnaround_ms = TRAVEL_TIME + (LOOPS_TICKS_TO_MS * loop_time);
+                WAIT_LIMIT = turnaround_ms * DEC_OVERALLOCATION;
+                turnaround_str = (turnaround_ms \ 100) / 10;
+                // Throughput of a single unit (items per second)
+                items_per_ms_unit = UNIT_CAPACITY / turnaround_ms;
+                items_per_min_unit = floor(items_per_ms_unit * 60000);
+
+                // Flow rate correction from container level changes
+                this_level = (min_level + max_level) / 2;
+                corr = (last_level - this_level) * FLOW_CORR_SIGN;
+                corr_per_ms = corr / elapsed_ms;
+                last_level = this_level;
+                total_flow_per_ms = items_per_ms + corr_per_ms;
+
+                // Output update
+                corr_per_min = floor(60000 * corr_per_ms);
+                CORR_SIGN = corr_per_min >= 0 ? "[]([green]+" : "[]([green]";
+                SPEED_UNIT_TXT = "[])/min";
+
+                // Don't adjust TARGET after the first unit is lost
+                // (the loop was not completed and the measurements are inaccurate)
+                if alive then
+                    // Additional boost when approaching a limit
+                    trigger = min_level < LOW_LEVEL_TRIGGER or max_level > HIGH_LEVEL_TRIGGER;
+
+                    if wait_time == 0 or (trigger > remote_wait_time) then
+                        // There were no waits, or there's a level trigger and no remote wait: we might need to add units
+                        // Compute new target from flow rate with correction
+                        if STABILIZATION then
+                            // Compute average for better stability
+                            // It's not displayed anywhere
+                            total_flow_3 = total_flow_2;
+                            total_flow_2 = total_flow_1;
+                            total_flow_1 = total_flow_per_ms;
+                            total_flow_per_ms = (total_flow_3 + total_flow_2 + total_flow_1) / 3;
+                        end;
+                        new_target = ceil(total_flow_per_ms / items_per_ms_unit + INC_OVERALLOCATION);
+
+                        level_boost = TRIGGER_BOOST * trigger;
+                        new_target = min(new_target + level_boost, MAX_UNITS);
+
+                        // Limit the CHANGE to the [0, INC_LIMIT] interval
+                        new_change = min(max(new_target - active, 0), INC_LIMIT);
+                        INC_LIMIT = INC_MAX;                           // Can increase again next time
+                        DEC_LIMIT = (new_change <= 0) * DEC_MAX;       // No decreases after an increase
+                    else
+                        // How much to decrease
+                        new_change = max(-1 * (wait_time \ WAIT_LIMIT), DEC_LIMIT);
+                        INC_LIMIT = (new_change >= 0) * INC_MAX;       // No increases after a decrease
+                        DEC_LIMIT = DEC_MAX;                           // Can decrease again next time
+                    end;
+
+                    TARGET = max(active + new_change, 1);
+                else
+                    // No change after first unit loss
+                    INC_LIMIT = 0;
+                    DEC_LIMIT = 0;
+                end;
+
+                min_level = 999999;
+                max_level = 0;
+            end;
+
+            if CONTAINERS > 1 and SRC == CORE then
+                max_drop = DROP_LEVEL - DST.sensor(ITEM);
+                if max_drop < DROP_PACK then
+                    last_level = this_level = findAnotherContainer();
+                end;
+            end;
+
+            wait_time = 0;
+            remote_wait_time = 0;
+
+            if @tick >= MESSAGE_TIMEOUT then
+                MESSAGE = "";
+            end;
+        end;
+
+        print(MESSAGE);
+        print($"Moving [green]$ITEM[]$DIRECTION$LINK_TXT");
+        print(AUTO_ALLOCATION_TXT);
+        if TARGET > 0 then
+            if active >= TARGET then
+                print($"\nUsing [green]$active/$TARGET[] units ($UNIT) [gold]+$items_in_transit");
+            else
+                print($"\nUsing [salmon]$active/$TARGET[] units ($UNIT) [gold]+$items_in_transit");
+            end;
+            if CHANGE > 0 then
+                print("\n[][salmon]Cannot acquire additional units![]");
+            end;
+        end;
+        print($"\n[]Local items: [gold]$container_items");
+        if EFF_LOCAL_LIMIT < 100 then
+            print($"[] (limit [orange]$LOCAL_MARGIN[])");
+        end;
+        if SHOW_REMOTE_LEVEL then
+            remote_level = CORE.sensor(ITEM);
+            print($"\n[]Remote items: [gold]$remote_level");
+            if EFF_REMOTE_LIMIT < 100 then
+                print($"[] (limit [orange]$REMOTE_MARGIN[])");
+            end;
+        end;
+        if TARGET > 0 then
+            print($"\n[]Speed: [green]$items_per_min$CORR_SIGN$corr_per_min$SPEED_UNIT_TXT");
+            if EFF_AUTO_ALLOCATION then
+                print($"\nUnit throughput: [green]$items_per_min_unit[]/min");
+                print($"\nMin/last round: [green]$turnaround_str[]/[green]$elapsed_str[] s");
+            else
+                print($"\nLast round: [green]$elapsed_str[] s");
+            end;
+            print($"\nTotal wait time: [green]$wait_time_str[] s");
+        end;
+        print($"\n[lightgray]Loop: $loop_time_ms ms");
+        printflush(message1);
+
+        CHANGE = TARGET - active;
+
+        active = 0;
+        first_unit = @unit;
+        items_in_transit = 0;
+
+        print("Unit status:");       // For message2
+
+        if SRC.@dead != 0 then break; end;
+        if DST.@dead != 0 then break; end;
+        if SORTER.@dead != 0 then break; end;
+
+        // Detect container relinking
+        if CONTAINER != getlink(CONTAINER_INDEX) then break; end;
+    end;
+
+    if CHANGE > 0 then
+        // We want to add a unit and this one is free
+        if @unit.@controlled == 0 then
+            CHANGE -= 1;
+            // Flag it now so that the unit is marked as controlled by us for other processors to see
+            flag(S_FIRST);
+        end;
+    end;
+
+    // Is it our unit?
+    // We assign a S_UNUSED flag to units that we want to let go.
+    // They're still marked as controlled by us (@unit.controller === @this)
+    // for a brief period of time, so we ignore them here
+    // Normally, S_UNUSED is zero, but it can be set to a nonzero, in which case
+    // the unit will be found by a housekeeping processor and parked away from core.
+    if @unit.@controller == @this then
+        state = @unit.@flag;
+        if state != S_UNUSED then
+            // Two instructions to limit state to valid range & applying state limit
+            state = min(max(state, S_FIRST), STATE_LIMIT);
+
+            // Do we want to let go a unit?
+            if CHANGE < 0 then
+                // S_DISCARD marks units that are being cleaned up -- can't let them go again
+                if state != S_DISCARD then
+                    if @unit.@totalItems <= DISCARD_UNIT_MAX_ITEMS then
+                        CHANGE += 1;
+                        state = S_DISCARD;
+                    end;
+                end;
+            end;
+
+            /////////////////////////////////////////////////////////////////
+            // BEGIN OF UNIT CONTROL CODE
+            // @unit is ours and we want to control it
+            /////////////////////////////////////////////////////////////////
+
+            // Unloads everything to the core. Used as starting state, to make sure
+            // the unit is free to accept whatever it has to transport
+            if state == S_UNLOAD then
+                if @unit.@totalItems == 0 then
+                    state = S_APPROACH_SRC;
+                elsif @unit.@firstItem == ITEM then
+                    state = S_APPROACH_DST;
+                elsif DROP_TO_CORE then
+                    approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+                    if within(CORE_X, CORE_Y, RADIUS_WITHIN) then
+                        itemDrop(CORE, UNIT_CAPACITY);
+                    end;
+                    print($"[]\nUnloading previous items: [green]");
+                else
+                    itemDrop(@air, UNIT_CAPACITY);
+                    state = S_APPROACH_SRC;
+                end;
+            end;
+
+            if state == S_APPROACH_SRC then
+                approach(SRC_X, SRC_Y, RADIUS_APPROACH);
+                if within(SRC_X, SRC_Y, RADIUS_WITHIN) then
+                    state = S_LOAD_ITEMS;
+                else
+                    printUnitInfo("source", SRC_X, SRC_Y);
+                end;
+            end;
+
+            if state == S_LOAD_ITEMS then
+                max_load = SRC.sensor(ITEM) - LOAD_LEVEL;
+                if max_load >= LOAD_PACK then
+                    itemTake(SRC, ITEM, max_load);
+                end;
+                if @unit.@totalItems >= UNIT_CAPACITY then
+                    state = S_APPROACH_DST;
+                else
+                    print($"[]\nWaiting at source: [green]");
+                    // Keep the unit in place
+                    approach(SRC_X, SRC_Y, RADIUS_APPROACH);
+                    // Time waited
+                    wait_time += loop_time_ms;
+                    remote_wait_time += loop_time_ms * SRC_REMOTE_WAIT;
+                end;
+            end;
+
+            if state == S_APPROACH_DST then
+                approach(DST_X, DST_Y, RADIUS_APPROACH);
+                if within(DST_X, DST_Y, RADIUS_WITHIN) then
+                    // Update transfer statistics
+                    transferred += @unit.@totalItems;
+                    transfers += 1;
+                    state = S_DROP_ITEMS;
+                else
+                    printUnitInfo("destination", DST_X, DST_Y);
+                end;
+            end;
+
+            if state == S_DROP_ITEMS then
+                max_drop = DROP_LEVEL - DST.sensor(ITEM);
+                if max_drop >= DROP_PACK then
+                    itemDrop(DST, max_drop);
+                end;
+                if @unit.@totalItems <= 0 then
+                    state = S_APPROACH_SRC;
+                    // Issue the command now to save one loop
+                    approach(SRC_X, SRC_Y, RADIUS_APPROACH);
+                    printUnitInfo("source", SRC_X, SRC_Y);
+                else
+                    print($"[]\nWaiting at destination: [green]");
+                    // Keep the unit in place
+                    approach(DST_X, DST_Y, RADIUS_APPROACH);
+                    // Time waited
+                    wait_time += loop_time_ms;
+                    remote_wait_time += loop_time_ms * DST_REMOTE_WAIT;
+                end;
+            end;
+
+            // Do not count discarded unit items as in transit
+            items = @unit.@totalItems;
+            items_in_transit += items;
+
+            // Quit using this unit: move it to the core and unload whatever it's carrying
+            if state == S_DISCARD then
+                print($"[]\nParking: [green]");
+                if items > 0 then
+                    if DROP_TO_CORE then
+                        approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+                        if within(CORE_X, CORE_Y, RADIUS_WITHIN) then
+                            itemDrop(CORE, UNIT_CAPACITY);
+                            items = @unit.@totalItems;
+                        end;
+                    else
+                        itemDrop(@air, UNIT_CAPACITY);
+                        items = @unit.@totalItems;
+                    end;
+                end;
+
+                if items <= PARK_ITEM_LIMIT then
+                    move(PARK_X, PARK_Y);
+                    state = S_UNUSED;
+                end;
+            else
+                // Only units not being discarded count as active
+                active += 1;
+            end;
+
+            print(items, ITEM_ICON);
+
+            /////////////////////////////////////////////////////////////////
+            // END OF UNIT CONTROL CODE
+            /////////////////////////////////////////////////////////////////
+
+            // Update unit state
+            flag(state);
+        end;
+    end;
+end;
+
+//while SORTER.dead do
+//    print("[salmon]sorter1 is missing![]\nPlease place and link sorter or inverted sorter to the processor.");
+//    printflush(message1);
+//    printflush(message2);
+//    SORTER = sorter1;
+//end;
+//
+//if SRC.dead or DST.dead then
+//    while !(switch1.enabled or switch2.enabled) do
+//        print("[salmon]Local or remote container became invalid.\nPlease fix and press any button to reinitialize.");
+//        printflush(message1);
+//        printflush(message2);
+//    end;
+//end;
+
+switch1.enabled = false;
+switch2.enabled = false;
+
+inline def printUnitInfo(name, x, y)
+    if SHOW_UNIT_DISTANCE then
+        print($"[]\n[gold]$ sec[] to $name: [green]", len(x - @unit.@x, y - @unit.@y) \ SPEED_SEC / 10);
+    else
+        print($"[]\nGoing to $name: [green]");
+    end;
+end;
+
+def itemTypeToIcon(itemType)
+    case itemType.@id
+        when @blast-compound.@id   then "[]" + ITEM_BLAST_COMPOUND;
+        when @coal.@id             then "[]" + ITEM_COAL;
+        when @copper.@id           then "[]" + ITEM_COPPER;
+        when @graphite.@id         then "[]" + ITEM_GRAPHITE;
+        when @lead.@id             then "[]" + ITEM_LEAD;
+        when @metaglass.@id        then "[]" + ITEM_METAGLASS;
+        when @phase-fabric.@id     then "[]" + ITEM_PHASE_FABRIC;
+        when @plastanium.@id       then "[]" + ITEM_PLASTANIUM;
+        when @pyratite.@id         then "[]" + ITEM_PYRATITE;
+        when @sand.@id             then "[]" + ITEM_SAND;
+        when @scrap.@id            then "[]" + ITEM_SCRAP;
+        when @silicon.@id          then "[]" + ITEM_SILICON;
+        when @spore-pod.@id        then "[]" + ITEM_SPORE_POD;
+        when @surge-alloy.@id      then "[]" + ITEM_SURGE_ALLOY;
+        when @thorium.@id          then "[]" + ITEM_THORIUM;
+        when @titanium.@id         then "[]" + ITEM_TITANIUM;
+    end;
+end;
+
+def findAnotherContainer()
+    min_level = 999999;
+    CONTAINERS = 0;
+    n = @links;
+    while n > 0 do
+        n = n - 1;
+        block = getlink(n);
+        case block.@type
+            when @vault, @container then
+                CONTAINERS += 1;
+                level = block.sensor(ITEM);
+                if level < min_level then
+                    min_level = level;
+                    CONTAINER = block;
+                    CONTAINER_INDEX = n;
+                end;
+        end;
+    end;
+
+    if CONTAINERS == 0 then
+        // Make sure main loop reinitializes
+        CONTAINER = @this;
+    else
+        DST = CONTAINER;
+        dst_capacity = DST.@itemCapacity;
+        DROP_LEVEL = (dst_capacity * EFF_LOCAL_LIMIT) \ 100;
+        LOCAL_MARGIN = DROP_LEVEL;
+        LOW_LEVEL_TRIGGER = dst_capacity * (1 - TRIGGER_LEVEL);
+        HIGH_LEVEL_TRIGGER = dst_capacity;  // never triggers
+
+        DST_X = DST.@x;
+        DST_Y = DST.@y;
+
+        DISTANCE = len(DST_X - SRC_X, DST_Y - SRC_Y) - RADIUS_APPROACH - RADIUS_WITHIN;
+        TRAVEL_TIME = (2 * max(DISTANCE, 10)) / SPEED;   // Travel time: both ways, in tiles/ms
+
+        MESSAGE = "[salmon]Container filled up, switching...[]\n";
+        MESSAGE_TIMEOUT = @tick + 600;      // Ten seconds
+    end;
+
+    return min_level;
+end;
