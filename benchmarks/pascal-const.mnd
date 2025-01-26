@@ -1,0 +1,50 @@
+// Pascal's triangle computation benchmark
+// Since the triangle's size is a constant,
+// loop unrolling optimization is possible.
+
+#set syntax = strict;
+
+// TRIANGLE_SIZE is a constant, allowing loop unrolling
+// optimization giving us a huge speedup
+const TRIANGLE_SIZE = 10;
+
+// To further optimize the code, the cells stored in currentLine and previousLine
+// are swapped after completing each line instead of copying the values one by one.
+noinit linked cell1, cell2, message1;
+
+begin
+    println("1");
+    println("1 1");
+    
+    var lineLength = 2;
+    var previousLine = cell1;
+    var currentLine = cell2;
+    
+    previousLine[0] = 1;
+    previousLine[1] = 1;
+    
+    for var i in 3 .. TRIANGLE_SIZE do
+        currentLine[0] = 1;
+        for var j in 1 .. lineLength do
+            currentLine[j] = previousLine[j - 1] + previousLine[j];
+        end;
+        currentLine[lineLength] = 1;
+        lineLength++;
+    
+        for var c in 0 ... lineLength do
+            print(currentLine[c]);
+            if c < lineLength - 1 then
+                print(" ");
+            end;
+        end;
+        println();
+
+        // Swapping the pointers to memory cells
+        // to avoid having to copy their values one by one
+        var tmp = previousLine;
+        previousLine = currentLine;
+        currentLine = tmp;
+    end;
+    
+    printflush(message1);
+end;

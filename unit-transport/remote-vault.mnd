@@ -1,0 +1,32 @@
+#set syntax = strict;
+
+param LINK_ID = 1;
+
+const QUERY_BASE = 99999900;
+linked vault1, message1;
+
+var queryFlag = QUERY_BASE + LINK_ID;
+var position = 100 * (vault1.@x + @mapw * vault1.@y);
+var answerFlag = position + LINK_ID;
+var serviced = 0;
+
+begin
+    while true do
+        var start = @time;
+        for var unit in @mono, @poly, @mega, @quad, @oct, @flare, @horizon, @zenith, @antumbra, @eclipse do
+            processUnit(unit);
+        end;
+        println($"Remote vault [gold]#$LINK_ID[]");
+        println($"Queries serviced: [green]$serviced[]");
+        println($"[lightgray]Loop time: ${floor(@time - start)} ms");
+        printflush(message1);
+    end;
+end;
+
+inline def processUnit(unit)
+    ubind(unit);
+    if @unit.@flag == queryFlag then
+        flag(answerFlag);
+        serviced++;
+    end;
+end;

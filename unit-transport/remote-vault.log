@@ -1,0 +1,601 @@
+    77 instructions before optimizations.
+     3 instructions eliminated by Temp Variables Elimination.
+     4 instructions eliminated by Dead Code Elimination (5 iterations).
+     1 instructions eliminated by Jump Normalization (3 iterations).
+     1 instructions eliminated by Jump Optimization (3 iterations).
+     1 instructions eliminated by Single Step Elimination (4 iterations).
+    11 instructions eliminated by Data Flow Optimization (2 passes, 7 iterations).
+    25 instructions added by Loop Unrolling (3 iterations).
+     1 loops unrolled by Loop Unrolling.
+     1 instructions eliminated by Unreachable Code Elimination.
+     7 instructions eliminated by Print Merging.
+    73 instructions after optimizations.
+
+Pass 1: speed optimization selection (cost limit 934):
+  * Unroll iteration loop at line 16:9                           cost    11, benefit      975.0, efficiency       88.6 (+15 instructions)
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-1 instructions):
+ 
+    68 label *label19
+    69 set *tmp11 null
+    70 label *label20
+-    * set *tmp8 *tmp11
+    71 label *label18
+    72 label *label6
+    73 multijump *tmp7 0 0 marker0
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-2 instructions):
+ 
+    63 ucontrol flag .answerFlag
+    64 set *tmp12 .serviced
+    65 op add .serviced .serviced 1
+-    * set *tmp11 *tmp12
+    66 jump *label20 always
+    67 label *label19
+-    * set *tmp11 null
+    68 label *label20
+    69 label *label18
+    70 label *label6
+
+Modifications by Initial phase, Dead Code Elimination, iteration 3 (-1 instructions):
+ 
+    61 op equal *tmp10 *tmp9 .queryFlag
+    62 jump *label19 equal *tmp10 false
+    63 ucontrol flag .answerFlag
+-    * set *tmp12 .serviced
+    64 op add .serviced .serviced 1
+    65 jump *label20 always
+    66 label *label19
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-3 instructions):
+ 
+     2 jump *label0 equal vault1 null
+     3 label *label1
+     4 jump *label1 equal message1 null
+-    * op add *tmp0 99999900 LINK_ID
+-    * set .queryFlag *tmp0
++    5 op add .queryFlag 99999900 LINK_ID
+     6 sensor *tmp1 vault1 @x
+     7 sensor *tmp2 vault1 @y
+     8 op mul *tmp3 @mapw *tmp2
+     9 op add *tmp4 *tmp1 *tmp3
+-    * op mul *tmp5 100 *tmp4
+-    * set .position *tmp5
+-    * op add *tmp6 .position LINK_ID
+-    * set .answerFlag *tmp6
++   10 op mul .position 100 *tmp4
++   11 op add .answerFlag .position LINK_ID
+    12 set .serviced 0
+    13 label *label2
+    14 jump *label4 equal true false
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+ 
+    11 op add .answerFlag .position LINK_ID
+    12 set .serviced 0
+    13 label *label2
+-    * jump *label4 equal true false
+    14 set :start @time
+    15 setaddr *tmp7 *label8
+    16 set :unit @mono
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+    54 set :fn0:unit :unit
+    55 ubind :fn0:unit
+    56 sensor *tmp9 @unit @flag
+-    * op equal *tmp10 *tmp9 .queryFlag
+-    * jump *label19 equal *tmp10 false
++   57 jump *label19 notEqual *tmp9 .queryFlag
+    58 ucontrol flag .answerFlag
+    59 op add .serviced .serviced 1
+    60 jump *label20 always
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
+ 
+    57 jump *label19 notEqual *tmp9 .queryFlag
+    58 ucontrol flag .answerFlag
+    59 op add .serviced .serviced 1
+-    * jump *label20 always
+    60 label *label19
+    61 label *label20
+    62 label *label18
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    52 set :unit @eclipse
+    53 label *label5
+    54 set :fn0:unit :unit
+-    * ubind :fn0:unit
++   55 ubind :unit
+    56 sensor *tmp9 @unit @flag
+    57 jump *label19 notEqual *tmp9 .queryFlag
+    58 ucontrol flag .answerFlag
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1 instructions):
+ 
+    51 setaddr *tmp7 *label17
+    52 set :unit @eclipse
+    53 label *label5
+-    * set :fn0:unit :unit
+    54 ubind :unit
+    55 sensor *tmp9 @unit @flag
+    56 jump *label19 notEqual *tmp9 .queryFlag
+
+Modifications by Unroll iteration loop at line 16:9 (+25 instructions):
+ 
+    12 set .serviced 0
+    13 label *label2
+    14 set :start @time
+-    * setaddr *tmp7 *label8
+-    * set :unit @mono
+-    * jump *label5 always
+-    * multilabel *label8 marker0
+-    * setaddr *tmp7 *label9
+-    * set :unit @poly
+-    * jump *label5 always
+-    * multilabel *label9 marker0
+-    * setaddr *tmp7 *label10
+-    * set :unit @mega
+-    * jump *label5 always
+-    * multilabel *label10 marker0
+-    * setaddr *tmp7 *label11
+-    * set :unit @quad
+-    * jump *label5 always
+-    * multilabel *label11 marker0
+-    * setaddr *tmp7 *label12
+-    * set :unit @oct
+-    * jump *label5 always
+-    * multilabel *label12 marker0
+-    * setaddr *tmp7 *label13
+-    * set :unit @flare
+-    * jump *label5 always
+-    * multilabel *label13 marker0
+-    * setaddr *tmp7 *label14
+-    * set :unit @horizon
+-    * jump *label5 always
+-    * multilabel *label14 marker0
+-    * setaddr *tmp7 *label15
+-    * set :unit @zenith
+-    * jump *label5 always
+-    * multilabel *label15 marker0
+-    * setaddr *tmp7 *label16
+-    * set :unit @antumbra
+-    * jump *label5 always
+-    * multilabel *label16 marker0
+-    * setaddr *tmp7 *label17
+-    * set :unit @eclipse
+-    * label *label5
+-    * ubind :unit
+-    * sensor *tmp9 @unit @flag
+-    * jump *label19 notEqual *tmp9 .queryFlag
+-    * ucontrol flag .answerFlag
+-    * op add .serviced .serviced 1
+-    * label *label19
+-    * label *label20
+-    * label *label18
+-    * label *label6
+-    * multijump *tmp7 0 0 marker0
+-    * multilabel *label17 marker0
+-    * label *label7
++   15 set :unit @mono
++   16 label *label21
++   17 ubind :unit
++   18 sensor *tmp9 @unit @flag
++   19 jump *label22 notEqual *tmp9 .queryFlag
++   20 ucontrol flag .answerFlag
++   21 op add .serviced .serviced 1
++   22 label *label22
++   23 label *label23
++   24 label *label24
++   25 label *label25
++   26 set :unit @poly
++   27 label *label28
++   28 ubind :unit
++   29 sensor *tmp9 @unit @flag
++   30 jump *label29 notEqual *tmp9 .queryFlag
++   31 ucontrol flag .answerFlag
++   32 op add .serviced .serviced 1
++   33 label *label29
++   34 label *label30
++   35 label *label31
++   36 label *label32
++   37 set :unit @mega
++   38 label *label35
++   39 ubind :unit
++   40 sensor *tmp9 @unit @flag
++   41 jump *label36 notEqual *tmp9 .queryFlag
++   42 ucontrol flag .answerFlag
++   43 op add .serviced .serviced 1
++   44 label *label36
++   45 label *label37
++   46 label *label38
++   47 label *label39
++   48 set :unit @quad
++   49 label *label42
++   50 ubind :unit
++   51 sensor *tmp9 @unit @flag
++   52 jump *label43 notEqual *tmp9 .queryFlag
++   53 ucontrol flag .answerFlag
++   54 op add .serviced .serviced 1
++   55 label *label43
++   56 label *label44
++   57 label *label45
++   58 label *label46
++   59 set :unit @oct
++   60 label *label49
++   61 ubind :unit
++   62 sensor *tmp9 @unit @flag
++   63 jump *label50 notEqual *tmp9 .queryFlag
++   64 ucontrol flag .answerFlag
++   65 op add .serviced .serviced 1
++   66 label *label50
++   67 label *label51
++   68 label *label52
++   69 label *label53
++   70 set :unit @flare
++   71 label *label56
++   72 ubind :unit
++   73 sensor *tmp9 @unit @flag
++   74 jump *label57 notEqual *tmp9 .queryFlag
++   75 ucontrol flag .answerFlag
++   76 op add .serviced .serviced 1
++   77 label *label57
++   78 label *label58
++   79 label *label59
++   80 label *label60
++   81 set :unit @horizon
++   82 label *label63
++   83 ubind :unit
++   84 sensor *tmp9 @unit @flag
++   85 jump *label64 notEqual *tmp9 .queryFlag
++   86 ucontrol flag .answerFlag
++   87 op add .serviced .serviced 1
++   88 label *label64
++   89 label *label65
++   90 label *label66
++   91 label *label67
++   92 set :unit @zenith
++   93 label *label70
++   94 ubind :unit
++   95 sensor *tmp9 @unit @flag
++   96 jump *label71 notEqual *tmp9 .queryFlag
++   97 ucontrol flag .answerFlag
++   98 op add .serviced .serviced 1
++   99 label *label71
++  100 label *label72
++  101 label *label73
++  102 label *label74
++  103 set :unit @antumbra
++  104 label *label77
++  105 ubind :unit
++  106 sensor *tmp9 @unit @flag
++  107 jump *label78 notEqual *tmp9 .queryFlag
++  108 ucontrol flag .answerFlag
++  109 op add .serviced .serviced 1
++  110 label *label78
++  111 label *label79
++  112 label *label80
++  113 label *label81
++  114 set :unit @eclipse
++  115 label *label84
++  116 ubind :unit
++  117 sensor *tmp9 @unit @flag
++  118 jump *label85 notEqual *tmp9 .queryFlag
++  119 ucontrol flag .answerFlag
++  120 op add .serviced .serviced 1
++  121 label *label85
++  122 label *label86
++  123 label *label87
++  124 label *label88
++  125 label *label7
+   126 print "Remote vault [gold]#"
+   127 print LINK_ID
+   128 print "["
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    14 set :start @time
+    15 set :unit @mono
+    16 label *label21
+-    * ubind :unit
++   17 ubind @mono
+    18 sensor *tmp9 @unit @flag
+    19 jump *label22 notEqual *tmp9 .queryFlag
+    20 ucontrol flag .answerFlag
+ 
+    25 label *label25
+    26 set :unit @poly
+    27 label *label28
+-    * ubind :unit
++   28 ubind @poly
+    29 sensor *tmp9 @unit @flag
+    30 jump *label29 notEqual *tmp9 .queryFlag
+    31 ucontrol flag .answerFlag
+ 
+    36 label *label32
+    37 set :unit @mega
+    38 label *label35
+-    * ubind :unit
++   39 ubind @mega
+    40 sensor *tmp9 @unit @flag
+    41 jump *label36 notEqual *tmp9 .queryFlag
+    42 ucontrol flag .answerFlag
+ 
+    47 label *label39
+    48 set :unit @quad
+    49 label *label42
+-    * ubind :unit
++   50 ubind @quad
+    51 sensor *tmp9 @unit @flag
+    52 jump *label43 notEqual *tmp9 .queryFlag
+    53 ucontrol flag .answerFlag
+ 
+    58 label *label46
+    59 set :unit @oct
+    60 label *label49
+-    * ubind :unit
++   61 ubind @oct
+    62 sensor *tmp9 @unit @flag
+    63 jump *label50 notEqual *tmp9 .queryFlag
+    64 ucontrol flag .answerFlag
+ 
+    69 label *label53
+    70 set :unit @flare
+    71 label *label56
+-    * ubind :unit
++   72 ubind @flare
+    73 sensor *tmp9 @unit @flag
+    74 jump *label57 notEqual *tmp9 .queryFlag
+    75 ucontrol flag .answerFlag
+ 
+    80 label *label60
+    81 set :unit @horizon
+    82 label *label63
+-    * ubind :unit
++   83 ubind @horizon
+    84 sensor *tmp9 @unit @flag
+    85 jump *label64 notEqual *tmp9 .queryFlag
+    86 ucontrol flag .answerFlag
+ 
+    91 label *label67
+    92 set :unit @zenith
+    93 label *label70
+-    * ubind :unit
++   94 ubind @zenith
+    95 sensor *tmp9 @unit @flag
+    96 jump *label71 notEqual *tmp9 .queryFlag
+    97 ucontrol flag .answerFlag
+ 
+   102 label *label74
+   103 set :unit @antumbra
+   104 label *label77
+-    * ubind :unit
++  105 ubind @antumbra
+   106 sensor *tmp9 @unit @flag
+   107 jump *label78 notEqual *tmp9 .queryFlag
+   108 ucontrol flag .answerFlag
+ 
+   113 label *label81
+   114 set :unit @eclipse
+   115 label *label84
+-    * ubind :unit
++  116 ubind @eclipse
+   117 sensor *tmp9 @unit @flag
+   118 jump *label85 notEqual *tmp9 .queryFlag
+   119 ucontrol flag .answerFlag
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-10 instructions):
+ 
+    12 set .serviced 0
+    13 label *label2
+    14 set :start @time
+-    * set :unit @mono
+    15 label *label21
+    16 ubind @mono
+    17 sensor *tmp9 @unit @flag
+ 
+    22 label *label23
+    23 label *label24
+    24 label *label25
+-    * set :unit @poly
+    25 label *label28
+    26 ubind @poly
+    27 sensor *tmp9 @unit @flag
+ 
+    32 label *label30
+    33 label *label31
+    34 label *label32
+-    * set :unit @mega
+    35 label *label35
+    36 ubind @mega
+    37 sensor *tmp9 @unit @flag
+ 
+    42 label *label37
+    43 label *label38
+    44 label *label39
+-    * set :unit @quad
+    45 label *label42
+    46 ubind @quad
+    47 sensor *tmp9 @unit @flag
+ 
+    52 label *label44
+    53 label *label45
+    54 label *label46
+-    * set :unit @oct
+    55 label *label49
+    56 ubind @oct
+    57 sensor *tmp9 @unit @flag
+ 
+    62 label *label51
+    63 label *label52
+    64 label *label53
+-    * set :unit @flare
+    65 label *label56
+    66 ubind @flare
+    67 sensor *tmp9 @unit @flag
+ 
+    72 label *label58
+    73 label *label59
+    74 label *label60
+-    * set :unit @horizon
+    75 label *label63
+    76 ubind @horizon
+    77 sensor *tmp9 @unit @flag
+ 
+    82 label *label65
+    83 label *label66
+    84 label *label67
+-    * set :unit @zenith
+    85 label *label70
+    86 ubind @zenith
+    87 sensor *tmp9 @unit @flag
+ 
+    92 label *label72
+    93 label *label73
+    94 label *label74
+-    * set :unit @antumbra
+    95 label *label77
+    96 ubind @antumbra
+    97 sensor *tmp9 @unit @flag
+ 
+   102 label *label79
+   103 label *label80
+   104 label *label81
+-    * set :unit @eclipse
+   105 label *label84
+   106 ubind @eclipse
+   107 sensor *tmp9 @unit @flag
+
+Modifications by Final phase, Unreachable Code Elimination, iteration 1 (-1 instructions):
+ 
+   132 printflush message1
+   133 label *label3
+   134 jump *label2 always
+-    * label *label4
+-    * end
+
+Modifications by Final phase, Print Merging, iteration 1 (-7 instructions):
+ 
+   115 label *label7
+   116 print "Remote vault [gold]#"
+   117 print LINK_ID
+-    * print "["
+-    * print "]"
+-    * print "\n"
+-    * print "Queries serviced: [green]"
++  118 print "[]\nQueries serviced: [green]"
+   119 print .serviced
+-    * print "["
+-    * print "]"
+-    * print "\n"
+   120 op sub *tmp13 @time :start
+   121 op floor *tmp14 *tmp13
+-    * print "[lightgray]Loop time: "
++  122 print "[]\n[lightgray]Loop time: "
+   123 print *tmp14
+-    * print " ms"
+-    * print "\n"
++  124 print " ms\n"
+   125 printflush message1
+   126 label *label3
+   127 jump *label2 always
+
+Final code before resolving virtual instructions:
+
+    0:  set LINK_ID 1                                                param LINK_ID = 1;
+        label *label0                                                linked vault1, message1;
+    1:  jump *label0 equal vault1 null                               ...
+        label *label1                                                ...
+    2:  jump *label1 equal message1 null                             ...
+    3:  op add .queryFlag 99999900 LINK_ID                           var queryFlag = QUERY_BASE + LINK_ID;
+    4:  sensor *tmp1 vault1 @x                                       var position = 100 * (vault1.@x + @mapw * vault1.@y);
+    5:  sensor *tmp2 vault1 @y                                       ...
+    6:  op mul *tmp3 @mapw *tmp2                                     ...
+    7:  op add *tmp4 *tmp1 *tmp3                                     ...
+    8:  op mul .position 100 *tmp4                                   ...
+    9:  op add .answerFlag .position LINK_ID                         var answerFlag = position + LINK_ID;
+   10:  set .serviced 0                                              var serviced = 0;
+        label *label2                                                while true do
+   11:  set :start @time                                             var start = @time;
+   12:  ubind @mono                                                  ubind(unit);
+   13:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   14:  jump *label22 notEqual *tmp9 .queryFlag                      ...
+   15:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   16:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label22                                               ...
+   17:  ubind @poly                                                  ubind(unit);
+   18:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   19:  jump *label29 notEqual *tmp9 .queryFlag                      ...
+   20:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   21:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label29                                               ...
+   22:  ubind @mega                                                  ubind(unit);
+   23:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   24:  jump *label36 notEqual *tmp9 .queryFlag                      ...
+   25:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   26:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label36                                               ...
+   27:  ubind @quad                                                  ubind(unit);
+   28:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   29:  jump *label43 notEqual *tmp9 .queryFlag                      ...
+   30:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   31:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label43                                               ...
+   32:  ubind @oct                                                   ubind(unit);
+   33:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   34:  jump *label50 notEqual *tmp9 .queryFlag                      ...
+   35:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   36:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label50                                               ...
+   37:  ubind @flare                                                 ubind(unit);
+   38:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   39:  jump *label57 notEqual *tmp9 .queryFlag                      ...
+   40:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   41:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label57                                               ...
+   42:  ubind @horizon                                               ubind(unit);
+   43:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   44:  jump *label64 notEqual *tmp9 .queryFlag                      ...
+   45:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   46:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label64                                               ...
+   47:  ubind @zenith                                                ubind(unit);
+   48:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   49:  jump *label71 notEqual *tmp9 .queryFlag                      ...
+   50:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   51:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label71                                               ...
+   52:  ubind @antumbra                                              ubind(unit);
+   53:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   54:  jump *label78 notEqual *tmp9 .queryFlag                      ...
+   55:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   56:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label78                                               ...
+   57:  ubind @eclipse                                               ubind(unit);
+   58:  sensor *tmp9 @unit @flag                                     if @unit.@flag == queryFlag then
+   59:  jump *label85 notEqual *tmp9 .queryFlag                      ...
+   60:  ucontrol flag .answerFlag 0 0 0 0                            flag(answerFlag);
+   61:  op add .serviced .serviced 1                                 if @unit.@flag == queryFlag then
+        label *label85                                               ...
+   62:  print "Remote vault [gold]#"                                 println($"Remote vault [gold]#$LINK_ID[]");
+   63:  print LINK_ID                                                ...
+   64:  print "[]\nQueries serviced: [green]"                        println($"Queries serviced: [green]$serviced[]");
+   65:  print .serviced                                              ...
+   66:  op sub *tmp13 @time :start                                   println($"[lightgray]Loop time: ${floor(@time - start)} ms");
+   67:  op floor *tmp14 *tmp13 0                                     ...
+   68:  print "[]\n[lightgray]Loop time: "                           ...
+   69:  print *tmp14                                                 ...
+   70:  print " ms\n"                                                ...
+   71:  printflush message1                                          printflush(message1);
+   72:  jump *label2 always 0 0                                      while true do
+
+
+Performance: parsed in 97 ms, compiled in 151 ms, optimized in 127 ms, run in 43 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
+
+Program output (100,000 steps):
+The program didn't generate any output.
+Execution step limit of 100 000 exceeded.

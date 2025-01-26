@@ -1,0 +1,43 @@
+// Pascal's triangle computation benchmark
+// Since the triangle's size is a constant,
+// loop unrolling optimization is possible.
+
+#set syntax = strict;
+
+// TRIANGLE_SIZE is a parameter, and can be changed in compiled code.
+// If we declared it const, much faster code would be generated.
+param TRIANGLE_SIZE = 10;
+
+noinit linked previousLine = cell1;
+noinit linked currentLine = cell2;
+noinit linked message1;
+
+begin
+    println("1");
+    println("1 1");
+    
+    var lineLength = 2;
+
+    previousLine[0] = 1;
+    previousLine[1] = 1;
+    
+    for var i in 3 .. TRIANGLE_SIZE do
+        currentLine[0] = 1;
+        for var j in 1 .. lineLength do
+            currentLine[j] = previousLine[j - 1] + previousLine[j];
+        end;
+        currentLine[lineLength] = 1;
+        lineLength++;
+    
+        for var c in 0 ... lineLength do
+            print(currentLine[c]);
+            previousLine[c] = currentLine[c];
+            if c < lineLength - 1 then
+                print(" ");
+            end;
+        end;
+        println();
+    end;
+    
+    printflush(message1);
+end;

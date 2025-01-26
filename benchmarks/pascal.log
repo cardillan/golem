@@ -1,0 +1,296 @@
+    52 instructions before optimizations.
+     1 instructions eliminated by Temp Variables Elimination.
+     3 instructions eliminated by Dead Code Elimination (3 iterations).
+     1 instructions eliminated by Jump Optimization (4 iterations).
+     2 instructions eliminated by Single Step Elimination (2 passes, 6 iterations).
+     8 instructions eliminated by Data Flow Optimization (2 passes, 6 iterations).
+     3 instructions modified by Loop Optimization (3 iterations).
+     3 loops improved by Loop Optimization.
+     3 instructions eliminated by Print Merging.
+    34 instructions after optimizations.
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-3 instructions):
+ 
+    27 label *label5
+    28 set *tmp12 :lineLength
+    29 write 1 cell2 *tmp12
+-    * set *tmp14 :lineLength
+    30 op add :lineLength :lineLength 1
+    31 set *tmp15 :lineLength
+    32 set :c 0
+ 
+    43 op lessThan *tmp23 :c *tmp22
+    44 jump *label9 equal *tmp23 false
+    45 print " "
+-    * set *tmp24 " "
+    46 jump *label10 always
+    47 label *label9
+-    * set *tmp24 null
+    48 label *label10
+    49 label *label7
+    50 op add :c :c 1
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-1 instructions):
+ 
+    14 label *label3
+    15 jump *label5 greaterThan :j *tmp3
+    16 set *tmp4 :j
+-    * op sub *tmp6 :j 1
+-    * set *tmp7 *tmp6
++   17 op sub *tmp7 :j 1
+    18 set *tmp9 :j
+    19 read *tmp8 cell1 *tmp7
+    20 read *tmp10 cell1 *tmp9
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+    39 read *tmp21 cell2 *tmp20
+    40 write *tmp21 cell1 *tmp18
+    41 op sub *tmp22 :lineLength 1
+-    * op lessThan *tmp23 :c *tmp22
+-    * jump *label9 equal *tmp23 false
++   42 jump *label9 greaterThanEq :c *tmp22
+    43 print " "
+    44 jump *label10 always
+    45 label *label9
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
+ 
+    41 op sub *tmp22 :lineLength 1
+    42 jump *label9 greaterThanEq :c *tmp22
+    43 print " "
+-    * jump *label10 always
+    44 label *label9
+    45 label *label10
+    46 label *label7
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    12 set *tmp3 :lineLength
+    13 set :j 1
+    14 label *label3
+-    * jump *label5 greaterThan :j *tmp3
++   15 jump *label5 greaterThan :j :lineLength
+    16 set *tmp4 :j
+    17 op sub *tmp7 :j 1
+    18 set *tmp9 :j
+    19 read *tmp8 cell1 *tmp7
+-    * read *tmp10 cell1 *tmp9
++   20 read *tmp10 cell1 :j
+    21 op add *tmp11 *tmp8 *tmp10
+-    * write *tmp11 cell2 *tmp4
++   22 write *tmp11 cell2 :j
+    23 label *label4
+    24 op add :j :j 1
+    25 jump *label3 always
+    26 label *label5
+    27 set *tmp12 :lineLength
+-    * write 1 cell2 *tmp12
++   28 write 1 cell2 :lineLength
+    29 op add :lineLength :lineLength 1
+    30 set *tmp15 :lineLength
+    31 set :c 0
+    32 label *label6
+-    * jump *label8 greaterThanEq :c *tmp15
++   33 jump *label8 greaterThanEq :c :lineLength
+    34 set *tmp16 :c
+-    * read *tmp17 cell2 *tmp16
++   35 read *tmp17 cell2 :c
+    36 print *tmp17
+    37 set *tmp18 :c
+    38 set *tmp20 :c
+-    * read *tmp21 cell2 *tmp20
+-    * write *tmp21 cell1 *tmp18
++   39 read *tmp21 cell2 :c
++   40 write *tmp21 cell1 :c
+    41 op sub *tmp22 :lineLength 1
+    42 jump *label9 greaterThanEq :c *tmp22
+    43 print " "
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-8 instructions):
+ 
+     9 label *label0
+    10 jump *label2 greaterThan :i TRIANGLE_SIZE
+    11 write 1 cell2 0
+-    * set *tmp3 :lineLength
+    12 set :j 1
+    13 label *label3
+    14 jump *label5 greaterThan :j :lineLength
+-    * set *tmp4 :j
+    15 op sub *tmp7 :j 1
+-    * set *tmp9 :j
+    16 read *tmp8 cell1 *tmp7
+    17 read *tmp10 cell1 :j
+    18 op add *tmp11 *tmp8 *tmp10
+ 
+    21 op add :j :j 1
+    22 jump *label3 always
+    23 label *label5
+-    * set *tmp12 :lineLength
+    24 write 1 cell2 :lineLength
+    25 op add :lineLength :lineLength 1
+-    * set *tmp15 :lineLength
+    26 set :c 0
+    27 label *label6
+    28 jump *label8 greaterThanEq :c :lineLength
+-    * set *tmp16 :c
+    29 read *tmp17 cell2 :c
+    30 print *tmp17
+-    * set *tmp18 :c
+-    * set *tmp20 :c
+    31 read *tmp21 cell2 :c
+    32 write *tmp21 cell1 :c
+    33 op sub *tmp22 :lineLength 1
+
+Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
+ 
+     8 set :i 3
+     9 label *label0
+    10 jump *label2 greaterThan :i TRIANGLE_SIZE
++   11 label *label11
+    12 write 1 cell2 0
+    13 set :j 1
+    14 label *label3
+    15 jump *label5 greaterThan :j :lineLength
++   16 label *label12
+    17 op sub *tmp7 :j 1
+    18 read *tmp8 cell1 *tmp7
+    19 read *tmp10 cell1 :j
+ 
+    21 write *tmp11 cell2 :j
+    22 label *label4
+    23 op add :j :j 1
+-    * jump *label3 always
++   24 jump *label12 lessThanEq :j :lineLength
+    25 label *label5
+    26 write 1 cell2 :lineLength
+    27 op add :lineLength :lineLength 1
+    28 set :c 0
+    29 label *label6
+    30 jump *label8 greaterThanEq :c :lineLength
++   31 label *label13
+    32 read *tmp17 cell2 :c
+    33 print *tmp17
+    34 read *tmp21 cell2 :c
+ 
+    40 label *label10
+    41 label *label7
+    42 op add :c :c 1
+-    * jump *label6 always
++   43 jump *label13 lessThan :c :lineLength
+    44 label *label8
+    45 print "\n"
+    46 label *label1
+    47 op add :i :i 1
+-    * jump *label0 always
++   48 jump *label11 lessThanEq :i TRIANGLE_SIZE
+    49 label *label2
+    50 printflush message1
+    51 end
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1:
+ 
+     7 write 1 cell1 1
+     8 set :i 3
+     9 label *label0
+-    * jump *label2 greaterThan :i TRIANGLE_SIZE
++   10 jump *label2 greaterThan 3 TRIANGLE_SIZE
+    11 label *label11
+    12 write 1 cell2 0
+    13 set :j 1
+    14 label *label3
+-    * jump *label5 greaterThan :j :lineLength
++   15 jump *label5 greaterThan 1 :lineLength
+    16 label *label12
+    17 op sub *tmp7 :j 1
+    18 read *tmp8 cell1 *tmp7
+ 
+    27 op add :lineLength :lineLength 1
+    28 set :c 0
+    29 label *label6
+-    * jump *label8 greaterThanEq :c :lineLength
++   30 jump *label8 greaterThanEq 0 :lineLength
+    31 label *label13
+    32 read *tmp17 cell2 :c
+    33 print *tmp17
+
+Modifications by Final phase, Single Step Elimination, iteration 1 (-1 instructions):
+ 
+    48 jump *label11 lessThanEq :i TRIANGLE_SIZE
+    49 label *label2
+    50 printflush message1
+-    * end
+
+Modifications by Final phase, Print Merging, iteration 1 (-3 instructions):
+     0 set TRIANGLE_SIZE 10
+-    * print "1"
+-    * print "\n"
+-    * print "1 1"
+-    * print "\n"
++    1 print "1\n1 1\n"
+     2 set :lineLength 2
+     3 write 1 cell1 0
+     4 write 1 cell1 1
+
+Final code before resolving virtual instructions:
+
+    0:  set TRIANGLE_SIZE 10                                         param TRIANGLE_SIZE = 10;
+    1:  print "1\n1 1\n"                                             println("1 1");
+    2:  set :lineLength 2                                            var lineLength = 2;
+    3:  write 1 cell1 0                                              previousLine[0] = 1;
+    4:  write 1 cell1 1                                              previousLine[1] = 1;
+    5:  set :i 3                                                     for var i in 3 .. TRIANGLE_SIZE do
+    6:  jump *label2 greaterThan 3 TRIANGLE_SIZE                     ...
+        label *label11                                               ...
+    7:  write 1 cell2 0                                              currentLine[0] = 1;
+    8:  set :j 1                                                     for var j in 1 .. lineLength do
+    9:  jump *label5 greaterThan 1 :lineLength                       ...
+        label *label12                                               ...
+   10:  op sub *tmp7 :j 1                                            currentLine[j] = previousLine[j - 1] + previousLine[j];
+   11:  read *tmp8 cell1 *tmp7                                       ...
+   12:  read *tmp10 cell1 :j                                         ...
+   13:  op add *tmp11 *tmp8 *tmp10                                   ...
+   14:  write *tmp11 cell2 :j                                        ...
+   15:  op add :j :j 1                                               for var j in 1 .. lineLength do
+   16:  jump *label12 lessThanEq :j :lineLength                      ...
+        label *label5                                                ...
+   17:  write 1 cell2 :lineLength                                    currentLine[lineLength] = 1;
+   18:  op add :lineLength :lineLength 1                             for var i in 3 .. TRIANGLE_SIZE do
+   19:  set :c 0                                                     for var c in 0 ... lineLength do
+   20:  jump *label8 greaterThanEq 0 :lineLength                     ...
+        label *label13                                               ...
+   21:  read *tmp17 cell2 :c                                         print(currentLine[c]);
+   22:  print *tmp17                                                 ...
+   23:  read *tmp21 cell2 :c                                         previousLine[c] = currentLine[c];
+   24:  write *tmp21 cell1 :c                                        ...
+   25:  op sub *tmp22 :lineLength 1                                  if c < lineLength - 1 then
+   26:  jump *label9 greaterThanEq :c *tmp22                         ...
+   27:  print " "                                                    print(" ");
+        label *label9                                                if c < lineLength - 1 then
+   28:  op add :c :c 1                                               for var c in 0 ... lineLength do
+   29:  jump *label13 lessThan :c :lineLength                        ...
+        label *label8                                                ...
+   30:  print "\n"                                                   println();
+   31:  op add :i :i 1                                               for var i in 3 .. TRIANGLE_SIZE do
+   32:  jump *label11 lessThanEq :i TRIANGLE_SIZE                    ...
+        label *label2                                                ...
+   33:  printflush message1                                          printflush(message1);
+
+
+Performance: parsed in 95 ms, compiled in 149 ms, optimized in 92 ms, run in 8 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
+
+Program output (856 steps):
+1
+1 1
+1 2 1
+1 3 3 1
+1 4 6 4 1
+1 5 10 10 5 1
+1 6 15 20 15 6 1
+1 7 21 35 35 21 7 1
+1 8 28 56 70 56 28 8 1
+1 9 36 84 126 126 84 36 9 1
+
