@@ -5,7 +5,7 @@
 > [!NOTE]
 > The Power Plant source codes haven't been updated to the new `strict` syntax of Mindcode 3.0. It still compiles, but the code could be improved in various ways.
 
-> ![TIP] 
+> [!TIP] 
 > To start up, the battery must be charged. The schematic contains a processor which brings thorium from the core using units to charge the internal battery for the fist start. Also, fuel and cryofluid must be available. 
 
 The power plant has three modes of operation:
