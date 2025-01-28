@@ -1,0 +1,324 @@
+jump 3 always 0 0
+print "This is the preferred unit type to use for bringing in supplies."
+print "If no units of this type exist, we'll try using other types."
+set UNIT_TYPE @poly
+jump 6 always 0 0
+print "Do not modify anything below this line."
+set .MSG ""
+set .VAULT vault1
+sensor *tmp0 vault1 @dead
+jump 13 equal *tmp0 0
+set .VAULT vault1
+sensor *tmp0 vault1 @dead
+jump 10 notEqual *tmp0 0
+printflush null
+print "[gold]Looking for suitable unit type:[]\n"
+set :fn1:occupied 0
+ubind UNIT_TYPE
+set :fn1:firstUnit @unit
+jump 34 equal :fn1:firstUnit null
+sensor *tmp7 @unit @controlled
+op equal *tmp8 *tmp7 0
+sensor *tmp9 @unit @controller
+op equal *tmp10 *tmp9 @this
+op or *tmp11 *tmp8 *tmp10
+jump 27 equal *tmp11 false
+set *tmp3 true
+jump 39 always 0 0
+op add :fn1:occupied :fn1:occupied 1
+ubind UNIT_TYPE
+op notEqual *tmp13 @unit :fn1:firstUnit
+sensor *tmp14 :fn1:firstUnit @dead
+op equal *tmp15 *tmp14 0
+op land *tmp16 *tmp13 *tmp15
+jump 19 notEqual *tmp16 false
+print UNIT_TYPE
+print " occupied: "
+print :fn1:occupied
+print "\n"
+set *tmp3 false
+jump 42 equal *tmp3 false
+set *tmp2 UNIT_TYPE
+jump 156 always 0 0
+jump 70 equal @flare UNIT_TYPE
+set :fn2:occupied 0
+ubind @flare
+set :fn2:firstUnit @unit
+jump 62 equal :fn2:firstUnit null
+sensor *tmp26 @unit @controlled
+op equal *tmp27 *tmp26 0
+sensor *tmp28 @unit @controller
+op equal *tmp29 *tmp28 @this
+op or *tmp30 *tmp27 *tmp29
+jump 55 equal *tmp30 false
+set *tmp22 true
+jump 66 always 0 0
+op add :fn2:occupied :fn2:occupied 1
+ubind @flare
+op notEqual *tmp32 @unit :fn2:firstUnit
+sensor *tmp33 :fn2:firstUnit @dead
+op equal *tmp34 *tmp33 0
+op land *tmp35 *tmp32 *tmp34
+jump 47 notEqual *tmp35 false
+print "flare occupied: "
+print :fn2:occupied
+print "\n"
+set *tmp22 false
+jump 70 equal *tmp22 false
+printflush null
+set *tmp2 @flare
+jump 156 always 0 0
+jump 98 equal @poly UNIT_TYPE
+set :fn2:occupied 0
+ubind @poly
+set :fn2:firstUnit @unit
+jump 90 equal :fn2:firstUnit null
+sensor *tmp26 @unit @controlled
+op equal *tmp27 *tmp26 0
+sensor *tmp28 @unit @controller
+op equal *tmp29 *tmp28 @this
+op or *tmp30 *tmp27 *tmp29
+jump 83 equal *tmp30 false
+set *tmp22 true
+jump 94 always 0 0
+op add :fn2:occupied :fn2:occupied 1
+ubind @poly
+op notEqual *tmp32 @unit :fn2:firstUnit
+sensor *tmp33 :fn2:firstUnit @dead
+op equal *tmp34 *tmp33 0
+op land *tmp35 *tmp32 *tmp34
+jump 75 notEqual *tmp35 false
+print "poly occupied: "
+print :fn2:occupied
+print "\n"
+set *tmp22 false
+jump 98 equal *tmp22 false
+printflush null
+set *tmp2 @poly
+jump 156 always 0 0
+jump 126 equal @mega UNIT_TYPE
+set :fn2:occupied 0
+ubind @mega
+set :fn2:firstUnit @unit
+jump 118 equal :fn2:firstUnit null
+sensor *tmp26 @unit @controlled
+op equal *tmp27 *tmp26 0
+sensor *tmp28 @unit @controller
+op equal *tmp29 *tmp28 @this
+op or *tmp30 *tmp27 *tmp29
+jump 111 equal *tmp30 false
+set *tmp22 true
+jump 122 always 0 0
+op add :fn2:occupied :fn2:occupied 1
+ubind @mega
+op notEqual *tmp32 @unit :fn2:firstUnit
+sensor *tmp33 :fn2:firstUnit @dead
+op equal *tmp34 *tmp33 0
+op land *tmp35 *tmp32 *tmp34
+jump 103 notEqual *tmp35 false
+print "mega occupied: "
+print :fn2:occupied
+print "\n"
+set *tmp22 false
+jump 126 equal *tmp22 false
+printflush null
+set *tmp2 @mega
+jump 156 always 0 0
+jump 154 equal @mono UNIT_TYPE
+set :fn2:occupied 0
+ubind @mono
+set :fn2:firstUnit @unit
+jump 146 equal :fn2:firstUnit null
+sensor *tmp26 @unit @controlled
+op equal *tmp27 *tmp26 0
+sensor *tmp28 @unit @controller
+op equal *tmp29 *tmp28 @this
+op or *tmp30 *tmp27 *tmp29
+jump 139 equal *tmp30 false
+set *tmp22 true
+jump 150 always 0 0
+op add :fn2:occupied :fn2:occupied 1
+ubind @mono
+op notEqual *tmp32 @unit :fn2:firstUnit
+sensor *tmp33 :fn2:firstUnit @dead
+op equal *tmp34 *tmp33 0
+op land *tmp35 *tmp32 *tmp34
+jump 131 notEqual *tmp35 false
+print "mono occupied: "
+print :fn2:occupied
+print "\n"
+set *tmp22 false
+jump 154 equal *tmp22 false
+printflush null
+set *tmp2 @mono
+jump 156 always 0 0
+printflush message1
+jump 13 always 0 0
+ubind *tmp2
+set :fn4:firstUnit @unit
+jump 0 equal :fn4:firstUnit null
+sensor *tmp51 @unit @controlled
+jump 168 equal *tmp51 0
+ubind *tmp2
+op notEqual *tmp54 @unit :fn4:firstUnit
+sensor *tmp55 :fn4:firstUnit @dead
+op equal *tmp56 *tmp55 0
+op land *tmp57 *tmp54 *tmp56
+jump 159 notEqual *tmp57 false
+end
+ucontrol flag 1 0 0 0 0
+set *tmp38 @unit
+sensor .UNIT_CAPACITY *tmp38 @itemCapacity
+sensor .SPEED *tmp38 @speed
+op div .SPEED_TENTHS .SPEED 10
+print "[gold]Locating core..."
+printflush message1
+ulocate building core false @copper 0 0 0 .CORE
+jump 175 equal .CORE null
+sensor .CORE_X .CORE @x
+sensor .CORE_Y .CORE @y
+sensor .VAULT_X .VAULT @x
+sensor .VAULT_Y .VAULT @y
+op add :unitCheck @time 5000
+set :start @time
+sensor *tmp72 .VAULT @thorium
+print " === [gold]Supplying Power Plant[] === \n\n\n[gold]Thorium[] status: [green]"
+print *tmp72
+print "[]\n"
+sensor *tmp73 .VAULT @thorium
+jump 315 greaterThanEq *tmp73 500
+print "\nUnit type: [green]"
+print *tmp2
+print "[]\n"
+jump 200 equal *tmp38 null
+ubind *tmp38
+sensor *tmp80 @unit @dead
+op equal *tmp81 *tmp80 0
+sensor *tmp82 @unit @controller
+op equal *tmp83 *tmp82 @this
+op land *tmp84 *tmp81 *tmp83
+jump 212 notEqual *tmp84 false
+ubind *tmp2
+set :fn6:firstUnit @unit
+jump 0 equal :fn6:firstUnit null
+sensor *tmp89 @unit @controlled
+jump 212 equal *tmp89 0
+ubind *tmp2
+op notEqual *tmp92 @unit :fn6:firstUnit
+sensor *tmp93 :fn6:firstUnit @dead
+op equal *tmp94 *tmp93 0
+op land *tmp95 *tmp92 *tmp94
+jump 203 notEqual *tmp95 false
+end
+sensor :fn5:state @unit @flag
+set :fn5:distance -1
+op lessThan *tmp97 :fn5:state 2
+op greaterThan *tmp98 :fn5:state 3
+op or *tmp99 *tmp97 *tmp98
+jump 231 equal *tmp99 false
+sensor *tmp101 @unit @firstItem
+jump 222 notEqual *tmp101 @thorium
+set :fn5:state 3
+jump 231 always 0 0
+sensor *tmp104 @unit @totalItems
+jump 226 notEqual *tmp104 0
+set :fn5:state 2
+jump 231 always 0 0
+set .MSG ", initializing\n"
+ucontrol approach .CORE_X .CORE_Y 6 0 0
+ucontrol within .CORE_X .CORE_Y 8 *tmp107 0
+jump 231 equal *tmp107 false
+ucontrol itemDrop .CORE .UNIT_CAPACITY 0 0 0
+jump 251 notEqual :fn5:state 2
+ucontrol within .CORE_X .CORE_Y 8 *tmp111 0
+jump 242 equal *tmp111 false
+ucontrol itemTake .CORE @thorium .UNIT_CAPACITY 0 0
+sensor *tmp113 @unit @totalItems
+jump 240 lessThan *tmp113 .UNIT_CAPACITY
+ucontrol approach .VAULT_X .VAULT_Y 6 0 0
+set :fn5:state 3
+jump 251 always 0 0
+set .MSG ", loading\n"
+jump 251 always 0 0
+ucontrol approach .CORE_X .CORE_Y 6 0 0
+set .MSG ", fetching in [gold]"
+sensor *tmp116 @unit @x
+op sub *tmp117 .CORE_X *tmp116
+sensor *tmp118 @unit @y
+op sub *tmp119 .CORE_Y *tmp118
+op len *tmp120 *tmp117 *tmp119
+op idiv *tmp121 *tmp120 .SPEED_TENTHS
+op div :fn5:distance *tmp121 10
+jump 270 notEqual :fn5:state 3
+ucontrol within .VAULT_X .VAULT_Y 8 *tmp125 0
+jump 261 equal *tmp125 false
+ucontrol itemDrop .VAULT .UNIT_CAPACITY 0 0 0
+set .MSG ", supplying\n"
+sensor *tmp127 @unit @totalItems
+jump 270 greaterThan *tmp127 0
+ucontrol approach .CORE_X .CORE_Y 6 0 0
+set :fn5:state 2
+jump 270 always 0 0
+ucontrol approach .VAULT_X .VAULT_Y 6 0 0
+set .MSG ", returning in [gold]"
+sensor *tmp130 @unit @x
+op sub *tmp131 .VAULT_X *tmp130
+sensor *tmp132 @unit @y
+op sub *tmp133 .VAULT_Y *tmp132
+op len *tmp134 *tmp131 *tmp133
+op idiv *tmp135 *tmp134 .SPEED_TENTHS
+op div :fn5:distance *tmp135 10
+ucontrol flag :fn5:state 0 0 0 0
+sensor *tmp137 @unit @totalItems
+print "[gold]"
+print *tmp137
+print "[]"
+jump 280 lessThan :fn5:distance 0
+print .MSG
+print :fn5:distance
+print "[] sec\n"
+jump 281 always 0 0
+print .MSG
+op equal *tmp140 :fn5:state 2
+sensor *tmp141 .VAULT @thorium
+op greaterThanEq *tmp142 *tmp141 500
+op land *tmp143 *tmp140 *tmp142
+jump 288 equal *tmp143 false
+ucontrol unbind 0 0 0 0 0
+jump 315 always 0 0
+op notEqual *tmp145 *tmp2 UNIT_TYPE
+op greaterThan *tmp146 :unitCheck @time
+op land *tmp147 *tmp145 *tmp146
+jump 315 equal *tmp147 false
+set :fn7:occupied 0
+ubind UNIT_TYPE
+set :fn7:firstUnit @unit
+jump 311 equal :fn7:firstUnit null
+sensor *tmp153 @unit @controlled
+op equal *tmp154 *tmp153 0
+sensor *tmp155 @unit @controller
+op equal *tmp156 *tmp155 @this
+op or *tmp157 *tmp154 *tmp156
+jump 304 equal *tmp157 false
+set *tmp149 true
+jump 312 always 0 0
+op add :fn7:occupied :fn7:occupied 1
+ubind UNIT_TYPE
+op notEqual *tmp159 @unit :fn7:firstUnit
+sensor *tmp160 :fn7:firstUnit @dead
+op equal *tmp161 *tmp160 0
+op land *tmp162 *tmp159 *tmp161
+jump 296 notEqual *tmp162 false
+set *tmp149 false
+jump 314 equal *tmp149 false
+end
+op add :unitCheck @time 5000
+op sub *tmp166 @time :start
+op floor *tmp167 *tmp166 0
+print "\n[lightgray]Loop time: "
+print *tmp167
+print " ms"
+printflush message1
+jump 182 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

@@ -1,0 +1,234 @@
+/// This is the preferred unit type to use for bringing in supplies.
+/// If no units of this type exist, we'll try using other types.
+param UNIT_TYPE         = @poly;  // Which unit to use
+
+/// Do not modify anything below this line.
+
+// BASIC INITIALIZATION
+/////////////////////////////////////////////////////////
+const RADIUS_WITHIN     = 8;
+const RADIUS_APPROACH   = 6;
+
+const S_UNUSED          = 0;        // Unit is not used.
+const S_INIT            = 1;        // Unloading wrong items held by unit/initializing unit
+const S_APPROACH_SRC    = 2;        // Approaching source block
+const S_APPROACH_DST    = 3;        // Approaching destination block
+
+// Interval to check for the availability of the optimal unit type if not used
+const UNIT_CHECK_TIME   = 5000;
+
+// Can't use const here?!
+ITEM = @thorium;
+MSG = "";
+UNIT = null;
+
+// FIND VAULT
+// Now this is funny: the processor might get built way
+// earlier than the vault and miss it in initialization
+/////////////////////////////////////////////////////////
+VAULT = vault1;
+while VAULT.@dead != 0 do
+    VAULT = vault1;
+end;
+
+// FIND AVAILABLE UNIT TYPE
+/////////////////////////////////////////////////////////
+TYPE = chooseUnitType();
+
+// BASIC INITIALIZATION - BINDING UNIT
+/////////////////////////////////////////////////////////
+
+UNIT = acquireUnit(UNIT);
+UNIT_CAPACITY = UNIT.@itemCapacity;
+SPEED = UNIT.@speed;
+SPEED_TENTHS = SPEED / 10;
+
+print("[gold]Locating core...");
+printflush(message1);
+do
+    CORE = ulocate(building, core, false);
+while CORE == null;
+
+CORE_X = CORE.@x;
+CORE_Y = CORE.@y;
+VAULT_X = VAULT.@x;
+VAULT_Y = VAULT.@y;
+
+unitCheck = @time + UNIT_CHECK_TIME;
+
+// MAIN LOOP
+/////////////////////////////////////////////////////////
+while true do
+    start = @time;
+    println(" === [gold]Supplying Power Plant[] === ");
+    println();
+    println($"\n[gold]Thorium[] status: [green]$[]", VAULT.sensor(ITEM));
+    if VAULT.sensor(ITEM) < 500 then
+        println($"\nUnit type: [green]$TYPE[]");
+        processUnit(UNIT, out state);
+
+        if state == S_APPROACH_SRC and VAULT.sensor(ITEM) >= 500 then
+            unbind();
+        elsif TYPE != UNIT_TYPE and unitCheck > @time then
+            if areUnitsAvailable(UNIT_TYPE, false) then
+                end();
+            end;
+            unitCheck = @time + UNIT_CHECK_TIME;
+        end;
+    end;
+
+    print($"\n[lightgray]Loop time: $ ms", floor(@time - start));
+    printflush(message1);
+end;
+
+// Chooses a type of units to use - the first type of which there are enough free units
+inline def chooseUnitType()
+    while true do
+        printflush(null);       // empty text buffer
+        println("[gold]Looking for suitable unit type:[]");
+        if areUnitsAvailable(UNIT_TYPE, true) then
+            return UNIT_TYPE;
+        end;
+
+        for type in @flare, @poly, @mega, @mono do
+            if type != UNIT_TYPE then
+                if areUnitsAvailable(type, true) then
+                    printflush(null);
+                    return type;
+                end;
+            end;
+        end;
+        printflush(message1);
+    end;
+end;
+
+// This method determines whether there are enough free units of given type to use
+// We may need two or four of them, depending on unit speed and the distance to the core
+inline def areUnitsAvailable(type, output)
+    occupied = 0;
+    firstUnit = ubind(type);
+    if firstUnit != null then
+        do
+            if @unit.@controlled == 0 or @unit.@controller == @this then
+                return true;
+            else
+                occupied += 1;
+            end;
+            ubind(type);
+        while @unit != firstUnit and firstUnit.@dead == 0;
+    end;
+
+    if output then
+        print($"$type occupied: $occupied");
+        println();
+    end;
+
+    return false;
+end;
+
+// Rebinds a unit that was in use, or acquires a new one
+// If no unit can be acquired, reinitializes everything to get units of different type
+inline def rebindUnit(currentUnit)
+    if currentUnit != null then
+        ubind(currentUnit);
+        if @unit.@dead == 0 && @unit.@controller == @this then
+            // Current unit is valid, no need to rebind
+            return currentUnit;
+        end;
+    end;
+
+    // We need to find an uncontrolled unit - either we're initializing, or lost one
+    firstUnit = ubind(TYPE);
+    if firstUnit != null then
+        do
+            if @unit.@controlled == 0 then
+                return @unit;
+            end;
+            ubind(TYPE);
+        while @unit != firstUnit and firstUnit.@dead == 0;
+    end;
+
+    // No additional unit of this type is available - reinitialize
+    end();
+end;
+
+inline def acquireUnit(currentUnit)
+    rebindUnit(currentUnit);
+    flag(S_INIT);
+    return @unit;
+end;
+
+// Controls one unit
+inline def processUnit(unit, out state)
+    rebindUnit(unit);
+
+    // We have a bound, functioning unit
+    state = @unit.@flag;
+    distance = -1;
+    color = "gold";
+
+    // Initializes the unit if not in a known state
+    if state < S_APPROACH_SRC or state > S_APPROACH_DST then
+        if @unit.@firstItem == ITEM then
+            // We've got what we need, bring the supplies in!
+            // Jump threading optimization here...
+            state = S_APPROACH_DST;
+        elsif @unit.@totalItems == 0 then
+            // We're empty, resupply
+            // Jump threading optimization here...
+            state = S_APPROACH_SRC;
+        else
+            // Get rid of whatever we might be carrying right now
+            MSG = ", initializing\n";
+            approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+            if within(CORE_X, CORE_Y, RADIUS_WITHIN) then
+                itemDrop(CORE, UNIT_CAPACITY);
+            end;
+        end;
+    end;
+
+    if state == S_APPROACH_SRC then
+        if within(CORE_X, CORE_Y, RADIUS_WITHIN) then
+            itemTake(CORE, ITEM, UNIT_CAPACITY);
+            if @unit.@totalItems >= UNIT_CAPACITY then
+                approach(VAULT_X, VAULT_Y, RADIUS_APPROACH);
+                // Jump threading optimization here...
+                state = S_APPROACH_DST;
+            else
+                MSG = ", loading\n";
+            end;
+        else
+            approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+            MSG = ", fetching in [gold]";
+            distance = len(CORE_X - @unit.@x, CORE_Y - @unit.@y) \ SPEED_TENTHS / 10;
+        end;
+    end;
+
+    if state == S_APPROACH_DST then
+        if within(VAULT_X, VAULT_Y, RADIUS_WITHIN) then
+            itemDrop(VAULT, UNIT_CAPACITY);
+            MSG = ", supplying\n";
+            //color = "green";
+
+            if @unit.@totalItems <= 0 then
+                approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+                state = S_APPROACH_SRC;
+            end;
+        else
+            approach(VAULT_X, VAULT_Y, RADIUS_APPROACH);
+            MSG = ", returning in [gold]";
+            distance = len(VAULT_X - @unit.@x, VAULT_Y - @unit.@y) \ SPEED_TENTHS / 10;
+        end;
+    end;
+
+    flag(state);
+
+    print($"[$color]$[]", @unit.@totalItems);
+    if distance >= 0 then
+        println($"$MSG$distance[] sec");
+    else
+        print(MSG);
+    end;
+
+    return @unit;
+end;

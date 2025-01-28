@@ -1,0 +1,384 @@
+set PLANT_PROTECTION 1
+set FAST_START 1
+jump 2 equal cell1 null
+set .COOLANT_FLAG null
+set .FUEL_FLAG null
+set .START null
+set :reactors 0
+set :n @links
+jump 30 lessThanEq :n 0
+op sub :n :n 1
+getlink :block :n
+print "Found: "
+print :block
+print "\n"
+sensor *tmp5 :block @type
+jump 19 notEqual *tmp5 @impact-reactor
+set .START :n
+op add :reactors :reactors 1
+jump 29 always 0 0
+jump 28 equal *tmp5 @overdrive-projector
+jump 28 equal *tmp5 @overdrive-dome
+jump 28 equal *tmp5 @conduit
+jump 28 equal *tmp5 @pulse-conduit
+jump 28 equal *tmp5 @plated-conduit
+jump 28 equal *tmp5 @conveyor
+jump 28 equal *tmp5 @titanium-conveyor
+jump 28 equal *tmp5 @plastanium-conveyor
+jump 29 notEqual *tmp5 @armored-conveyor
+set .START :n
+jump 9 greaterThan :n 0
+read *tmp7 cell2 1
+op add :reactors :reactors *tmp7
+jump 34 notEqual :reactors 0
+print "No reactor."
+printflush message1
+jump 6 equal :reactors 0
+read .MODE cell1 0
+read .OUTPUT_1 cell1 1
+read .OUTPUT_2 cell1 2
+read .REACTORS_ON cell1 3
+read .OVERDRIVE cell1 4
+read .GENERATOR cell1 5
+read .CAN_COMMIT cell1 6
+read .STARTUPS cell1 7
+read .RESETS cell1 8
+read .COMMITS cell1 9
+set :reactors .REACTORS_ON
+set .REASON "Reason unknown -- out of power?"
+jump 50 notEqual .MODE 0
+set .REASON "Processor reset"
+op notEqual *tmp23 .MODE 0
+control enabled switch1 *tmp23 0 0 0
+set :failure_cnt 0
+set :boosts 0
+set :nextStart 0
+op add :nextDecommit @time 6000
+sensor *tmp25 battery1 @totalPower
+op floor :battery_level *tmp25 0
+op idiv :battery_level_str :battery_level 1000
+sensor *tmp28 battery1 @powerNetStored
+op floor :total_battery *tmp28 0
+op idiv :total_battery_str :total_battery 1000
+sensor :consumption battery1 @powerNetOut
+read :production bank1 509
+read :net_power bank1 510
+read :battery_change bank1 511
+sensor :total_capacity battery1 @powerNetCapacity
+op idiv :total_capacity_str :total_capacity 1000
+op mul :required_capacity 100000 :reactors
+op greaterThanEq :enough_battery :total_capacity :required_capacity
+op sub *tmp39 :required_capacity :total_capacity
+op div *tmp40 *tmp39 1000
+op ceil :missing_battery *tmp40 0
+jump 102 equal .MODE 0
+sensor *tmp44 switch1 @enabled
+jump 79 notEqual *tmp44 false
+set .MODE 0
+set .REASON "Manual power off"
+jump 102 always 0 0
+op mul :min_consumption .REACTORS_ON 1200
+op lessThan :failure1 :consumption :min_consumption
+op equal *tmp49 :battery_level 0
+op greaterThan *tmp50 :consumption 0
+op land *tmp51 *tmp49 *tmp50
+op equal *tmp52 :production 0
+op land :failure2 *tmp51 *tmp52
+op or *tmp54 :failure1 :failure2
+jump 101 equal *tmp54 false
+op add :failure_cnt :failure_cnt 1
+read *tmp56 cell2 1
+op add *tmp57 10 *tmp56
+jump 102 lessThanEq :failure_cnt *tmp57
+set .MODE 0
+control enabled switch1 false 0 0 0
+set .REASON "Unknown -- out of power?"
+print "Consumption: "
+print :consumption
+print "\nMin. consumption: "
+print :min_consumption
+printflush message2
+jump 102 always 0 0
+set :failure_cnt 0
+jump 105 notEqual .MODE 0
+set *tmp61 "[salmon]SHUTDOWN[]"
+jump 112 always 0 0
+jump 108 notEqual .MODE 1
+set *tmp61 "[gold]STARTUP[]"
+jump 112 always 0 0
+jump 111 notEqual .MODE 2
+set *tmp61 "[green]RUNNING[]"
+jump 112 always 0 0
+set *tmp61 null
+print *tmp61
+print ", reactors [green]"
+print .REACTORS_ON
+print "/"
+print :reactors
+print "[]"
+jump 127 equal .OVERDRIVE false
+op mul *tmp64 100 :boosts
+op div *tmp65 *tmp64 .REACTORS_ON
+op add *tmp66 *tmp65 0.5
+op floor *tmp67 *tmp66 0
+op div :multiplier *tmp67 100
+print " ([gold]"
+print :multiplier
+print "x[])"
+print "\n=================================="
+sensor *tmp69 tank1 @totalLiquids
+jump 131 greaterThanEq *tmp69 750
+print "\n[salmon]Cryofluid level critical![]"
+sensor *tmp72 vault1 @blast-compound
+jump 134 greaterThanEq *tmp72 700
+print "\n[salmon]Blast compound level critical![]"
+jump 138 notEqual :enough_battery false
+print "\n[salmon]Insufficient battery storage![]\nLink [gold]"
+print :missing_battery
+print " K[] of additional storage to internal battery."
+print "\nInternal battery:    [gold]"
+print :battery_level_str
+print "[]/[green]50[] K\nTotal battery:        [gold]"
+print :total_battery_str
+print "[]/[green]"
+print :total_capacity_str
+print "[] K\nBattery change:     [gold]"
+print :battery_change
+print "[]\nPower balance:       [gold]"
+print :net_power
+print "[]"
+jump 169 notEqual .MODE 0
+set .REACTORS_ON 0
+set .OVERDRIVE 0
+set .OUTPUT_1 0
+set .OUTPUT_2 0
+op greaterThanEq *tmp79 :net_power -150
+op lessThan *tmp80 :total_battery 47500
+op land .GENERATOR *tmp79 *tmp80
+print "\nShutdown reason: [gold]"
+print .REASON
+print "[]"
+sensor *tmp82 switch1 @enabled
+jump 316 equal *tmp82 false
+set .MODE 1
+op add .STARTUPS .STARTUPS 1
+set :nextStart 0
+set :failure_cnt 0
+set .GENERATOR true
+set .REASON "Unknown -- out of power?"
+jump 316 always 0 0
+jump 226 notEqual .MODE 1
+sensor *tmp85 battery2 @powerNetOut
+jump 173 equal .OUTPUT_1 false
+sensor *tmp85 battery3 @powerNetOut
+op idiv *tmp87 *tmp85 0.9523809523809523
+op max :neededPower *tmp87 1000
+jump 182 notEqual .REACTORS_ON 0
+jump 180 lessThan :total_battery 25000
+set .REACTORS_ON 1
+op add :nextStart @time 2000
+jump 316 always 0 0
+print "\nRequired startup energy: [gold]25 K[]"
+jump 316 always 0 0
+op add :outputs .OUTPUT_1 .OUTPUT_2
+print "\n[gold]"
+print :outputs
+print "[] surge tower(s) online"
+jump 190 notEqual .OUTPUT_2 0
+print "\nRequired power level: [gold]"
+print :neededPower
+print "[]"
+jump 192 lessThanEq :net_power 100
+set .OVERDRIVE true
+op lessThan *tmp99 .REACTORS_ON :reactors
+op greaterThan *tmp100 :net_power 1000
+op land *tmp101 *tmp99 *tmp100
+op greaterThanEq *tmp102 :total_battery 25000
+op land :canStart *tmp101 *tmp102
+jump 200 lessThan :net_power :neededPower
+set .OUTPUT_2 .OUTPUT_1
+set .OUTPUT_1 1
+jump 205 notEqual .OUTPUT_1 0
+op mul :availablePower 6300 :boosts
+op div :ratio :neededPower :availablePower
+jump 205 greaterThanEq :ratio 1
+op add :nextStart @time 2000
+op greaterThan *tmp113 @time :nextStart
+op land *tmp114 :canStart *tmp113
+jump 214 equal *tmp114 false
+set *tmp116 1
+jump 211 equal FAST_START false
+op idiv *tmp116 :total_battery 25000
+op add *tmp118 .REACTORS_ON *tmp116
+op min .REACTORS_ON *tmp118 :reactors
+op add :nextStart @time 2000
+op greaterThanEq *tmp121 .REACTORS_ON :reactors
+op greaterThan *tmp122 @time :nextStart
+op land *tmp123 *tmp121 *tmp122
+op greaterThan *tmp124 .OUTPUT_2 0
+op land *tmp125 *tmp123 *tmp124
+jump 316 equal *tmp125 false
+set .MODE 2
+op add :nextDecommit @time 6000
+set .COOLANT_FLAG 0
+set .FUEL_FLAG 0
+set .GENERATOR false
+jump 316 always 0 0
+jump 316 notEqual .MODE 2
+sensor *tmp128 tank1 @totalLiquids
+op lessThan *tmp129 *tmp128 750
+op land *tmp130 .COOLANT_FLAG *tmp129
+jump 234 equal *tmp130 false
+set .MODE 0
+control enabled switch1 false 0 0 0
+set .REASON "Cryo level too low"
+sensor *tmp133 vault1 @blast-compound
+op lessThan *tmp134 *tmp133 700
+op land *tmp135 .FUEL_FLAG *tmp134
+jump 241 equal *tmp135 false
+set .MODE 0
+control enabled switch1 false 0 0 0
+set .REASON "Blast compound level too low"
+sensor *tmp138 tank1 @totalLiquids
+op greaterThan *tmp139 *tmp138 1000
+op or .COOLANT_FLAG .COOLANT_FLAG *tmp139
+sensor *tmp141 vault1 @blast-compound
+op greaterThan *tmp142 *tmp141 800
+op or .FUEL_FLAG .FUEL_FLAG *tmp142
+sensor *tmp144 switch2 @enabled
+op land *tmp145 :enough_battery *tmp144
+jump 301 equal *tmp145 false
+op mul :min_level :reactors 50000
+set :commit_level 0
+op lessThan *tmp148 :battery_change 0
+op land *tmp149 .CAN_COMMIT *tmp148
+op lessThan *tmp150 .REACTORS_ON :reactors
+op land *tmp151 *tmp149 *tmp150
+jump 266 equal *tmp151 false
+op sub :p :battery_change 2500
+op mul *tmp155 :p 0.00472972972972973
+op add *tmp156 -5 *tmp155
+op mul *tmp157 :p *tmp156
+op add :commit_margin 25000 *tmp157
+op add :commit_level :min_level :commit_margin
+op idiv *tmp160 :commit_level 1000
+print "\nCommit threshold:   [gold]"
+print *tmp160
+jump 270 notEqual :commit_level 0
+op idiv *tmp163 :min_level 1000
+print "\nRestart threshold: [gold]"
+print *tmp163
+print "[] K"
+op lessThan *tmp164 :total_battery :min_level
+op mul *tmp165 .REACTORS_ON -2500
+op lessThan *tmp166 :battery_change *tmp165
+op or *tmp167 *tmp164 *tmp166
+jump 282 equal *tmp167 false
+op equal *tmp169 .OVERDRIVE false
+op add .RESETS .RESETS *tmp169
+set .OVERDRIVE true
+set .REACTORS_ON :reactors
+op add :nextDecommit @time 6000
+jump 308 always 0 0
+op lessThan *tmp171 :battery_level 47500
+op lessThan *tmp172 :battery_change -100
+op or *tmp173 *tmp171 *tmp172
+jump 287 equal *tmp173 false
+op add :nextDecommit @time 6000
+jump 296 lessThanEq @time :nextDecommit
+jump 291 equal .OVERDRIVE false
+set .OVERDRIVE false
+jump 294 always 0 0
+op sub *tmp179 .REACTORS_ON 1
+op max .REACTORS_ON *tmp179 1
+set .CAN_COMMIT true
+op add :nextDecommit @time 6000
+jump 308 always 0 0
+jump 308 greaterThanEq :total_battery :commit_level
+op add .REACTORS_ON .REACTORS_ON 1
+op add .COMMITS .COMMITS 1
+set .CAN_COMMIT false
+jump 308 always 0 0
+sensor *tmp184 switch2 @enabled
+jump 305 equal *tmp184 false
+print "\n[salmon]Load adapting not possible.[]"
+jump 306 always 0 0
+print "\n[gold]Load adapting not active.[]"
+set .REACTORS_ON :reactors
+set .OVERDRIVE true
+op mul *tmp186 PLANT_PROTECTION 47500
+jump 311 greaterThanEq :total_battery *tmp186
+set .OUTPUT_2 0
+jump 316 notEqual .OUTPUT_2 0
+jump 315 lessThanEq :total_battery 47500
+set .OUTPUT_2 1
+jump 316 always 0 0
+print "\n*** [gold]Surge tower 2 offline[] ***"
+print "\n"
+print .STARTUPS
+print "-"
+print .RESETS
+print "-"
+print .COMMITS
+printflush message1
+control enabled diode1 .OUTPUT_1 0 0 0
+control enabled diode2 .OUTPUT_2 0 0 0
+control enabled generator1 .GENERATOR 0 0 0
+control enabled generator2 .GENERATOR 0 0 0
+op equal :startup .MODE 1
+set :reactors 0
+set :boosts 0
+set *tmp198 @links
+set :n .START
+jump 357 greaterThanEq .START *tmp198
+getlink :block :n
+sensor *tmp201 :block @type
+jump 343 notEqual *tmp201 @impact-reactor
+op add :reactors :reactors 1
+op lessThanEq :enabled :reactors .REACTORS_ON
+control enabled :block :enabled 0 0 0
+jump 355 equal :enabled false
+sensor *tmp207 :block @timescale
+op add :boosts :boosts *tmp207
+jump 355 always 0 0
+jump 345 equal *tmp201 @overdrive-projector
+jump 347 notEqual *tmp201 @overdrive-dome
+control enabled :block .OVERDRIVE 0 0 0
+jump 355 always 0 0
+jump 354 equal *tmp201 @conduit
+jump 354 equal *tmp201 @pulse-conduit
+jump 354 equal *tmp201 @plated-conduit
+jump 354 equal *tmp201 @conveyor
+jump 354 equal *tmp201 @titanium-conveyor
+jump 354 equal *tmp201 @plastanium-conveyor
+jump 355 notEqual *tmp201 @armored-conveyor
+control enabled :block :startup 0 0 0
+op add :n :n 1
+jump 333 lessThan :n *tmp198
+jump 365 equal cell2 null
+write :reactors cell2 0
+write .REACTORS_ON cell2 2
+write .OVERDRIVE cell2 3
+read *tmp217 cell2 1
+op add :reactors :reactors *tmp217
+read *tmp218 cell2 4
+op add :boosts :boosts *tmp218
+op min .REACTORS_ON .REACTORS_ON :reactors
+jump 371 notEqual cell1 null
+set .STARTUPS 0
+set .RESETS 0
+set .COMMITS 0
+jump 56 always 0 0
+write .MODE cell1 0
+write .OUTPUT_1 cell1 1
+write .OUTPUT_2 cell1 2
+write .REACTORS_ON cell1 3
+write .OVERDRIVE cell1 4
+write .GENERATOR cell1 5
+write .CAN_COMMIT cell1 6
+write .STARTUPS cell1 7
+write .RESETS cell1 8
+write .COMMITS cell1 9
+jump 56 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

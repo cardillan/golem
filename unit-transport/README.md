@@ -10,7 +10,7 @@ This is yet another implementation of units controlled by Mindustry logic to tra
 ## How to use
 
 - Build the schematic.
-- On the first line of the processor code, set the unit type to use (the "set UNIT" command; you have to type in the unit type manually as it is not a `ubind` command). See [supported units](#additional-configuration) below.
+- On the first line of the processor code, set the unit type to use (the `set UNIT` instruction; you have to type in the unit type manually as it is not a `ubind` command). See [supported units](#additional-configuration) below.
 - The schematic moves items from core to the local container/vault. If you want to transport items in the other direction, build an inverted sorter in place of the regular sorter that comes with the schematics.
 - If you want to use a remote vault instead of the core, build the `Remote Vault` schematic and set the `LINK_ID` variable to the same value in both processors.
 - Link the storage (a container or a vault) to the processor.

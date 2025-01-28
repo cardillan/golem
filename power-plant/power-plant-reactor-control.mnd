@@ -1,0 +1,465 @@
+// AUTOMATIC IMPACT-REACTOR POWER PLANT
+//
+// The power plant has three modes of operation:
+//
+// SHUTDOWN: all reactors, overdrives and power outputs are disabled.
+//      RTG generator is enabled if the net power isn't negative and battery isn't saturated
+//      When switch1 is activated, the STARTUP mode is entered
+// STARTUP: RCP is bringing reactors online
+//      RTG generator is activated
+//      First reactor isn't started until enough power is stored in batteries
+//      After the first reactor is started and net power is positive, the overdrive is activated
+//      Just enough reactors are started to power up first power output (presumably a coolant/fuel factory)
+//      After the first output is powered, the rest of reactors are brought online
+//      When all reactors are online and second output is powered, running mode is entered
+//      When switch1 is deactivated, SHUTDOWN mode is entered
+// RUNNING: reactors and overdrives are kept running with possible load adapting
+//      If coolant or fuel fall below critical levels, SHUTDOWN mode is entered and switch1 is deactivated
+//      When switch1 is deactivated, SHUTDOWN mode is entered
+//      If switch2 is active and available battery capacity is greater than 100K * number of reactors,
+//      load adapting is performed:
+//          - decommitting:
+//              - possible if battery is saturated and battery balance is not negative
+//              - if overdrive is active, it is deactivated
+//              - if overdrive is not active, one reactor is shut down
+//              - decommit cool-down period is started
+//          - committing:
+//              if required remaining capacity (50% if overdrive is active, 20% if it is inactive) is not met, 
+//              or battery storage falls faster than PANIC_ENERGY_DROP per second:
+//              everything is started at once (overdrive and all reactors)
+//
+// The following controls must be statically linked to the processor:
+// diode1 - diode controlling the first surge tower output (to the support factory for producing coolant and perhaps fuel)
+// diode2 - diode controlling the second surge tower output (to the rest of the grid / weapons)
+// battery1 - the internal battery, contains the start-up energy
+// battery2 - battery of the first output (behind diode1)
+// battery3 - battery of the second output (behind diode2)
+// switch1 - control switch. Activating it initiates the startup sequence. Deactivating shuts down reactors.
+// switch2 - load adapting switch. When active, reactors are started and stopped according to power demands
+// message1 - status display
+// generator1 - RTG generator providing energy when reactors are offline
+// cell1 - memory cell containing last state of the processor
+// bank1 - memory bank containing the values monitored by the standalone processor
+// tank1 - coolant tank
+// vault1 - fuel tank
+//
+// cell2 - optional cell used to relay control information to/from other reactors
+//
+// Additionally, these types of blocks can be dynamically linked and are used in this way:
+// Impact reactors: at least one must be linked. Impact reactors are controlled by the main processor
+// Overdrive projectors/domes: controlled to provide boosts when appropriate. All of them are activated/deactivated at the same time.
+// Conduits of any kind: linked conduits are disabled unless the power plant is starting.
+// Conveyors of any kind: linked conveyors are disabled unless the power plant is starting.
+// It can be used to allow in-flow of cryofluid and/or fuel from reserve storage during startup.
+//
+// Two large batteries per reactor should be linked to the internal battery, perhaps by using a surge tower.
+// Nothing else must be attached to those batteries - use plastanium walls to prevent accidental connections.
+
+// TODO check blast compound and cryofluid level in individual reactors to detect possible misconfiguration of bridge conduits/conveyors.
+
+
+// System configuration
+param PLANT_PROTECTION      = 1;        // If internal battery level gets too low, output to base is switched off
+param FAST_START            = 1;        // Starts as many reactors at once as possible during startup
+
+allocate heap in cell1[0 ... 64];
+
+// Memory bank indexes
+const PRODUCTION_INDEX      = 509;
+const NET_POWER_INDEX       = 510;
+const BATTERY_CHANGE_INDEX  = 511;
+
+// REMOTE REACTOR INDEXES
+const CELL_PRIOR_REACTORS   = 0;        // Number of reactors managed by this processor (and predecessors)
+const CELL_REMOTE_REACTORS  = 1;        // Number of remote reactors
+const CELL_REACTORS_ON      = 2;        // How many reactors are running
+const CELL_OVERDRIVE        = 3;        // Overdrive active
+const CELL_BOOSTS           = 4;        // How much boost is active at remote reactors
+
+// Modes of operation
+const SHUTDOWN              = 0;
+const STARTUP               = 1;
+const RUNNING               = 2;
+
+const BATTERY_SAT           = 47500;    // Single battery saturation level (95%)
+const BATTERY_PER_REACTOR   = 100000;   // Require this much battery capacity per reactor
+const MIN_CONS_REACTOR      = 1200;     // Minimal consumption per reactor. If it is lower, shut down.
+
+// STARTUP MODE CONSTANTS
+const POWER_MARGIN          = 1.05;     // How much more power must be generated for output to be activated
+const STARTUP_DELAY         = 2000;     // Minimal delay between starting reactors
+const STARTUP_BAT_ENERGY    = 25000;    // Energy needed to start a reactor
+const REACTOR_OUTPUT        = 6300;     // Nominal net output of one reactor
+
+// RUNNING MODE CONSTANTS
+const COOLANT_CUTOFF        = 750;      // When cryofluid level falls below this, shutdown
+const COOLANT_SAT           = 1000;     // Reaching this level of coolant allows shutdown above
+const FUEL_CUTOFF           = 700;      // When blast compound level falls below this, shutdown
+const FUEL_SAT              = 800;      // Reaching this level of fuel allows shutdown above
+const DECOMMIT_DELAY        = 6000;     // Minimal delay between decommitting reactors
+const PANIC_ENERGY_DROP     = -2500;    // When battery level drops this much per reactor online, everything is started and boosted
+const BATTERY_CRITICAL      = 0.50;     // Level at which all reactors and overdrives will be activated
+
+// IMPACT REACTOR CONSTANTS
+const OWN_CONSUMPTION       = 1500;     // The power the reactor consumes when online
+const MAX_PRODUCTION        = 7400;     // Maximal gross output of one reactor (7800 actually, but the last 400 take forever to reach)
+const SAFETY_MARGIN         = 1000;     // The average load might be up to this much higher during reactor startup
+const STARTUP_TIME          = 5;        // It takes this many seconds for the reactor to begin increasing its output
+const RAMP_TIME             = 70;       // It takes this many additional seconds for the reactor to reach max production
+
+const COEF_A1 = 0 - STARTUP_TIME;
+const COEF_A2 = RAMP_TIME / (MAX_PRODUCTION * 2);
+
+COOLANT_FLAG = null; FUEL_FLAG = null; START = null;
+
+reactors = 0;
+while reactors == 0 do
+    reactors = 0;
+    n = @links;
+    while n > 0 do
+        block = getlink(--n);
+        println($"Found: $block");
+        case block.@type
+            when @impact-reactor then
+                START = n;
+                reactors += 1;
+            when @overdrive-projector, @overdrive-dome,
+                    @conduit, @pulse-conduit, @plated-conduit, @conveyor,
+                    @titanium-conveyor, @plastanium-conveyor, @armored-conveyor then
+                START = n;
+        end;
+    end;
+
+    reactors += cell2[CELL_REMOTE_REACTORS];
+    if reactors == 0 then
+        print("No reactor.");
+    end;
+    printflush(message1);
+end;
+
+// Load state
+MODE = $MODE;
+OUTPUT_1 = $OUTPUT_1;
+OUTPUT_2 = $OUTPUT_2;
+REACTORS_ON = $REACTORS_ON;
+OVERDRIVE = $OVERDRIVE;
+GENERATOR = $GENERATOR;
+CAN_COMMIT = $CAN_COMMIT;
+STARTUPS = $STARTUPS;
+RESETS = $RESETS;
+COMMITS = $COMMITS;
+
+reactors = REACTORS_ON;
+
+if MODE == SHUTDOWN then
+    REASON = "Processor reset";
+else
+    REASON = "Reason unknown -- out of power?";
+end;
+
+switch1.enabled = MODE != SHUTDOWN;
+
+failure_cnt = 0;
+
+boosts = 0;
+nextStart = 0;
+nextDecommit = @time + DECOMMIT_DELAY;
+
+
+while true do
+    battery_level = floor(battery1.@totalPower);
+    battery_level_str = battery_level \ 1000;
+    total_battery = floor(battery1.@powerNetStored);
+    total_battery_str = total_battery \ 1000;
+    consumption = battery1.@powerNetOut;
+    production = bank1[PRODUCTION_INDEX];
+    net_power = bank1[NET_POWER_INDEX];
+    battery_change = bank1[BATTERY_CHANGE_INDEX];
+    
+    total_capacity = battery1.@powerNetCapacity;
+    total_capacity_str = total_capacity \ 1000;
+    required_capacity = BATTERY_PER_REACTOR * reactors;
+    enough_battery = total_capacity >= required_capacity;
+    missing_battery = ceil((required_capacity - total_capacity) / 1000);
+    
+    if MODE != SHUTDOWN then
+        if switch1.@enabled == false then
+            MODE = SHUTDOWN;
+            REASON = "Manual power off";
+        else
+            // Detect spontaneous shutdowns
+            // If the failure conditions remain for 10 iterations, initiate shutdown
+            // First mode: energy consumption falls below minimal consumption
+            // (diodes prevent the consumption from other grid segments to overflow into internal battery)
+            min_consumption = REACTORS_ON * MIN_CONS_REACTOR;
+            failure1 = (consumption < min_consumption);
+            // Second mode: the production is steady at 0, the battery is empty
+            failure2 = (battery_level == 0) and (consumption > 0) and (production == 0);
+            if failure1 or failure2 then
+                failure_cnt += 1;
+                if failure_cnt > 10 + cell2[CELL_REMOTE_REACTORS] then
+                    MODE = SHUTDOWN;
+                    switch1.enabled = false;
+                    REASON = "Unknown -- out of power?";
+                    print("Consumption: ", consumption);
+                    print("\nMin. consumption: ", min_consumption);
+                    printflush(message2);
+                end;
+            else
+                failure_cnt = 0;
+            end;
+        end;
+    end;
+    
+    STR_MODE = case MODE
+        when SHUTDOWN   then "[salmon]SHUTDOWN[]";
+        when STARTUP    then "[gold]STARTUP[]";
+        when RUNNING    then "[green]RUNNING[]";
+    end;
+    print($"$STR_MODE, reactors [green]$REACTORS_ON/$reactors[]");
+    if OVERDRIVE then
+        multiplier = floor(100 * boosts / REACTORS_ON + 0.5) / 100;
+        print(" ([gold]", multiplier, "x[])");
+    end;
+    print("\n==================================");
+    if tank1.@totalLiquids < COOLANT_CUTOFF then
+        print("\n[salmon]Cryofluid level critical![]");
+    end;
+    if vault1.@blast-compound < FUEL_CUTOFF then
+        print("\n[salmon]Blast compound level critical![]");
+    end;
+    if enough_battery == false then
+        print($"\n[salmon]Insufficient battery storage![]");
+        print($"\nLink [gold]$missing_battery K[] of additional storage to internal battery.");
+    end;
+    print($"\nInternal battery:    [gold]$battery_level_str[]/[green]50[] K");
+    print($"\nTotal battery:        [gold]$total_battery_str[]/[green]$total_capacity_str[] K");
+    print($"\nBattery change:     [gold]$battery_change[]");
+    print($"\nPower balance:       [gold]$net_power[]");
+    
+    case MODE
+        when SHUTDOWN then
+            REACTORS_ON = 0;
+            OVERDRIVE = 0;
+            OUTPUT_1 = 0;
+            OUTPUT_2 = 0;
+            GENERATOR = (net_power >= -150) && (total_battery < BATTERY_SAT);
+            print("\nShutdown reason: [gold]", REASON, "[]");
+        
+            if switch1.@enabled then
+                MODE = STARTUP;
+                STARTUPS += 1;
+                // The only place where startup can be activated. Set initial variables.
+                nextStart = 0;
+                failure_cnt = 0;
+                GENERATOR = true;
+
+                // Failure reason
+                REASON = "Unknown -- out of power?";
+            end;
+
+        when STARTUP then
+            nextBattery = OUTPUT_1 ? battery3 : battery2;
+            neededPower = max(floor(nextBattery.@powerNetOut * POWER_MARGIN), 1000);
+
+            if REACTORS_ON == 0 then
+                if total_battery >= STARTUP_BAT_ENERGY then
+                    REACTORS_ON = 1;
+                    nextStart = @time + STARTUP_DELAY;
+                else
+                    print("\nRequired startup energy: [gold]", STARTUP_BAT_ENERGY \ 1000, " K[]");
+                end;
+            else
+                outputs = OUTPUT_1 + OUTPUT_2;
+                print($"\n[gold]$outputs[] surge tower(s) online");
+                if OUTPUT_2 == 0 then
+                    print($"\nRequired power level: [gold]$neededPower[]");
+                end;
+            
+                // A reactor is running. Activate boost as soon as power is positive
+                if net_power > 100 then
+                    OVERDRIVE = true;
+                end;
+                
+                // Enough energy/power for another reactor startup
+                canStart = (REACTORS_ON < reactors) and (net_power > 1000) and (total_battery >= STARTUP_BAT_ENERGY);
+                
+                // Will activate the next output level
+                if net_power >= neededPower then
+                    OUTPUT_2 = OUTPUT_1;
+                    OUTPUT_1 = 1;
+                end;
+                
+                if OUTPUT_1 == 0 then
+                    // Can only start additional reactors if they're needed for OUTPUT_1 power
+                    availablePower = REACTOR_OUTPUT * boosts;
+                    ratio = neededPower / availablePower;
+
+                    // Block starting reactor if not needed for OUTPUT_1
+                    if ratio < 1 then
+                        nextStart = @time + STARTUP_DELAY;
+                    end;
+                end;
+
+                if canStart and (@time > nextStart) then
+                    start_at_once = FAST_START ? total_battery \ STARTUP_BAT_ENERGY : 1;
+                    REACTORS_ON = min(REACTORS_ON + start_at_once, reactors);
+                    nextStart = @time + STARTUP_DELAY;
+                end;
+
+                // Enough power produced for OUTPUT_2. Switch to RUNNING mode.
+                if (REACTORS_ON >= reactors) and (@time > nextStart) and (OUTPUT_2 > 0) then
+                    MODE = RUNNING;
+                    nextDecommit = @time + DECOMMIT_DELAY;
+
+                    // Resetting saturation flags
+                    COOLANT_FLAG = 0;
+                    FUEL_FLAG = 0;
+                    GENERATOR = false;
+                end;
+            end;
+
+        when RUNNING then
+            if COOLANT_FLAG and (tank1.@totalLiquids < COOLANT_CUTOFF) then
+                MODE = SHUTDOWN;
+                switch1.enabled = false;
+                REASON = "Cryo level too low";
+            end;
+            if FUEL_FLAG and (vault1.@blast-compound < FUEL_CUTOFF) then
+                MODE = SHUTDOWN;
+                switch1.enabled = false;
+                REASON = "Blast compound level too low";
+            end ;
+            COOLANT_FLAG = COOLANT_FLAG or (tank1.@totalLiquids > COOLANT_SAT);
+            FUEL_FLAG = FUEL_FLAG or (vault1.@blast-compound > FUEL_SAT);
+
+            // Load adapting is supported and activated
+            if enough_battery and switch2.@enabled then
+                min_level = BATTERY_CRITICAL * required_capacity;
+                commit_level = 0;
+                if CAN_COMMIT and (battery_change < 0) and (REACTORS_ON < reactors) then
+                    p = battery_change - OWN_CONSUMPTION - SAFETY_MARGIN;
+                    commit_margin = STARTUP_BAT_ENERGY + (p * (COEF_A1 + (p * COEF_A2)));
+                    commit_level = min_level + commit_margin;
+                    print("\nCommit threshold:   [gold]", commit_level \ 1000);
+                end;
+                if commit_level == 0 then
+                    print("\nRestart threshold: [gold]", min_level \ 1000);
+                end;
+                print("[] K");
+                
+                if (total_battery < min_level) or (battery_change < REACTORS_ON * PANIC_ENERGY_DROP) then
+                    // Energy too low or drop too low: activate all
+                    RESETS += (OVERDRIVE == false);
+                    OVERDRIVE = true;
+                    REACTORS_ON = reactors;
+                    nextDecommit = @time + DECOMMIT_DELAY;
+                else
+                    // If some of this happen, no decommit!
+                    if (battery_level < BATTERY_SAT) or (battery_change < -100) then
+                        nextDecommit = @time + DECOMMIT_DELAY;
+                    end;
+                
+                    // Can we stop something?
+                    if @time > nextDecommit then
+                        if OVERDRIVE then
+                            OVERDRIVE = false;
+                        else
+                            REACTORS_ON = max(REACTORS_ON - 1, 1);
+                            CAN_COMMIT = true;
+                        end;
+                        nextDecommit = @time + DECOMMIT_DELAY;
+                    else
+                        // Perhaps we could add just one reactor now?
+                        if total_battery < commit_level then
+                            REACTORS_ON += 1;
+                            COMMITS += 1;
+                            CAN_COMMIT = false;
+                        end;
+                    end;
+                end;
+            else
+                if switch2.@enabled then
+                    print("\n[salmon]Load adapting not possible.[]");
+                else
+                    print("\n[gold]Load adapting not active.[]");
+                end;
+                REACTORS_ON = reactors;
+                OVERDRIVE = true;
+            end;
+
+            if total_battery < PLANT_PROTECTION * BATTERY_SAT then
+                OUTPUT_2 = 0;
+            end;
+
+            if OUTPUT_2 == 0 then
+                if total_battery > BATTERY_SAT then
+                    OUTPUT_2 = 1;
+                else
+                    print("\n*** [gold]Surge tower 2 offline[] ***");
+                end;
+            end;
+    end;
+
+    print($"\n${STARTUPS}-${RESETS}-${COMMITS}");
+    printflush(message1);
+
+    // Update blocks
+    diode1.enabled = OUTPUT_1;
+    diode2.enabled = OUTPUT_2;
+    generator1.enabled = GENERATOR;
+    generator2.enabled = GENERATOR;
+    
+    startup = MODE == STARTUP;
+
+    reactors = 0;
+    boosts = 0;
+    enabled = true;
+    for n in START ... @links do
+        block = getlink(n);
+        case block.@type
+            when @impact-reactor then
+                reactors += 1;
+                enabled = reactors <= REACTORS_ON;
+                block.enabled = enabled;
+                if enabled then
+                    boosts += block.@timescale;
+                end;
+            when @overdrive-projector, @overdrive-dome then
+                block.enabled = OVERDRIVE;
+            when @conduit, @pulse-conduit, @plated-conduit, @conveyor, 
+                    @titanium-conveyor, @plastanium-conveyor, @armored-conveyor then
+                block.enabled = startup;
+        end;
+    end;
+    
+    // Reactors remoting
+    if cell2 != null then
+        cell2[CELL_PRIOR_REACTORS] = reactors;
+        cell2[CELL_REACTORS_ON] = REACTORS_ON;
+        cell2[CELL_OVERDRIVE] = OVERDRIVE;
+        reactors += cell2[CELL_REMOTE_REACTORS];
+        boosts += cell2[CELL_BOOSTS];
+    end;
+
+    // Correct for missing/unlinked reactors
+    REACTORS_ON = min(REACTORS_ON, reactors);
+
+    // Store state
+    if cell1 == null then
+        STARTUPS = 0;
+        RESETS = 0;
+        COMMITS = 0;
+    else
+        $MODE = MODE;
+        $OUTPUT_1 = OUTPUT_1;
+        $OUTPUT_2 = OUTPUT_2;
+        $REACTORS_ON = REACTORS_ON;
+        $OVERDRIVE = OVERDRIVE;
+        $GENERATOR = GENERATOR;
+        $CAN_COMMIT = CAN_COMMIT;
+        $STARTUPS = STARTUPS;
+        $RESETS = RESETS;
+        $COMMITS = COMMITS;
+    end;
+end;

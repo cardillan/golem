@@ -1,0 +1,164 @@
+schematic
+    name = "Impact Reactor Power Plant"
+    description = """
+        Automated Impact Reactor Power Plant.
+        Can automatically start the reactors when provided with blast compound, cryofluid and thorium
+        (thorium is used to charge battery for cold startup, will use units to bring thorium from core).
+        May switch off boosting or reactors when power demand is low (link the overdrive projector/dome to the lower right processor).
+        Can be switched off manually, stars quickly if there is enough energy in battery storage.
+        Provides early power output for cryofluid/blast compound factories (tower 1), full output to the rest of the base (tower 2).
+        Can handle up to 12 reactors.
+        To add reactors, copy the existing reactors and the bridges right next to them.
+        Needs 2 additional large batteries per reactor linked to the central battery (not included in schematics).
+        These batteries should be isolated from the rest of the power grid.
+        """
+    tag = BLOCK-IMPACT-REACTOR
+
+    @bridge-conveyor     at ( 6,  0) connected to +(0, 2)
+    @item-source         at ( 7,  0) item @thorium
+    @item-source         at ( 9,  0) item @blast-compound
+    @bridge-conveyor     at (10,  0) connected to +(0, 2)
+    @plastanium-wall     at (11,  0)
+    @plastanium-wall     at (12,  0)
+    @plastanium-wall     at (13,  0)
+    @plastanium-wall     at (14,  0)
+    @plastanium-wall     at (15,  0)
+    @plastanium-wall     at ( 0,  1)
+    @plastanium-wall     at ( 1,  1)
+    @plastanium-wall     at ( 2,  1)
+    @plastanium-wall     at ( 3,  1)
+    @plastanium-wall     at ( 4,  1)
+    @plastanium-wall     at ( 5,  1)
+    @plastanium-wall     at ( 6,  1)
+    @plastanium-wall     at ( 7,  1)
+    @plastanium-wall     at ( 8,  1)
+    @plastanium-wall     at ( 9,  1)
+    @plastanium-wall     at (10,  1)
+    @plastanium-wall     at (11,  1)
+    @plastanium-wall     at ( 0,  2)
+    @surge-tower         at ( 1,  2)
+    @plastanium-wall     at ( 3,  2)
+p0-generator1:
+    @rtg-generator       at ( 4,  2)
+    @bridge-conveyor     at ( 6,  2)
+    @bridge-conveyor     at (10,  2)
+p0-switch2:
+    @switch              at (11,  2) enabled
+p0-reactor1:
+    @impact-reactor      at (12,  1)
+    @plastanium-wall     at ( 0,  3)
+    @plastanium-wall     at ( 3,  3)
+    @unloader            at ( 6,  3) item @thorium
+p0-vault1:
+    @vault               at ( 7,  2)
+    @logic-processor     at (10,  3) processor
+        links
+            p0-switch1 as switch1
+            p0-switch2 as switch2
+            p0-message1 as message1
+            p0-diode1 as diode1
+            p0-diode2 as diode2
+            p0-battery1 as battery1
+            p0-battery2 as battery2
+            p0-battery3 as battery3
+            p0-generator1 as generator1
+            p0-cell1 as cell1
+            p0-bank1 as bank1
+            p0-tank1 as tank1
+            p0-vault1 as vault1
+            p0-reactor1 as reactor1
+            p0-reactor2 as reactor2
+            (17,  2) as reactor3 virtual
+            (17,  7) as reactor4 virtual
+            (21,  2) as reactor5 virtual
+            (21,  7) as reactor6 virtual
+            (25,  2) as reactor7 virtual
+            (25,  7) as reactor8 virtual
+            (29,  2) as reactor9 virtual
+            (29,  7) as reactor10 virtual
+            (33,  2) as reactor11 virtual
+            (33,  7) as reactor12 virtual
+        end
+        mindcode = file "power-plant-reactor-control.mnd"
+    end
+    @plastanium-wall     at ( 0,  4)
+p0-message1:
+    @message             at ( 1,  4) text ""
+p0-battery3:
+    @battery             at ( 2,  4)
+p0-diode2:
+    @diode               at ( 3,  4) facing west
+    @plastanium-wall     at ( 0,  5)
+    @plastanium-wall     at ( 1,  5)
+    @plastanium-wall     at ( 2,  5)
+    @micro-processor     at ( 3,  5) processor
+        links
+            p0-vault1 as vault1
+        end
+        mindcode = file "power-plant-transport.mnd"
+    end
+p0-battery1, p1-battery1:
+    @battery-large       at ( 4,  4)
+    @unloader            at ( 7,  5) item @blast-compound
+    @bridge-conveyor     at ( 8,  5) connected to +(4, 0)
+    @bridge-conduit      at ( 9,  5) connected to +(2, 0)
+    @power-node          at (10,  5) connected to +(2, -4), +(2, 1), -(6, 1)
+    @bridge-conduit      at (11,  5) connected to +(3, 0)
+    @bridge-conveyor     at (12,  5)
+    @bridge-conveyor     at (13,  5) connected to +(3, 0)
+    @bridge-conduit      at (14,  5)
+    @bridge-conduit      at (15,  5) connected to +(3, 0)
+    @plastanium-wall     at ( 0,  6)
+p0-switch1:
+    @switch              at ( 1,  6) disabled
+p0-battery2:
+    @battery             at ( 2,  6)
+p0-diode1:
+    @diode               at ( 3,  6) facing west
+p0-bank1, p1-bank1:
+    @memory-bank         at (10,  6)
+    @plastanium-wall     at ( 0,  7)
+    @surge-tower         at ( 1,  7)
+    @plastanium-wall     at ( 3,  7)
+    @logic-processor     at ( 4,  7) processor
+        links
+            p1-message1 as message1
+            p1-battery1 as battery1
+            p1-bank1 as bank1
+        end
+        mindcode = file "power-plant-battery-level.mnd"
+    end
+p1-message1:
+    @message             at ( 6,  7) text "Initializing..."
+p0-tank1:
+    @liquid-tank         at ( 7,  6) facing east
+p0-reactor2:
+    @impact-reactor      at (12,  6)
+    @plastanium-wall     at ( 0,  8)
+    @plastanium-wall     at ( 3,  8)
+    @bridge-conduit      at ( 6,  8)
+    @bridge-conduit      at (10,  8)
+p0-cell1:
+    @memory-cell         at (11,  8)
+    @plastanium-wall     at ( 0,  9)
+    @plastanium-wall     at ( 1,  9)
+    @plastanium-wall     at ( 2,  9)
+    @plastanium-wall     at ( 3,  9)
+    @plastanium-wall     at ( 4,  9)
+    @plastanium-wall     at ( 5,  9)
+    @plastanium-wall     at ( 6,  9)
+    @plastanium-wall     at ( 7,  9)
+    @plastanium-wall     at ( 8,  9)
+    @plastanium-wall     at ( 9,  9)
+    @plastanium-wall     at (10,  9)
+    @plastanium-wall     at (11,  9)
+    @bridge-conduit      at ( 6, 10) connected to -(0, 2)
+    @liquid-source       at ( 7, 10) liquid @cryofluid
+    @liquid-source       at ( 9, 10) liquid @cryofluid
+    @bridge-conduit      at (10, 10) connected to -(0, 2)
+    @plastanium-wall     at (11, 10)
+    @plastanium-wall     at (12, 10)
+    @plastanium-wall     at (13, 10)
+    @plastanium-wall     at (14, 10)
+    @plastanium-wall     at (15, 10)
+end
