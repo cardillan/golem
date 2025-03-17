@@ -1,0 +1,88 @@
+set :lastCell 0
+set .MEMORY null
+set .FIRST_BLOCK @links
+set :n @links
+jump 19 lessThanEq :n 0
+op sub :n :n 1
+getlink :block :n
+sensor *tmp5 :block @type
+jump 12 notEqual *tmp5 @memory-cell
+set .MEMORY :block
+set :lastCell 63
+jump 18 always 0 0
+jump 16 notEqual *tmp5 @memory-bank
+set .MEMORY :block
+set :lastCell 511
+jump 18 always 0 0
+jump 18 notEqual *tmp5 @plastanium-conveyor
+set .FIRST_BLOCK :n
+jump 5 greaterThan :n 0
+print "Item Counter\n[salmon]No memory attached."
+printflush message1
+jump 1 equal .MEMORY null
+read :total .MEMORY 0
+set :batch 10
+set :startTime @time
+set :ratePerMin 0
+op add :limit :total 10
+control enabled switch1 0 0 0 0
+sensor *tmp18 switch1 @enabled
+jump 80 notEqual *tmp18 0
+set :start @time
+set :n .FIRST_BLOCK
+jump 55 greaterThanEq .FIRST_BLOCK @links
+getlink :block :n
+op add :n :n 1
+sensor *tmp23 :block @type
+jump 54 notEqual *tmp23 @plastanium-conveyor
+read :prev .MEMORY :n
+sensor :curr :block @totalItems
+write :curr .MEMORY :n
+jump 54 greaterThanEq :curr :prev
+op add :total :total 10
+write :total .MEMORY 0
+jump 54 lessThanEq :total :limit
+op sub :duration @time :startTime
+set :startTime @time
+op add :limit :limit :batch
+op div :rate :batch :duration
+op mul *tmp41 :rate 16.666666666666668
+write *tmp41 .MEMORY :lastCell
+op idiv :ratePerMin :rate 0.000016666666666666667
+jump 54 greaterThan :duration 2000
+op add *tmp46 :batch 10
+op min :batch *tmp46 1000
+jump 33 lessThan :n @links
+op sub *tmp48 @time :startTime
+op floor :elapsed *tmp48 0
+jump 64 lessThan :elapsed 10000
+op idiv *tmp52 :batch 90
+op mul *tmp53 *tmp52 10
+op max :batch *tmp53 10
+write 0 .MEMORY :lastCell
+set :ratePerMin 0
+set :startTime @time
+print "Item Counter                  \nTotal items: [gold]"
+print :total
+print "[]\nRate: [green]"
+print :ratePerMin
+print "[] items/min\nBatch size: [green]"
+print :batch
+print "[]\nBatch time: [gold]"
+print :elapsed
+op sub *tmp58 @time :start
+op floor *tmp59 *tmp58 0
+print "[] ms\n[lightgray]Loop time: "
+print *tmp59
+print " ms\n"
+printflush message1
+sensor *tmp18 switch1 @enabled
+jump 30 equal *tmp18 0
+control enabled switch1 0 0 0 0
+write 0 .MEMORY :lastCell
+set :n 0
+jump 0 greaterThanEq 0 @links
+write 0 .MEMORY :n
+op add :n :n 1
+jump 84 lessThan :n @links
+

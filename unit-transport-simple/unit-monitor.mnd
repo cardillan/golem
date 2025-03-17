@@ -1,0 +1,34 @@
+#set target = 8;
+#set syntax = strict;
+
+module UnitMonitor;
+
+linked noinit message1;
+
+require units;
+
+// Unit types in preferred order
+// Change or add new units as necessary
+var types[5] = (@mega, @poly, @horizon, @flare, @mono);
+
+// Tries to find a unit better than the one currently held (use null when no unit is held)
+// Returns when a unit is found.
+// Never returns if the best unit is already held.
+remote def findUnit(currentUnit)
+    var currentType = currentUnit.@type;
+    print("Trying to find unit better than ", currentUnit);
+    printflush(message1);
+    while true do
+        for var type in types do
+            if type == currentType then break; end;
+            print("Finding unit: ", type);
+            printflush(message1);
+            var unit = findFreeUnit(type, 0);
+            if unit != null then
+                print("Returning unit: ", unit);
+                printflush(message1);
+                return unit;
+             end;
+        end;
+    end;
+end;

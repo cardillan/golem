@@ -56,14 +56,14 @@ Pass 1: speed optimization selection (cost limit 593):
 
 Pass 1: speed optimization selection (cost limit 589):
   * Replicate loop condition at line 112:9                       cost     5, benefit        6.3, efficiency        1.3 (+5 instructions)
-C:\Home\golem\unit-transport\unit-transport-single.mnd:96:47 Variable 'CORE_X' is not initialized.
-C:\Home\golem\unit-transport\unit-transport-single.mnd:96:59 Variable 'CORE_Y' is not initialized.
+C:\Home\golem\unit-transport\unit-transport-single.mnd:96:49 Variable 'CORE_X' is not initialized.
+C:\Home\golem\unit-transport\unit-transport-single.mnd:96:61 Variable 'CORE_Y' is not initialized.
 C:\Home\golem\unit-transport\unit-transport-single.mnd:229:13 Variable 'MSG' is not initialized.
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-48 instructions):
  
     34 set *tmp8 @unit
-    35 set :fn0:first_unit *tmp8
+    35 set :rebindUnit.0:first_unit *tmp8
     36 jump *label9 always
 -    * set *tmp7 null
     37 jump *label11 always
@@ -575,8 +575,8 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-38 ins
     30 op notEqual *tmp6 @unit null
     31 jump *label10 equal *tmp6 false
 -    * set *tmp8 @unit
--    * set :fn0:first_unit *tmp8
-+   32 set :fn0:first_unit @unit
+-    * set :rebindUnit.0:first_unit *tmp8
++   32 set :rebindUnit.0:first_unit @unit
     33 jump *label9 always
     34 jump *label11 always
     35 label *label10
@@ -833,7 +833,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-38 ins
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-7 instructions):
  
     25 jump *label5 equal *tmp5 false
-    26 set :fn0:first_unit null
+    26 set :rebindUnit.0:first_unit null
     27 label *label7
 -    * jump *label9 equal true false
     28 ubind UNIT
@@ -906,13 +906,13 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-41 ins
 -    * op notEqual *tmp5 *tmp4 0
 -    * jump *label5 equal *tmp5 false
 +   23 jump *label5 equal *tmp4 0
-    24 set :fn0:first_unit null
+    24 set :rebindUnit.0:first_unit null
     25 label *label7
     26 ubind UNIT
 -    * op notEqual *tmp6 @unit null
 -    * jump *label10 equal *tmp6 false
 +   27 jump *label10 equal @unit null
-    28 set :fn0:first_unit @unit
+    28 set :rebindUnit.0:first_unit @unit
     29 jump *label9 always
     30 jump *label11 always
  
@@ -1269,7 +1269,7 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-41 ins
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-23 instructions):
  
     27 jump *label10 equal @unit null
-    28 set :fn0:first_unit @unit
+    28 set :rebindUnit.0:first_unit @unit
     29 jump *label9 always
 -    * jump *label11 always
     30 label *label10
@@ -1628,7 +1628,7 @@ Modifications by Replicate loop condition at line 52:1 (+1 instructions):
     24 sensor *tmp4 @unit @dead
     25 jump *label5 equal *tmp4 0
 +   26 label *label137
-    27 set :fn0:first_unit null
+    27 set :rebindUnit.0:first_unit null
     28 label *label7
     29 ubind UNIT
  
@@ -2261,11 +2261,11 @@ Final code before resolving virtual instructions:
    20:  sensor *tmp4 @unit @dead                                     while @unit.@dead != 0 do
    21:  jump *label5 equal *tmp4 0                                   ...
         label *label137                                              ...
-   22:  set :fn0:first_unit null                                     first_unit = null;
+   22:  set :rebindUnit.0:first_unit null                            first_unit = null;
         label *label7                                                while true do
    23:  ubind UNIT                                                   ubind(UNIT);
    24:  jump *label10 equal @unit null                               if @unit != null then
-   25:  set :fn0:first_unit @unit                                    first_unit = @unit;
+   25:  set :rebindUnit.0:first_unit @unit                           first_unit = @unit;
    26:  jump *label9 always 0 0                                      break;
         label *label10                                               if @unit != null then
    27:  print "[salmon]No unit of type "                             print($"[salmon]No unit of type $UNIT found. 1");
@@ -2280,8 +2280,8 @@ Final code before resolving virtual instructions:
    34:  ubind UNIT                                                   ubind(UNIT);
    35:  print "[gold]Looking for old unit..."                        print($"[gold]Looking for old unit...");
    36:  printflush message1                                          printflush(message1);
-   37:  op notEqual *tmp12 @unit :fn0:first_unit                     while @unit != first_unit and first_unit.@dead == 0;
-   38:  sensor *tmp13 :fn0:first_unit @dead                          ...
+   37:  op notEqual *tmp12 @unit :rebindUnit.0:first_unit            while @unit != first_unit and first_unit.@dead == 0;
+   38:  sensor *tmp13 :rebindUnit.0:first_unit @dead                 ...
    39:  op equal *tmp14 *tmp13 0                                     ...
    40:  op land *tmp15 *tmp12 *tmp14                                 ...
    41:  jump *label12 notEqual *tmp15 false                          do
@@ -2347,7 +2347,7 @@ Final code before resolving virtual instructions:
    88:  jump *label37 notEqual LINK_ID 0                             if LINK_ID == 0 then
    89:  print "[gold]Locating core..."                               print("[gold]Locating core...");
    90:  printflush message1                                          printflush(message1);
-   91:  ulocate building core false @copper .CORE_X .CORE_Y 0 .CORE  CORE = ulocate(building, core, false, out CORE_X, out CORE_Y);
+   91:  ulocate building core false @copper .CORE_X .CORE_Y 0 .CORE  CORE = ulocate(:building, :core, false, out CORE_X, out CORE_Y);
    92:  jump *label38 always 0 0                                     if LINK_ID == 0 then
         label *label37                                               ...
    93:  print "[gold]Locating vault #"                               print($"[gold]Locating vault #$LINK_ID...");
@@ -2674,7 +2674,7 @@ Final code before resolving virtual instructions:
   364:  jump *label139 equal *tmp203 false                           ...
 
 
-Performance: parsed in 282 ms, compiled in 162 ms, optimized in 457 ms, run in 11 ms.
+Performance: parsed in 304 ms, compiled in 220 ms, optimized in 536 ms, run in 12 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

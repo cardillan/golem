@@ -18,9 +18,9 @@ The power plant has three modes of operation:
   * RTG generator is activated
   * First reactor isn't started until enough power is stored in batteries
   * After the first reactor is started and net power is positive, the overdrive is activated
-  * Just enough reactors are started to power up first power output (presumably a cryofluid/blast compound factory)
+  * Just enough reactors are started to power up first surge tower output (presumably a cryofluid/blast compound factory)
   * After the first output is powered, the rest of reactors are brought online
-  * When all reactors are online and second output is powered, running mode is entered
+  * When all reactors are online and the second surge tower is powered, running mode is entered
   * When `switch1` is deactivated, **Shutdown** mode is entered
 
 * **Running**: reactors and overdrives are kept running with possible load adapting
