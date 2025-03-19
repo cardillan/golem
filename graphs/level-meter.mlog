@@ -1,0 +1,160 @@
+set B0 null
+set B1 null
+set END_INDEX null
+set G0 null
+set G1 null
+set MAXIMUM null
+set MESSAGE null
+set R0 null
+set R1 null
+set SENSOR null
+set SIZE null
+set START_INDEX null
+set SWITCH null
+print "Item/Liquid/Energy Level Meter"
+set CONTAINER null
+set MEMORY null
+set n @links
+jump 90 lessThanEq n 0
+op sub n n 1
+getlink block n
+print "\nFound: "
+print block
+sensor __tmp12 block @type
+jump 26 notEqual __tmp12 @message
+set MESSAGE block
+jump 89 always 0 0
+jump 29 notEqual __tmp12 @switch
+set SWITCH block
+jump 89 always 0 0
+jump 35 notEqual __tmp12 @memory-bank
+set MEMORY block
+set START_INDEX 264
+set END_INDEX 511
+set SIZE 248
+jump 89 always 0 0
+jump 41 notEqual __tmp12 @memory-cell
+set MEMORY block
+set START_INDEX 40
+set END_INDEX 63
+set SIZE 24
+jump 89 always 0 0
+jump 43 equal __tmp12 @vault
+jump 53 notEqual __tmp12 @container
+set CONTAINER block
+set SENSOR @totalItems
+set MAXIMUM @itemCapacity
+set R0 0
+set G0 80
+set B0 0
+set R1 80
+set G1 255
+set B1 80
+jump 89 always 0 0
+jump 55 equal __tmp12 @battery
+jump 65 notEqual __tmp12 @battery-large
+set CONTAINER block
+set SENSOR @totalPower
+set MAXIMUM @powerCapacity
+set R0 80
+set G0 80
+set B0 0
+set R1 255
+set G1 255
+set B1 80
+jump 89 always 0 0
+jump 67 equal __tmp12 @liquid-tank
+jump 77 notEqual __tmp12 @liquid-container
+set CONTAINER block
+set SENSOR @totalLiquids
+set MAXIMUM @liquidCapacity
+set R0 0
+set G0 0
+set B0 192
+set R1 192
+set G1 192
+set B1 255
+jump 89 always 0 0
+jump 80 equal __tmp12 @power-node
+jump 80 equal __tmp12 @power-node-large
+jump 89 notEqual __tmp12 @surge-tower
+set CONTAINER block
+set SENSOR @powerNetStored
+set MAXIMUM @powerNetCapacity
+set R0 80
+set G0 80
+set B0 0
+set R1 255
+set G1 255
+set B1 80
+jump 18 greaterThan n 0
+print "\nMessage: "
+print MESSAGE
+print "\nSwitch: "
+print SWITCH
+print "\nMemory: "
+print MEMORY
+print "\nContainer: "
+print CONTAINER
+op equal __tmp14 CONTAINER null
+op equal __tmp15 MEMORY null
+op or __tmp16 __tmp14 __tmp15
+jump 105 equal __tmp16 false
+print "\nNo memory or container."
+printflush MESSAGE
+jump 13 always 0 0
+printflush MESSAGE
+write START_INDEX MEMORY 0
+write END_INDEX MEMORY 2
+write R0 MEMORY 3
+write G0 MEMORY 4
+write B0 MEMORY 5
+write R1 MEMORY 6
+write G1 MEMORY 7
+write B1 MEMORY 8
+read __tmp19 MEMORY 1
+op max __tmp20 START_INDEX __tmp19
+op min index __tmp20 END_INDEX
+set nextTick @tick
+control enabled SWITCH 0 0 0 0
+sensor __tmp23 SWITCH @enabled
+jump 0 notEqual __tmp23 0
+set startTime @time
+set prevTick nextTick
+op add nextTick nextTick 60
+op add __tmp27 nextTick 60
+jump 128 lessThanEq @tick __tmp27
+set prevTick @tick
+op add nextTick prevTick 60
+jump 132 greaterThanEq @tick nextTick
+jump 131 greaterThanEq @tick prevTick
+end
+jump 129 lessThan @tick nextTick
+sensor amount CONTAINER SENSOR
+sensor max CONTAINER MAXIMUM
+op mul __tmp37 amount 150
+op div __tmp38 __tmp37 max
+op add scaled 10 __tmp38
+op add index index 1
+jump 140 lessThanEq index END_INDEX
+set index START_INDEX
+write index MEMORY 0
+write scaled MEMORY index
+op sub __tmp43 index SIZE
+write scaled MEMORY __tmp43
+print "Item/Liquid/Energy Level Meter\nStartIndex: "
+print START_INDEX
+print "\nIndex: "
+print index
+print "\nAmount: "
+print amount
+print "\nScaled: "
+print scaled
+op sub __tmp44 @time startTime
+print "\nElapsed: "
+print __tmp44
+print "\n"
+printflush MESSAGE
+sensor __tmp23 SWITCH @enabled
+jump 121 equal __tmp23 0
+

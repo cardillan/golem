@@ -1,0 +1,201 @@
+set PCT_LOW 60
+set PCT_HIGH 80
+set :initialize.0:repeat false
+print "Configuring regulator...\n"
+set .links @links
+op sub :initialize.0:n .links 1
+jump 57 lessThan :initialize.0:n 0
+getlink :initialize.0:block :initialize.0:n
+print "Found: "
+print :initialize.0:block
+print "\n"
+sensor *tmp3 :initialize.0:block @type
+jump 15 notEqual *tmp3 @message
+set .message :initialize.0:block
+jump 55 always 0 0
+jump 18 notEqual *tmp3 @switch
+set .switch :initialize.0:block
+jump 55 always 0 0
+jump 21 equal *tmp3 @sorter
+jump 21 equal *tmp3 @inverted-sorter
+jump 23 notEqual *tmp3 @unloader
+set .sorter :initialize.0:block
+jump 55 always 0 0
+jump 28 equal *tmp3 @vault
+jump 28 equal *tmp3 @container
+jump 28 equal *tmp3 @core-shard
+jump 28 equal *tmp3 @core-foundation
+jump 33 notEqual *tmp3 @core-nucleus
+set .container :initialize.0:block
+set .measure @totalItems
+set .maximum @itemCapacity
+op add .first :initialize.0:n 1
+jump 55 always 0 0
+jump 36 equal *tmp3 @liquid-tank
+jump 36 equal *tmp3 @liquid-container
+jump 41 notEqual *tmp3 @liquid-router
+set .container :initialize.0:block
+set .measure @totalLiquids
+set .maximum @liquidCapacity
+op add .first :initialize.0:n 1
+jump 55 always 0 0
+jump 43 equal *tmp3 @battery
+jump 48 notEqual *tmp3 @battery-large
+set .container :initialize.0:block
+set .measure @totalPower
+set .maximum @powerCapacity
+op add .first :initialize.0:n 1
+jump 55 always 0 0
+jump 51 equal *tmp3 @power-node
+jump 51 equal *tmp3 @power-node-large
+jump 55 notEqual *tmp3 @surge-tower
+set .container :initialize.0:block
+set .measure @powerNetStored
+set .maximum @powerNetCapacity
+op add .first :initialize.0:n 1
+op sub :initialize.0:n :initialize.0:n 1
+jump 7 greaterThanEq :initialize.0:n 0
+print "Message: "
+print .message
+print "\nSwitch: "
+print .switch
+print "\nSorter: "
+print .sorter
+print "\nContainer: "
+print .container
+print "\nFirst index: "
+print .first
+print "\n"
+jump 71 notEqual .message null
+print "No message.\n"
+set :initialize.0:repeat true
+jump 74 notEqual .switch null
+print "No switch.\n"
+set :initialize.0:repeat true
+jump 77 notEqual .container null
+print "No container.\n"
+set :initialize.0:repeat true
+printflush .message
+jump 2 notEqual :initialize.0:repeat false
+printflush null
+op greaterThanEq *tmp15 PCT_LOW 0
+op lessThanEq *tmp16 PCT_LOW 100
+op land *tmp17 *tmp15 *tmp16
+op floor *tmp18 PCT_LOW 0
+op strictEqual *tmp19 PCT_LOW *tmp18
+op land :validate.0:condition *tmp17 *tmp19
+jump 90 notEqual :validate.0:condition false
+print "PCT_LOW must be an integer between 0 to 100."
+printflush .message
+stop
+op greaterThanEq *tmp23 PCT_HIGH 0
+op lessThanEq *tmp24 PCT_HIGH 100
+op land *tmp25 *tmp23 *tmp24
+op floor *tmp26 PCT_HIGH 0
+op strictEqual *tmp27 PCT_HIGH *tmp26
+op land :validate.1:condition *tmp25 *tmp27
+jump 100 notEqual :validate.1:condition false
+print "PCT_HIGH must be an integer between 0 to 100."
+printflush .message
+stop
+op lessThan :validate.2:condition PCT_LOW PCT_HIGH
+jump 105 notEqual :validate.2:condition false
+print "PCT_LOW must be less than PCT_HIGH."
+printflush .message
+stop
+sensor *tmp34 .sorter @type
+op equal .inverted *tmp34 @inverted-sorter
+set .state true
+op add .cycles .cycles 1
+op xor .active .inverted true
+set .activeText "\nCurrently inactive:[salmon]"
+jump 113 equal .active false
+set .activeText "\nCurrently active:[green]"
+control enabled .switch 0 0 0 0
+sensor *tmp43 .switch @enabled
+jump 0 notEqual *tmp43 0
+set :start @time
+sensor *tmp45 .container @dead
+jump 120 equal *tmp45 false
+end
+sensor *tmp47 .message @dead
+jump 123 equal *tmp47 false
+end
+sensor *tmp49 .switch @dead
+jump 126 equal *tmp49 false
+end
+sensor *tmp51 .sorter @dead
+op land *tmp52 .sorter *tmp51
+jump 130 equal *tmp52 false
+end
+jump 132 equal .links @links
+end
+sensor :item .sorter @config
+op equal *tmp57 :item null
+op notEqual *tmp58 .measure @totalItems
+op or *tmp60 *tmp57 *tmp58
+jump 141 equal *tmp60 false
+print "Measuring [gold]total[] in "
+print .container
+sensor :amount .container .measure
+jump 146 always 0 0
+print "Measuring [gold]"
+print :item
+print "[] in "
+print .container
+sensor :amount .container :item
+op mul *tmp64 100 :amount
+sensor *tmp65 .container .maximum
+op idiv :pct *tmp64 *tmp65
+jump 158 greaterThan :pct PCT_LOW
+jump 166 equal .state true
+set .state true
+op add .cycles .cycles 1
+op xor .active .inverted true
+set .activeText "\nCurrently inactive:[salmon]"
+jump 166 equal .active false
+set .activeText "\nCurrently active:[green]"
+jump 166 always 0 0
+jump 166 lessThan :pct PCT_HIGH
+jump 166 equal .state false
+set .state false
+op add .cycles .cycles 1
+op xor .active .inverted false
+set .activeText "\nCurrently inactive:[salmon]"
+jump 166 equal .active false
+set .activeText "\nCurrently active:[green]"
+print "\nLevel: [gold]"
+print :pct
+print "%[]"
+jump 176 equal .inverted false
+print "\nActivate above [green]"
+print PCT_HIGH
+print "%[]\nDeactivate below [salmon]"
+print PCT_LOW
+print "%[]"
+jump 181 always 0 0
+print "\nActivate below [green]"
+print PCT_LOW
+print "%[]\nDeactivate above [salmon]"
+print PCT_HIGH
+print "%[]"
+print .activeText
+set :n .first
+jump 190 greaterThanEq .first .links
+getlink :block :n
+control enabled :block .active 0 0 0
+print "\n    "
+print :block
+op add :n :n 1
+jump 184 lessThan :n .links
+print "[]\n# of cycles: "
+print .cycles
+op sub *tmp86 @time :start
+op floor *tmp87 *tmp86 0
+print "\n[lightgray]Loop: "
+print *tmp87
+print " ms"
+printflush .message
+sensor *tmp43 .switch @enabled
+jump 116 equal *tmp43 0
+

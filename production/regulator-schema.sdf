@@ -1,0 +1,27 @@
+schematic
+    name = "Regulator"
+    description = """
+        Regulates production or consumption by switching devices on or off.
+        Linked blocks are identified and used according to their type as follows:
+        messages are printed to the first message block found,
+        reset switch is the first switch block found; reset causes complete reconfiguration (new scanning of all blocks),
+        sorter or inverted sorter, if configured, is used to specify item to measure in item containers.
+        The last found container/liquid-tank/battery/node is used for level measurement (surge towers are not supported).
+        All devices linked after the container are switched on or off according to the fullness of the container.
+        Linking inverted sorter (regardless of its configuration) inverts the activation logic:
+        devices are activated when the level is high and deactivated when it is low.
+        Level is measured as a percentage of total capacity filled by materials.
+        """
+
+message1:
+    @message             at ( 0,  0)
+    @micro-processor     at ( 1,  0) processor
+        links
+            message1 as message1
+            switch1 as switch1
+        end
+        mindcode = file "regulator.mnd"
+    end
+switch1:
+    @switch              at ( 2,  0) facing south enabled
+end
