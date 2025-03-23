@@ -1,15 +1,15 @@
-// Item counter for logic processor. Can handle 20 plastanium conveyors at once.
-// For safety, the limit is set to 16.
+// Item counter for microprocessor. Can handle 5 plastanium conveyors at once, according to tests at 60 FPS.
+// For safety, the limit is set to 4.
 
 //#set target = 8;
 #set syntax = strict;
 
 const VERSION = "1.0";
-const TITLE = "[gold]Item Counter[], version [gold]" + VERSION + "[]";
+const TITLE = "[gold]Item Counter Micro[], version [gold]" + VERSION + "[]";
 
 // Hard constraint to max. number of conveyors to monitor
 // This implementation's speed doesn't depend on number of conveyors linked at runtime
-const MAX_LINKED = 16;
+const MAX_LINKED = 4;
 
 noinit linked switch1, message1;
 noinit var links;
@@ -38,9 +38,8 @@ void initialize()
                 when @memory-cell, @memory-bank then
                     memory = block;
                 when @plastanium-conveyor then
-                    if found < MAX_LINKED then
-                        conv[found] = block;
-                    end;
+                    conv[1 ... MAX_LINKED] = conv[0 ... MAX_LINKED - 1];
+                    conv[0] = block;
                     found++;
             end;
         end;
@@ -65,7 +64,7 @@ begin
 
     switch1.enabled = false;
 
-    while !switch1.@enabled do
+    do
         var start = @time;
         for var i in 0 ... MAX_LINKED do
             state1[i] = conv[i].@totalItems;
@@ -94,7 +93,7 @@ begin
             // Change in linked blocks: reinitialize
             end();
         end;
-    end;
+    while !switch1.@enabled;
 
     total = 0;
     memory[0] = 0;

@@ -1,0 +1,125 @@
+set TICKS 60
+set .switch null
+set .message null
+set .srcMem null
+set .dstMem null
+print "[gold]Item Rate Meter[], version [gold]1.0[]            \n"
+op sub :initialize.0:n @links 1
+jump 24 lessThan :initialize.0:n 0
+getlink :initialize.0:block :initialize.0:n
+print "\nFound: "
+print :initialize.0:block
+sensor *tmp2 :initialize.0:block @type
+jump 15 notEqual *tmp2 @message
+set .message :initialize.0:block
+jump 22 always 0 0
+jump 18 notEqual *tmp2 @switch
+set .switch :initialize.0:block
+jump 22 always 0 0
+jump 20 equal *tmp2 @memory-bank
+jump 22 notEqual *tmp2 @memory-cell
+set .dstMem .srcMem
+set .srcMem :initialize.0:block
+op sub :initialize.0:n :initialize.0:n 1
+jump 8 greaterThanEq :initialize.0:n 0
+print "\nMessage: "
+print .message
+print "\nSwitch: "
+print .switch
+print "\nSource memory: "
+print .srcMem
+print "\nTarget memory: "
+print .dstMem
+jump 34 notEqual .srcMem null
+print "\nNo memory."
+printflush .message
+jump 1 equal .srcMem null
+jump 38 notEqual .dstMem null
+set .dstMem .srcMem
+sensor *tmp10 .dstMem @type
+jump 42 notEqual *tmp10 @memory-cell
+set *tmp9 64
+jump 46 always 0 0
+jump 45 notEqual *tmp10 @memory-bank
+set *tmp9 512
+jump 46 always 0 0
+set *tmp9 0
+set .memSize *tmp9
+set .startIndex 0
+jump 51 notEqual .srcMem .dstMem
+op sub .memSize *tmp9 1
+set .startIndex 1
+set :prevTick @tick
+read :prev .srcMem 0
+set :currTick :prevTick
+set :curr :prev
+read *tmp16 .dstMem .startIndex
+op max :index .startIndex *tmp16
+set :nextTick :prevTick
+control enabled .switch false 0 0 0
+set :start @time
+op add :nextTick :nextTick TICKS
+op add *tmp20 :nextTick TICKS
+jump 66 lessThanEq @tick *tmp20
+op add :currTick :prevTick TICKS
+read :curr .srcMem 0
+print "[red]ERR[]\n"
+set :prevTick :currTick
+set :prev :curr
+jump 76 greaterThanEq @tick :nextTick
+jump 71 greaterThanEq @tick :prevTick
+end
+read :value .srcMem 0
+jump 75 equal :value :curr
+set :currTick @tick
+set :curr :value
+jump 69 lessThan @tick :nextTick
+op sub :amount :curr :prev
+op sub :time :currTick :prevTick
+set *tmp36 0
+jump 82 equal :amount 0
+op div *tmp37 :amount :time
+op max *tmp36 *tmp37 0
+set .samples*9 .samples*8
+set .samples*8 .samples*7
+set .samples*7 .samples*6
+set .samples*6 .samples*5
+set .samples*5 .samples*4
+set .samples*4 .samples*3
+set .samples*3 .samples*2
+set .samples*2 .samples*1
+set .samples*1 .samples*0
+set .samples*0 *tmp36
+op add :total *tmp36 .samples*1
+op add :total :total .samples*2
+op add :total :total .samples*3
+op add :total :total .samples*4
+op add :total :total .samples*5
+op add :total :total .samples*6
+op add :total :total .samples*7
+op add :total :total .samples*8
+op add :total :total .samples*9
+op div :average :total 10
+op add :index :index 1
+jump 105 lessThan :index .memSize
+op add :index .startIndex 1
+write :index .dstMem .startIndex
+write :average .dstMem :index
+print "[gold]Item Rate Meter[], version [gold]1.0[]            \nTotal items: [gold]"
+print :curr
+op idiv *tmp50 :average 0.0002777777777777778
+print "[]\nCurrent rate [green]"
+print *tmp50
+print "[]/min\n  memory start: [gold]"
+print .startIndex
+print "[]\n\n  memory index: [gold]"
+print :index
+op sub *tmp51 @time :start
+op floor *tmp52 *tmp51 0
+print "[]\n\n[lightgray]Loop time: "
+print *tmp52
+print " ms"
+printflush .message
+sensor *tmp53 .switch @enabled
+jump 59 equal *tmp53 false
+

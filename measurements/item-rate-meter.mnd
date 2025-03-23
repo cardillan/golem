@@ -1,0 +1,139 @@
+// Item counter for logic processor. Can handle 20 plastanium conveyors at once.
+// For safety, the limit is set to 16.
+
+//#set target = 8;
+#set syntax = strict;
+
+const VERSION = "1.0";
+const TITLE = "[gold]Item Rate Meter[], version [gold]" + VERSION + "[]";
+
+// Measurement interval
+param TICKS = 60;
+
+// Size of averaging window
+const SAMPLES = 10;
+
+var samples[SAMPLES];
+
+noinit var switch, message, srcMem, dstMem;
+noinit var startIndex, memSize;
+
+void initialize()
+    do
+        switch = null;
+        message = null;
+        srcMem = null;
+        dstMem = null;
+
+        println($"$TITLE            ");
+        for var n in 0 ... @links descending do
+            var block = getlink(n);
+            print("\nFound: ", block);
+            case block.@type
+                when @message then
+                    message = block;
+                when @switch then
+                    switch = block;
+                when @memory-bank, @memory-cell then
+                    dstMem = srcMem;
+                    srcMem = block;
+            end;
+        end;
+    
+        print("\nMessage: ", message);
+        print("\nSwitch: ", switch);
+        print("\nSource memory: ", srcMem);
+        print("\nTarget memory: ", dstMem);
+        if srcMem == null then
+            print("\nNo memory.");
+        end;
+        printflush(message);
+    while srcMem == null;
+
+    if dstMem == null then
+        dstMem = srcMem;
+    end;
+
+    memSize = case dstMem.@type
+        when @memory-cell then 64;
+        when @memory-bank then 512;
+        else 0;
+    end;
+
+    if srcMem == dstMem then
+        memSize -= 1;
+        startIndex = 1;
+    else
+        startIndex = 0;
+    end;
+end;
+
+begin
+    initialize();
+
+    var prevTick = @tick;
+    var prev = srcMem[0];
+    var currTick = prevTick;
+    var curr = prev;
+    var index = max(startIndex, dstMem[startIndex]);
+    var nextTick = prevTick;
+
+    switch.enabled = false;
+    do
+        var start = @time;
+        nextTick += TICKS;
+
+        if @tick > nextTick + TICKS then
+            // @tick has jumped too far to the future, reset it
+            currTick = @tick;
+            currTick = prevTick + TICKS;
+            curr = srcMem[0];
+            println("[red]ERR[]");
+        end;
+
+        prevTick = currTick;
+        prev = curr;
+
+        while @tick < nextTick do
+            if @tick < prevTick then
+                // Ticks can decrease after a map reload.
+                // Restart everything not to be stuck in a very long loop
+                end();
+            else
+                var value = srcMem[0];
+                if value != curr then
+                    currTick = @tick;
+                    curr = value;
+                end;
+            end;
+        end;
+
+        var amount = curr - prev;
+        var time = currTick - prevTick;
+        var rate = amount == 0 ? 0 : max(amount / time, 0);  // Items per tick
+
+        samples[1 ... SAMPLES] = samples[0 ... SAMPLES - 1];
+        samples[0] = rate;
+
+        var total = samples[0];
+        for var i in samples[1 ... SAMPLES] do total += i; end;
+        var average = total / SAMPLES;
+
+        index++;
+        if index >= memSize then
+            index = startIndex + 1;
+        end;
+        dstMem[startIndex] = index;
+        dstMem[index] = average;
+
+        println($"$TITLE            ");
+        println($"Total items: [gold]$curr[]");
+        println($"Current rate [green]${floor(average * 3600)}[]/min");
+        println($"  memory start: [gold]$startIndex[]\n");
+        println($"  memory index: [gold]$index[]\n");
+        print($"[lightgray]Loop time: ${floor(@time - start)} ms");
+        printflush(message);
+    while !switch.@enabled;
+end;
+
+
