@@ -1,90 +1,101 @@
-MIN_BATCH = 10;
-MAX_BATCH = 1000;
+// Item counter for logic processor. Can handle 20 plastanium conveyors at once.
+// For safety, the limit is set to 16.
 
-lastCell = 0;
-do
-    MEMORY = null;
-    FIRST_BLOCK = @links;
-    n = @links;
-    while n > 0 do
-        n -= 1;
-        block = getlink(n);
-        case block.@type
-            when @memory-cell then
-                MEMORY = block;
-                lastCell = 63;
-            when @memory-bank then
-                MEMORY = block;
-                lastCell = 511;
-            when @plastanium-conveyor then
-                FIRST_BLOCK = n;
-        end;
-    end;
+//#set target = 8;
+#set syntax = strict;
 
-    print("Item Counter\n[salmon]No memory attached.");
-    printflush(message1);
-while MEMORY == null;
+const VERSION = "1.0";
+const TITLE = "[gold]Item Counter[], version [gold]" + VERSION + "[]";
 
-total = MEMORY[0];
-BATCH_DURATION = 2000;                // We aim for a batch to be completed in about 2 seconds
-MIN_BATCH = (max(MIN_BATCH, 10) \ 10) * 10;
-MAX_BATCH = (max(MAX_BATCH, MIN_BATCH) \ 10) * 10;
-BATCH_STEP = 10;
-batch = MIN_BATCH;
-startTime = @time;           // Batch start time
-ratePerMin = 0;
-limit = total + batch;
-//totalStart = @time;
-switch1.enabled = 0;
-while switch1.@enabled == 0 do
-    start = @time;
-    n = FIRST_BLOCK;
-    while n < @links do
-        block = getlink(n);
-        n += 1;
-        if block.@type == @plastanium-conveyor then
-            prev = MEMORY[n];
-            curr = block.@totalItems;
-            MEMORY[n] = curr;
-            //print($"$n: $curr\n");
-            if curr < prev then
-                total += 10;
-                MEMORY[0] = total;
-                if total > limit then
-                    duration = @time - startTime;
-                    startTime = @time;
-                    limit += batch;
-                    rate = batch / duration;                            // items/ms
-                    MEMORY[lastCell] = rate * (1000 / 60);              // items/tick
-                    ratePerMin = floor(rate * 60000);                   // items/min
-                    if duration <= BATCH_DURATION then                  // too fast, increase batch time
-                        batch = min(batch + BATCH_STEP, MAX_BATCH);
+// Hard constraint to max. number of conveyors to monitor
+// This implementation's speed doesn't depend on number of conveyors linked at runtime
+const MAX_LINKED = 16;
+
+noinit linked switch1, message1;
+noinit var links;
+noinit var found;
+noinit var memory;
+
+// Conveyors linked
+var conv[MAX_LINKED];
+
+// First and second state
+var state1[MAX_LINKED];
+var state2[MAX_LINKED];
+
+volatile total = memory[0];
+
+void initialize()
+    while true do
+        for var out c in conv do c = null; end;
+
+        memory = null;
+        found = 0;
+        links = @links;
+        for var n in 0 ... links descending do
+            var block = getlink(n);
+            case block.@type
+                when @memory-cell, @memory-bank then
+                    memory = block;
+                when @plastanium-conveyor then
+                    if found < MAX_LINKED then
+                        conv[found] = block;
                     end;
-                end;
+                    found++;
             end;
         end;
+
+        if found == 0 then
+            print($"$TITLE\n[salmon]No plastanium conveyor attached (maximum: $MAX_LINKED, found: $found)");
+            printflush(message1);
+        elsif found > MAX_LINKED then
+            print($"$TITLE\n[salmon]Too many plastanium conveyors attached (maximum: $MAX_LINKED, found: $found)");
+            printflush(message1);
+        elsif memory == null then
+            print("$TITLE\n[salmon]No memory attached.");
+            printflush(message1);
+        else
+            break;
+        end;
     end;
-    elapsed = floor(@time - startTime);
-    if elapsed >= 10000 then
-        // Batch didn't complete in 10 seconds
-        batch = max((batch \ 90) * 10, MIN_BATCH);      // Divide batch size by 9, round to tens
-        MEMORY[lastCell] = 0;
-        ratePerMin = 0;
-        startTime = @time;
-    end;
-    println($"Item Counter                  ");
-    println($"Total items: [gold]$total[]");
-    println($"Rate: [green]$ratePerMin[] items/min");
-//  println($"Overall rate: [green]$[] items/min", floor(total / (@time - totalStart) * 60000));
-    println($"Batch size: [green]$batch[]");
-    println($"Batch time: [gold]$elapsed[] ms");
-    println($"[lightgray]Loop time: $ ms", floor(@time - start));
-    printflush(message1);
 end;
-switch1.enabled = 0;
-MEMORY[lastCell] = 0;
-n = 0;
-while n < @links do
-    MEMORY[n] = 0;
-    n += 1;
+
+begin
+    initialize();
+
+    switch1.enabled = false;
+
+    while !switch1.@enabled do
+        var start = @time;
+        for var i in 0 ... MAX_LINKED do
+            state1[i] = conv[i].@totalItems;
+            if state1[i] < state2[i] then
+                total += 10;
+            end;
+        end;
+
+        memory[0] = total;
+
+        println($"$TITLE            ");
+        println($"Monitoring [green]$found[] conveyors");
+        println($"Total items: [gold]$total[]");
+
+        for var i in 0 ... MAX_LINKED do
+            state2[i] = conv[i].@totalItems;
+            if state2[i] < state1[i] then
+                total += 10;
+            end;
+        end;
+
+        println($"[lightgray]Loop time: $ ms", floor((@time - start) / 2));
+        printflush(message1);
+
+        if links != @links then
+            // Change in linked blocks: reinitialize
+            end();
+        end;
+    end;
+
+    total = 0;
+    memory[0] = 0;
 end;

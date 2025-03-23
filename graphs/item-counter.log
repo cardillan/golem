@@ -1,865 +1,4038 @@
-   174 instructions before optimizations.
-    20 instructions eliminated by Temp Variables Elimination.
+   436 instructions before optimizations.
+     9 instructions eliminated by Temp Variables Elimination.
      1 instructions eliminated by Case Expression Optimization.
-    14 instructions eliminated by Dead Code Elimination (6 iterations).
-    10 instructions eliminated by Jump Optimization (3 iterations).
-     7 instructions eliminated by Single Step Elimination (2 passes, 5 iterations).
-     1 instructions eliminated by Expression Optimization (2 iterations).
-    16 instructions eliminated by Data Flow Optimization (2 passes, 7 iterations).
-     1 instructions added by Loop Optimization (2 iterations).
+    18 instructions eliminated by Dead Code Elimination (5 iterations).
+     1 instructions eliminated by Jump Normalization (5 iterations).
+     8 instructions eliminated by Jump Optimization (5 iterations).
+     5 instructions eliminated by Single Step Elimination (6 iterations).
+   385 instructions eliminated by Expression Optimization (2 passes, 4 iterations).
+   185 instructions eliminated by Data Flow Optimization (4 passes, 17 iterations).
+     1 instructions eliminated by Loop Optimization (4 iterations).
      4 loops improved by Loop Optimization.
-     3 instructions eliminated by Jump Straightening (3 iterations).
-     1 instructions updated by JumpThreading.
-    16 instructions eliminated by Print Merging.
-    87 instructions after optimizations.
+   566 instructions added by Loop Unrolling (8 iterations).
+     3 loops unrolled by Loop Unrolling.
+     2 instructions eliminated by Jump Straightening (5 iterations).
+     4 instructions updated by JumpThreading.
+     2 instructions eliminated by Unreachable Code Elimination.
+    21 instructions eliminated by Print Merging.
+   204 instructions after optimizations.
 
-Pass 1: speed optimization selection (cost limit 897):
-  * Replicate loop condition at line 39:1                        cost     1, benefit       25.0, efficiency       25.0 (+1 instructions)
+Pass 1: speed optimization selection (cost limit 634):
+    Replicate loop condition at line 68:5                        cost     1, benefit       25.0, efficiency       25.0
+  * Unroll iteration loop at line 30:9                           cost     0, benefit     1975.0, efficiency   Infinity (-32 instructions)
+    Unroll loop at line 70:9                                     cost    90, benefit    20000.0, efficiency      222.2
+    Unroll loop at line 83:9                                     cost    90, benefit    20000.0, efficiency      222.2
+
+Pass 1: speed optimization selection (cost limit 666):
+    Replicate loop condition at line 68:5                        cost     1, benefit       25.0, efficiency       25.0
+  * Unroll loop at line 70:9                                     cost    90, benefit    20000.0, efficiency      222.2 (+282 instructions)
+    Unroll loop at line 83:9                                     cost    90, benefit    20000.0, efficiency      222.2
+
+Pass 1: speed optimization selection (cost limit 384):
+    Replicate loop condition at line 68:5                        cost     1, benefit       25.0, efficiency       25.0
+  * Unroll loop at line 83:9                                     cost    90, benefit    20000.0, efficiency      222.2 (+282 instructions)
+
+Pass 1: speed optimization selection (cost limit 102):
+  * Replicate loop condition at line 68:5                        cost     1, benefit       25.0, efficiency       25.0 (+1 instructions)
 
 Modifications by Initial phase, Case Expression Optimization, iteration 1 (-1 instructions):
  
-    13 getlink *tmp3 :n
-    14 set :block *tmp3
-    15 sensor *tmp5 :block @type
+    95 getlink *tmp3 :initialize.0:n
+    96 set :initialize.0:block *tmp3
+    97 sensor *tmp5 :initialize.0:block @type
 -    * set *tmp6 *tmp5
--    * jump *label8 equal *tmp6 @memory-cell
-+   16 jump *label8 equal *tmp5 @memory-cell
-    17 jump *label7 always
-    18 label *label8
-    19 set .MEMORY :block
- 
-    21 set *tmp4 :lastCell
-    22 jump *label6 always
-    23 label *label7
--    * jump *label10 equal *tmp6 @memory-bank
-+   24 jump *label10 equal *tmp5 @memory-bank
-    25 jump *label9 always
-    26 label *label10
-    27 set .MEMORY :block
- 
-    29 set *tmp4 :lastCell
-    30 jump *label6 always
-    31 label *label9
--    * jump *label12 equal *tmp6 @plastanium-conveyor
-+   32 jump *label12 equal *tmp5 @plastanium-conveyor
-    33 jump *label11 always
-    34 label *label12
-    35 set .FIRST_BLOCK :n
+-    * jump *label28 equal *tmp6 @memory-cell
+-    * jump *label28 equal *tmp6 @memory-bank
++   98 jump *label28 equal *tmp5 @memory-cell
++   99 jump *label28 equal *tmp5 @memory-bank
+   100 jump *label27 always
+   101 label *label28
+   102 set .memory :initialize.0:block
+   103 set *tmp4 .memory
+   104 jump *label26 always
+   105 label *label27
+-    * jump *label30 equal *tmp6 @plastanium-conveyor
++  106 jump *label30 equal *tmp5 @plastanium-conveyor
+   107 jump *label29 always
+   108 label *label30
+   109 op lessThan *tmp7 .found 16
 
-Modifications by Initial phase, Dead Code Elimination, iteration 1 (-8 instructions):
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-13 instructions):
  
-    18 label *label8
-    19 set .MEMORY :block
-    20 set :lastCell 63
--    * set *tmp4 :lastCell
-    21 jump *label6 always
-    22 label *label7
-    23 jump *label10 equal *tmp5 @memory-bank
+   100 jump *label27 always
+   101 label *label28
+   102 set .memory :initialize.0:block
+-    * set *tmp4 .memory
+   103 jump *label26 always
+   104 label *label27
+   105 jump *label30 equal *tmp5 @plastanium-conveyor
  
-    25 label *label10
-    26 set .MEMORY :block
-    27 set :lastCell 511
--    * set *tmp4 :lastCell
-    28 jump *label6 always
-    29 label *label9
-    30 jump *label12 equal *tmp5 @plastanium-conveyor
-    31 jump *label11 always
-    32 label *label12
-    33 set .FIRST_BLOCK :n
--    * set *tmp4 .FIRST_BLOCK
-    34 jump *label6 always
-    35 label *label11
+   109 jump *label31 equal *tmp7 false
+   110 set *tmp9 .found
+   111 writearr :initialize.0:block .conv[] *tmp9
+-    * set *tmp8 :initialize.0:block
+   112 jump *label32 always
+   113 label *label31
+-    * set *tmp8 null
+   114 label *label32
+   115 set *tmp11 .found
+   116 op add .found .found 1
+-    * set *tmp4 *tmp11
+   117 jump *label26 always
+   118 label *label29
 -    * set *tmp4 null
-    36 label *label6
-    37 label *label4
-    38 jump *label3 always
+   119 label *label26
+   120 label *label24
+   121 op sub :initialize.0:n :initialize.0:n 1
  
-   124 label *label21
-   125 set *tmp32 null
-   126 label *label22
--    * set *tmp25 *tmp32
-   127 jump *label20 always
-   128 label *label19
--    * set *tmp25 null
-   129 label *label20
-   130 label *label17
-   131 jump *label16 always
+   132 print .found
+   133 print ")"
+   134 printflush message1
+-    * set *tmp13 null
+   135 jump *label34 always
+   136 label *label33
+   137 op greaterThan *tmp14 .found 16
  
-   144 set :ratePerMin 0
-   145 set *tmp57 @time
-   146 set :startTime *tmp57
--    * set *tmp51 :startTime
-   147 jump *label28 always
-   148 label *label27
+   160 label *label38
+   161 set *tmp15 *tmp17
+   162 label *label36
+-    * set *tmp13 *tmp15
+   163 label *label34
+   164 label *label2
+   165 jump *label1 always
+ 
+   187 jump *label45 equal *tmp30 false
+   188 op add *tmp32 .total 10
+   189 set .total *tmp32
+-    * set *tmp31 *tmp32
+   190 jump *label46 always
+   191 label *label45
+-    * set *tmp31 null
+   192 label *label46
+   193 label *label43
+   194 op add :i :i 1
+ 
+   226 jump *label50 equal *tmp44 false
+   227 op add *tmp46 .total 10
+   228 set .total *tmp46
+-    * set *tmp45 *tmp46
+   229 jump *label51 always
+   230 label *label50
+-    * set *tmp45 null
+   231 label *label51
+   232 label *label48
+   233 op add :i.1 :i.1 1
+ 
+   245 op notEqual *tmp50 .links @links
+   246 jump *label52 equal *tmp50 false
+   247 end
 -    * set *tmp51 null
-   149 label *label28
-   150 print "Item Counter                  "
-   151 print "\n"
+   248 jump *label53 always
+   249 label *label52
+-    * set *tmp51 null
+   250 label *label53
+   251 label *label40
+   252 jump *label39 always
 
-Modifications by Initial phase, Dead Code Elimination, iteration 2 (-2 instructions):
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-3 instructions):
  
-   119 label *label23
-   120 set *tmp35 null
-   121 label *label24
--    * set *tmp32 *tmp35
-   122 jump *label22 always
-   123 label *label21
--    * set *tmp32 null
-   124 label *label22
-   125 jump *label20 always
-   126 label *label19
+   112 jump *label32 always
+   113 label *label31
+   114 label *label32
+-    * set *tmp11 .found
+   115 op add .found .found 1
+   116 jump *label26 always
+   117 label *label29
+ 
+   144 print .found
+   145 print ")"
+   146 printflush message1
+-    * set *tmp15 null
+   147 jump *label36 always
+   148 label *label35
+   149 op equal *tmp16 .memory null
+ 
+   156 jump *label3 always
+   157 set *tmp17 null
+   158 label *label38
+-    * set *tmp15 *tmp17
+   159 label *label36
+   160 label *label34
+   161 label *label2
 
 Modifications by Initial phase, Dead Code Elimination, iteration 3 (-2 instructions):
  
+   150 jump *label37 equal *tmp16 false
+   151 print "$TITLE\n[salmon]No memory attached."
+   152 printflush message1
+-    * set *tmp17 null
+   153 jump *label38 always
+   154 label *label37
+   155 jump *label3 always
+-    * set *tmp17 null
+   156 label *label38
+   157 label *label36
+   158 label *label34
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-9 instructions):
+-    * read *tmp0 .memory 0
+-    * set .total *tmp0
++    0 read .total .memory 0
+     1 label *label1
+     2 jump *label3 equal true false
+     3 setaddr *tmp1 *label7
+ 
+    86 label *label6
+    87 set .memory null
+    88 set .found 0
+-    * set *tmp2 @links
+-    * set .links *tmp2
++   89 set .links @links
+    90 op sub :initialize.0:n .links 1
+    91 label *label23
+    92 jump *label25 lessThan :initialize.0:n 0
+-    * getlink *tmp3 :initialize.0:n
+-    * set :initialize.0:block *tmp3
++   93 getlink :initialize.0:block :initialize.0:n
+    94 sensor *tmp5 :initialize.0:block @type
+    95 jump *label28 equal *tmp5 @memory-cell
+    96 jump *label28 equal *tmp5 @memory-bank
+ 
+   104 label *label30
+   105 op lessThan *tmp7 .found 16
+   106 jump *label31 equal *tmp7 false
+-    * set *tmp9 .found
+-    * writearr :initialize.0:block .conv[] *tmp9
++  107 writearr :initialize.0:block .conv[] .found
+   108 jump *label32 always
+   109 label *label31
+   110 label *label32
+ 
+   166 label *label42
+   167 jump *label44 greaterThanEq :i 16
+   168 set *tmp21 :i
+-    * set *tmp23 :i
+-    * readarr *tmp24 .conv[] *tmp23
++  169 readarr *tmp24 .conv[] :i
+   170 sensor *tmp25 *tmp24 @totalItems
+   171 writearr *tmp25 .state1[] *tmp21
+   172 set *tmp26 :i
+ 
+   175 readarr *tmp29 .state2[] *tmp28
+   176 op lessThan *tmp30 *tmp27 *tmp29
+   177 jump *label45 equal *tmp30 false
+-    * op add *tmp32 .total 10
+-    * set .total *tmp32
++  178 op add .total .total 10
+   179 jump *label46 always
+   180 label *label45
+   181 label *label46
+ 
+   183 op add :i :i 1
+   184 jump *label42 always
+   185 label *label44
+-    * set *tmp34 .total
+-    * write *tmp34 .memory 0
++  186 write .total .memory 0
+   187 print "[gold]Item Counter[], version [gold]1.0[]"
+   188 print " "
+   189 print "           "
+ 
+   202 label *label47
+   203 jump *label49 greaterThanEq :i.1 16
+   204 set *tmp35 :i.1
+-    * set *tmp37 :i.1
+-    * readarr *tmp38 .conv[] *tmp37
++  205 readarr *tmp38 .conv[] :i.1
+   206 sensor *tmp39 *tmp38 @totalItems
+   207 writearr *tmp39 .state2[] *tmp35
+   208 set *tmp40 :i.1
+ 
+   211 readarr *tmp43 .state1[] *tmp42
+   212 op lessThan *tmp44 *tmp41 *tmp43
+   213 jump *label50 equal *tmp44 false
+-    * op add *tmp46 .total 10
+-    * set .total *tmp46
++  214 op add .total .total 10
+   215 jump *label51 always
+   216 label *label50
+   217 label *label51
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+     0 read .total .memory 0
+     1 label *label1
+-    * jump *label3 equal true false
+     2 setaddr *tmp1 *label7
+     3 set :initialize.0:c .conv*0
+     4 jump *label4 always
+
+Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-2 instructions):
+ 
+    92 getlink :initialize.0:block :initialize.0:n
+    93 sensor *tmp5 :initialize.0:block @type
+    94 jump *label28 equal *tmp5 @memory-cell
+-    * jump *label28 equal *tmp5 @memory-bank
+-    * jump *label27 always
++   95 jump *label27 notEqual *tmp5 @memory-bank
+    96 label *label28
+    97 set .memory :initialize.0:block
+    98 jump *label26 always
+    99 label *label27
+-    * jump *label30 equal *tmp5 @plastanium-conveyor
+-    * jump *label29 always
++  100 jump *label29 notEqual *tmp5 @plastanium-conveyor
+   101 label *label30
+   102 op lessThan *tmp7 .found 16
+   103 jump *label31 equal *tmp7 false
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-8 instructions):
+ 
+    99 label *label27
+   100 jump *label29 notEqual *tmp5 @plastanium-conveyor
+   101 label *label30
+-    * op lessThan *tmp7 .found 16
+-    * jump *label31 equal *tmp7 false
++  102 jump *label31 greaterThanEq .found 16
+   103 writearr :initialize.0:block .conv[] .found
+   104 jump *label32 always
+   105 label *label31
+ 
+   112 op sub :initialize.0:n :initialize.0:n 1
+   113 jump *label23 always
    114 label *label25
-   115 set *tmp45 null
-   116 label *label26
--    * set *tmp35 *tmp45
-   117 jump *label24 always
-   118 label *label23
--    * set *tmp35 null
-   119 label *label24
-   120 jump *label22 always
-   121 label *label21
+-    * op equal *tmp12 .found 0
+-    * jump *label33 equal *tmp12 false
++  115 jump *label33 notEqual .found 0
+   116 print "[gold]Item Counter[], version [gold]1.0[]"
+   117 print "\"
+   118 print "n[salmon]No plastanium conveyor attached (maximum: "
+ 
+   124 printflush message1
+   125 jump *label34 always
+   126 label *label33
+-    * op greaterThan *tmp14 .found 16
+-    * jump *label35 equal *tmp14 false
++  127 jump *label35 lessThanEq .found 16
+   128 print "[gold]Item Counter[], version [gold]1.0[]"
+   129 print "\"
+   130 print "n[salmon]Too many plastanium conveyors attached (maximum: "
+ 
+   136 printflush message1
+   137 jump *label36 always
+   138 label *label35
+-    * op equal *tmp16 .memory null
+-    * jump *label37 equal *tmp16 false
++  139 jump *label37 notEqual .memory null
+   140 print "$TITLE\n[salmon]No memory attached."
+   141 printflush message1
+   142 jump *label38 always
+ 
+   152 control enabled switch1 false
+   153 label *label39
+   154 sensor *tmp19 switch1 @enabled
+-    * op equal *tmp20 *tmp19 false
+-    * jump *label41 equal *tmp20 false
++  155 jump *label41 notEqual *tmp19 false
+   156 set :start @time
+   157 set :i 0
+   158 label *label42
+ 
+   165 set *tmp28 :i
+   166 readarr *tmp27 .state1[] *tmp26
+   167 readarr *tmp29 .state2[] *tmp28
+-    * op lessThan *tmp30 *tmp27 *tmp29
+-    * jump *label45 equal *tmp30 false
++  168 jump *label45 greaterThanEq *tmp27 *tmp29
+   169 op add .total .total 10
+   170 jump *label46 always
+   171 label *label45
+ 
+   200 set *tmp42 :i.1
+   201 readarr *tmp41 .state2[] *tmp40
+   202 readarr *tmp43 .state1[] *tmp42
+-    * op lessThan *tmp44 *tmp41 *tmp43
+-    * jump *label50 equal *tmp44 false
++  203 jump *label50 greaterThanEq *tmp41 *tmp43
+   204 op add .total .total 10
+   205 jump *label51 always
+   206 label *label50
+ 
+   218 print "ms"
+   219 print "\n"
+   220 printflush message1
+-    * op notEqual *tmp50 .links @links
+-    * jump *label52 equal *tmp50 false
++  221 jump *label52 equal .links @links
+   222 end
+   223 jump *label53 always
+   224 label *label52
 
-Modifications by Initial phase, Dead Code Elimination, iteration 4 (-2 instructions):
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-5 instructions):
  
-   109 op add *tmp46 :batch .BATCH_STEP
-   110 op min *tmp47 *tmp46 .MAX_BATCH
-   111 set :batch *tmp47
--    * set *tmp45 :batch
-   112 jump *label26 always
-   113 label *label25
--    * set *tmp45 null
-   114 label *label26
-   115 jump *label24 always
-   116 label *label23
-
-Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-20 instructions):
- 
-     2 set :lastCell 0
-     3 label *label0
-     4 set .MEMORY null
--    * set *tmp0 @links
--    * set .FIRST_BLOCK *tmp0
--    * set *tmp1 @links
--    * set :n *tmp1
-+    5 set .FIRST_BLOCK @links
-+    6 set :n @links
-     7 label *label3
-     8 op greaterThan *tmp2 :n 0
-     9 jump *label5 equal *tmp2 false
-    10 op sub :n :n 1
--    * getlink *tmp3 :n
--    * set :block *tmp3
-+   11 getlink :block :n
-    12 sensor *tmp5 :block @type
-    13 jump *label8 equal *tmp5 @memory-cell
-    14 jump *label7 always
- 
-    40 op equal *tmp7 .MEMORY null
-    41 jump *label0 notEqual *tmp7 false
-    42 label *label2
--    * read *tmp8 .MEMORY 0
--    * set :total *tmp8
-+   43 read :total .MEMORY 0
-    44 set .BATCH_DURATION 2000
-    45 op max *tmp9 .MIN_BATCH 10
-    46 op idiv *tmp10 *tmp9 10
--    * op mul *tmp11 *tmp10 10
--    * set .MIN_BATCH *tmp11
-+   47 op mul .MIN_BATCH *tmp10 10
-    48 op max *tmp12 .MAX_BATCH .MIN_BATCH
-    49 op idiv *tmp13 *tmp12 10
--    * op mul *tmp14 *tmp13 10
--    * set .MAX_BATCH *tmp14
-+   50 op mul .MAX_BATCH *tmp13 10
-    51 set .BATCH_STEP 10
-    52 set :batch .MIN_BATCH
--    * set *tmp15 @time
--    * set :startTime *tmp15
-+   53 set :startTime @time
-    54 set :ratePerMin 0
--    * op add *tmp16 :total :batch
--    * set :limit *tmp16
-+   55 op add :limit :total :batch
-    56 control enabled switch1 0
-    57 label *label13
-    58 sensor *tmp18 switch1 @enabled
-    59 op equal *tmp19 *tmp18 0
-    60 jump *label15 equal *tmp19 false
--    * set *tmp20 @time
--    * set :start *tmp20
-+   61 set :start @time
-    62 set :n .FIRST_BLOCK
-    63 label *label16
-    64 op lessThan *tmp21 :n @links
-    65 jump *label18 equal *tmp21 false
--    * getlink *tmp22 :n
--    * set :block *tmp22
-+   66 getlink :block :n
-    67 op add :n :n 1
-    68 sensor *tmp23 :block @type
-    69 op equal *tmp24 *tmp23 @plastanium-conveyor
-    70 jump *label19 equal *tmp24 false
-    71 set *tmp26 :n
--    * read *tmp27 .MEMORY *tmp26
--    * set :prev *tmp27
--    * sensor *tmp28 :block @totalItems
--    * set :curr *tmp28
-+   72 read :prev .MEMORY *tmp26
-+   73 sensor :curr :block @totalItems
-    74 set *tmp29 :n
-    75 write :curr .MEMORY *tmp29
-    76 op lessThan *tmp31 :curr :prev
- 
-    79 write :total .MEMORY 0
-    80 op greaterThan *tmp34 :total :limit
-    81 jump *label23 equal *tmp34 false
--    * op sub *tmp36 @time :startTime
--    * set :duration *tmp36
--    * set *tmp37 @time
--    * set :startTime *tmp37
-+   82 op sub :duration @time :startTime
-+   83 set :startTime @time
-    84 op add :limit :limit :batch
--    * op div *tmp38 :batch :duration
--    * set :rate *tmp38
-+   85 op div :rate :batch :duration
-    86 set *tmp39 :lastCell
-    87 op mul *tmp41 :rate 16.666666666666668
-    88 write *tmp41 .MEMORY *tmp39
-    89 op mul *tmp42 :rate 60000
--    * op floor *tmp43 *tmp42
--    * set :ratePerMin *tmp43
-+   90 op floor :ratePerMin *tmp42
-    91 op lessThanEq *tmp44 :duration .BATCH_DURATION
-    92 jump *label25 equal *tmp44 false
-    93 op add *tmp46 :batch .BATCH_STEP
--    * op min *tmp47 *tmp46 .MAX_BATCH
--    * set :batch *tmp47
-+   94 op min :batch *tmp46 .MAX_BATCH
-    95 jump *label26 always
-    96 label *label25
-    97 label *label26
- 
-   108 jump *label16 always
-   109 label *label18
-   110 op sub *tmp48 @time :startTime
--    * op floor *tmp49 *tmp48
--    * set :elapsed *tmp49
-+  111 op floor :elapsed *tmp48
-   112 op greaterThanEq *tmp50 :elapsed 10000
-   113 jump *label27 equal *tmp50 false
-   114 op idiv *tmp52 :batch 90
-   115 op mul *tmp53 *tmp52 10
--    * op max *tmp54 *tmp53 .MIN_BATCH
--    * set :batch *tmp54
-+  116 op max :batch *tmp53 .MIN_BATCH
-   117 set *tmp55 :lastCell
-   118 write 0 .MEMORY *tmp55
-   119 set :ratePerMin 0
--    * set *tmp57 @time
--    * set :startTime *tmp57
-+  120 set :startTime @time
-   121 jump *label28 always
-   122 label *label27
-   123 label *label28
-
-Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-3 instructions):
- 
-    10 op sub :n :n 1
-    11 getlink :block :n
-    12 sensor *tmp5 :block @type
--    * jump *label8 equal *tmp5 @memory-cell
--    * jump *label7 always
-+   13 jump *label7 notEqual *tmp5 @memory-cell
-    14 label *label8
-    15 set .MEMORY :block
-    16 set :lastCell 63
-    17 jump *label6 always
-    18 label *label7
--    * jump *label10 equal *tmp5 @memory-bank
--    * jump *label9 always
-+   19 jump *label9 notEqual *tmp5 @memory-bank
-    20 label *label10
-    21 set .MEMORY :block
-    22 set :lastCell 511
-    23 jump *label6 always
-    24 label *label9
--    * jump *label12 equal *tmp5 @plastanium-conveyor
--    * jump *label11 always
-+   25 jump *label11 notEqual *tmp5 @plastanium-conveyor
-    26 label *label12
-    27 set .FIRST_BLOCK :n
-    28 jump *label6 always
-
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-10 instructions):
- 
-     5 set .FIRST_BLOCK @links
-     6 set :n @links
-     7 label *label3
--    * op greaterThan *tmp2 :n 0
--    * jump *label5 equal *tmp2 false
-+    8 jump *label5 lessThanEq :n 0
-     9 op sub :n :n 1
-    10 getlink :block :n
-    11 sensor *tmp5 :block @type
- 
-    33 print "Item Counter\n[salmon]No memory attached."
-    34 printflush message1
-    35 label *label1
--    * op equal *tmp7 .MEMORY null
--    * jump *label0 notEqual *tmp7 false
-+   36 jump *label0 equal .MEMORY null
-    37 label *label2
-    38 read :total .MEMORY 0
-    39 set .BATCH_DURATION 2000
- 
-    51 control enabled switch1 0
-    52 label *label13
-    53 sensor *tmp18 switch1 @enabled
--    * op equal *tmp19 *tmp18 0
--    * jump *label15 equal *tmp19 false
-+   54 jump *label15 notEqual *tmp18 0
-    55 set :start @time
-    56 set :n .FIRST_BLOCK
-    57 label *label16
--    * op lessThan *tmp21 :n @links
--    * jump *label18 equal *tmp21 false
-+   58 jump *label18 greaterThanEq :n @links
-    59 getlink :block :n
-    60 op add :n :n 1
-    61 sensor *tmp23 :block @type
--    * op equal *tmp24 *tmp23 @plastanium-conveyor
--    * jump *label19 equal *tmp24 false
-+   62 jump *label19 notEqual *tmp23 @plastanium-conveyor
-    63 set *tmp26 :n
-    64 read :prev .MEMORY *tmp26
-    65 sensor :curr :block @totalItems
-    66 set *tmp29 :n
-    67 write :curr .MEMORY *tmp29
--    * op lessThan *tmp31 :curr :prev
--    * jump *label21 equal *tmp31 false
-+   68 jump *label21 greaterThanEq :curr :prev
-    69 op add :total :total 10
-    70 write :total .MEMORY 0
--    * op greaterThan *tmp34 :total :limit
--    * jump *label23 equal *tmp34 false
-+   71 jump *label23 lessThanEq :total :limit
-    72 op sub :duration @time :startTime
-    73 set :startTime @time
-    74 op add :limit :limit :batch
- 
-    78 write *tmp41 .MEMORY *tmp39
-    79 op mul *tmp42 :rate 60000
-    80 op floor :ratePerMin *tmp42
--    * op lessThanEq *tmp44 :duration .BATCH_DURATION
--    * jump *label25 equal *tmp44 false
-+   81 jump *label25 greaterThan :duration .BATCH_DURATION
-    82 op add *tmp46 :batch .BATCH_STEP
-    83 op min :batch *tmp46 .MAX_BATCH
-    84 jump *label26 always
- 
-    98 label *label18
-    99 op sub *tmp48 @time :startTime
-   100 op floor :elapsed *tmp48
--    * op greaterThanEq *tmp50 :elapsed 10000
--    * jump *label27 equal *tmp50 false
-+  101 jump *label27 lessThan :elapsed 10000
-   102 op idiv *tmp52 :batch 90
-   103 op mul *tmp53 *tmp52 10
-   104 op max :batch *tmp53 .MIN_BATCH
- 
-   147 write 0 .MEMORY *tmp61
-   148 set :n 0
-   149 label *label29
--    * op lessThan *tmp63 :n @links
--    * jump *label31 equal *tmp63 false
-+  150 jump *label31 greaterThanEq :n @links
-   151 set *tmp64 :n
-   152 write 0 .MEMORY *tmp64
-   153 op add :n :n 1
-
-Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-6 instructions):
- 
-    24 jump *label11 notEqual *tmp5 @plastanium-conveyor
-    25 label *label12
-    26 set .FIRST_BLOCK :n
--    * jump *label6 always
-    27 label *label11
-    28 label *label6
-    29 label *label4
- 
-    80 jump *label25 greaterThan :duration .BATCH_DURATION
-    81 op add *tmp46 :batch .BATCH_STEP
-    82 op min :batch *tmp46 .MAX_BATCH
+   101 label *label30
+   102 jump *label31 greaterThanEq .found 16
+   103 writearr :initialize.0:block .conv[] .found
+-    * jump *label32 always
+   104 label *label31
+   105 label *label32
+   106 op add .found .found 1
 -    * jump *label26 always
-    83 label *label25
-    84 label *label26
--    * jump *label24 always
-    85 label *label23
-    86 label *label24
--    * jump *label22 always
-    87 label *label21
-    88 label *label22
--    * jump *label20 always
-    89 label *label19
-    90 label *label20
-    91 label *label17
+   107 label *label29
+   108 label *label26
+   109 label *label24
  
-   101 write 0 .MEMORY *tmp55
-   102 set :ratePerMin 0
-   103 set :startTime @time
--    * jump *label28 always
-   104 label *label27
-   105 label *label28
-   106 print "Item Counter                  "
+   165 readarr *tmp29 .state2[] *tmp28
+   166 jump *label45 greaterThanEq *tmp27 *tmp29
+   167 op add .total .total 10
+-    * jump *label46 always
+   168 label *label45
+   169 label *label46
+   170 label *label43
+ 
+   199 readarr *tmp43 .state1[] *tmp42
+   200 jump *label50 greaterThanEq *tmp41 *tmp43
+   201 op add .total .total 10
+-    * jump *label51 always
+   202 label *label50
+   203 label *label51
+   204 label *label48
+ 
+   216 printflush message1
+   217 jump *label52 equal .links @links
+   218 end
+-    * jump *label53 always
+   219 label *label52
+   220 label *label53
+   221 label *label40
 
 Modifications by Iterated phase, Expression Optimization, pass 1, iteration 1 (-1 instructions):
  
-    75 set *tmp39 :lastCell
-    76 op mul *tmp41 :rate 16.666666666666668
-    77 write *tmp41 .MEMORY *tmp39
--    * op mul *tmp42 :rate 60000
--    * op floor :ratePerMin *tmp42
-+   78 op idiv :ratePerMin :rate 0.000016666666666666667
-    79 jump *label25 greaterThan :duration .BATCH_DURATION
-    80 op add *tmp46 :batch .BATCH_STEP
-    81 op min :batch *tmp46 .MAX_BATCH
+   206 jump *label47 always
+   207 label *label49
+   208 op sub *tmp47 @time :start
+-    * op div *tmp48 *tmp47 2
+-    * op floor *tmp49 *tmp48
++  209 op idiv *tmp49 *tmp47 2
+   210 print "[lightgray]Loop time: "
+   211 print *tmp49
+   212 print " "
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-16 instructions):
+     0 read .total .memory 0
+     1 label *label1
+     2 setaddr *tmp1 *label7
+-    * set :initialize.0:c .conv*0
+     3 jump *label4 always
+     4 multilabel *label7 marker0
+-    * set .conv*0 :initialize.0:c
++    5 set .conv*0 null
+     6 setaddr *tmp1 *label8
+-    * set :initialize.0:c .conv*1
+     7 jump *label4 always
+     8 multilabel *label8 marker0
+-    * set .conv*1 :initialize.0:c
++    9 set .conv*1 null
+    10 setaddr *tmp1 *label9
+-    * set :initialize.0:c .conv*2
+    11 jump *label4 always
+    12 multilabel *label9 marker0
+-    * set .conv*2 :initialize.0:c
++   13 set .conv*2 null
+    14 setaddr *tmp1 *label10
+-    * set :initialize.0:c .conv*3
+    15 jump *label4 always
+    16 multilabel *label10 marker0
+-    * set .conv*3 :initialize.0:c
++   17 set .conv*3 null
+    18 setaddr *tmp1 *label11
+-    * set :initialize.0:c .conv*4
+    19 jump *label4 always
+    20 multilabel *label11 marker0
+-    * set .conv*4 :initialize.0:c
++   21 set .conv*4 null
+    22 setaddr *tmp1 *label12
+-    * set :initialize.0:c .conv*5
+    23 jump *label4 always
+    24 multilabel *label12 marker0
+-    * set .conv*5 :initialize.0:c
++   25 set .conv*5 null
+    26 setaddr *tmp1 *label13
+-    * set :initialize.0:c .conv*6
+    27 jump *label4 always
+    28 multilabel *label13 marker0
+-    * set .conv*6 :initialize.0:c
++   29 set .conv*6 null
+    30 setaddr *tmp1 *label14
+-    * set :initialize.0:c .conv*7
+    31 jump *label4 always
+    32 multilabel *label14 marker0
+-    * set .conv*7 :initialize.0:c
++   33 set .conv*7 null
+    34 setaddr *tmp1 *label15
+-    * set :initialize.0:c .conv*8
+    35 jump *label4 always
+    36 multilabel *label15 marker0
+-    * set .conv*8 :initialize.0:c
++   37 set .conv*8 null
+    38 setaddr *tmp1 *label16
+-    * set :initialize.0:c .conv*9
+    39 jump *label4 always
+    40 multilabel *label16 marker0
+-    * set .conv*9 :initialize.0:c
++   41 set .conv*9 null
+    42 setaddr *tmp1 *label17
+-    * set :initialize.0:c .conv*10
+    43 jump *label4 always
+    44 multilabel *label17 marker0
+-    * set .conv*10 :initialize.0:c
++   45 set .conv*10 null
+    46 setaddr *tmp1 *label18
+-    * set :initialize.0:c .conv*11
+    47 jump *label4 always
+    48 multilabel *label18 marker0
+-    * set .conv*11 :initialize.0:c
++   49 set .conv*11 null
+    50 setaddr *tmp1 *label19
+-    * set :initialize.0:c .conv*12
+    51 jump *label4 always
+    52 multilabel *label19 marker0
+-    * set .conv*12 :initialize.0:c
++   53 set .conv*12 null
+    54 setaddr *tmp1 *label20
+-    * set :initialize.0:c .conv*13
+    55 jump *label4 always
+    56 multilabel *label20 marker0
+-    * set .conv*13 :initialize.0:c
++   57 set .conv*13 null
+    58 setaddr *tmp1 *label21
+-    * set :initialize.0:c .conv*14
+    59 jump *label4 always
+    60 multilabel *label21 marker0
+-    * set .conv*14 :initialize.0:c
++   61 set .conv*14 null
+    62 setaddr *tmp1 *label22
+-    * set :initialize.0:c .conv*15
+    63 label *label4
+    64 set :initialize.0:c null
+    65 label *label5
+    66 multijump *tmp1 0 0 marker0
+    67 multilabel *label22 marker0
+-    * set .conv*15 :initialize.0:c
++   68 set .conv*15 null
+    69 label *label6
+    70 set .memory null
+    71 set .found 0
+ 
+   142 set *tmp21 :i
+   143 readarr *tmp24 .conv[] :i
+   144 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] *tmp21
++  145 writearr *tmp25 .state1[] :i
+   146 set *tmp26 :i
+   147 set *tmp28 :i
+-    * readarr *tmp27 .state1[] *tmp26
+-    * readarr *tmp29 .state2[] *tmp28
++  148 readarr *tmp27 .state1[] :i
++  149 readarr *tmp29 .state2[] :i
+   150 jump *label45 greaterThanEq *tmp27 *tmp29
+   151 op add .total .total 10
+   152 label *label45
+ 
+   176 set *tmp35 :i.1
+   177 readarr *tmp38 .conv[] :i.1
+   178 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] *tmp35
++  179 writearr *tmp39 .state2[] :i.1
+   180 set *tmp40 :i.1
+   181 set *tmp42 :i.1
+-    * readarr *tmp41 .state2[] *tmp40
+-    * readarr *tmp43 .state1[] *tmp42
++  182 readarr *tmp41 .state2[] :i.1
++  183 readarr *tmp43 .state1[] :i.1
+   184 jump *label50 greaterThanEq *tmp41 *tmp43
+   185 op add .total .total 10
+   186 label *label50
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-7 instructions):
+ 
+    61 set .conv*14 null
+    62 setaddr *tmp1 *label22
+    63 label *label4
+-    * set :initialize.0:c null
+    64 label *label5
+    65 multijump *tmp1 0 0 marker0
+    66 multilabel *label22 marker0
+ 
+   138 set :i 0
+   139 label *label42
+   140 jump *label44 greaterThanEq :i 16
+-    * set *tmp21 :i
+   141 readarr *tmp24 .conv[] :i
+   142 sensor *tmp25 *tmp24 @totalItems
+   143 writearr *tmp25 .state1[] :i
+-    * set *tmp26 :i
+-    * set *tmp28 :i
+   144 readarr *tmp27 .state1[] :i
+   145 readarr *tmp29 .state2[] :i
+   146 jump *label45 greaterThanEq *tmp27 *tmp29
+ 
+   169 set :i.1 0
+   170 label *label47
+   171 jump *label49 greaterThanEq :i.1 16
+-    * set *tmp35 :i.1
+   172 readarr *tmp38 .conv[] :i.1
+   173 sensor *tmp39 *tmp38 @totalItems
+   174 writearr *tmp39 .state2[] :i.1
+-    * set *tmp40 :i.1
+-    * set *tmp42 :i.1
+   175 readarr *tmp41 .state2[] :i.1
+   176 readarr *tmp43 .state1[] :i.1
+   177 jump *label50 greaterThanEq *tmp41 *tmp43
+
+Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1 (-2 instructions):
+ 
+    72 op sub :initialize.0:n .links 1
+    73 label *label23
+    74 jump *label25 lessThan :initialize.0:n 0
++   75 label *label54
+    76 getlink :initialize.0:block :initialize.0:n
+    77 sensor *tmp5 :initialize.0:block @type
+    78 jump *label28 equal *tmp5 @memory-cell
+ 
+    92 label *label26
+    93 label *label24
+    94 op sub :initialize.0:n :initialize.0:n 1
+-    * jump *label23 always
++   95 jump *label54 greaterThanEq :initialize.0:n 0
+    96 label *label25
+    97 jump *label33 notEqual .found 0
+    98 print "[gold]Item Counter[], version [gold]1.0[]"
+ 
+   138 set :start @time
+   139 set :i 0
+   140 label *label42
+-    * jump *label44 greaterThanEq :i 16
++  141 label *label55
+   142 readarr *tmp24 .conv[] :i
+   143 sensor *tmp25 *tmp24 @totalItems
+   144 writearr *tmp25 .state1[] :i
+ 
+   150 label *label46
+   151 label *label43
+   152 op add :i :i 1
+-    * jump *label42 always
++  153 jump *label55 lessThan :i 16
+   154 label *label44
+   155 write .total .memory 0
+   156 print "[gold]Item Counter[], version [gold]1.0[]"
+ 
+   169 print "\n"
+   170 set :i.1 0
+   171 label *label47
+-    * jump *label49 greaterThanEq :i.1 16
++  172 label *label56
+   173 readarr *tmp38 .conv[] :i.1
+   174 sensor *tmp39 *tmp38 @totalItems
+   175 writearr *tmp39 .state2[] :i.1
+ 
+   181 label *label51
+   182 label *label48
+   183 op add :i.1 :i.1 1
+-    * jump *label47 always
++  184 jump *label56 lessThan :i.1 16
+   185 label *label49
+   186 op sub *tmp47 @time :start
+   187 op idiv *tmp49 *tmp47 2
+
+Modifications by Unroll iteration loop at line 30:9 (-32 instructions):
+     0 read .total .memory 0
+     1 label *label1
+-    * setaddr *tmp1 *label7
+-    * jump *label4 always
+-    * multilabel *label7 marker0
+-    * set .conv*0 null
+-    * setaddr *tmp1 *label8
+-    * jump *label4 always
+-    * multilabel *label8 marker0
+-    * set .conv*1 null
+-    * setaddr *tmp1 *label9
+-    * jump *label4 always
+-    * multilabel *label9 marker0
+-    * set .conv*2 null
+-    * setaddr *tmp1 *label10
+-    * jump *label4 always
+-    * multilabel *label10 marker0
+-    * set .conv*3 null
+-    * setaddr *tmp1 *label11
+-    * jump *label4 always
+-    * multilabel *label11 marker0
+-    * set .conv*4 null
+-    * setaddr *tmp1 *label12
+-    * jump *label4 always
+-    * multilabel *label12 marker0
+-    * set .conv*5 null
+-    * setaddr *tmp1 *label13
+-    * jump *label4 always
+-    * multilabel *label13 marker0
+-    * set .conv*6 null
+-    * setaddr *tmp1 *label14
+-    * jump *label4 always
+-    * multilabel *label14 marker0
+-    * set .conv*7 null
+-    * setaddr *tmp1 *label15
+-    * jump *label4 always
+-    * multilabel *label15 marker0
+-    * set .conv*8 null
+-    * setaddr *tmp1 *label16
+-    * jump *label4 always
+-    * multilabel *label16 marker0
+-    * set .conv*9 null
+-    * setaddr *tmp1 *label17
+-    * jump *label4 always
+-    * multilabel *label17 marker0
+-    * set .conv*10 null
+-    * setaddr *tmp1 *label18
+-    * jump *label4 always
+-    * multilabel *label18 marker0
+-    * set .conv*11 null
+-    * setaddr *tmp1 *label19
+-    * jump *label4 always
+-    * multilabel *label19 marker0
+-    * set .conv*12 null
+-    * setaddr *tmp1 *label20
+-    * jump *label4 always
+-    * multilabel *label20 marker0
+-    * set .conv*13 null
+-    * setaddr *tmp1 *label21
+-    * jump *label4 always
+-    * multilabel *label21 marker0
+-    * set .conv*14 null
+-    * setaddr *tmp1 *label22
+-    * label *label4
+-    * label *label5
+-    * multijump *tmp1 0 0 marker0
+-    * multilabel *label22 marker0
+-    * set .conv*15 null
+-    * label *label6
++    2 label *label57
++    3 label *label58
++    4 set .conv*0 null
++    5 label *label61
++    6 label *label62
++    7 set .conv*1 null
++    8 label *label65
++    9 label *label66
++   10 set .conv*2 null
++   11 label *label69
++   12 label *label70
++   13 set .conv*3 null
++   14 label *label73
++   15 label *label74
++   16 set .conv*4 null
++   17 label *label77
++   18 label *label78
++   19 set .conv*5 null
++   20 label *label81
++   21 label *label82
++   22 set .conv*6 null
++   23 label *label85
++   24 label *label86
++   25 set .conv*7 null
++   26 label *label89
++   27 label *label90
++   28 set .conv*8 null
++   29 label *label93
++   30 label *label94
++   31 set .conv*9 null
++   32 label *label97
++   33 label *label98
++   34 set .conv*10 null
++   35 label *label101
++   36 label *label102
++   37 set .conv*11 null
++   38 label *label105
++   39 label *label106
++   40 set .conv*12 null
++   41 label *label109
++   42 label *label110
++   43 set .conv*13 null
++   44 label *label113
++   45 label *label114
++   46 set .conv*14 null
++   47 label *label117
++   48 label *label118
++   49 set .conv*15 null
++   50 label *label6
+    51 set .memory null
+    52 set .found 0
+    53 set .links @links
+
+Modifications by Unroll loop at line 70:9 (+299 instructions):
+ 
+   118 sensor *tmp19 switch1 @enabled
+   119 jump *label41 notEqual *tmp19 false
+   120 set :start @time
+-    * set :i 0
+-    * label *label42
+-    * label *label55
+-    * readarr *tmp24 .conv[] :i
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
+-    * jump *label45 greaterThanEq *tmp27 *tmp29
+-    * op add .total .total 10
+-    * label *label45
+-    * label *label46
+-    * label *label43
+-    * op add :i :i 1
+-    * jump *label55 lessThan :i 16
+-    * label *label44
++  121 set :i 0
++  122 label *label122
++  123 label *label123
++  124 readarr *tmp24 .conv[] :i
++  125 sensor *tmp25 *tmp24 @totalItems
++  126 writearr *tmp25 .state1[] :i
++  127 readarr *tmp27 .state1[] :i
++  128 readarr *tmp29 .state2[] :i
++  129 jump *label124 greaterThanEq *tmp27 *tmp29
++  130 op add .total .total 10
++  131 label *label124
++  132 label *label125
++  133 label *label126
++  134 op add :i :i 1
++  135 label *label127
++  136 readarr *tmp24 .conv[] :i
++  137 sensor *tmp25 *tmp24 @totalItems
++  138 writearr *tmp25 .state1[] :i
++  139 readarr *tmp27 .state1[] :i
++  140 readarr *tmp29 .state2[] :i
++  141 jump *label128 greaterThanEq *tmp27 *tmp29
++  142 op add .total .total 10
++  143 label *label128
++  144 label *label129
++  145 label *label130
++  146 op add :i :i 1
++  147 label *label131
++  148 readarr *tmp24 .conv[] :i
++  149 sensor *tmp25 *tmp24 @totalItems
++  150 writearr *tmp25 .state1[] :i
++  151 readarr *tmp27 .state1[] :i
++  152 readarr *tmp29 .state2[] :i
++  153 jump *label132 greaterThanEq *tmp27 *tmp29
++  154 op add .total .total 10
++  155 label *label132
++  156 label *label133
++  157 label *label134
++  158 op add :i :i 1
++  159 label *label135
++  160 readarr *tmp24 .conv[] :i
++  161 sensor *tmp25 *tmp24 @totalItems
++  162 writearr *tmp25 .state1[] :i
++  163 readarr *tmp27 .state1[] :i
++  164 readarr *tmp29 .state2[] :i
++  165 jump *label136 greaterThanEq *tmp27 *tmp29
++  166 op add .total .total 10
++  167 label *label136
++  168 label *label137
++  169 label *label138
++  170 op add :i :i 1
++  171 label *label139
++  172 readarr *tmp24 .conv[] :i
++  173 sensor *tmp25 *tmp24 @totalItems
++  174 writearr *tmp25 .state1[] :i
++  175 readarr *tmp27 .state1[] :i
++  176 readarr *tmp29 .state2[] :i
++  177 jump *label140 greaterThanEq *tmp27 *tmp29
++  178 op add .total .total 10
++  179 label *label140
++  180 label *label141
++  181 label *label142
++  182 op add :i :i 1
++  183 label *label143
++  184 readarr *tmp24 .conv[] :i
++  185 sensor *tmp25 *tmp24 @totalItems
++  186 writearr *tmp25 .state1[] :i
++  187 readarr *tmp27 .state1[] :i
++  188 readarr *tmp29 .state2[] :i
++  189 jump *label144 greaterThanEq *tmp27 *tmp29
++  190 op add .total .total 10
++  191 label *label144
++  192 label *label145
++  193 label *label146
++  194 op add :i :i 1
++  195 label *label147
++  196 readarr *tmp24 .conv[] :i
++  197 sensor *tmp25 *tmp24 @totalItems
++  198 writearr *tmp25 .state1[] :i
++  199 readarr *tmp27 .state1[] :i
++  200 readarr *tmp29 .state2[] :i
++  201 jump *label148 greaterThanEq *tmp27 *tmp29
++  202 op add .total .total 10
++  203 label *label148
++  204 label *label149
++  205 label *label150
++  206 op add :i :i 1
++  207 label *label151
++  208 readarr *tmp24 .conv[] :i
++  209 sensor *tmp25 *tmp24 @totalItems
++  210 writearr *tmp25 .state1[] :i
++  211 readarr *tmp27 .state1[] :i
++  212 readarr *tmp29 .state2[] :i
++  213 jump *label152 greaterThanEq *tmp27 *tmp29
++  214 op add .total .total 10
++  215 label *label152
++  216 label *label153
++  217 label *label154
++  218 op add :i :i 1
++  219 label *label155
++  220 readarr *tmp24 .conv[] :i
++  221 sensor *tmp25 *tmp24 @totalItems
++  222 writearr *tmp25 .state1[] :i
++  223 readarr *tmp27 .state1[] :i
++  224 readarr *tmp29 .state2[] :i
++  225 jump *label156 greaterThanEq *tmp27 *tmp29
++  226 op add .total .total 10
++  227 label *label156
++  228 label *label157
++  229 label *label158
++  230 op add :i :i 1
++  231 label *label159
++  232 readarr *tmp24 .conv[] :i
++  233 sensor *tmp25 *tmp24 @totalItems
++  234 writearr *tmp25 .state1[] :i
++  235 readarr *tmp27 .state1[] :i
++  236 readarr *tmp29 .state2[] :i
++  237 jump *label160 greaterThanEq *tmp27 *tmp29
++  238 op add .total .total 10
++  239 label *label160
++  240 label *label161
++  241 label *label162
++  242 op add :i :i 1
++  243 label *label163
++  244 readarr *tmp24 .conv[] :i
++  245 sensor *tmp25 *tmp24 @totalItems
++  246 writearr *tmp25 .state1[] :i
++  247 readarr *tmp27 .state1[] :i
++  248 readarr *tmp29 .state2[] :i
++  249 jump *label164 greaterThanEq *tmp27 *tmp29
++  250 op add .total .total 10
++  251 label *label164
++  252 label *label165
++  253 label *label166
++  254 op add :i :i 1
++  255 label *label167
++  256 readarr *tmp24 .conv[] :i
++  257 sensor *tmp25 *tmp24 @totalItems
++  258 writearr *tmp25 .state1[] :i
++  259 readarr *tmp27 .state1[] :i
++  260 readarr *tmp29 .state2[] :i
++  261 jump *label168 greaterThanEq *tmp27 *tmp29
++  262 op add .total .total 10
++  263 label *label168
++  264 label *label169
++  265 label *label170
++  266 op add :i :i 1
++  267 label *label171
++  268 readarr *tmp24 .conv[] :i
++  269 sensor *tmp25 *tmp24 @totalItems
++  270 writearr *tmp25 .state1[] :i
++  271 readarr *tmp27 .state1[] :i
++  272 readarr *tmp29 .state2[] :i
++  273 jump *label172 greaterThanEq *tmp27 *tmp29
++  274 op add .total .total 10
++  275 label *label172
++  276 label *label173
++  277 label *label174
++  278 op add :i :i 1
++  279 label *label175
++  280 readarr *tmp24 .conv[] :i
++  281 sensor *tmp25 *tmp24 @totalItems
++  282 writearr *tmp25 .state1[] :i
++  283 readarr *tmp27 .state1[] :i
++  284 readarr *tmp29 .state2[] :i
++  285 jump *label176 greaterThanEq *tmp27 *tmp29
++  286 op add .total .total 10
++  287 label *label176
++  288 label *label177
++  289 label *label178
++  290 op add :i :i 1
++  291 label *label179
++  292 readarr *tmp24 .conv[] :i
++  293 sensor *tmp25 *tmp24 @totalItems
++  294 writearr *tmp25 .state1[] :i
++  295 readarr *tmp27 .state1[] :i
++  296 readarr *tmp29 .state2[] :i
++  297 jump *label180 greaterThanEq *tmp27 *tmp29
++  298 op add .total .total 10
++  299 label *label180
++  300 label *label181
++  301 label *label182
++  302 op add :i :i 1
++  303 label *label183
++  304 readarr *tmp24 .conv[] :i
++  305 sensor *tmp25 *tmp24 @totalItems
++  306 writearr *tmp25 .state1[] :i
++  307 readarr *tmp27 .state1[] :i
++  308 readarr *tmp29 .state2[] :i
++  309 jump *label184 greaterThanEq *tmp27 *tmp29
++  310 op add .total .total 10
++  311 label *label184
++  312 label *label185
++  313 label *label186
++  314 op add :i :i 1
++  315 label *label44
+   316 write .total .memory 0
+   317 print "[gold]Item Counter[], version [gold]1.0[]"
+   318 print " "
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
  
-    36 label *label2
-    37 read :total .MEMORY 0
-    38 set .BATCH_DURATION 2000
--    * op max *tmp9 .MIN_BATCH 10
--    * op idiv *tmp10 *tmp9 10
--    * op mul .MIN_BATCH *tmp10 10
--    * op max *tmp12 .MAX_BATCH .MIN_BATCH
--    * op idiv *tmp13 *tmp12 10
--    * op mul .MAX_BATCH *tmp13 10
-+   39 op max *tmp9 10 10
-+   40 op idiv *tmp10 10 10
-+   41 op mul .MIN_BATCH 1 10
-+   42 op max *tmp12 1000 10
-+   43 op idiv *tmp13 1000 10
-+   44 op mul .MAX_BATCH 100 10
-    45 set .BATCH_STEP 10
--    * set :batch .MIN_BATCH
-+   46 set :batch 10
-    47 set :startTime @time
-    48 set :ratePerMin 0
--    * op add :limit :total :batch
-+   49 op add :limit :total .MIN_BATCH
-    50 control enabled switch1 0
-    51 label *label13
-    52 sensor *tmp18 switch1 @enabled
- 
-    60 sensor *tmp23 :block @type
-    61 jump *label19 notEqual *tmp23 @plastanium-conveyor
-    62 set *tmp26 :n
--    * read :prev .MEMORY *tmp26
-+   63 read :prev .MEMORY :n
-    64 sensor :curr :block @totalItems
-    65 set *tmp29 :n
--    * write :curr .MEMORY *tmp29
-+   66 write :curr .MEMORY :n
-    67 jump *label21 greaterThanEq :curr :prev
-    68 op add :total :total 10
-    69 write :total .MEMORY 0
- 
-    74 op div :rate :batch :duration
-    75 set *tmp39 :lastCell
-    76 op mul *tmp41 :rate 16.666666666666668
--    * write *tmp41 .MEMORY *tmp39
-+   77 write *tmp41 .MEMORY :lastCell
-    78 op idiv :ratePerMin :rate 0.000016666666666666667
--    * jump *label25 greaterThan :duration .BATCH_DURATION
--    * op add *tmp46 :batch .BATCH_STEP
--    * op min :batch *tmp46 .MAX_BATCH
-+   79 jump *label25 greaterThan :duration 2000
-+   80 op add *tmp46 :batch 10
-+   81 op min :batch *tmp46 1000
-    82 label *label25
-    83 label *label26
-    84 label *label23
- 
-    95 jump *label27 lessThan :elapsed 10000
-    96 op idiv *tmp52 :batch 90
-    97 op mul *tmp53 *tmp52 10
--    * op max :batch *tmp53 .MIN_BATCH
-+   98 op max :batch *tmp53 10
-    99 set *tmp55 :lastCell
--    * write 0 .MEMORY *tmp55
-+  100 write 0 .MEMORY :lastCell
-   101 set :ratePerMin 0
-   102 set :startTime @time
-   103 label *label27
- 
-   137 label *label15
-   138 control enabled switch1 0
-   139 set *tmp61 :lastCell
--    * write 0 .MEMORY *tmp61
-+  140 write 0 .MEMORY :lastCell
-   141 set :n 0
-   142 label *label29
-   143 jump *label31 greaterThanEq :n @links
-   144 set *tmp64 :n
--    * write 0 .MEMORY *tmp64
-+  145 write 0 .MEMORY :n
-   146 op add :n :n 1
-   147 label *label30
-   148 jump *label29 always
+   121 set :i 0
+   122 label *label122
+   123 label *label123
+-    * readarr *tmp24 .conv[] :i
++  124 readarr *tmp24 .conv[] 0
+   125 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  126 writearr *tmp25 .state1[] 0
++  127 readarr *tmp27 .state1[] 0
++  128 readarr *tmp29 .state2[] 0
+   129 jump *label124 greaterThanEq *tmp27 *tmp29
+   130 op add .total .total 10
+   131 label *label124
+   132 label *label125
+   133 label *label126
+-    * op add :i :i 1
++  134 op add :i 0 1
+   135 label *label127
+-    * readarr *tmp24 .conv[] :i
++  136 readarr *tmp24 .conv[] 1
+   137 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  138 writearr *tmp25 .state1[] 1
++  139 readarr *tmp27 .state1[] 1
++  140 readarr *tmp29 .state2[] 1
+   141 jump *label128 greaterThanEq *tmp27 *tmp29
+   142 op add .total .total 10
+   143 label *label128
+   144 label *label129
+   145 label *label130
+-    * op add :i :i 1
++  146 op add :i 1 1
+   147 label *label131
+-    * readarr *tmp24 .conv[] :i
++  148 readarr *tmp24 .conv[] 2
+   149 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  150 writearr *tmp25 .state1[] 2
++  151 readarr *tmp27 .state1[] 2
++  152 readarr *tmp29 .state2[] 2
+   153 jump *label132 greaterThanEq *tmp27 *tmp29
+   154 op add .total .total 10
+   155 label *label132
+   156 label *label133
+   157 label *label134
+-    * op add :i :i 1
++  158 op add :i 2 1
+   159 label *label135
+-    * readarr *tmp24 .conv[] :i
++  160 readarr *tmp24 .conv[] 3
+   161 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  162 writearr *tmp25 .state1[] 3
++  163 readarr *tmp27 .state1[] 3
++  164 readarr *tmp29 .state2[] 3
+   165 jump *label136 greaterThanEq *tmp27 *tmp29
+   166 op add .total .total 10
+   167 label *label136
+   168 label *label137
+   169 label *label138
+-    * op add :i :i 1
++  170 op add :i 3 1
+   171 label *label139
+-    * readarr *tmp24 .conv[] :i
++  172 readarr *tmp24 .conv[] 4
+   173 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  174 writearr *tmp25 .state1[] 4
++  175 readarr *tmp27 .state1[] 4
++  176 readarr *tmp29 .state2[] 4
+   177 jump *label140 greaterThanEq *tmp27 *tmp29
+   178 op add .total .total 10
+   179 label *label140
+   180 label *label141
+   181 label *label142
+-    * op add :i :i 1
++  182 op add :i 4 1
+   183 label *label143
+-    * readarr *tmp24 .conv[] :i
++  184 readarr *tmp24 .conv[] 5
+   185 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  186 writearr *tmp25 .state1[] 5
++  187 readarr *tmp27 .state1[] 5
++  188 readarr *tmp29 .state2[] 5
+   189 jump *label144 greaterThanEq *tmp27 *tmp29
+   190 op add .total .total 10
+   191 label *label144
+   192 label *label145
+   193 label *label146
+-    * op add :i :i 1
++  194 op add :i 5 1
+   195 label *label147
+-    * readarr *tmp24 .conv[] :i
++  196 readarr *tmp24 .conv[] 6
+   197 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  198 writearr *tmp25 .state1[] 6
++  199 readarr *tmp27 .state1[] 6
++  200 readarr *tmp29 .state2[] 6
+   201 jump *label148 greaterThanEq *tmp27 *tmp29
+   202 op add .total .total 10
+   203 label *label148
+   204 label *label149
+   205 label *label150
+-    * op add :i :i 1
++  206 op add :i 6 1
+   207 label *label151
+-    * readarr *tmp24 .conv[] :i
++  208 readarr *tmp24 .conv[] 7
+   209 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  210 writearr *tmp25 .state1[] 7
++  211 readarr *tmp27 .state1[] 7
++  212 readarr *tmp29 .state2[] 7
+   213 jump *label152 greaterThanEq *tmp27 *tmp29
+   214 op add .total .total 10
+   215 label *label152
+   216 label *label153
+   217 label *label154
+-    * op add :i :i 1
++  218 op add :i 7 1
+   219 label *label155
+-    * readarr *tmp24 .conv[] :i
++  220 readarr *tmp24 .conv[] 8
+   221 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  222 writearr *tmp25 .state1[] 8
++  223 readarr *tmp27 .state1[] 8
++  224 readarr *tmp29 .state2[] 8
+   225 jump *label156 greaterThanEq *tmp27 *tmp29
+   226 op add .total .total 10
+   227 label *label156
+   228 label *label157
+   229 label *label158
+-    * op add :i :i 1
++  230 op add :i 8 1
+   231 label *label159
+-    * readarr *tmp24 .conv[] :i
++  232 readarr *tmp24 .conv[] 9
+   233 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  234 writearr *tmp25 .state1[] 9
++  235 readarr *tmp27 .state1[] 9
++  236 readarr *tmp29 .state2[] 9
+   237 jump *label160 greaterThanEq *tmp27 *tmp29
+   238 op add .total .total 10
+   239 label *label160
+   240 label *label161
+   241 label *label162
+-    * op add :i :i 1
++  242 op add :i 9 1
+   243 label *label163
+-    * readarr *tmp24 .conv[] :i
++  244 readarr *tmp24 .conv[] 10
+   245 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  246 writearr *tmp25 .state1[] 10
++  247 readarr *tmp27 .state1[] 10
++  248 readarr *tmp29 .state2[] 10
+   249 jump *label164 greaterThanEq *tmp27 *tmp29
+   250 op add .total .total 10
+   251 label *label164
+   252 label *label165
+   253 label *label166
+-    * op add :i :i 1
++  254 op add :i 10 1
+   255 label *label167
+-    * readarr *tmp24 .conv[] :i
++  256 readarr *tmp24 .conv[] 11
+   257 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  258 writearr *tmp25 .state1[] 11
++  259 readarr *tmp27 .state1[] 11
++  260 readarr *tmp29 .state2[] 11
+   261 jump *label168 greaterThanEq *tmp27 *tmp29
+   262 op add .total .total 10
+   263 label *label168
+   264 label *label169
+   265 label *label170
+-    * op add :i :i 1
++  266 op add :i 11 1
+   267 label *label171
+-    * readarr *tmp24 .conv[] :i
++  268 readarr *tmp24 .conv[] 12
+   269 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  270 writearr *tmp25 .state1[] 12
++  271 readarr *tmp27 .state1[] 12
++  272 readarr *tmp29 .state2[] 12
+   273 jump *label172 greaterThanEq *tmp27 *tmp29
+   274 op add .total .total 10
+   275 label *label172
+   276 label *label173
+   277 label *label174
+-    * op add :i :i 1
++  278 op add :i 12 1
+   279 label *label175
+-    * readarr *tmp24 .conv[] :i
++  280 readarr *tmp24 .conv[] 13
+   281 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  282 writearr *tmp25 .state1[] 13
++  283 readarr *tmp27 .state1[] 13
++  284 readarr *tmp29 .state2[] 13
+   285 jump *label176 greaterThanEq *tmp27 *tmp29
+   286 op add .total .total 10
+   287 label *label176
+   288 label *label177
+   289 label *label178
+-    * op add :i :i 1
++  290 op add :i 13 1
+   291 label *label179
+-    * readarr *tmp24 .conv[] :i
++  292 readarr *tmp24 .conv[] 14
+   293 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  294 writearr *tmp25 .state1[] 14
++  295 readarr *tmp27 .state1[] 14
++  296 readarr *tmp29 .state2[] 14
+   297 jump *label180 greaterThanEq *tmp27 *tmp29
+   298 op add .total .total 10
+   299 label *label180
+   300 label *label181
+   301 label *label182
+-    * op add :i :i 1
++  302 op add :i 14 1
+   303 label *label183
+-    * readarr *tmp24 .conv[] :i
++  304 readarr *tmp24 .conv[] 15
+   305 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] :i
+-    * readarr *tmp27 .state1[] :i
+-    * readarr *tmp29 .state2[] :i
++  306 writearr *tmp25 .state1[] 15
++  307 readarr *tmp27 .state1[] 15
++  308 readarr *tmp29 .state2[] 15
+   309 jump *label184 greaterThanEq *tmp27 *tmp29
+   310 op add .total .total 10
+   311 label *label184
+   312 label *label185
+   313 label *label186
+-    * op add :i :i 1
++  314 op add :i 15 1
+   315 label *label44
+   316 write .total .memory 0
+   317 print "[gold]Item Counter[], version [gold]1.0[]"
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-15 instructions):
--    * set .MIN_BATCH 10
--    * set .MAX_BATCH 1000
-     0 set :lastCell 0
-     1 label *label0
-     2 set .MEMORY null
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-17 instructions):
  
-    33 jump *label0 equal .MEMORY null
-    34 label *label2
-    35 read :total .MEMORY 0
--    * set .BATCH_DURATION 2000
--    * op max *tmp9 10 10
--    * op idiv *tmp10 10 10
-    36 op mul .MIN_BATCH 1 10
--    * op max *tmp12 1000 10
--    * op idiv *tmp13 1000 10
--    * op mul .MAX_BATCH 100 10
--    * set .BATCH_STEP 10
-    37 set :batch 10
-    38 set :startTime @time
-    39 set :ratePerMin 0
--    * op add :limit :total .MIN_BATCH
-+   40 op add :limit :total 10
-    41 control enabled switch1 0
-    42 label *label13
-    43 sensor *tmp18 switch1 @enabled
+   118 sensor *tmp19 switch1 @enabled
+   119 jump *label41 notEqual *tmp19 false
+   120 set :start @time
+-    * set :i 0
+   121 label *label122
+   122 label *label123
+   123 readarr *tmp24 .conv[] 0
  
-    50 op add :n :n 1
-    51 sensor *tmp23 :block @type
-    52 jump *label19 notEqual *tmp23 @plastanium-conveyor
--    * set *tmp26 :n
-    53 read :prev .MEMORY :n
-    54 sensor :curr :block @totalItems
--    * set *tmp29 :n
-    55 write :curr .MEMORY :n
-    56 jump *label21 greaterThanEq :curr :prev
-    57 op add :total :total 10
+   130 label *label124
+   131 label *label125
+   132 label *label126
+-    * op add :i 0 1
+   133 label *label127
+   134 readarr *tmp24 .conv[] 1
+   135 sensor *tmp25 *tmp24 @totalItems
  
-    61 set :startTime @time
-    62 op add :limit :limit :batch
-    63 op div :rate :batch :duration
--    * set *tmp39 :lastCell
-    64 op mul *tmp41 :rate 16.666666666666668
-    65 write *tmp41 .MEMORY :lastCell
-    66 op idiv :ratePerMin :rate 0.000016666666666666667
+   141 label *label128
+   142 label *label129
+   143 label *label130
+-    * op add :i 1 1
+   144 label *label131
+   145 readarr *tmp24 .conv[] 2
+   146 sensor *tmp25 *tmp24 @totalItems
  
-    84 op idiv *tmp52 :batch 90
-    85 op mul *tmp53 *tmp52 10
-    86 op max :batch *tmp53 10
--    * set *tmp55 :lastCell
-    87 write 0 .MEMORY :lastCell
-    88 set :ratePerMin 0
-    89 set :startTime @time
+   152 label *label132
+   153 label *label133
+   154 label *label134
+-    * op add :i 2 1
+   155 label *label135
+   156 readarr *tmp24 .conv[] 3
+   157 sensor *tmp25 *tmp24 @totalItems
  
-   123 jump *label13 always
-   124 label *label15
-   125 control enabled switch1 0
--    * set *tmp61 :lastCell
-   126 write 0 .MEMORY :lastCell
-   127 set :n 0
-   128 label *label29
-   129 jump *label31 greaterThanEq :n @links
--    * set *tmp64 :n
-   130 write 0 .MEMORY :n
-   131 op add :n :n 1
-   132 label *label30
+   163 label *label136
+   164 label *label137
+   165 label *label138
+-    * op add :i 3 1
+   166 label *label139
+   167 readarr *tmp24 .conv[] 4
+   168 sensor *tmp25 *tmp24 @totalItems
+ 
+   174 label *label140
+   175 label *label141
+   176 label *label142
+-    * op add :i 4 1
+   177 label *label143
+   178 readarr *tmp24 .conv[] 5
+   179 sensor *tmp25 *tmp24 @totalItems
+ 
+   185 label *label144
+   186 label *label145
+   187 label *label146
+-    * op add :i 5 1
+   188 label *label147
+   189 readarr *tmp24 .conv[] 6
+   190 sensor *tmp25 *tmp24 @totalItems
+ 
+   196 label *label148
+   197 label *label149
+   198 label *label150
+-    * op add :i 6 1
+   199 label *label151
+   200 readarr *tmp24 .conv[] 7
+   201 sensor *tmp25 *tmp24 @totalItems
+ 
+   207 label *label152
+   208 label *label153
+   209 label *label154
+-    * op add :i 7 1
+   210 label *label155
+   211 readarr *tmp24 .conv[] 8
+   212 sensor *tmp25 *tmp24 @totalItems
+ 
+   218 label *label156
+   219 label *label157
+   220 label *label158
+-    * op add :i 8 1
+   221 label *label159
+   222 readarr *tmp24 .conv[] 9
+   223 sensor *tmp25 *tmp24 @totalItems
+ 
+   229 label *label160
+   230 label *label161
+   231 label *label162
+-    * op add :i 9 1
+   232 label *label163
+   233 readarr *tmp24 .conv[] 10
+   234 sensor *tmp25 *tmp24 @totalItems
+ 
+   240 label *label164
+   241 label *label165
+   242 label *label166
+-    * op add :i 10 1
+   243 label *label167
+   244 readarr *tmp24 .conv[] 11
+   245 sensor *tmp25 *tmp24 @totalItems
+ 
+   251 label *label168
+   252 label *label169
+   253 label *label170
+-    * op add :i 11 1
+   254 label *label171
+   255 readarr *tmp24 .conv[] 12
+   256 sensor *tmp25 *tmp24 @totalItems
+ 
+   262 label *label172
+   263 label *label173
+   264 label *label174
+-    * op add :i 12 1
+   265 label *label175
+   266 readarr *tmp24 .conv[] 13
+   267 sensor *tmp25 *tmp24 @totalItems
+ 
+   273 label *label176
+   274 label *label177
+   275 label *label178
+-    * op add :i 13 1
+   276 label *label179
+   277 readarr *tmp24 .conv[] 14
+   278 sensor *tmp25 *tmp24 @totalItems
+ 
+   284 label *label180
+   285 label *label181
+   286 label *label182
+-    * op add :i 14 1
+   287 label *label183
+   288 readarr *tmp24 .conv[] 15
+   289 sensor *tmp25 *tmp24 @totalItems
+ 
+   295 label *label184
+   296 label *label185
+   297 label *label186
+-    * op add :i 15 1
+   298 label *label44
+   299 write .total .memory 0
+   300 print "[gold]Item Counter[], version [gold]1.0[]"
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-1 instructions):
+Modifications by Unroll loop at line 83:9 (+299 instructions):
  
-    33 jump *label0 equal .MEMORY null
-    34 label *label2
-    35 read :total .MEMORY 0
--    * op mul .MIN_BATCH 1 10
-    36 set :batch 10
-    37 set :startTime @time
-    38 set :ratePerMin 0
-
-Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
- 
-     4 set :n @links
-     5 label *label3
-     6 jump *label5 lessThanEq :n 0
-+    7 label *label32
-     8 op sub :n :n 1
-     9 getlink :block :n
-    10 sensor *tmp5 :block @type
- 
-    26 label *label11
-    27 label *label6
-    28 label *label4
--    * jump *label3 always
-+   29 jump *label32 greaterThan :n 0
-    30 label *label5
-    31 print "Item Counter\n[salmon]No memory attached."
-    32 printflush message1
- 
-    46 set :n .FIRST_BLOCK
-    47 label *label16
-    48 jump *label18 greaterThanEq :n @links
-+   49 label *label33
-    50 getlink :block :n
-    51 op add :n :n 1
-    52 sensor *tmp23 :block @type
- 
-    77 label *label19
-    78 label *label20
-    79 label *label17
--    * jump *label16 always
-+   80 jump *label33 lessThan :n @links
-    81 label *label18
-    82 op sub *tmp48 @time :startTime
-    83 op floor :elapsed *tmp48
- 
-   128 set :n 0
-   129 label *label29
-   130 jump *label31 greaterThanEq :n @links
-+  131 label *label34
-   132 write 0 .MEMORY :n
-   133 op add :n :n 1
-   134 label *label30
--    * jump *label29 always
-+  135 jump *label34 lessThan :n @links
-   136 label *label31
-   137 end
-
-Modifications by Replicate loop condition at line 39:1 (+1 instructions):
- 
-    42 label *label13
-    43 sensor *tmp18 switch1 @enabled
-    44 jump *label15 notEqual *tmp18 0
-+   45 label *label35
-    46 set :start @time
-    47 set :n .FIRST_BLOCK
-    48 label *label16
- 
-   122 print "\n"
-   123 printflush message1
-   124 label *label14
--    * jump *label13 always
-+  125 sensor *tmp18 switch1 @enabled
-+  126 jump *label35 equal *tmp18 0
-   127 label *label15
-   128 control enabled switch1 0
-   129 write 0 .MEMORY :lastCell
+   311 print "["
+   312 print "]"
+   313 print "\n"
+-    * set :i.1 0
+-    * label *label47
+-    * label *label56
+-    * readarr *tmp38 .conv[] :i.1
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
+-    * jump *label50 greaterThanEq *tmp41 *tmp43
+-    * op add .total .total 10
+-    * label *label50
+-    * label *label51
+-    * label *label48
+-    * op add :i.1 :i.1 1
+-    * jump *label56 lessThan :i.1 16
+-    * label *label49
++  314 set :i.1 0
++  315 label *label187
++  316 label *label188
++  317 readarr *tmp38 .conv[] :i.1
++  318 sensor *tmp39 *tmp38 @totalItems
++  319 writearr *tmp39 .state2[] :i.1
++  320 readarr *tmp41 .state2[] :i.1
++  321 readarr *tmp43 .state1[] :i.1
++  322 jump *label189 greaterThanEq *tmp41 *tmp43
++  323 op add .total .total 10
++  324 label *label189
++  325 label *label190
++  326 label *label191
++  327 op add :i.1 :i.1 1
++  328 label *label192
++  329 readarr *tmp38 .conv[] :i.1
++  330 sensor *tmp39 *tmp38 @totalItems
++  331 writearr *tmp39 .state2[] :i.1
++  332 readarr *tmp41 .state2[] :i.1
++  333 readarr *tmp43 .state1[] :i.1
++  334 jump *label193 greaterThanEq *tmp41 *tmp43
++  335 op add .total .total 10
++  336 label *label193
++  337 label *label194
++  338 label *label195
++  339 op add :i.1 :i.1 1
++  340 label *label196
++  341 readarr *tmp38 .conv[] :i.1
++  342 sensor *tmp39 *tmp38 @totalItems
++  343 writearr *tmp39 .state2[] :i.1
++  344 readarr *tmp41 .state2[] :i.1
++  345 readarr *tmp43 .state1[] :i.1
++  346 jump *label197 greaterThanEq *tmp41 *tmp43
++  347 op add .total .total 10
++  348 label *label197
++  349 label *label198
++  350 label *label199
++  351 op add :i.1 :i.1 1
++  352 label *label200
++  353 readarr *tmp38 .conv[] :i.1
++  354 sensor *tmp39 *tmp38 @totalItems
++  355 writearr *tmp39 .state2[] :i.1
++  356 readarr *tmp41 .state2[] :i.1
++  357 readarr *tmp43 .state1[] :i.1
++  358 jump *label201 greaterThanEq *tmp41 *tmp43
++  359 op add .total .total 10
++  360 label *label201
++  361 label *label202
++  362 label *label203
++  363 op add :i.1 :i.1 1
++  364 label *label204
++  365 readarr *tmp38 .conv[] :i.1
++  366 sensor *tmp39 *tmp38 @totalItems
++  367 writearr *tmp39 .state2[] :i.1
++  368 readarr *tmp41 .state2[] :i.1
++  369 readarr *tmp43 .state1[] :i.1
++  370 jump *label205 greaterThanEq *tmp41 *tmp43
++  371 op add .total .total 10
++  372 label *label205
++  373 label *label206
++  374 label *label207
++  375 op add :i.1 :i.1 1
++  376 label *label208
++  377 readarr *tmp38 .conv[] :i.1
++  378 sensor *tmp39 *tmp38 @totalItems
++  379 writearr *tmp39 .state2[] :i.1
++  380 readarr *tmp41 .state2[] :i.1
++  381 readarr *tmp43 .state1[] :i.1
++  382 jump *label209 greaterThanEq *tmp41 *tmp43
++  383 op add .total .total 10
++  384 label *label209
++  385 label *label210
++  386 label *label211
++  387 op add :i.1 :i.1 1
++  388 label *label212
++  389 readarr *tmp38 .conv[] :i.1
++  390 sensor *tmp39 *tmp38 @totalItems
++  391 writearr *tmp39 .state2[] :i.1
++  392 readarr *tmp41 .state2[] :i.1
++  393 readarr *tmp43 .state1[] :i.1
++  394 jump *label213 greaterThanEq *tmp41 *tmp43
++  395 op add .total .total 10
++  396 label *label213
++  397 label *label214
++  398 label *label215
++  399 op add :i.1 :i.1 1
++  400 label *label216
++  401 readarr *tmp38 .conv[] :i.1
++  402 sensor *tmp39 *tmp38 @totalItems
++  403 writearr *tmp39 .state2[] :i.1
++  404 readarr *tmp41 .state2[] :i.1
++  405 readarr *tmp43 .state1[] :i.1
++  406 jump *label217 greaterThanEq *tmp41 *tmp43
++  407 op add .total .total 10
++  408 label *label217
++  409 label *label218
++  410 label *label219
++  411 op add :i.1 :i.1 1
++  412 label *label220
++  413 readarr *tmp38 .conv[] :i.1
++  414 sensor *tmp39 *tmp38 @totalItems
++  415 writearr *tmp39 .state2[] :i.1
++  416 readarr *tmp41 .state2[] :i.1
++  417 readarr *tmp43 .state1[] :i.1
++  418 jump *label221 greaterThanEq *tmp41 *tmp43
++  419 op add .total .total 10
++  420 label *label221
++  421 label *label222
++  422 label *label223
++  423 op add :i.1 :i.1 1
++  424 label *label224
++  425 readarr *tmp38 .conv[] :i.1
++  426 sensor *tmp39 *tmp38 @totalItems
++  427 writearr *tmp39 .state2[] :i.1
++  428 readarr *tmp41 .state2[] :i.1
++  429 readarr *tmp43 .state1[] :i.1
++  430 jump *label225 greaterThanEq *tmp41 *tmp43
++  431 op add .total .total 10
++  432 label *label225
++  433 label *label226
++  434 label *label227
++  435 op add :i.1 :i.1 1
++  436 label *label228
++  437 readarr *tmp38 .conv[] :i.1
++  438 sensor *tmp39 *tmp38 @totalItems
++  439 writearr *tmp39 .state2[] :i.1
++  440 readarr *tmp41 .state2[] :i.1
++  441 readarr *tmp43 .state1[] :i.1
++  442 jump *label229 greaterThanEq *tmp41 *tmp43
++  443 op add .total .total 10
++  444 label *label229
++  445 label *label230
++  446 label *label231
++  447 op add :i.1 :i.1 1
++  448 label *label232
++  449 readarr *tmp38 .conv[] :i.1
++  450 sensor *tmp39 *tmp38 @totalItems
++  451 writearr *tmp39 .state2[] :i.1
++  452 readarr *tmp41 .state2[] :i.1
++  453 readarr *tmp43 .state1[] :i.1
++  454 jump *label233 greaterThanEq *tmp41 *tmp43
++  455 op add .total .total 10
++  456 label *label233
++  457 label *label234
++  458 label *label235
++  459 op add :i.1 :i.1 1
++  460 label *label236
++  461 readarr *tmp38 .conv[] :i.1
++  462 sensor *tmp39 *tmp38 @totalItems
++  463 writearr *tmp39 .state2[] :i.1
++  464 readarr *tmp41 .state2[] :i.1
++  465 readarr *tmp43 .state1[] :i.1
++  466 jump *label237 greaterThanEq *tmp41 *tmp43
++  467 op add .total .total 10
++  468 label *label237
++  469 label *label238
++  470 label *label239
++  471 op add :i.1 :i.1 1
++  472 label *label240
++  473 readarr *tmp38 .conv[] :i.1
++  474 sensor *tmp39 *tmp38 @totalItems
++  475 writearr *tmp39 .state2[] :i.1
++  476 readarr *tmp41 .state2[] :i.1
++  477 readarr *tmp43 .state1[] :i.1
++  478 jump *label241 greaterThanEq *tmp41 *tmp43
++  479 op add .total .total 10
++  480 label *label241
++  481 label *label242
++  482 label *label243
++  483 op add :i.1 :i.1 1
++  484 label *label244
++  485 readarr *tmp38 .conv[] :i.1
++  486 sensor *tmp39 *tmp38 @totalItems
++  487 writearr *tmp39 .state2[] :i.1
++  488 readarr *tmp41 .state2[] :i.1
++  489 readarr *tmp43 .state1[] :i.1
++  490 jump *label245 greaterThanEq *tmp41 *tmp43
++  491 op add .total .total 10
++  492 label *label245
++  493 label *label246
++  494 label *label247
++  495 op add :i.1 :i.1 1
++  496 label *label248
++  497 readarr *tmp38 .conv[] :i.1
++  498 sensor *tmp39 *tmp38 @totalItems
++  499 writearr *tmp39 .state2[] :i.1
++  500 readarr *tmp41 .state2[] :i.1
++  501 readarr *tmp43 .state1[] :i.1
++  502 jump *label249 greaterThanEq *tmp41 *tmp43
++  503 op add .total .total 10
++  504 label *label249
++  505 label *label250
++  506 label *label251
++  507 op add :i.1 :i.1 1
++  508 label *label49
+   509 op sub *tmp47 @time :start
+   510 op idiv *tmp49 *tmp47 2
+   511 print "[lightgray]Loop time: "
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
  
-    46 set :start @time
-    47 set :n .FIRST_BLOCK
-    48 label *label16
--    * jump *label18 greaterThanEq :n @links
-+   49 jump *label18 greaterThanEq .FIRST_BLOCK @links
-    50 label *label33
-    51 getlink :block :n
-    52 op add :n :n 1
+   314 set :i.1 0
+   315 label *label187
+   316 label *label188
+-    * readarr *tmp38 .conv[] :i.1
++  317 readarr *tmp38 .conv[] 0
+   318 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  319 writearr *tmp39 .state2[] 0
++  320 readarr *tmp41 .state2[] 0
++  321 readarr *tmp43 .state1[] 0
+   322 jump *label189 greaterThanEq *tmp41 *tmp43
+   323 op add .total .total 10
+   324 label *label189
+   325 label *label190
+   326 label *label191
+-    * op add :i.1 :i.1 1
++  327 op add :i.1 0 1
+   328 label *label192
+-    * readarr *tmp38 .conv[] :i.1
++  329 readarr *tmp38 .conv[] 1
+   330 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  331 writearr *tmp39 .state2[] 1
++  332 readarr *tmp41 .state2[] 1
++  333 readarr *tmp43 .state1[] 1
+   334 jump *label193 greaterThanEq *tmp41 *tmp43
+   335 op add .total .total 10
+   336 label *label193
+   337 label *label194
+   338 label *label195
+-    * op add :i.1 :i.1 1
++  339 op add :i.1 1 1
+   340 label *label196
+-    * readarr *tmp38 .conv[] :i.1
++  341 readarr *tmp38 .conv[] 2
+   342 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  343 writearr *tmp39 .state2[] 2
++  344 readarr *tmp41 .state2[] 2
++  345 readarr *tmp43 .state1[] 2
+   346 jump *label197 greaterThanEq *tmp41 *tmp43
+   347 op add .total .total 10
+   348 label *label197
+   349 label *label198
+   350 label *label199
+-    * op add :i.1 :i.1 1
++  351 op add :i.1 2 1
+   352 label *label200
+-    * readarr *tmp38 .conv[] :i.1
++  353 readarr *tmp38 .conv[] 3
+   354 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  355 writearr *tmp39 .state2[] 3
++  356 readarr *tmp41 .state2[] 3
++  357 readarr *tmp43 .state1[] 3
+   358 jump *label201 greaterThanEq *tmp41 *tmp43
+   359 op add .total .total 10
+   360 label *label201
+   361 label *label202
+   362 label *label203
+-    * op add :i.1 :i.1 1
++  363 op add :i.1 3 1
+   364 label *label204
+-    * readarr *tmp38 .conv[] :i.1
++  365 readarr *tmp38 .conv[] 4
+   366 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  367 writearr *tmp39 .state2[] 4
++  368 readarr *tmp41 .state2[] 4
++  369 readarr *tmp43 .state1[] 4
+   370 jump *label205 greaterThanEq *tmp41 *tmp43
+   371 op add .total .total 10
+   372 label *label205
+   373 label *label206
+   374 label *label207
+-    * op add :i.1 :i.1 1
++  375 op add :i.1 4 1
+   376 label *label208
+-    * readarr *tmp38 .conv[] :i.1
++  377 readarr *tmp38 .conv[] 5
+   378 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  379 writearr *tmp39 .state2[] 5
++  380 readarr *tmp41 .state2[] 5
++  381 readarr *tmp43 .state1[] 5
+   382 jump *label209 greaterThanEq *tmp41 *tmp43
+   383 op add .total .total 10
+   384 label *label209
+   385 label *label210
+   386 label *label211
+-    * op add :i.1 :i.1 1
++  387 op add :i.1 5 1
+   388 label *label212
+-    * readarr *tmp38 .conv[] :i.1
++  389 readarr *tmp38 .conv[] 6
+   390 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  391 writearr *tmp39 .state2[] 6
++  392 readarr *tmp41 .state2[] 6
++  393 readarr *tmp43 .state1[] 6
+   394 jump *label213 greaterThanEq *tmp41 *tmp43
+   395 op add .total .total 10
+   396 label *label213
+   397 label *label214
+   398 label *label215
+-    * op add :i.1 :i.1 1
++  399 op add :i.1 6 1
+   400 label *label216
+-    * readarr *tmp38 .conv[] :i.1
++  401 readarr *tmp38 .conv[] 7
+   402 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  403 writearr *tmp39 .state2[] 7
++  404 readarr *tmp41 .state2[] 7
++  405 readarr *tmp43 .state1[] 7
+   406 jump *label217 greaterThanEq *tmp41 *tmp43
+   407 op add .total .total 10
+   408 label *label217
+   409 label *label218
+   410 label *label219
+-    * op add :i.1 :i.1 1
++  411 op add :i.1 7 1
+   412 label *label220
+-    * readarr *tmp38 .conv[] :i.1
++  413 readarr *tmp38 .conv[] 8
+   414 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  415 writearr *tmp39 .state2[] 8
++  416 readarr *tmp41 .state2[] 8
++  417 readarr *tmp43 .state1[] 8
+   418 jump *label221 greaterThanEq *tmp41 *tmp43
+   419 op add .total .total 10
+   420 label *label221
+   421 label *label222
+   422 label *label223
+-    * op add :i.1 :i.1 1
++  423 op add :i.1 8 1
+   424 label *label224
+-    * readarr *tmp38 .conv[] :i.1
++  425 readarr *tmp38 .conv[] 9
+   426 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  427 writearr *tmp39 .state2[] 9
++  428 readarr *tmp41 .state2[] 9
++  429 readarr *tmp43 .state1[] 9
+   430 jump *label225 greaterThanEq *tmp41 *tmp43
+   431 op add .total .total 10
+   432 label *label225
+   433 label *label226
+   434 label *label227
+-    * op add :i.1 :i.1 1
++  435 op add :i.1 9 1
+   436 label *label228
+-    * readarr *tmp38 .conv[] :i.1
++  437 readarr *tmp38 .conv[] 10
+   438 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  439 writearr *tmp39 .state2[] 10
++  440 readarr *tmp41 .state2[] 10
++  441 readarr *tmp43 .state1[] 10
+   442 jump *label229 greaterThanEq *tmp41 *tmp43
+   443 op add .total .total 10
+   444 label *label229
+   445 label *label230
+   446 label *label231
+-    * op add :i.1 :i.1 1
++  447 op add :i.1 10 1
+   448 label *label232
+-    * readarr *tmp38 .conv[] :i.1
++  449 readarr *tmp38 .conv[] 11
+   450 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  451 writearr *tmp39 .state2[] 11
++  452 readarr *tmp41 .state2[] 11
++  453 readarr *tmp43 .state1[] 11
+   454 jump *label233 greaterThanEq *tmp41 *tmp43
+   455 op add .total .total 10
+   456 label *label233
+   457 label *label234
+   458 label *label235
+-    * op add :i.1 :i.1 1
++  459 op add :i.1 11 1
+   460 label *label236
+-    * readarr *tmp38 .conv[] :i.1
++  461 readarr *tmp38 .conv[] 12
+   462 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  463 writearr *tmp39 .state2[] 12
++  464 readarr *tmp41 .state2[] 12
++  465 readarr *tmp43 .state1[] 12
+   466 jump *label237 greaterThanEq *tmp41 *tmp43
+   467 op add .total .total 10
+   468 label *label237
+   469 label *label238
+   470 label *label239
+-    * op add :i.1 :i.1 1
++  471 op add :i.1 12 1
+   472 label *label240
+-    * readarr *tmp38 .conv[] :i.1
++  473 readarr *tmp38 .conv[] 13
+   474 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  475 writearr *tmp39 .state2[] 13
++  476 readarr *tmp41 .state2[] 13
++  477 readarr *tmp43 .state1[] 13
+   478 jump *label241 greaterThanEq *tmp41 *tmp43
+   479 op add .total .total 10
+   480 label *label241
+   481 label *label242
+   482 label *label243
+-    * op add :i.1 :i.1 1
++  483 op add :i.1 13 1
+   484 label *label244
+-    * readarr *tmp38 .conv[] :i.1
++  485 readarr *tmp38 .conv[] 14
+   486 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  487 writearr *tmp39 .state2[] 14
++  488 readarr *tmp41 .state2[] 14
++  489 readarr *tmp43 .state1[] 14
+   490 jump *label245 greaterThanEq *tmp41 *tmp43
+   491 op add .total .total 10
+   492 label *label245
+   493 label *label246
+   494 label *label247
+-    * op add :i.1 :i.1 1
++  495 op add :i.1 14 1
+   496 label *label248
+-    * readarr *tmp38 .conv[] :i.1
++  497 readarr *tmp38 .conv[] 15
+   498 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] :i.1
+-    * readarr *tmp41 .state2[] :i.1
+-    * readarr *tmp43 .state1[] :i.1
++  499 writearr *tmp39 .state2[] 15
++  500 readarr *tmp41 .state2[] 15
++  501 readarr *tmp43 .state1[] 15
+   502 jump *label249 greaterThanEq *tmp41 *tmp43
+   503 op add .total .total 10
+   504 label *label249
+   505 label *label250
+   506 label *label251
+-    * op add :i.1 :i.1 1
++  507 op add :i.1 15 1
+   508 label *label49
+   509 op sub *tmp47 @time :start
+   510 op idiv *tmp49 *tmp47 2
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-17 instructions):
  
-   129 write 0 .MEMORY :lastCell
-   130 set :n 0
-   131 label *label29
--    * jump *label31 greaterThanEq :n @links
-+  132 jump *label31 greaterThanEq 0 @links
-   133 label *label34
-   134 write 0 .MEMORY :n
-   135 op add :n :n 1
+   311 print "["
+   312 print "]"
+   313 print "\n"
+-    * set :i.1 0
+   314 label *label187
+   315 label *label188
+   316 readarr *tmp38 .conv[] 0
+ 
+   323 label *label189
+   324 label *label190
+   325 label *label191
+-    * op add :i.1 0 1
+   326 label *label192
+   327 readarr *tmp38 .conv[] 1
+   328 sensor *tmp39 *tmp38 @totalItems
+ 
+   334 label *label193
+   335 label *label194
+   336 label *label195
+-    * op add :i.1 1 1
+   337 label *label196
+   338 readarr *tmp38 .conv[] 2
+   339 sensor *tmp39 *tmp38 @totalItems
+ 
+   345 label *label197
+   346 label *label198
+   347 label *label199
+-    * op add :i.1 2 1
+   348 label *label200
+   349 readarr *tmp38 .conv[] 3
+   350 sensor *tmp39 *tmp38 @totalItems
+ 
+   356 label *label201
+   357 label *label202
+   358 label *label203
+-    * op add :i.1 3 1
+   359 label *label204
+   360 readarr *tmp38 .conv[] 4
+   361 sensor *tmp39 *tmp38 @totalItems
+ 
+   367 label *label205
+   368 label *label206
+   369 label *label207
+-    * op add :i.1 4 1
+   370 label *label208
+   371 readarr *tmp38 .conv[] 5
+   372 sensor *tmp39 *tmp38 @totalItems
+ 
+   378 label *label209
+   379 label *label210
+   380 label *label211
+-    * op add :i.1 5 1
+   381 label *label212
+   382 readarr *tmp38 .conv[] 6
+   383 sensor *tmp39 *tmp38 @totalItems
+ 
+   389 label *label213
+   390 label *label214
+   391 label *label215
+-    * op add :i.1 6 1
+   392 label *label216
+   393 readarr *tmp38 .conv[] 7
+   394 sensor *tmp39 *tmp38 @totalItems
+ 
+   400 label *label217
+   401 label *label218
+   402 label *label219
+-    * op add :i.1 7 1
+   403 label *label220
+   404 readarr *tmp38 .conv[] 8
+   405 sensor *tmp39 *tmp38 @totalItems
+ 
+   411 label *label221
+   412 label *label222
+   413 label *label223
+-    * op add :i.1 8 1
+   414 label *label224
+   415 readarr *tmp38 .conv[] 9
+   416 sensor *tmp39 *tmp38 @totalItems
+ 
+   422 label *label225
+   423 label *label226
+   424 label *label227
+-    * op add :i.1 9 1
+   425 label *label228
+   426 readarr *tmp38 .conv[] 10
+   427 sensor *tmp39 *tmp38 @totalItems
+ 
+   433 label *label229
+   434 label *label230
+   435 label *label231
+-    * op add :i.1 10 1
+   436 label *label232
+   437 readarr *tmp38 .conv[] 11
+   438 sensor *tmp39 *tmp38 @totalItems
+ 
+   444 label *label233
+   445 label *label234
+   446 label *label235
+-    * op add :i.1 11 1
+   447 label *label236
+   448 readarr *tmp38 .conv[] 12
+   449 sensor *tmp39 *tmp38 @totalItems
+ 
+   455 label *label237
+   456 label *label238
+   457 label *label239
+-    * op add :i.1 12 1
+   458 label *label240
+   459 readarr *tmp38 .conv[] 13
+   460 sensor *tmp39 *tmp38 @totalItems
+ 
+   466 label *label241
+   467 label *label242
+   468 label *label243
+-    * op add :i.1 13 1
+   469 label *label244
+   470 readarr *tmp38 .conv[] 14
+   471 sensor *tmp39 *tmp38 @totalItems
+ 
+   477 label *label245
+   478 label *label246
+   479 label *label247
+-    * op add :i.1 14 1
+   480 label *label248
+   481 readarr *tmp38 .conv[] 15
+   482 sensor *tmp39 *tmp38 @totalItems
+ 
+   488 label *label249
+   489 label *label250
+   490 label *label251
+-    * op add :i.1 15 1
+   491 label *label49
+   492 op sub *tmp47 @time :start
+   493 op idiv *tmp49 *tmp47 2
+
+Modifications by Replicate loop condition at line 68:5 (+1 instructions):
+ 
+   117 label *label39
+   118 sensor *tmp19 switch1 @enabled
+   119 jump *label41 notEqual *tmp19 false
++  120 label *label252
+   121 set :start @time
+   122 label *label122
+   123 label *label123
+ 
+   503 label *label52
+   504 label *label53
+   505 label *label40
+-    * jump *label39 always
++  506 sensor *tmp19 switch1 @enabled
++  507 jump *label252 equal *tmp19 false
+   508 label *label41
+   509 set .total 0
+   510 write 0 .memory 0
+
+Modifications by Iterated phase, Expression Optimization, pass 2, iteration 1 (-544 instructions):
+ 
+   121 set :start @time
+   122 label *label122
+   123 label *label123
+-    * readarr *tmp24 .conv[] 0
++  124 set *tmp24 .conv*0
+   125 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 0
+-    * readarr *tmp27 .state1[] 0
+-    * readarr *tmp29 .state2[] 0
++  126 set .state1*0 *tmp25
++  127 set *tmp27 .state1*0
++  128 set *tmp29 .state2*0
+   129 jump *label124 greaterThanEq *tmp27 *tmp29
+   130 op add .total .total 10
+   131 label *label124
+   132 label *label125
+   133 label *label126
+   134 label *label127
+-    * readarr *tmp24 .conv[] 1
++  135 set *tmp24 .conv*1
+   136 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 1
+-    * readarr *tmp27 .state1[] 1
+-    * readarr *tmp29 .state2[] 1
++  137 set .state1*1 *tmp25
++  138 set *tmp27 .state1*1
++  139 set *tmp29 .state2*1
+   140 jump *label128 greaterThanEq *tmp27 *tmp29
+   141 op add .total .total 10
+   142 label *label128
+   143 label *label129
+   144 label *label130
+   145 label *label131
+-    * readarr *tmp24 .conv[] 2
++  146 set *tmp24 .conv*2
+   147 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 2
+-    * readarr *tmp27 .state1[] 2
+-    * readarr *tmp29 .state2[] 2
++  148 set .state1*2 *tmp25
++  149 set *tmp27 .state1*2
++  150 set *tmp29 .state2*2
+   151 jump *label132 greaterThanEq *tmp27 *tmp29
+   152 op add .total .total 10
+   153 label *label132
+   154 label *label133
+   155 label *label134
+   156 label *label135
+-    * readarr *tmp24 .conv[] 3
++  157 set *tmp24 .conv*3
+   158 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 3
+-    * readarr *tmp27 .state1[] 3
+-    * readarr *tmp29 .state2[] 3
++  159 set .state1*3 *tmp25
++  160 set *tmp27 .state1*3
++  161 set *tmp29 .state2*3
+   162 jump *label136 greaterThanEq *tmp27 *tmp29
+   163 op add .total .total 10
+   164 label *label136
+   165 label *label137
+   166 label *label138
+   167 label *label139
+-    * readarr *tmp24 .conv[] 4
++  168 set *tmp24 .conv*4
+   169 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 4
+-    * readarr *tmp27 .state1[] 4
+-    * readarr *tmp29 .state2[] 4
++  170 set .state1*4 *tmp25
++  171 set *tmp27 .state1*4
++  172 set *tmp29 .state2*4
+   173 jump *label140 greaterThanEq *tmp27 *tmp29
+   174 op add .total .total 10
+   175 label *label140
+   176 label *label141
+   177 label *label142
+   178 label *label143
+-    * readarr *tmp24 .conv[] 5
++  179 set *tmp24 .conv*5
+   180 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 5
+-    * readarr *tmp27 .state1[] 5
+-    * readarr *tmp29 .state2[] 5
++  181 set .state1*5 *tmp25
++  182 set *tmp27 .state1*5
++  183 set *tmp29 .state2*5
+   184 jump *label144 greaterThanEq *tmp27 *tmp29
+   185 op add .total .total 10
+   186 label *label144
+   187 label *label145
+   188 label *label146
+   189 label *label147
+-    * readarr *tmp24 .conv[] 6
++  190 set *tmp24 .conv*6
+   191 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 6
+-    * readarr *tmp27 .state1[] 6
+-    * readarr *tmp29 .state2[] 6
++  192 set .state1*6 *tmp25
++  193 set *tmp27 .state1*6
++  194 set *tmp29 .state2*6
+   195 jump *label148 greaterThanEq *tmp27 *tmp29
+   196 op add .total .total 10
+   197 label *label148
+   198 label *label149
+   199 label *label150
+   200 label *label151
+-    * readarr *tmp24 .conv[] 7
++  201 set *tmp24 .conv*7
+   202 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 7
+-    * readarr *tmp27 .state1[] 7
+-    * readarr *tmp29 .state2[] 7
++  203 set .state1*7 *tmp25
++  204 set *tmp27 .state1*7
++  205 set *tmp29 .state2*7
+   206 jump *label152 greaterThanEq *tmp27 *tmp29
+   207 op add .total .total 10
+   208 label *label152
+   209 label *label153
+   210 label *label154
+   211 label *label155
+-    * readarr *tmp24 .conv[] 8
++  212 set *tmp24 .conv*8
+   213 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 8
+-    * readarr *tmp27 .state1[] 8
+-    * readarr *tmp29 .state2[] 8
++  214 set .state1*8 *tmp25
++  215 set *tmp27 .state1*8
++  216 set *tmp29 .state2*8
+   217 jump *label156 greaterThanEq *tmp27 *tmp29
+   218 op add .total .total 10
+   219 label *label156
+   220 label *label157
+   221 label *label158
+   222 label *label159
+-    * readarr *tmp24 .conv[] 9
++  223 set *tmp24 .conv*9
+   224 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 9
+-    * readarr *tmp27 .state1[] 9
+-    * readarr *tmp29 .state2[] 9
++  225 set .state1*9 *tmp25
++  226 set *tmp27 .state1*9
++  227 set *tmp29 .state2*9
+   228 jump *label160 greaterThanEq *tmp27 *tmp29
+   229 op add .total .total 10
+   230 label *label160
+   231 label *label161
+   232 label *label162
+   233 label *label163
+-    * readarr *tmp24 .conv[] 10
++  234 set *tmp24 .conv*10
+   235 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 10
+-    * readarr *tmp27 .state1[] 10
+-    * readarr *tmp29 .state2[] 10
++  236 set .state1*10 *tmp25
++  237 set *tmp27 .state1*10
++  238 set *tmp29 .state2*10
+   239 jump *label164 greaterThanEq *tmp27 *tmp29
+   240 op add .total .total 10
+   241 label *label164
+   242 label *label165
+   243 label *label166
+   244 label *label167
+-    * readarr *tmp24 .conv[] 11
++  245 set *tmp24 .conv*11
+   246 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 11
+-    * readarr *tmp27 .state1[] 11
+-    * readarr *tmp29 .state2[] 11
++  247 set .state1*11 *tmp25
++  248 set *tmp27 .state1*11
++  249 set *tmp29 .state2*11
+   250 jump *label168 greaterThanEq *tmp27 *tmp29
+   251 op add .total .total 10
+   252 label *label168
+   253 label *label169
+   254 label *label170
+   255 label *label171
+-    * readarr *tmp24 .conv[] 12
++  256 set *tmp24 .conv*12
+   257 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 12
+-    * readarr *tmp27 .state1[] 12
+-    * readarr *tmp29 .state2[] 12
++  258 set .state1*12 *tmp25
++  259 set *tmp27 .state1*12
++  260 set *tmp29 .state2*12
+   261 jump *label172 greaterThanEq *tmp27 *tmp29
+   262 op add .total .total 10
+   263 label *label172
+   264 label *label173
+   265 label *label174
+   266 label *label175
+-    * readarr *tmp24 .conv[] 13
++  267 set *tmp24 .conv*13
+   268 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 13
+-    * readarr *tmp27 .state1[] 13
+-    * readarr *tmp29 .state2[] 13
++  269 set .state1*13 *tmp25
++  270 set *tmp27 .state1*13
++  271 set *tmp29 .state2*13
+   272 jump *label176 greaterThanEq *tmp27 *tmp29
+   273 op add .total .total 10
+   274 label *label176
+   275 label *label177
+   276 label *label178
+   277 label *label179
+-    * readarr *tmp24 .conv[] 14
++  278 set *tmp24 .conv*14
+   279 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 14
+-    * readarr *tmp27 .state1[] 14
+-    * readarr *tmp29 .state2[] 14
++  280 set .state1*14 *tmp25
++  281 set *tmp27 .state1*14
++  282 set *tmp29 .state2*14
+   283 jump *label180 greaterThanEq *tmp27 *tmp29
+   284 op add .total .total 10
+   285 label *label180
+   286 label *label181
+   287 label *label182
+   288 label *label183
+-    * readarr *tmp24 .conv[] 15
++  289 set *tmp24 .conv*15
+   290 sensor *tmp25 *tmp24 @totalItems
+-    * writearr *tmp25 .state1[] 15
+-    * readarr *tmp27 .state1[] 15
+-    * readarr *tmp29 .state2[] 15
++  291 set .state1*15 *tmp25
++  292 set *tmp27 .state1*15
++  293 set *tmp29 .state2*15
+   294 jump *label184 greaterThanEq *tmp27 *tmp29
+   295 op add .total .total 10
+   296 label *label184
+ 
+   314 print "\n"
+   315 label *label187
+   316 label *label188
+-    * readarr *tmp38 .conv[] 0
++  317 set *tmp38 .conv*0
+   318 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 0
+-    * readarr *tmp41 .state2[] 0
+-    * readarr *tmp43 .state1[] 0
++  319 set .state2*0 *tmp39
++  320 set *tmp41 .state2*0
++  321 set *tmp43 .state1*0
+   322 jump *label189 greaterThanEq *tmp41 *tmp43
+   323 op add .total .total 10
+   324 label *label189
+   325 label *label190
+   326 label *label191
+   327 label *label192
+-    * readarr *tmp38 .conv[] 1
++  328 set *tmp38 .conv*1
+   329 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 1
+-    * readarr *tmp41 .state2[] 1
+-    * readarr *tmp43 .state1[] 1
++  330 set .state2*1 *tmp39
++  331 set *tmp41 .state2*1
++  332 set *tmp43 .state1*1
+   333 jump *label193 greaterThanEq *tmp41 *tmp43
+   334 op add .total .total 10
+   335 label *label193
+   336 label *label194
+   337 label *label195
+   338 label *label196
+-    * readarr *tmp38 .conv[] 2
++  339 set *tmp38 .conv*2
+   340 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 2
+-    * readarr *tmp41 .state2[] 2
+-    * readarr *tmp43 .state1[] 2
++  341 set .state2*2 *tmp39
++  342 set *tmp41 .state2*2
++  343 set *tmp43 .state1*2
+   344 jump *label197 greaterThanEq *tmp41 *tmp43
+   345 op add .total .total 10
+   346 label *label197
+   347 label *label198
+   348 label *label199
+   349 label *label200
+-    * readarr *tmp38 .conv[] 3
++  350 set *tmp38 .conv*3
+   351 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 3
+-    * readarr *tmp41 .state2[] 3
+-    * readarr *tmp43 .state1[] 3
++  352 set .state2*3 *tmp39
++  353 set *tmp41 .state2*3
++  354 set *tmp43 .state1*3
+   355 jump *label201 greaterThanEq *tmp41 *tmp43
+   356 op add .total .total 10
+   357 label *label201
+   358 label *label202
+   359 label *label203
+   360 label *label204
+-    * readarr *tmp38 .conv[] 4
++  361 set *tmp38 .conv*4
+   362 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 4
+-    * readarr *tmp41 .state2[] 4
+-    * readarr *tmp43 .state1[] 4
++  363 set .state2*4 *tmp39
++  364 set *tmp41 .state2*4
++  365 set *tmp43 .state1*4
+   366 jump *label205 greaterThanEq *tmp41 *tmp43
+   367 op add .total .total 10
+   368 label *label205
+   369 label *label206
+   370 label *label207
+   371 label *label208
+-    * readarr *tmp38 .conv[] 5
++  372 set *tmp38 .conv*5
+   373 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 5
+-    * readarr *tmp41 .state2[] 5
+-    * readarr *tmp43 .state1[] 5
++  374 set .state2*5 *tmp39
++  375 set *tmp41 .state2*5
++  376 set *tmp43 .state1*5
+   377 jump *label209 greaterThanEq *tmp41 *tmp43
+   378 op add .total .total 10
+   379 label *label209
+   380 label *label210
+   381 label *label211
+   382 label *label212
+-    * readarr *tmp38 .conv[] 6
++  383 set *tmp38 .conv*6
+   384 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 6
+-    * readarr *tmp41 .state2[] 6
+-    * readarr *tmp43 .state1[] 6
++  385 set .state2*6 *tmp39
++  386 set *tmp41 .state2*6
++  387 set *tmp43 .state1*6
+   388 jump *label213 greaterThanEq *tmp41 *tmp43
+   389 op add .total .total 10
+   390 label *label213
+   391 label *label214
+   392 label *label215
+   393 label *label216
+-    * readarr *tmp38 .conv[] 7
++  394 set *tmp38 .conv*7
+   395 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 7
+-    * readarr *tmp41 .state2[] 7
+-    * readarr *tmp43 .state1[] 7
++  396 set .state2*7 *tmp39
++  397 set *tmp41 .state2*7
++  398 set *tmp43 .state1*7
+   399 jump *label217 greaterThanEq *tmp41 *tmp43
+   400 op add .total .total 10
+   401 label *label217
+   402 label *label218
+   403 label *label219
+   404 label *label220
+-    * readarr *tmp38 .conv[] 8
++  405 set *tmp38 .conv*8
+   406 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 8
+-    * readarr *tmp41 .state2[] 8
+-    * readarr *tmp43 .state1[] 8
++  407 set .state2*8 *tmp39
++  408 set *tmp41 .state2*8
++  409 set *tmp43 .state1*8
+   410 jump *label221 greaterThanEq *tmp41 *tmp43
+   411 op add .total .total 10
+   412 label *label221
+   413 label *label222
+   414 label *label223
+   415 label *label224
+-    * readarr *tmp38 .conv[] 9
++  416 set *tmp38 .conv*9
+   417 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 9
+-    * readarr *tmp41 .state2[] 9
+-    * readarr *tmp43 .state1[] 9
++  418 set .state2*9 *tmp39
++  419 set *tmp41 .state2*9
++  420 set *tmp43 .state1*9
+   421 jump *label225 greaterThanEq *tmp41 *tmp43
+   422 op add .total .total 10
+   423 label *label225
+   424 label *label226
+   425 label *label227
+   426 label *label228
+-    * readarr *tmp38 .conv[] 10
++  427 set *tmp38 .conv*10
+   428 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 10
+-    * readarr *tmp41 .state2[] 10
+-    * readarr *tmp43 .state1[] 10
++  429 set .state2*10 *tmp39
++  430 set *tmp41 .state2*10
++  431 set *tmp43 .state1*10
+   432 jump *label229 greaterThanEq *tmp41 *tmp43
+   433 op add .total .total 10
+   434 label *label229
+   435 label *label230
+   436 label *label231
+   437 label *label232
+-    * readarr *tmp38 .conv[] 11
++  438 set *tmp38 .conv*11
+   439 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 11
+-    * readarr *tmp41 .state2[] 11
+-    * readarr *tmp43 .state1[] 11
++  440 set .state2*11 *tmp39
++  441 set *tmp41 .state2*11
++  442 set *tmp43 .state1*11
+   443 jump *label233 greaterThanEq *tmp41 *tmp43
+   444 op add .total .total 10
+   445 label *label233
+   446 label *label234
+   447 label *label235
+   448 label *label236
+-    * readarr *tmp38 .conv[] 12
++  449 set *tmp38 .conv*12
+   450 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 12
+-    * readarr *tmp41 .state2[] 12
+-    * readarr *tmp43 .state1[] 12
++  451 set .state2*12 *tmp39
++  452 set *tmp41 .state2*12
++  453 set *tmp43 .state1*12
+   454 jump *label237 greaterThanEq *tmp41 *tmp43
+   455 op add .total .total 10
+   456 label *label237
+   457 label *label238
+   458 label *label239
+   459 label *label240
+-    * readarr *tmp38 .conv[] 13
++  460 set *tmp38 .conv*13
+   461 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 13
+-    * readarr *tmp41 .state2[] 13
+-    * readarr *tmp43 .state1[] 13
++  462 set .state2*13 *tmp39
++  463 set *tmp41 .state2*13
++  464 set *tmp43 .state1*13
+   465 jump *label241 greaterThanEq *tmp41 *tmp43
+   466 op add .total .total 10
+   467 label *label241
+   468 label *label242
+   469 label *label243
+   470 label *label244
+-    * readarr *tmp38 .conv[] 14
++  471 set *tmp38 .conv*14
+   472 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 14
+-    * readarr *tmp41 .state2[] 14
+-    * readarr *tmp43 .state1[] 14
++  473 set .state2*14 *tmp39
++  474 set *tmp41 .state2*14
++  475 set *tmp43 .state1*14
+   476 jump *label245 greaterThanEq *tmp41 *tmp43
+   477 op add .total .total 10
+   478 label *label245
+   479 label *label246
+   480 label *label247
+   481 label *label248
+-    * readarr *tmp38 .conv[] 15
++  482 set *tmp38 .conv*15
+   483 sensor *tmp39 *tmp38 @totalItems
+-    * writearr *tmp39 .state2[] 15
+-    * readarr *tmp41 .state2[] 15
+-    * readarr *tmp43 .state1[] 15
++  484 set .state2*15 *tmp39
++  485 set *tmp41 .state2*15
++  486 set *tmp43 .state1*15
+   487 jump *label249 greaterThanEq *tmp41 *tmp43
+   488 op add .total .total 10
+   489 label *label249
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-32 instructions):
+ 
+   122 label *label122
+   123 label *label123
+   124 set *tmp24 .conv*0
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*0 *tmp25
++  125 sensor .state1*0 *tmp24 @totalItems
+   126 set *tmp27 .state1*0
+   127 set *tmp29 .state2*0
+   128 jump *label124 greaterThanEq *tmp27 *tmp29
+ 
+   132 label *label126
+   133 label *label127
+   134 set *tmp24 .conv*1
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*1 *tmp25
++  135 sensor .state1*1 *tmp24 @totalItems
+   136 set *tmp27 .state1*1
+   137 set *tmp29 .state2*1
+   138 jump *label128 greaterThanEq *tmp27 *tmp29
+ 
+   142 label *label130
+   143 label *label131
+   144 set *tmp24 .conv*2
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*2 *tmp25
++  145 sensor .state1*2 *tmp24 @totalItems
+   146 set *tmp27 .state1*2
+   147 set *tmp29 .state2*2
+   148 jump *label132 greaterThanEq *tmp27 *tmp29
+ 
+   152 label *label134
+   153 label *label135
+   154 set *tmp24 .conv*3
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*3 *tmp25
++  155 sensor .state1*3 *tmp24 @totalItems
+   156 set *tmp27 .state1*3
+   157 set *tmp29 .state2*3
+   158 jump *label136 greaterThanEq *tmp27 *tmp29
+ 
+   162 label *label138
+   163 label *label139
+   164 set *tmp24 .conv*4
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*4 *tmp25
++  165 sensor .state1*4 *tmp24 @totalItems
+   166 set *tmp27 .state1*4
+   167 set *tmp29 .state2*4
+   168 jump *label140 greaterThanEq *tmp27 *tmp29
+ 
+   172 label *label142
+   173 label *label143
+   174 set *tmp24 .conv*5
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*5 *tmp25
++  175 sensor .state1*5 *tmp24 @totalItems
+   176 set *tmp27 .state1*5
+   177 set *tmp29 .state2*5
+   178 jump *label144 greaterThanEq *tmp27 *tmp29
+ 
+   182 label *label146
+   183 label *label147
+   184 set *tmp24 .conv*6
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*6 *tmp25
++  185 sensor .state1*6 *tmp24 @totalItems
+   186 set *tmp27 .state1*6
+   187 set *tmp29 .state2*6
+   188 jump *label148 greaterThanEq *tmp27 *tmp29
+ 
+   192 label *label150
+   193 label *label151
+   194 set *tmp24 .conv*7
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*7 *tmp25
++  195 sensor .state1*7 *tmp24 @totalItems
+   196 set *tmp27 .state1*7
+   197 set *tmp29 .state2*7
+   198 jump *label152 greaterThanEq *tmp27 *tmp29
+ 
+   202 label *label154
+   203 label *label155
+   204 set *tmp24 .conv*8
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*8 *tmp25
++  205 sensor .state1*8 *tmp24 @totalItems
+   206 set *tmp27 .state1*8
+   207 set *tmp29 .state2*8
+   208 jump *label156 greaterThanEq *tmp27 *tmp29
+ 
+   212 label *label158
+   213 label *label159
+   214 set *tmp24 .conv*9
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*9 *tmp25
++  215 sensor .state1*9 *tmp24 @totalItems
+   216 set *tmp27 .state1*9
+   217 set *tmp29 .state2*9
+   218 jump *label160 greaterThanEq *tmp27 *tmp29
+ 
+   222 label *label162
+   223 label *label163
+   224 set *tmp24 .conv*10
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*10 *tmp25
++  225 sensor .state1*10 *tmp24 @totalItems
+   226 set *tmp27 .state1*10
+   227 set *tmp29 .state2*10
+   228 jump *label164 greaterThanEq *tmp27 *tmp29
+ 
+   232 label *label166
+   233 label *label167
+   234 set *tmp24 .conv*11
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*11 *tmp25
++  235 sensor .state1*11 *tmp24 @totalItems
+   236 set *tmp27 .state1*11
+   237 set *tmp29 .state2*11
+   238 jump *label168 greaterThanEq *tmp27 *tmp29
+ 
+   242 label *label170
+   243 label *label171
+   244 set *tmp24 .conv*12
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*12 *tmp25
++  245 sensor .state1*12 *tmp24 @totalItems
+   246 set *tmp27 .state1*12
+   247 set *tmp29 .state2*12
+   248 jump *label172 greaterThanEq *tmp27 *tmp29
+ 
+   252 label *label174
+   253 label *label175
+   254 set *tmp24 .conv*13
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*13 *tmp25
++  255 sensor .state1*13 *tmp24 @totalItems
+   256 set *tmp27 .state1*13
+   257 set *tmp29 .state2*13
+   258 jump *label176 greaterThanEq *tmp27 *tmp29
+ 
+   262 label *label178
+   263 label *label179
+   264 set *tmp24 .conv*14
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*14 *tmp25
++  265 sensor .state1*14 *tmp24 @totalItems
+   266 set *tmp27 .state1*14
+   267 set *tmp29 .state2*14
+   268 jump *label180 greaterThanEq *tmp27 *tmp29
+ 
+   272 label *label182
+   273 label *label183
+   274 set *tmp24 .conv*15
+-    * sensor *tmp25 *tmp24 @totalItems
+-    * set .state1*15 *tmp25
++  275 sensor .state1*15 *tmp24 @totalItems
+   276 set *tmp27 .state1*15
+   277 set *tmp29 .state2*15
+   278 jump *label184 greaterThanEq *tmp27 *tmp29
+ 
+   299 label *label187
+   300 label *label188
+   301 set *tmp38 .conv*0
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*0 *tmp39
++  302 sensor .state2*0 *tmp38 @totalItems
+   303 set *tmp41 .state2*0
+   304 set *tmp43 .state1*0
+   305 jump *label189 greaterThanEq *tmp41 *tmp43
+ 
+   309 label *label191
+   310 label *label192
+   311 set *tmp38 .conv*1
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*1 *tmp39
++  312 sensor .state2*1 *tmp38 @totalItems
+   313 set *tmp41 .state2*1
+   314 set *tmp43 .state1*1
+   315 jump *label193 greaterThanEq *tmp41 *tmp43
+ 
+   319 label *label195
+   320 label *label196
+   321 set *tmp38 .conv*2
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*2 *tmp39
++  322 sensor .state2*2 *tmp38 @totalItems
+   323 set *tmp41 .state2*2
+   324 set *tmp43 .state1*2
+   325 jump *label197 greaterThanEq *tmp41 *tmp43
+ 
+   329 label *label199
+   330 label *label200
+   331 set *tmp38 .conv*3
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*3 *tmp39
++  332 sensor .state2*3 *tmp38 @totalItems
+   333 set *tmp41 .state2*3
+   334 set *tmp43 .state1*3
+   335 jump *label201 greaterThanEq *tmp41 *tmp43
+ 
+   339 label *label203
+   340 label *label204
+   341 set *tmp38 .conv*4
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*4 *tmp39
++  342 sensor .state2*4 *tmp38 @totalItems
+   343 set *tmp41 .state2*4
+   344 set *tmp43 .state1*4
+   345 jump *label205 greaterThanEq *tmp41 *tmp43
+ 
+   349 label *label207
+   350 label *label208
+   351 set *tmp38 .conv*5
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*5 *tmp39
++  352 sensor .state2*5 *tmp38 @totalItems
+   353 set *tmp41 .state2*5
+   354 set *tmp43 .state1*5
+   355 jump *label209 greaterThanEq *tmp41 *tmp43
+ 
+   359 label *label211
+   360 label *label212
+   361 set *tmp38 .conv*6
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*6 *tmp39
++  362 sensor .state2*6 *tmp38 @totalItems
+   363 set *tmp41 .state2*6
+   364 set *tmp43 .state1*6
+   365 jump *label213 greaterThanEq *tmp41 *tmp43
+ 
+   369 label *label215
+   370 label *label216
+   371 set *tmp38 .conv*7
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*7 *tmp39
++  372 sensor .state2*7 *tmp38 @totalItems
+   373 set *tmp41 .state2*7
+   374 set *tmp43 .state1*7
+   375 jump *label217 greaterThanEq *tmp41 *tmp43
+ 
+   379 label *label219
+   380 label *label220
+   381 set *tmp38 .conv*8
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*8 *tmp39
++  382 sensor .state2*8 *tmp38 @totalItems
+   383 set *tmp41 .state2*8
+   384 set *tmp43 .state1*8
+   385 jump *label221 greaterThanEq *tmp41 *tmp43
+ 
+   389 label *label223
+   390 label *label224
+   391 set *tmp38 .conv*9
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*9 *tmp39
++  392 sensor .state2*9 *tmp38 @totalItems
+   393 set *tmp41 .state2*9
+   394 set *tmp43 .state1*9
+   395 jump *label225 greaterThanEq *tmp41 *tmp43
+ 
+   399 label *label227
+   400 label *label228
+   401 set *tmp38 .conv*10
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*10 *tmp39
++  402 sensor .state2*10 *tmp38 @totalItems
+   403 set *tmp41 .state2*10
+   404 set *tmp43 .state1*10
+   405 jump *label229 greaterThanEq *tmp41 *tmp43
+ 
+   409 label *label231
+   410 label *label232
+   411 set *tmp38 .conv*11
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*11 *tmp39
++  412 sensor .state2*11 *tmp38 @totalItems
+   413 set *tmp41 .state2*11
+   414 set *tmp43 .state1*11
+   415 jump *label233 greaterThanEq *tmp41 *tmp43
+ 
+   419 label *label235
+   420 label *label236
+   421 set *tmp38 .conv*12
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*12 *tmp39
++  422 sensor .state2*12 *tmp38 @totalItems
+   423 set *tmp41 .state2*12
+   424 set *tmp43 .state1*12
+   425 jump *label237 greaterThanEq *tmp41 *tmp43
+ 
+   429 label *label239
+   430 label *label240
+   431 set *tmp38 .conv*13
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*13 *tmp39
++  432 sensor .state2*13 *tmp38 @totalItems
+   433 set *tmp41 .state2*13
+   434 set *tmp43 .state1*13
+   435 jump *label241 greaterThanEq *tmp41 *tmp43
+ 
+   439 label *label243
+   440 label *label244
+   441 set *tmp38 .conv*14
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*14 *tmp39
++  442 sensor .state2*14 *tmp38 @totalItems
+   443 set *tmp41 .state2*14
+   444 set *tmp43 .state1*14
+   445 jump *label245 greaterThanEq *tmp41 *tmp43
+ 
+   449 label *label247
+   450 label *label248
+   451 set *tmp38 .conv*15
+-    * sensor *tmp39 *tmp38 @totalItems
+-    * set .state2*15 *tmp39
++  452 sensor .state2*15 *tmp38 @totalItems
+   453 set *tmp41 .state2*15
+   454 set *tmp43 .state1*15
+   455 jump *label249 greaterThanEq *tmp41 *tmp43
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2:
+ 
+   122 label *label122
+   123 label *label123
+   124 set *tmp24 .conv*0
+-    * sensor .state1*0 *tmp24 @totalItems
++  125 sensor .state1*0 .conv*0 @totalItems
+   126 set *tmp27 .state1*0
+   127 set *tmp29 .state2*0
+-    * jump *label124 greaterThanEq *tmp27 *tmp29
++  128 jump *label124 greaterThanEq .state1*0 .state2*0
+   129 op add .total .total 10
+   130 label *label124
+   131 label *label125
+   132 label *label126
+   133 label *label127
+   134 set *tmp24 .conv*1
+-    * sensor .state1*1 *tmp24 @totalItems
++  135 sensor .state1*1 .conv*1 @totalItems
+   136 set *tmp27 .state1*1
+   137 set *tmp29 .state2*1
+-    * jump *label128 greaterThanEq *tmp27 *tmp29
++  138 jump *label128 greaterThanEq .state1*1 .state2*1
+   139 op add .total .total 10
+   140 label *label128
+   141 label *label129
+   142 label *label130
+   143 label *label131
+   144 set *tmp24 .conv*2
+-    * sensor .state1*2 *tmp24 @totalItems
++  145 sensor .state1*2 .conv*2 @totalItems
+   146 set *tmp27 .state1*2
+   147 set *tmp29 .state2*2
+-    * jump *label132 greaterThanEq *tmp27 *tmp29
++  148 jump *label132 greaterThanEq .state1*2 .state2*2
+   149 op add .total .total 10
+   150 label *label132
+   151 label *label133
+   152 label *label134
+   153 label *label135
+   154 set *tmp24 .conv*3
+-    * sensor .state1*3 *tmp24 @totalItems
++  155 sensor .state1*3 .conv*3 @totalItems
+   156 set *tmp27 .state1*3
+   157 set *tmp29 .state2*3
+-    * jump *label136 greaterThanEq *tmp27 *tmp29
++  158 jump *label136 greaterThanEq .state1*3 .state2*3
+   159 op add .total .total 10
+   160 label *label136
+   161 label *label137
+   162 label *label138
+   163 label *label139
+   164 set *tmp24 .conv*4
+-    * sensor .state1*4 *tmp24 @totalItems
++  165 sensor .state1*4 .conv*4 @totalItems
+   166 set *tmp27 .state1*4
+   167 set *tmp29 .state2*4
+-    * jump *label140 greaterThanEq *tmp27 *tmp29
++  168 jump *label140 greaterThanEq .state1*4 .state2*4
+   169 op add .total .total 10
+   170 label *label140
+   171 label *label141
+   172 label *label142
+   173 label *label143
+   174 set *tmp24 .conv*5
+-    * sensor .state1*5 *tmp24 @totalItems
++  175 sensor .state1*5 .conv*5 @totalItems
+   176 set *tmp27 .state1*5
+   177 set *tmp29 .state2*5
+-    * jump *label144 greaterThanEq *tmp27 *tmp29
++  178 jump *label144 greaterThanEq .state1*5 .state2*5
+   179 op add .total .total 10
+   180 label *label144
+   181 label *label145
+   182 label *label146
+   183 label *label147
+   184 set *tmp24 .conv*6
+-    * sensor .state1*6 *tmp24 @totalItems
++  185 sensor .state1*6 .conv*6 @totalItems
+   186 set *tmp27 .state1*6
+   187 set *tmp29 .state2*6
+-    * jump *label148 greaterThanEq *tmp27 *tmp29
++  188 jump *label148 greaterThanEq .state1*6 .state2*6
+   189 op add .total .total 10
+   190 label *label148
+   191 label *label149
+   192 label *label150
+   193 label *label151
+   194 set *tmp24 .conv*7
+-    * sensor .state1*7 *tmp24 @totalItems
++  195 sensor .state1*7 .conv*7 @totalItems
+   196 set *tmp27 .state1*7
+   197 set *tmp29 .state2*7
+-    * jump *label152 greaterThanEq *tmp27 *tmp29
++  198 jump *label152 greaterThanEq .state1*7 .state2*7
+   199 op add .total .total 10
+   200 label *label152
+   201 label *label153
+   202 label *label154
+   203 label *label155
+   204 set *tmp24 .conv*8
+-    * sensor .state1*8 *tmp24 @totalItems
++  205 sensor .state1*8 .conv*8 @totalItems
+   206 set *tmp27 .state1*8
+   207 set *tmp29 .state2*8
+-    * jump *label156 greaterThanEq *tmp27 *tmp29
++  208 jump *label156 greaterThanEq .state1*8 .state2*8
+   209 op add .total .total 10
+   210 label *label156
+   211 label *label157
+   212 label *label158
+   213 label *label159
+   214 set *tmp24 .conv*9
+-    * sensor .state1*9 *tmp24 @totalItems
++  215 sensor .state1*9 .conv*9 @totalItems
+   216 set *tmp27 .state1*9
+   217 set *tmp29 .state2*9
+-    * jump *label160 greaterThanEq *tmp27 *tmp29
++  218 jump *label160 greaterThanEq .state1*9 .state2*9
+   219 op add .total .total 10
+   220 label *label160
+   221 label *label161
+   222 label *label162
+   223 label *label163
+   224 set *tmp24 .conv*10
+-    * sensor .state1*10 *tmp24 @totalItems
++  225 sensor .state1*10 .conv*10 @totalItems
+   226 set *tmp27 .state1*10
+   227 set *tmp29 .state2*10
+-    * jump *label164 greaterThanEq *tmp27 *tmp29
++  228 jump *label164 greaterThanEq .state1*10 .state2*10
+   229 op add .total .total 10
+   230 label *label164
+   231 label *label165
+   232 label *label166
+   233 label *label167
+   234 set *tmp24 .conv*11
+-    * sensor .state1*11 *tmp24 @totalItems
++  235 sensor .state1*11 .conv*11 @totalItems
+   236 set *tmp27 .state1*11
+   237 set *tmp29 .state2*11
+-    * jump *label168 greaterThanEq *tmp27 *tmp29
++  238 jump *label168 greaterThanEq .state1*11 .state2*11
+   239 op add .total .total 10
+   240 label *label168
+   241 label *label169
+   242 label *label170
+   243 label *label171
+   244 set *tmp24 .conv*12
+-    * sensor .state1*12 *tmp24 @totalItems
++  245 sensor .state1*12 .conv*12 @totalItems
+   246 set *tmp27 .state1*12
+   247 set *tmp29 .state2*12
+-    * jump *label172 greaterThanEq *tmp27 *tmp29
++  248 jump *label172 greaterThanEq .state1*12 .state2*12
+   249 op add .total .total 10
+   250 label *label172
+   251 label *label173
+   252 label *label174
+   253 label *label175
+   254 set *tmp24 .conv*13
+-    * sensor .state1*13 *tmp24 @totalItems
++  255 sensor .state1*13 .conv*13 @totalItems
+   256 set *tmp27 .state1*13
+   257 set *tmp29 .state2*13
+-    * jump *label176 greaterThanEq *tmp27 *tmp29
++  258 jump *label176 greaterThanEq .state1*13 .state2*13
+   259 op add .total .total 10
+   260 label *label176
+   261 label *label177
+   262 label *label178
+   263 label *label179
+   264 set *tmp24 .conv*14
+-    * sensor .state1*14 *tmp24 @totalItems
++  265 sensor .state1*14 .conv*14 @totalItems
+   266 set *tmp27 .state1*14
+   267 set *tmp29 .state2*14
+-    * jump *label180 greaterThanEq *tmp27 *tmp29
++  268 jump *label180 greaterThanEq .state1*14 .state2*14
+   269 op add .total .total 10
+   270 label *label180
+   271 label *label181
+   272 label *label182
+   273 label *label183
+   274 set *tmp24 .conv*15
+-    * sensor .state1*15 *tmp24 @totalItems
++  275 sensor .state1*15 .conv*15 @totalItems
+   276 set *tmp27 .state1*15
+   277 set *tmp29 .state2*15
+-    * jump *label184 greaterThanEq *tmp27 *tmp29
++  278 jump *label184 greaterThanEq .state1*15 .state2*15
+   279 op add .total .total 10
+   280 label *label184
+   281 label *label185
+ 
+   299 label *label187
+   300 label *label188
+   301 set *tmp38 .conv*0
+-    * sensor .state2*0 *tmp38 @totalItems
++  302 sensor .state2*0 .conv*0 @totalItems
+   303 set *tmp41 .state2*0
+   304 set *tmp43 .state1*0
+-    * jump *label189 greaterThanEq *tmp41 *tmp43
++  305 jump *label189 greaterThanEq .state2*0 .state1*0
+   306 op add .total .total 10
+   307 label *label189
+   308 label *label190
+   309 label *label191
+   310 label *label192
+   311 set *tmp38 .conv*1
+-    * sensor .state2*1 *tmp38 @totalItems
++  312 sensor .state2*1 .conv*1 @totalItems
+   313 set *tmp41 .state2*1
+   314 set *tmp43 .state1*1
+-    * jump *label193 greaterThanEq *tmp41 *tmp43
++  315 jump *label193 greaterThanEq .state2*1 .state1*1
+   316 op add .total .total 10
+   317 label *label193
+   318 label *label194
+   319 label *label195
+   320 label *label196
+   321 set *tmp38 .conv*2
+-    * sensor .state2*2 *tmp38 @totalItems
++  322 sensor .state2*2 .conv*2 @totalItems
+   323 set *tmp41 .state2*2
+   324 set *tmp43 .state1*2
+-    * jump *label197 greaterThanEq *tmp41 *tmp43
++  325 jump *label197 greaterThanEq .state2*2 .state1*2
+   326 op add .total .total 10
+   327 label *label197
+   328 label *label198
+   329 label *label199
+   330 label *label200
+   331 set *tmp38 .conv*3
+-    * sensor .state2*3 *tmp38 @totalItems
++  332 sensor .state2*3 .conv*3 @totalItems
+   333 set *tmp41 .state2*3
+   334 set *tmp43 .state1*3
+-    * jump *label201 greaterThanEq *tmp41 *tmp43
++  335 jump *label201 greaterThanEq .state2*3 .state1*3
+   336 op add .total .total 10
+   337 label *label201
+   338 label *label202
+   339 label *label203
+   340 label *label204
+   341 set *tmp38 .conv*4
+-    * sensor .state2*4 *tmp38 @totalItems
++  342 sensor .state2*4 .conv*4 @totalItems
+   343 set *tmp41 .state2*4
+   344 set *tmp43 .state1*4
+-    * jump *label205 greaterThanEq *tmp41 *tmp43
++  345 jump *label205 greaterThanEq .state2*4 .state1*4
+   346 op add .total .total 10
+   347 label *label205
+   348 label *label206
+   349 label *label207
+   350 label *label208
+   351 set *tmp38 .conv*5
+-    * sensor .state2*5 *tmp38 @totalItems
++  352 sensor .state2*5 .conv*5 @totalItems
+   353 set *tmp41 .state2*5
+   354 set *tmp43 .state1*5
+-    * jump *label209 greaterThanEq *tmp41 *tmp43
++  355 jump *label209 greaterThanEq .state2*5 .state1*5
+   356 op add .total .total 10
+   357 label *label209
+   358 label *label210
+   359 label *label211
+   360 label *label212
+   361 set *tmp38 .conv*6
+-    * sensor .state2*6 *tmp38 @totalItems
++  362 sensor .state2*6 .conv*6 @totalItems
+   363 set *tmp41 .state2*6
+   364 set *tmp43 .state1*6
+-    * jump *label213 greaterThanEq *tmp41 *tmp43
++  365 jump *label213 greaterThanEq .state2*6 .state1*6
+   366 op add .total .total 10
+   367 label *label213
+   368 label *label214
+   369 label *label215
+   370 label *label216
+   371 set *tmp38 .conv*7
+-    * sensor .state2*7 *tmp38 @totalItems
++  372 sensor .state2*7 .conv*7 @totalItems
+   373 set *tmp41 .state2*7
+   374 set *tmp43 .state1*7
+-    * jump *label217 greaterThanEq *tmp41 *tmp43
++  375 jump *label217 greaterThanEq .state2*7 .state1*7
+   376 op add .total .total 10
+   377 label *label217
+   378 label *label218
+   379 label *label219
+   380 label *label220
+   381 set *tmp38 .conv*8
+-    * sensor .state2*8 *tmp38 @totalItems
++  382 sensor .state2*8 .conv*8 @totalItems
+   383 set *tmp41 .state2*8
+   384 set *tmp43 .state1*8
+-    * jump *label221 greaterThanEq *tmp41 *tmp43
++  385 jump *label221 greaterThanEq .state2*8 .state1*8
+   386 op add .total .total 10
+   387 label *label221
+   388 label *label222
+   389 label *label223
+   390 label *label224
+   391 set *tmp38 .conv*9
+-    * sensor .state2*9 *tmp38 @totalItems
++  392 sensor .state2*9 .conv*9 @totalItems
+   393 set *tmp41 .state2*9
+   394 set *tmp43 .state1*9
+-    * jump *label225 greaterThanEq *tmp41 *tmp43
++  395 jump *label225 greaterThanEq .state2*9 .state1*9
+   396 op add .total .total 10
+   397 label *label225
+   398 label *label226
+   399 label *label227
+   400 label *label228
+   401 set *tmp38 .conv*10
+-    * sensor .state2*10 *tmp38 @totalItems
++  402 sensor .state2*10 .conv*10 @totalItems
+   403 set *tmp41 .state2*10
+   404 set *tmp43 .state1*10
+-    * jump *label229 greaterThanEq *tmp41 *tmp43
++  405 jump *label229 greaterThanEq .state2*10 .state1*10
+   406 op add .total .total 10
+   407 label *label229
+   408 label *label230
+   409 label *label231
+   410 label *label232
+   411 set *tmp38 .conv*11
+-    * sensor .state2*11 *tmp38 @totalItems
++  412 sensor .state2*11 .conv*11 @totalItems
+   413 set *tmp41 .state2*11
+   414 set *tmp43 .state1*11
+-    * jump *label233 greaterThanEq *tmp41 *tmp43
++  415 jump *label233 greaterThanEq .state2*11 .state1*11
+   416 op add .total .total 10
+   417 label *label233
+   418 label *label234
+   419 label *label235
+   420 label *label236
+   421 set *tmp38 .conv*12
+-    * sensor .state2*12 *tmp38 @totalItems
++  422 sensor .state2*12 .conv*12 @totalItems
+   423 set *tmp41 .state2*12
+   424 set *tmp43 .state1*12
+-    * jump *label237 greaterThanEq *tmp41 *tmp43
++  425 jump *label237 greaterThanEq .state2*12 .state1*12
+   426 op add .total .total 10
+   427 label *label237
+   428 label *label238
+   429 label *label239
+   430 label *label240
+   431 set *tmp38 .conv*13
+-    * sensor .state2*13 *tmp38 @totalItems
++  432 sensor .state2*13 .conv*13 @totalItems
+   433 set *tmp41 .state2*13
+   434 set *tmp43 .state1*13
+-    * jump *label241 greaterThanEq *tmp41 *tmp43
++  435 jump *label241 greaterThanEq .state2*13 .state1*13
+   436 op add .total .total 10
+   437 label *label241
+   438 label *label242
+   439 label *label243
+   440 label *label244
+   441 set *tmp38 .conv*14
+-    * sensor .state2*14 *tmp38 @totalItems
++  442 sensor .state2*14 .conv*14 @totalItems
+   443 set *tmp41 .state2*14
+   444 set *tmp43 .state1*14
+-    * jump *label245 greaterThanEq *tmp41 *tmp43
++  445 jump *label245 greaterThanEq .state2*14 .state1*14
+   446 op add .total .total 10
+   447 label *label245
+   448 label *label246
+   449 label *label247
+   450 label *label248
+   451 set *tmp38 .conv*15
+-    * sensor .state2*15 *tmp38 @totalItems
++  452 sensor .state2*15 .conv*15 @totalItems
+   453 set *tmp41 .state2*15
+   454 set *tmp43 .state1*15
+-    * jump *label249 greaterThanEq *tmp41 *tmp43
++  455 jump *label249 greaterThanEq .state2*15 .state1*15
+   456 op add .total .total 10
+   457 label *label249
+   458 label *label250
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 3 (-96 instructions):
+ 
+   121 set :start @time
+   122 label *label122
+   123 label *label123
+-    * set *tmp24 .conv*0
+   124 sensor .state1*0 .conv*0 @totalItems
+-    * set *tmp27 .state1*0
+-    * set *tmp29 .state2*0
+   125 jump *label124 greaterThanEq .state1*0 .state2*0
+   126 op add .total .total 10
+   127 label *label124
+   128 label *label125
+   129 label *label126
+   130 label *label127
+-    * set *tmp24 .conv*1
+   131 sensor .state1*1 .conv*1 @totalItems
+-    * set *tmp27 .state1*1
+-    * set *tmp29 .state2*1
+   132 jump *label128 greaterThanEq .state1*1 .state2*1
+   133 op add .total .total 10
+   134 label *label128
+   135 label *label129
+   136 label *label130
+   137 label *label131
+-    * set *tmp24 .conv*2
+   138 sensor .state1*2 .conv*2 @totalItems
+-    * set *tmp27 .state1*2
+-    * set *tmp29 .state2*2
+   139 jump *label132 greaterThanEq .state1*2 .state2*2
+   140 op add .total .total 10
+   141 label *label132
+   142 label *label133
+   143 label *label134
+   144 label *label135
+-    * set *tmp24 .conv*3
+   145 sensor .state1*3 .conv*3 @totalItems
+-    * set *tmp27 .state1*3
+-    * set *tmp29 .state2*3
+   146 jump *label136 greaterThanEq .state1*3 .state2*3
+   147 op add .total .total 10
+   148 label *label136
+   149 label *label137
+   150 label *label138
+   151 label *label139
+-    * set *tmp24 .conv*4
+   152 sensor .state1*4 .conv*4 @totalItems
+-    * set *tmp27 .state1*4
+-    * set *tmp29 .state2*4
+   153 jump *label140 greaterThanEq .state1*4 .state2*4
+   154 op add .total .total 10
+   155 label *label140
+   156 label *label141
+   157 label *label142
+   158 label *label143
+-    * set *tmp24 .conv*5
+   159 sensor .state1*5 .conv*5 @totalItems
+-    * set *tmp27 .state1*5
+-    * set *tmp29 .state2*5
+   160 jump *label144 greaterThanEq .state1*5 .state2*5
+   161 op add .total .total 10
+   162 label *label144
+   163 label *label145
+   164 label *label146
+   165 label *label147
+-    * set *tmp24 .conv*6
+   166 sensor .state1*6 .conv*6 @totalItems
+-    * set *tmp27 .state1*6
+-    * set *tmp29 .state2*6
+   167 jump *label148 greaterThanEq .state1*6 .state2*6
+   168 op add .total .total 10
+   169 label *label148
+   170 label *label149
+   171 label *label150
+   172 label *label151
+-    * set *tmp24 .conv*7
+   173 sensor .state1*7 .conv*7 @totalItems
+-    * set *tmp27 .state1*7
+-    * set *tmp29 .state2*7
+   174 jump *label152 greaterThanEq .state1*7 .state2*7
+   175 op add .total .total 10
+   176 label *label152
+   177 label *label153
+   178 label *label154
+   179 label *label155
+-    * set *tmp24 .conv*8
+   180 sensor .state1*8 .conv*8 @totalItems
+-    * set *tmp27 .state1*8
+-    * set *tmp29 .state2*8
+   181 jump *label156 greaterThanEq .state1*8 .state2*8
+   182 op add .total .total 10
+   183 label *label156
+   184 label *label157
+   185 label *label158
+   186 label *label159
+-    * set *tmp24 .conv*9
+   187 sensor .state1*9 .conv*9 @totalItems
+-    * set *tmp27 .state1*9
+-    * set *tmp29 .state2*9
+   188 jump *label160 greaterThanEq .state1*9 .state2*9
+   189 op add .total .total 10
+   190 label *label160
+   191 label *label161
+   192 label *label162
+   193 label *label163
+-    * set *tmp24 .conv*10
+   194 sensor .state1*10 .conv*10 @totalItems
+-    * set *tmp27 .state1*10
+-    * set *tmp29 .state2*10
+   195 jump *label164 greaterThanEq .state1*10 .state2*10
+   196 op add .total .total 10
+   197 label *label164
+   198 label *label165
+   199 label *label166
+   200 label *label167
+-    * set *tmp24 .conv*11
+   201 sensor .state1*11 .conv*11 @totalItems
+-    * set *tmp27 .state1*11
+-    * set *tmp29 .state2*11
+   202 jump *label168 greaterThanEq .state1*11 .state2*11
+   203 op add .total .total 10
+   204 label *label168
+   205 label *label169
+   206 label *label170
+   207 label *label171
+-    * set *tmp24 .conv*12
+   208 sensor .state1*12 .conv*12 @totalItems
+-    * set *tmp27 .state1*12
+-    * set *tmp29 .state2*12
+   209 jump *label172 greaterThanEq .state1*12 .state2*12
+   210 op add .total .total 10
+   211 label *label172
+   212 label *label173
+   213 label *label174
+   214 label *label175
+-    * set *tmp24 .conv*13
+   215 sensor .state1*13 .conv*13 @totalItems
+-    * set *tmp27 .state1*13
+-    * set *tmp29 .state2*13
+   216 jump *label176 greaterThanEq .state1*13 .state2*13
+   217 op add .total .total 10
+   218 label *label176
+   219 label *label177
+   220 label *label178
+   221 label *label179
+-    * set *tmp24 .conv*14
+   222 sensor .state1*14 .conv*14 @totalItems
+-    * set *tmp27 .state1*14
+-    * set *tmp29 .state2*14
+   223 jump *label180 greaterThanEq .state1*14 .state2*14
+   224 op add .total .total 10
+   225 label *label180
+   226 label *label181
+   227 label *label182
+   228 label *label183
+-    * set *tmp24 .conv*15
+   229 sensor .state1*15 .conv*15 @totalItems
+-    * set *tmp27 .state1*15
+-    * set *tmp29 .state2*15
+   230 jump *label184 greaterThanEq .state1*15 .state2*15
+   231 op add .total .total 10
+   232 label *label184
+ 
+   250 print "\n"
+   251 label *label187
+   252 label *label188
+-    * set *tmp38 .conv*0
+   253 sensor .state2*0 .conv*0 @totalItems
+-    * set *tmp41 .state2*0
+-    * set *tmp43 .state1*0
+   254 jump *label189 greaterThanEq .state2*0 .state1*0
+   255 op add .total .total 10
+   256 label *label189
+   257 label *label190
+   258 label *label191
+   259 label *label192
+-    * set *tmp38 .conv*1
+   260 sensor .state2*1 .conv*1 @totalItems
+-    * set *tmp41 .state2*1
+-    * set *tmp43 .state1*1
+   261 jump *label193 greaterThanEq .state2*1 .state1*1
+   262 op add .total .total 10
+   263 label *label193
+   264 label *label194
+   265 label *label195
+   266 label *label196
+-    * set *tmp38 .conv*2
+   267 sensor .state2*2 .conv*2 @totalItems
+-    * set *tmp41 .state2*2
+-    * set *tmp43 .state1*2
+   268 jump *label197 greaterThanEq .state2*2 .state1*2
+   269 op add .total .total 10
+   270 label *label197
+   271 label *label198
+   272 label *label199
+   273 label *label200
+-    * set *tmp38 .conv*3
+   274 sensor .state2*3 .conv*3 @totalItems
+-    * set *tmp41 .state2*3
+-    * set *tmp43 .state1*3
+   275 jump *label201 greaterThanEq .state2*3 .state1*3
+   276 op add .total .total 10
+   277 label *label201
+   278 label *label202
+   279 label *label203
+   280 label *label204
+-    * set *tmp38 .conv*4
+   281 sensor .state2*4 .conv*4 @totalItems
+-    * set *tmp41 .state2*4
+-    * set *tmp43 .state1*4
+   282 jump *label205 greaterThanEq .state2*4 .state1*4
+   283 op add .total .total 10
+   284 label *label205
+   285 label *label206
+   286 label *label207
+   287 label *label208
+-    * set *tmp38 .conv*5
+   288 sensor .state2*5 .conv*5 @totalItems
+-    * set *tmp41 .state2*5
+-    * set *tmp43 .state1*5
+   289 jump *label209 greaterThanEq .state2*5 .state1*5
+   290 op add .total .total 10
+   291 label *label209
+   292 label *label210
+   293 label *label211
+   294 label *label212
+-    * set *tmp38 .conv*6
+   295 sensor .state2*6 .conv*6 @totalItems
+-    * set *tmp41 .state2*6
+-    * set *tmp43 .state1*6
+   296 jump *label213 greaterThanEq .state2*6 .state1*6
+   297 op add .total .total 10
+   298 label *label213
+   299 label *label214
+   300 label *label215
+   301 label *label216
+-    * set *tmp38 .conv*7
+   302 sensor .state2*7 .conv*7 @totalItems
+-    * set *tmp41 .state2*7
+-    * set *tmp43 .state1*7
+   303 jump *label217 greaterThanEq .state2*7 .state1*7
+   304 op add .total .total 10
+   305 label *label217
+   306 label *label218
+   307 label *label219
+   308 label *label220
+-    * set *tmp38 .conv*8
+   309 sensor .state2*8 .conv*8 @totalItems
+-    * set *tmp41 .state2*8
+-    * set *tmp43 .state1*8
+   310 jump *label221 greaterThanEq .state2*8 .state1*8
+   311 op add .total .total 10
+   312 label *label221
+   313 label *label222
+   314 label *label223
+   315 label *label224
+-    * set *tmp38 .conv*9
+   316 sensor .state2*9 .conv*9 @totalItems
+-    * set *tmp41 .state2*9
+-    * set *tmp43 .state1*9
+   317 jump *label225 greaterThanEq .state2*9 .state1*9
+   318 op add .total .total 10
+   319 label *label225
+   320 label *label226
+   321 label *label227
+   322 label *label228
+-    * set *tmp38 .conv*10
+   323 sensor .state2*10 .conv*10 @totalItems
+-    * set *tmp41 .state2*10
+-    * set *tmp43 .state1*10
+   324 jump *label229 greaterThanEq .state2*10 .state1*10
+   325 op add .total .total 10
+   326 label *label229
+   327 label *label230
+   328 label *label231
+   329 label *label232
+-    * set *tmp38 .conv*11
+   330 sensor .state2*11 .conv*11 @totalItems
+-    * set *tmp41 .state2*11
+-    * set *tmp43 .state1*11
+   331 jump *label233 greaterThanEq .state2*11 .state1*11
+   332 op add .total .total 10
+   333 label *label233
+   334 label *label234
+   335 label *label235
+   336 label *label236
+-    * set *tmp38 .conv*12
+   337 sensor .state2*12 .conv*12 @totalItems
+-    * set *tmp41 .state2*12
+-    * set *tmp43 .state1*12
+   338 jump *label237 greaterThanEq .state2*12 .state1*12
+   339 op add .total .total 10
+   340 label *label237
+   341 label *label238
+   342 label *label239
+   343 label *label240
+-    * set *tmp38 .conv*13
+   344 sensor .state2*13 .conv*13 @totalItems
+-    * set *tmp41 .state2*13
+-    * set *tmp43 .state1*13
+   345 jump *label241 greaterThanEq .state2*13 .state1*13
+   346 op add .total .total 10
+   347 label *label241
+   348 label *label242
+   349 label *label243
+   350 label *label244
+-    * set *tmp38 .conv*14
+   351 sensor .state2*14 .conv*14 @totalItems
+-    * set *tmp41 .state2*14
+-    * set *tmp43 .state1*14
+   352 jump *label245 greaterThanEq .state2*14 .state1*14
+   353 op add .total .total 10
+   354 label *label245
+   355 label *label246
+   356 label *label247
+   357 label *label248
+-    * set *tmp38 .conv*15
+   358 sensor .state2*15 .conv*15 @totalItems
+-    * set *tmp41 .state2*15
+-    * set *tmp43 .state1*15
+   359 jump *label249 greaterThanEq .state2*15 .state1*15
+   360 op add .total .total 10
+   361 label *label249
+
+Modifications by Virtual Instruction Expansion:
+ 
+    66 jump *label29 notEqual *tmp5 @plastanium-conveyor
+    67 label *label30
+    68 jump *label31 greaterThanEq .found 16
+-    * writearr :initialize.0:block .conv[] .found
++   69 setaddr .conv*wret *label269
++   70 set .conv*w :initialize.0:block
++   71 op mul *tmp53 .found 2
++   72 multicall *label253 *tmp53 marker1
++   73 label *label269
+    74 label *label31
+    75 label *label32
+    76 op add .found .found 1
+ 
+   385 set .total 0
+   386 write 0 .memory 0
+   387 end
++  388 multilabel *label253 marker1
++  389 set .conv*0 .conv*w
++  390 return .conv*wret
++  391 multilabel *label254 marker1
++  392 set .conv*1 .conv*w
++  393 return .conv*wret
++  394 multilabel *label255 marker1
++  395 set .conv*2 .conv*w
++  396 return .conv*wret
++  397 multilabel *label256 marker1
++  398 set .conv*3 .conv*w
++  399 return .conv*wret
++  400 multilabel *label257 marker1
++  401 set .conv*4 .conv*w
++  402 return .conv*wret
++  403 multilabel *label258 marker1
++  404 set .conv*5 .conv*w
++  405 return .conv*wret
++  406 multilabel *label259 marker1
++  407 set .conv*6 .conv*w
++  408 return .conv*wret
++  409 multilabel *label260 marker1
++  410 set .conv*7 .conv*w
++  411 return .conv*wret
++  412 multilabel *label261 marker1
++  413 set .conv*8 .conv*w
++  414 return .conv*wret
++  415 multilabel *label262 marker1
++  416 set .conv*9 .conv*w
++  417 return .conv*wret
++  418 multilabel *label263 marker1
++  419 set .conv*10 .conv*w
++  420 return .conv*wret
++  421 multilabel *label264 marker1
++  422 set .conv*11 .conv*w
++  423 return .conv*wret
++  424 multilabel *label265 marker1
++  425 set .conv*12 .conv*w
++  426 return .conv*wret
++  427 multilabel *label266 marker1
++  428 set .conv*13 .conv*w
++  429 return .conv*wret
++  430 multilabel *label267 marker1
++  431 set .conv*14 .conv*w
++  432 return .conv*wret
++  433 multilabel *label268 marker1
++  434 set .conv*15 .conv*w
++  435 return .conv*wret
 
 Modifications by Final phase, Jump Threading, iteration 1:
-+    0 label __start__
-     1 set :lastCell 0
-     2 label *label0
-     3 set .MEMORY null
  
-   130 write 0 .MEMORY :lastCell
-   131 set :n 0
-   132 label *label29
--    * jump *label31 greaterThanEq 0 @links
-+  133 jump __start__ greaterThanEq 0 @links
-   134 label *label34
-   135 write 0 .MEMORY :n
-   136 op add :n :n 1
+    90 print .found
+    91 print ")"
+    92 printflush message1
+-    * jump *label34 always
++   93 jump *label1 always
+    94 label *label33
+    95 jump *label35 lessThanEq .found 16
+    96 print "[gold]Item Counter[], version [gold]1.0[]"
+ 
+   102 print .found
+   103 print ")"
+   104 printflush message1
+-    * jump *label36 always
++  105 jump *label1 always
+   106 label *label35
+-    * jump *label37 notEqual .memory null
++  107 jump *label3 notEqual .memory null
+   108 print "$TITLE\n[salmon]No memory attached."
+   109 printflush message1
+-    * jump *label38 always
++  110 jump *label1 always
+   111 label *label37
+   112 jump *label3 always
+   113 label *label38
 
-Modifications by Final phase, Single Step Elimination, iteration 1 (-1 instructions):
+Modifications by Final phase, Unreachable Code Elimination, iteration 1 (-2 instructions):
  
-   137 label *label30
-   138 jump *label34 lessThan :n @links
-   139 label *label31
--    * end
+   108 print "$TITLE\n[salmon]No memory attached."
+   109 printflush message1
+   110 jump *label1 always
+-    * label *label37
+-    * jump *label3 always
+-    * label *label38
+-    * label *label36
+-    * label *label34
+-    * label *label2
+-    * jump *label1 always
+   111 label *label3
+   112 label *label0
+   113 control enabled switch1 false
 
-Modifications by Final phase, Print Merging, iteration 1 (-16 instructions):
+Modifications by Final phase, Print Merging, iteration 1 (-21 instructions):
  
-    92 set :startTime @time
-    93 label *label27
-    94 label *label28
--    * print "Item Counter                  "
+    81 jump *label54 greaterThanEq :initialize.0:n 0
+    82 label *label25
+    83 jump *label33 notEqual .found 0
+-    * print "[gold]Item Counter[], version [gold]1.0[]"
+-    * print "\"
+-    * print "n[salmon]No plastanium conveyor attached (maximum: "
+-    * print 16
+-    * print ","
+-    * print " found: "
++   84 print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]No plastanium conveyor attached (maximum: 16, found: "
+    85 print .found
+    86 print ")"
+    87 printflush message1
+    88 jump *label1 always
+    89 label *label33
+    90 jump *label35 lessThanEq .found 16
+-    * print "[gold]Item Counter[], version [gold]1.0[]"
+-    * print "\"
+-    * print "n[salmon]Too many plastanium conveyors attached (maximum: "
+-    * print 16
+-    * print ","
+-    * print " found: "
++   91 print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]Too many plastanium conveyors attached (maximum: 16, found: "
+    92 print .found
+    93 print ")"
+    94 printflush message1
+ 
+   221 label *label186
+   222 label *label44
+   223 write .total .memory 0
+-    * print "[gold]Item Counter[], version [gold]1.0[]"
+-    * print " "
+-    * print "           "
+-    * print "\n"
+-    * print "Monitoring [green]"
++  224 print "[gold]Item Counter[], version [gold]1.0[]            \nMonitoring [green]"
+   225 print .found
+-    * print "["
+-    * print "] conveyors"
 -    * print "\n"
 -    * print "Total items: [gold]"
-+   95 print "Item Counter                  \nTotal items: [gold]"
-    96 print :total
++  226 print "[] conveyors\nTotal items: [gold]"
+   227 print .total
 -    * print "["
 -    * print "]"
 -    * print "\n"
--    * print "Rate: [green]"
-+   97 print "[]\nRate: [green]"
-    98 print :ratePerMin
--    * print "["
--    * print "] items/min"
--    * print "\n"
--    * print "Batch size: [green]"
-+   99 print "[] items/min\nBatch size: [green]"
-   100 print :batch
--    * print "["
--    * print "]"
--    * print "\n"
--    * print "Batch time: [gold]"
-+  101 print "[]\nBatch time: [gold]"
-   102 print :elapsed
--    * print "["
--    * print "] ms"
--    * print "\n"
-   103 op sub *tmp58 @time :start
-   104 op floor *tmp59 *tmp58
--    * print "[lightgray]Loop time: "
-+  105 print "[] ms\n[lightgray]Loop time: "
-   106 print *tmp59
++  228 print "[]\n"
+   229 label *label187
+   230 label *label188
+   231 sensor .state2*0 .conv*0 @totalItems
+ 
+   344 op idiv *tmp49 *tmp47 2
+   345 print "[lightgray]Loop time: "
+   346 print *tmp49
 -    * print " "
 -    * print "ms"
 -    * print "\n"
-+  107 print " ms\n"
-   108 printflush message1
-   109 label *label14
-   110 sensor *tmp18 switch1 @enabled
++  347 print " ms\n"
+   348 printflush message1
+   349 jump *label52 equal .links @links
+   350 end
 
 Final code before resolving virtual instructions:
 
-        label __start__                                              lastCell = 0;
-    0:  set :lastCell 0                                              ...
-        label *label0                                                do
-    1:  set .MEMORY null                                             MEMORY = null;
-    2:  set .FIRST_BLOCK @links                                      FIRST_BLOCK = @links;
-    3:  set :n @links                                                n = @links;
-    4:  jump *label5 lessThanEq :n 0                                 while n > 0 do
-        label *label32                                               ...
-    5:  op sub :n :n 1                                               n -= 1;
-    6:  getlink :block :n                                            block = getlink(n);
-    7:  sensor *tmp5 :block @type                                    case block.@type
-    8:  jump *label7 notEqual *tmp5 @memory-cell                     ...
-    9:  set .MEMORY :block                                           MEMORY = block;
-   10:  set :lastCell 63                                             lastCell = 63;
-   11:  jump *label6 always 0 0                                      case block.@type
-        label *label7                                                ...
-   12:  jump *label9 notEqual *tmp5 @memory-bank                     ...
-   13:  set .MEMORY :block                                           MEMORY = block;
-   14:  set :lastCell 511                                            lastCell = 511;
-   15:  jump *label6 always 0 0                                      case block.@type
-        label *label9                                                ...
-   16:  jump *label11 notEqual *tmp5 @plastanium-conveyor            ...
-   17:  set .FIRST_BLOCK :n                                          FIRST_BLOCK = n;
-        label *label11                                               case block.@type
-        label *label6                                                ...
-   18:  jump *label32 greaterThan :n 0                               while n > 0 do
-        label *label5                                                ...
-   19:  print "Item Counter\n[salmon]No memory attached."            print("Item Counter\n[salmon]No memory attached.");
-   20:  printflush message1                                          printflush(message1);
-   21:  jump *label0 equal .MEMORY null                              do
-   22:  read :total .MEMORY 0                                        total = MEMORY[0];
-   23:  set :batch 10                                                batch = MIN_BATCH;
-   24:  set :startTime @time                                         startTime = @time;           // Batch start time
-   25:  set :ratePerMin 0                                            ratePerMin = 0;
-   26:  op add :limit :total 10                                      limit = total + batch;
-   27:  control enabled switch1 0 0 0 0                              switch1.enabled = 0;
-   28:  sensor *tmp18 switch1 @enabled                               while switch1.@enabled == 0 do
-   29:  jump *label15 notEqual *tmp18 0                              ...
-        label *label35                                               ...
-   30:  set :start @time                                             start = @time;
-   31:  set :n .FIRST_BLOCK                                          n = FIRST_BLOCK;
-   32:  jump *label18 greaterThanEq .FIRST_BLOCK @links              while n < @links do
+    0:  read .total .memory 0                                        volatile total = memory[0];
+        label *label1                                                while true do
+    1:  set .conv*0 null                                             for var out c in conv do c = null; end;
+    2:  set .conv*1 null                                             ...
+    3:  set .conv*2 null                                             ...
+    4:  set .conv*3 null                                             ...
+    5:  set .conv*4 null                                             ...
+    6:  set .conv*5 null                                             ...
+    7:  set .conv*6 null                                             ...
+    8:  set .conv*7 null                                             ...
+    9:  set .conv*8 null                                             ...
+   10:  set .conv*9 null                                             ...
+   11:  set .conv*10 null                                            ...
+   12:  set .conv*11 null                                            ...
+   13:  set .conv*12 null                                            ...
+   14:  set .conv*13 null                                            ...
+   15:  set .conv*14 null                                            ...
+   16:  set .conv*15 null                                            ...
+   17:  set .memory null                                             memory = null;
+   18:  set .found 0                                                 found = 0;
+   19:  set .links @links                                            links = @links;
+   20:  op sub :initialize.0:n .links 1                              for var n in 0 ... links descending do
+   21:  jump *label25 lessThan :initialize.0:n 0                     ...
+        label *label54                                               ...
+   22:  getlink :initialize.0:block :initialize.0:n                  var block = getlink(n);
+   23:  sensor *tmp5 :initialize.0:block @type                       case block.@type
+   24:  jump *label28 equal *tmp5 @memory-cell                       ...
+   25:  jump *label27 notEqual *tmp5 @memory-bank                    ...
+        label *label28                                               ...
+   26:  set .memory :initialize.0:block                              memory = block;
+   27:  jump *label26 always 0 0                                     case block.@type
+        label *label27                                               ...
+   28:  jump *label29 notEqual *tmp5 @plastanium-conveyor            ...
+   29:  jump *label31 greaterThanEq .found 16                        if found < MAX_LINKED then
+   30:  setaddr .conv*wret *label269                                 conv[found] = block;
+   31:  set .conv*w :initialize.0:block                              ...
+   32:  op mul *tmp53 .found 2                                       ...
+   33:  multicall *label253 *tmp53 marker1                           ...
+        label *label269                                              ...
+        label *label31                                               if found < MAX_LINKED then
+   34:  op add .found .found 1                                       case block.@type
+        label *label29                                               ...
+        label *label26                                               ...
+   35:  op sub :initialize.0:n :initialize.0:n 1                     for var n in 0 ... links descending do
+   36:  jump *label54 greaterThanEq :initialize.0:n 0                ...
+        label *label25                                               ...
+   37:  jump *label33 notEqual .found 0                              if found == 0 then
+   38:  print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]No print($"$TITLE\n[salmon]No plastanium conveyor attached (maximum: $MAX_LINKED, found: $found)");
+   39:  print .found                                                 ...
+   40:  print ")"                                                    ...
+   41:  printflush message1                                          printflush(message1);
+   42:  jump *label1 always 0 0                                      if found == 0 then
         label *label33                                               ...
-   33:  getlink :block :n                                            block = getlink(n);
-   34:  op add :n :n 1                                               n += 1;
-   35:  sensor *tmp23 :block @type                                   if block.@type == @plastanium-conveyor then
-   36:  jump *label19 notEqual *tmp23 @plastanium-conveyor           ...
-   37:  read :prev .MEMORY :n                                        prev = MEMORY[n];
-   38:  sensor :curr :block @totalItems                              curr = block.@totalItems;
-   39:  write :curr .MEMORY :n                                       MEMORY[n] = curr;
-   40:  jump *label21 greaterThanEq :curr :prev                      if curr < prev then
-   41:  op add :total :total 10                                      total += 10;
-   42:  write :total .MEMORY 0                                       MEMORY[0] = total;
-   43:  jump *label23 lessThanEq :total :limit                       if total > limit then
-   44:  op sub :duration @time :startTime                            duration = @time - startTime;
-   45:  set :startTime @time                                         startTime = @time;
-   46:  op add :limit :limit :batch                                  limit += batch;
-   47:  op div :rate :batch :duration                                rate = batch / duration;                            // items/ms
-   48:  op mul *tmp41 :rate 16.666666666666668                       MEMORY[lastCell] = rate * (1000 / 60);              // items/tick
-   49:  write *tmp41 .MEMORY :lastCell                               ...
-   50:  op idiv :ratePerMin :rate 0.000016666666666666667            ratePerMin = floor(rate * 60000);                   // items/min
-   51:  jump *label25 greaterThan :duration 2000                     if duration <= BATCH_DURATION then                  // too fast, increase batch time
-   52:  op add *tmp46 :batch 10                                      batch = min(batch + BATCH_STEP, MAX_BATCH);
-   53:  op min :batch *tmp46 1000                                    ...
-        label *label25                                               if duration <= BATCH_DURATION then                  // too fast, increase batch time
-        label *label23                                               if total > limit then
-        label *label21                                               if curr < prev then
-        label *label19                                               if block.@type == @plastanium-conveyor then
-   54:  jump *label33 lessThan :n @links                             while n < @links do
-        label *label18                                               ...
-   55:  op sub *tmp48 @time :startTime                               elapsed = floor(@time - startTime);
-   56:  op floor :elapsed *tmp48 0                                   ...
-   57:  jump *label27 lessThan :elapsed 10000                        if elapsed >= 10000 then
-   58:  op idiv *tmp52 :batch 90                                     batch = max((batch \ 90) * 10, MIN_BATCH);      // Divide batch size by 9, round to tens
-   59:  op mul *tmp53 *tmp52 10                                      ...
-   60:  op max :batch *tmp53 10                                      ...
-   61:  write 0 .MEMORY :lastCell                                    MEMORY[lastCell] = 0;
-   62:  set :ratePerMin 0                                            ratePerMin = 0;
-   63:  set :startTime @time                                         startTime = @time;
-        label *label27                                               if elapsed >= 10000 then
-   64:  print "Item Counter                  \nTotal items: [gold]"  println($"Total items: [gold]$total[]");
-   65:  print :total                                                 ...
-   66:  print "[]\nRate: [green]"                                    println($"Rate: [green]$ratePerMin[] items/min");
-   67:  print :ratePerMin                                            ...
-   68:  print "[] items/min\nBatch size: [green]"                    println($"Batch size: [green]$batch[]");
-   69:  print :batch                                                 ...
-   70:  print "[]\nBatch time: [gold]"                               println($"Batch time: [gold]$elapsed[] ms");
-   71:  print :elapsed                                               ...
-   72:  op sub *tmp58 @time :start                                   println($"[lightgray]Loop time: $ ms", floor(@time - start));
-   73:  op floor *tmp59 *tmp58 0                                     ...
-   74:  print "[] ms\n[lightgray]Loop time: "                        ...
-   75:  print *tmp59                                                 ...
-   76:  print " ms\n"                                                ...
-   77:  printflush message1                                          printflush(message1);
-   78:  sensor *tmp18 switch1 @enabled                               while switch1.@enabled == 0 do
-   79:  jump *label35 equal *tmp18 0                                 ...
-        label *label15                                               ...
-   80:  control enabled switch1 0 0 0 0                              switch1.enabled = 0;
-   81:  write 0 .MEMORY :lastCell                                    MEMORY[lastCell] = 0;
-   82:  set :n 0                                                     n = 0;
-   83:  jump __start__ greaterThanEq 0 @links                        while n < @links do
-        label *label34                                               ...
-   84:  write 0 .MEMORY :n                                           MEMORY[n] = 0;
-   85:  op add :n :n 1                                               n += 1;
-   86:  jump *label34 lessThan :n @links                             while n < @links do
+   43:  jump *label35 lessThanEq .found 16                           elsif found > MAX_LINKED then
+   44:  print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]To print($"$TITLE\n[salmon]Too many plastanium conveyors attached (maximum: $MAX_LINKED, found: $found)");
+   45:  print .found                                                 ...
+   46:  print ")"                                                    ...
+   47:  printflush message1                                          printflush(message1);
+   48:  jump *label1 always 0 0                                      elsif found > MAX_LINKED then
+        label *label35                                               ...
+   49:  jump *label3 notEqual .memory null                           elsif memory == null then
+   50:  print "$TITLE\n[salmon]No memory attached."                  print("$TITLE\n[salmon]No memory attached.");
+   51:  printflush message1                                          printflush(message1);
+   52:  jump *label1 always 0 0                                      elsif memory == null then
+        label *label3                                                while true do
+   53:  control enabled switch1 false 0 0 0                          switch1.enabled = false;
+   54:  sensor *tmp19 switch1 @enabled                               while !switch1.@enabled do
+   55:  jump *label41 notEqual *tmp19 false                          ...
+        label *label252                                              ...
+   56:  set :start @time                                             var start = @time;
+   57:  sensor .state1*0 .conv*0 @totalItems                         state1[i] = conv[i].@totalItems;
+   58:  jump *label124 greaterThanEq .state1*0 .state2*0             if state1[i] < state2[i] then
+   59:  op add .total .total 10                                      total += 10;
+        label *label124                                              if state1[i] < state2[i] then
+   60:  sensor .state1*1 .conv*1 @totalItems                         state1[i] = conv[i].@totalItems;
+   61:  jump *label128 greaterThanEq .state1*1 .state2*1             if state1[i] < state2[i] then
+   62:  op add .total .total 10                                      total += 10;
+        label *label128                                              if state1[i] < state2[i] then
+   63:  sensor .state1*2 .conv*2 @totalItems                         state1[i] = conv[i].@totalItems;
+   64:  jump *label132 greaterThanEq .state1*2 .state2*2             if state1[i] < state2[i] then
+   65:  op add .total .total 10                                      total += 10;
+        label *label132                                              if state1[i] < state2[i] then
+   66:  sensor .state1*3 .conv*3 @totalItems                         state1[i] = conv[i].@totalItems;
+   67:  jump *label136 greaterThanEq .state1*3 .state2*3             if state1[i] < state2[i] then
+   68:  op add .total .total 10                                      total += 10;
+        label *label136                                              if state1[i] < state2[i] then
+   69:  sensor .state1*4 .conv*4 @totalItems                         state1[i] = conv[i].@totalItems;
+   70:  jump *label140 greaterThanEq .state1*4 .state2*4             if state1[i] < state2[i] then
+   71:  op add .total .total 10                                      total += 10;
+        label *label140                                              if state1[i] < state2[i] then
+   72:  sensor .state1*5 .conv*5 @totalItems                         state1[i] = conv[i].@totalItems;
+   73:  jump *label144 greaterThanEq .state1*5 .state2*5             if state1[i] < state2[i] then
+   74:  op add .total .total 10                                      total += 10;
+        label *label144                                              if state1[i] < state2[i] then
+   75:  sensor .state1*6 .conv*6 @totalItems                         state1[i] = conv[i].@totalItems;
+   76:  jump *label148 greaterThanEq .state1*6 .state2*6             if state1[i] < state2[i] then
+   77:  op add .total .total 10                                      total += 10;
+        label *label148                                              if state1[i] < state2[i] then
+   78:  sensor .state1*7 .conv*7 @totalItems                         state1[i] = conv[i].@totalItems;
+   79:  jump *label152 greaterThanEq .state1*7 .state2*7             if state1[i] < state2[i] then
+   80:  op add .total .total 10                                      total += 10;
+        label *label152                                              if state1[i] < state2[i] then
+   81:  sensor .state1*8 .conv*8 @totalItems                         state1[i] = conv[i].@totalItems;
+   82:  jump *label156 greaterThanEq .state1*8 .state2*8             if state1[i] < state2[i] then
+   83:  op add .total .total 10                                      total += 10;
+        label *label156                                              if state1[i] < state2[i] then
+   84:  sensor .state1*9 .conv*9 @totalItems                         state1[i] = conv[i].@totalItems;
+   85:  jump *label160 greaterThanEq .state1*9 .state2*9             if state1[i] < state2[i] then
+   86:  op add .total .total 10                                      total += 10;
+        label *label160                                              if state1[i] < state2[i] then
+   87:  sensor .state1*10 .conv*10 @totalItems                       state1[i] = conv[i].@totalItems;
+   88:  jump *label164 greaterThanEq .state1*10 .state2*10           if state1[i] < state2[i] then
+   89:  op add .total .total 10                                      total += 10;
+        label *label164                                              if state1[i] < state2[i] then
+   90:  sensor .state1*11 .conv*11 @totalItems                       state1[i] = conv[i].@totalItems;
+   91:  jump *label168 greaterThanEq .state1*11 .state2*11           if state1[i] < state2[i] then
+   92:  op add .total .total 10                                      total += 10;
+        label *label168                                              if state1[i] < state2[i] then
+   93:  sensor .state1*12 .conv*12 @totalItems                       state1[i] = conv[i].@totalItems;
+   94:  jump *label172 greaterThanEq .state1*12 .state2*12           if state1[i] < state2[i] then
+   95:  op add .total .total 10                                      total += 10;
+        label *label172                                              if state1[i] < state2[i] then
+   96:  sensor .state1*13 .conv*13 @totalItems                       state1[i] = conv[i].@totalItems;
+   97:  jump *label176 greaterThanEq .state1*13 .state2*13           if state1[i] < state2[i] then
+   98:  op add .total .total 10                                      total += 10;
+        label *label176                                              if state1[i] < state2[i] then
+   99:  sensor .state1*14 .conv*14 @totalItems                       state1[i] = conv[i].@totalItems;
+  100:  jump *label180 greaterThanEq .state1*14 .state2*14           if state1[i] < state2[i] then
+  101:  op add .total .total 10                                      total += 10;
+        label *label180                                              if state1[i] < state2[i] then
+  102:  sensor .state1*15 .conv*15 @totalItems                       state1[i] = conv[i].@totalItems;
+  103:  jump *label184 greaterThanEq .state1*15 .state2*15           if state1[i] < state2[i] then
+  104:  op add .total .total 10                                      total += 10;
+        label *label184                                              if state1[i] < state2[i] then
+  105:  write .total .memory 0                                       memory[0] = total;
+  106:  print "[gold]Item Counter[], version [gold]1.0[]             println($"Monitoring [green]$found[] conveyors");
+  107:  print .found                                                 ...
+  108:  print "[] conveyors\nTotal items: [gold]"                    println($"Total items: [gold]$total[]");
+  109:  print .total                                                 ...
+  110:  print "[]\n"                                                 ...
+  111:  sensor .state2*0 .conv*0 @totalItems                         state2[i] = conv[i].@totalItems;
+  112:  jump *label189 greaterThanEq .state2*0 .state1*0             if state2[i] < state1[i] then
+  113:  op add .total .total 10                                      total += 10;
+        label *label189                                              if state2[i] < state1[i] then
+  114:  sensor .state2*1 .conv*1 @totalItems                         state2[i] = conv[i].@totalItems;
+  115:  jump *label193 greaterThanEq .state2*1 .state1*1             if state2[i] < state1[i] then
+  116:  op add .total .total 10                                      total += 10;
+        label *label193                                              if state2[i] < state1[i] then
+  117:  sensor .state2*2 .conv*2 @totalItems                         state2[i] = conv[i].@totalItems;
+  118:  jump *label197 greaterThanEq .state2*2 .state1*2             if state2[i] < state1[i] then
+  119:  op add .total .total 10                                      total += 10;
+        label *label197                                              if state2[i] < state1[i] then
+  120:  sensor .state2*3 .conv*3 @totalItems                         state2[i] = conv[i].@totalItems;
+  121:  jump *label201 greaterThanEq .state2*3 .state1*3             if state2[i] < state1[i] then
+  122:  op add .total .total 10                                      total += 10;
+        label *label201                                              if state2[i] < state1[i] then
+  123:  sensor .state2*4 .conv*4 @totalItems                         state2[i] = conv[i].@totalItems;
+  124:  jump *label205 greaterThanEq .state2*4 .state1*4             if state2[i] < state1[i] then
+  125:  op add .total .total 10                                      total += 10;
+        label *label205                                              if state2[i] < state1[i] then
+  126:  sensor .state2*5 .conv*5 @totalItems                         state2[i] = conv[i].@totalItems;
+  127:  jump *label209 greaterThanEq .state2*5 .state1*5             if state2[i] < state1[i] then
+  128:  op add .total .total 10                                      total += 10;
+        label *label209                                              if state2[i] < state1[i] then
+  129:  sensor .state2*6 .conv*6 @totalItems                         state2[i] = conv[i].@totalItems;
+  130:  jump *label213 greaterThanEq .state2*6 .state1*6             if state2[i] < state1[i] then
+  131:  op add .total .total 10                                      total += 10;
+        label *label213                                              if state2[i] < state1[i] then
+  132:  sensor .state2*7 .conv*7 @totalItems                         state2[i] = conv[i].@totalItems;
+  133:  jump *label217 greaterThanEq .state2*7 .state1*7             if state2[i] < state1[i] then
+  134:  op add .total .total 10                                      total += 10;
+        label *label217                                              if state2[i] < state1[i] then
+  135:  sensor .state2*8 .conv*8 @totalItems                         state2[i] = conv[i].@totalItems;
+  136:  jump *label221 greaterThanEq .state2*8 .state1*8             if state2[i] < state1[i] then
+  137:  op add .total .total 10                                      total += 10;
+        label *label221                                              if state2[i] < state1[i] then
+  138:  sensor .state2*9 .conv*9 @totalItems                         state2[i] = conv[i].@totalItems;
+  139:  jump *label225 greaterThanEq .state2*9 .state1*9             if state2[i] < state1[i] then
+  140:  op add .total .total 10                                      total += 10;
+        label *label225                                              if state2[i] < state1[i] then
+  141:  sensor .state2*10 .conv*10 @totalItems                       state2[i] = conv[i].@totalItems;
+  142:  jump *label229 greaterThanEq .state2*10 .state1*10           if state2[i] < state1[i] then
+  143:  op add .total .total 10                                      total += 10;
+        label *label229                                              if state2[i] < state1[i] then
+  144:  sensor .state2*11 .conv*11 @totalItems                       state2[i] = conv[i].@totalItems;
+  145:  jump *label233 greaterThanEq .state2*11 .state1*11           if state2[i] < state1[i] then
+  146:  op add .total .total 10                                      total += 10;
+        label *label233                                              if state2[i] < state1[i] then
+  147:  sensor .state2*12 .conv*12 @totalItems                       state2[i] = conv[i].@totalItems;
+  148:  jump *label237 greaterThanEq .state2*12 .state1*12           if state2[i] < state1[i] then
+  149:  op add .total .total 10                                      total += 10;
+        label *label237                                              if state2[i] < state1[i] then
+  150:  sensor .state2*13 .conv*13 @totalItems                       state2[i] = conv[i].@totalItems;
+  151:  jump *label241 greaterThanEq .state2*13 .state1*13           if state2[i] < state1[i] then
+  152:  op add .total .total 10                                      total += 10;
+        label *label241                                              if state2[i] < state1[i] then
+  153:  sensor .state2*14 .conv*14 @totalItems                       state2[i] = conv[i].@totalItems;
+  154:  jump *label245 greaterThanEq .state2*14 .state1*14           if state2[i] < state1[i] then
+  155:  op add .total .total 10                                      total += 10;
+        label *label245                                              if state2[i] < state1[i] then
+  156:  sensor .state2*15 .conv*15 @totalItems                       state2[i] = conv[i].@totalItems;
+  157:  jump *label249 greaterThanEq .state2*15 .state1*15           if state2[i] < state1[i] then
+  158:  op add .total .total 10                                      total += 10;
+        label *label249                                              if state2[i] < state1[i] then
+  159:  op sub *tmp47 @time :start                                   println($"[lightgray]Loop time: $ ms", floor((@time - start) / 2));
+  160:  op idiv *tmp49 *tmp47 2                                      ...
+  161:  print "[lightgray]Loop time: "                               ...
+  162:  print *tmp49                                                 ...
+  163:  print " ms\n"                                                ...
+  164:  printflush message1                                          printflush(message1);
+  165:  jump *label52 equal .links @links                            if links != @links then
+  166:  end                                                          end();
+        label *label52                                               if links != @links then
+  167:  sensor *tmp19 switch1 @enabled                               while !switch1.@enabled do
+  168:  jump *label252 equal *tmp19 false                            ...
+        label *label41                                               ...
+  169:  set .total 0                                                 total = 0;
+  170:  write 0 .memory 0                                            memory[0] = 0;
+  171:  end
+        multilabel *label253 marker1
+  172:  set .conv*0 .conv*w
+  173:  return .conv*wret
+        multilabel *label254 marker1
+  174:  set .conv*1 .conv*w
+  175:  return .conv*wret
+        multilabel *label255 marker1
+  176:  set .conv*2 .conv*w
+  177:  return .conv*wret
+        multilabel *label256 marker1
+  178:  set .conv*3 .conv*w
+  179:  return .conv*wret
+        multilabel *label257 marker1
+  180:  set .conv*4 .conv*w
+  181:  return .conv*wret
+        multilabel *label258 marker1
+  182:  set .conv*5 .conv*w
+  183:  return .conv*wret
+        multilabel *label259 marker1
+  184:  set .conv*6 .conv*w
+  185:  return .conv*wret
+        multilabel *label260 marker1
+  186:  set .conv*7 .conv*w
+  187:  return .conv*wret
+        multilabel *label261 marker1
+  188:  set .conv*8 .conv*w
+  189:  return .conv*wret
+        multilabel *label262 marker1
+  190:  set .conv*9 .conv*w
+  191:  return .conv*wret
+        multilabel *label263 marker1
+  192:  set .conv*10 .conv*w
+  193:  return .conv*wret
+        multilabel *label264 marker1
+  194:  set .conv*11 .conv*w
+  195:  return .conv*wret
+        multilabel *label265 marker1
+  196:  set .conv*12 .conv*w
+  197:  return .conv*wret
+        multilabel *label266 marker1
+  198:  set .conv*13 .conv*w
+  199:  return .conv*wret
+        multilabel *label267 marker1
+  200:  set .conv*14 .conv*w
+  201:  return .conv*wret
+        multilabel *label268 marker1
+  202:  set .conv*15 .conv*w
+  203:  return .conv*wret
 
 
-Performance: parsed in 136 ms, compiled in 179 ms, optimized in 160 ms, run in 17 ms.
-Error connecting to Mlog Watcher: Connection refused: connect
-  - make sure Mindustry with active Mlog Watcher mod is running
-  - verify Mlog Watcher listens on port 9992
+Performance: parsed in 174 ms, compiled in 246 ms, optimized in 391 ms, run in 12 ms.
 
-Program output (294 steps):
-Item Counter
-[salmon]No memory attached.
-Execution exception at instruction 28: sensor *tmp18 switch1 @enabled:
-Instruction not supported by Mindcode emulator.
-(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)
+Compiled mlog code was sent to Mlog Watcher.
+  No response from Mlog Watcher - maybe an old version is installed?
+
+Program output (1 steps):
+The program didn't generate any output.
+Execution exception at instruction 0: read .total .memory 0:
+Variable '.memory' is not an object.
+(Use the '#set err-not-an-object = false;' directive or the '--err-not-an-object false' command line option to ignore this exception.)

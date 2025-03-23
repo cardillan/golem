@@ -1,131 +1,87 @@
-set lastCell 0
-set CONV4 null
-set CONV3 null
-set CONV2 null
-set CONV1 null
-set MEMORY null
-set LINKED 0
-set LINKS @links
-set n LINKS
-op sub n n 1
-getlink block n
-sensor __tmp3 block @type
-jump 16 notEqual __tmp3 @memory-cell
-set MEMORY block
-set lastCell 63
-jump 26 always 0 0
-jump 20 notEqual __tmp3 @memory-bank
-set MEMORY block
-set lastCell 511
-jump 26 always 0 0
-jump 26 notEqual __tmp3 @plastanium-conveyor
-set CONV4 CONV3
-set CONV3 CONV2
-set CONV2 CONV1
-set CONV1 block
-op add LINKED LINKED 1
-jump 9 greaterThan n 0
-jump 33 notEqual LINKED 0
-print "Item Counter\n[salmon]No plastanium conveyor attached (maximum: 4, found: "
-print LINKED
+read .total .memory 0
+set .conv*0 null
+set .conv*1 null
+set .conv*2 null
+set .conv*3 null
+set .memory null
+set .found 0
+set .links @links
+op sub :initialize.0:n .links 1
+jump 24 lessThan :initialize.0:n 0
+getlink :initialize.0:block :initialize.0:n
+sensor *tmp5 :initialize.0:block @type
+jump 14 equal *tmp5 @memory-cell
+jump 16 notEqual *tmp5 @memory-bank
+set .memory :initialize.0:block
+jump 22 always 0 0
+jump 22 notEqual *tmp5 @plastanium-conveyor
+set .conv*3 .conv*2
+set .conv*2 .conv*1
+set .conv*1 .conv*0
+set .conv*0 :initialize.0:block
+op add .found .found 1
+op sub :initialize.0:n :initialize.0:n 1
+jump 10 greaterThanEq :initialize.0:n 0
+jump 30 notEqual .found 0
+print "[gold]Item Counter Micro[], version [gold]1.0[]\n[salmon]No plastanium conveyor attached (maximum: 4, found: "
+print .found
 print ")"
 printflush message1
 jump 1 always 0 0
-jump 39 lessThanEq LINKED 4
-print "Item Counter\n[salmon]Too many plastanium conveyors attached (maximum: 4, found: "
-print LINKED
+jump 36 lessThanEq .found 4
+print "[gold]Item Counter Micro[], version [gold]1.0[]\n[salmon]Too many plastanium conveyors attached (maximum: 4, found: "
+print .found
 print ")"
 printflush message1
 jump 1 always 0 0
-jump 43 notEqual MEMORY null
-print "Item Counter\n[salmon]No memory attached."
+jump 40 notEqual .memory null
+print "$TITLE\n[salmon]No memory attached."
 printflush message1
 jump 1 always 0 0
-set BATCH 1
-set BATCH_TXT 10
-read total MEMORY 0
-op idiv batches total 10
-op add limit batches 1
-control enabled switch1 0 0 0 0
-set b4 0
-set b3 0
-set b2 0
-set b1 0
-set ratePerMin 0
-set startTime @time
-sensor __tmp22 switch1 @enabled
-jump 127 notEqual __tmp22 0
-set start @time
-sensor a1 CONV1 @totalItems
-jump 61 greaterThanEq a1 b1
-op add batches batches 1
-sensor a2 CONV2 @totalItems
-jump 64 greaterThanEq a2 b2
-op add batches batches 1
-sensor a3 CONV3 @totalItems
-jump 67 greaterThanEq a3 b3
-op add batches batches 1
-sensor a4 CONV4 @totalItems
-jump 70 greaterThanEq a4 b4
-op add batches batches 1
-jump 82 lessThanEq batches limit
-op sub duration @time startTime
-set startTime @time
-op div rate BATCH duration
-op mul __tmp46 rate 166.66666666666666
-write __tmp46 MEMORY lastCell
-op idiv ratePerMin rate 0.0000016666666666666667
-jump 81 greaterThan duration 2000
-op add __tmp51 BATCH 1
-op min BATCH __tmp51 100
-op mul BATCH_TXT BATCH 10
-op add limit limit BATCH
-op mul total batches 10
-write total MEMORY 0
-print "Item Counter                  \nMonitoring [green]"
-print LINKED
+control enabled switch1 false 0 0 0
+sensor *tmp15 switch1 @enabled
+jump 84 notEqual *tmp15 false
+set :start @time
+sensor .state1*0 .conv*0 @totalItems
+jump 47 greaterThanEq .state1*0 .state2*0
+op add .total .total 10
+sensor .state1*1 .conv*1 @totalItems
+jump 50 greaterThanEq .state1*1 .state2*1
+op add .total .total 10
+sensor .state1*2 .conv*2 @totalItems
+jump 53 greaterThanEq .state1*2 .state2*2
+op add .total .total 10
+sensor .state1*3 .conv*3 @totalItems
+jump 56 greaterThanEq .state1*3 .state2*3
+op add .total .total 10
+write .total .memory 0
+print "[gold]Item Counter Micro[], version [gold]1.0[]            \nMonitoring [green]"
+print .found
 print "[] conveyors\nTotal items: [gold]"
-print total
-print "[]\nRate: [green]"
-print ratePerMin
-print "[] items/min\n"
-sensor b1 CONV1 @totalItems
-jump 94 greaterThanEq b1 a1
-op add batches batches 1
-sensor b2 CONV2 @totalItems
-jump 97 greaterThanEq b2 a2
-op add batches batches 1
-sensor b3 CONV3 @totalItems
-jump 100 greaterThanEq b3 a3
-op add batches batches 1
-sensor b4 CONV4 @totalItems
-jump 103 greaterThanEq b4 a4
-op add batches batches 1
-op sub __tmp72 @time startTime
-op floor elapsed __tmp72 0
-jump 113 lessThan elapsed 10000
-op idiv __tmp76 BATCH 5
-op max BATCH __tmp76 1
-op mul BATCH_TXT BATCH 10
-op add limit batches BATCH
-write 0 MEMORY lastCell
-set ratePerMin 0
-set startTime @time
-print "Batch size: [green]"
-print BATCH_TXT
-print "[]\nBatch time: [gold]"
-print elapsed
-op sub __tmp81 @time start
-op idiv __tmp83 __tmp81 2
-print "[] ms\n[lightgray]Loop time: "
-print __tmp83
+print .total
+print "[]\n"
+sensor .state2*0 .conv*0 @totalItems
+jump 65 greaterThanEq .state2*0 .state1*0
+op add .total .total 10
+sensor .state2*1 .conv*1 @totalItems
+jump 68 greaterThanEq .state2*1 .state1*1
+op add .total .total 10
+sensor .state2*2 .conv*2 @totalItems
+jump 71 greaterThanEq .state2*2 .state1*2
+op add .total .total 10
+sensor .state2*3 .conv*3 @totalItems
+jump 74 greaterThanEq .state2*3 .state1*3
+op add .total .total 10
+op sub *tmp43 @time :start
+op idiv *tmp45 *tmp43 2
+print "[lightgray]Loop time: "
+print *tmp45
 print " ms\n"
 printflush message1
-jump 125 equal LINKS @links
+jump 82 equal .links @links
 end
-sensor __tmp22 switch1 @enabled
-jump 57 equal __tmp22 0
-control enabled switch1 0 0 0 0
-write 0 MEMORY lastCell
-write 0 MEMORY 0
+sensor *tmp15 switch1 @enabled
+jump 43 equal *tmp15 false
+set .total 0
+write 0 .memory 0
 

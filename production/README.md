@@ -10,6 +10,8 @@ Regulates production or consumption by switching linked blocks on or off dependi
 
 Linking an inverted sorter (regardless of its configuration) inverts the activation logic: linked blocks are activated when the level is high and deactivated when it is low. This mode of operation is suitable for regulating demand, e.g. for siphoning off excess production to be sent to the core.
 
+**How to use:** build the schematics. If you plan to use a sorter/inverted sorter/unloader for item or mode configuration, link it first, then link the block to be monitored. After that, link all the blocks to be controlled by the schematics.
+
 Linked blocks are scanned during initialization and used according to their type as follows:
  
 * Messages are printed to the first message block found.

@@ -1,88 +1,206 @@
-set :lastCell 0
-set .MEMORY null
-set .FIRST_BLOCK @links
-set :n @links
-jump 19 lessThanEq :n 0
-op sub :n :n 1
-getlink :block :n
-sensor *tmp5 :block @type
-jump 12 notEqual *tmp5 @memory-cell
-set .MEMORY :block
-set :lastCell 63
-jump 18 always 0 0
-jump 16 notEqual *tmp5 @memory-bank
-set .MEMORY :block
-set :lastCell 511
-jump 18 always 0 0
-jump 18 notEqual *tmp5 @plastanium-conveyor
-set .FIRST_BLOCK :n
-jump 5 greaterThan :n 0
-print "Item Counter\n[salmon]No memory attached."
+read .total .memory 0
+set .conv*0 null
+set .conv*1 null
+set .conv*2 null
+set .conv*3 null
+set .conv*4 null
+set .conv*5 null
+set .conv*6 null
+set .conv*7 null
+set .conv*8 null
+set .conv*9 null
+set .conv*10 null
+set .conv*11 null
+set .conv*12 null
+set .conv*13 null
+set .conv*14 null
+set .conv*15 null
+set .memory null
+set .found 0
+set .links @links
+op sub :initialize.0:n .links 1
+jump 37 lessThan :initialize.0:n 0
+getlink :initialize.0:block :initialize.0:n
+sensor *tmp5 :initialize.0:block @type
+jump 26 equal *tmp5 @memory-cell
+jump 28 notEqual *tmp5 @memory-bank
+set .memory :initialize.0:block
+jump 35 always 0 0
+jump 35 notEqual *tmp5 @plastanium-conveyor
+jump 34 greaterThanEq .found 16
+set .conv*wret 34
+set .conv*w :initialize.0:block
+op mul *tmp53 .found 2
+op add @counter 172 *tmp53
+op add .found .found 1
+op sub :initialize.0:n :initialize.0:n 1
+jump 22 greaterThanEq :initialize.0:n 0
+jump 43 notEqual .found 0
+print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]No plastanium conveyor attached (maximum: 16, found: "
+print .found
+print ")"
 printflush message1
-jump 1 equal .MEMORY null
-read :total .MEMORY 0
-set :batch 10
-set :startTime @time
-set :ratePerMin 0
-op add :limit :total 10
-control enabled switch1 0 0 0 0
-sensor *tmp18 switch1 @enabled
-jump 80 notEqual *tmp18 0
+jump 1 always 0 0
+jump 49 lessThanEq .found 16
+print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]Too many plastanium conveyors attached (maximum: 16, found: "
+print .found
+print ")"
+printflush message1
+jump 1 always 0 0
+jump 53 notEqual .memory null
+print "$TITLE\n[salmon]No memory attached."
+printflush message1
+jump 1 always 0 0
+control enabled switch1 false 0 0 0
+sensor *tmp19 switch1 @enabled
+jump 169 notEqual *tmp19 false
 set :start @time
-set :n .FIRST_BLOCK
-jump 55 greaterThanEq .FIRST_BLOCK @links
-getlink :block :n
-op add :n :n 1
-sensor *tmp23 :block @type
-jump 54 notEqual *tmp23 @plastanium-conveyor
-read :prev .MEMORY :n
-sensor :curr :block @totalItems
-write :curr .MEMORY :n
-jump 54 greaterThanEq :curr :prev
-op add :total :total 10
-write :total .MEMORY 0
-jump 54 lessThanEq :total :limit
-op sub :duration @time :startTime
-set :startTime @time
-op add :limit :limit :batch
-op div :rate :batch :duration
-op mul *tmp41 :rate 16.666666666666668
-write *tmp41 .MEMORY :lastCell
-op idiv :ratePerMin :rate 0.000016666666666666667
-jump 54 greaterThan :duration 2000
-op add *tmp46 :batch 10
-op min :batch *tmp46 1000
-jump 33 lessThan :n @links
-op sub *tmp48 @time :startTime
-op floor :elapsed *tmp48 0
-jump 64 lessThan :elapsed 10000
-op idiv *tmp52 :batch 90
-op mul *tmp53 *tmp52 10
-op max :batch *tmp53 10
-write 0 .MEMORY :lastCell
-set :ratePerMin 0
-set :startTime @time
-print "Item Counter                  \nTotal items: [gold]"
-print :total
-print "[]\nRate: [green]"
-print :ratePerMin
-print "[] items/min\nBatch size: [green]"
-print :batch
-print "[]\nBatch time: [gold]"
-print :elapsed
-op sub *tmp58 @time :start
-op floor *tmp59 *tmp58 0
-print "[] ms\n[lightgray]Loop time: "
-print *tmp59
+sensor .state1*0 .conv*0 @totalItems
+jump 60 greaterThanEq .state1*0 .state2*0
+op add .total .total 10
+sensor .state1*1 .conv*1 @totalItems
+jump 63 greaterThanEq .state1*1 .state2*1
+op add .total .total 10
+sensor .state1*2 .conv*2 @totalItems
+jump 66 greaterThanEq .state1*2 .state2*2
+op add .total .total 10
+sensor .state1*3 .conv*3 @totalItems
+jump 69 greaterThanEq .state1*3 .state2*3
+op add .total .total 10
+sensor .state1*4 .conv*4 @totalItems
+jump 72 greaterThanEq .state1*4 .state2*4
+op add .total .total 10
+sensor .state1*5 .conv*5 @totalItems
+jump 75 greaterThanEq .state1*5 .state2*5
+op add .total .total 10
+sensor .state1*6 .conv*6 @totalItems
+jump 78 greaterThanEq .state1*6 .state2*6
+op add .total .total 10
+sensor .state1*7 .conv*7 @totalItems
+jump 81 greaterThanEq .state1*7 .state2*7
+op add .total .total 10
+sensor .state1*8 .conv*8 @totalItems
+jump 84 greaterThanEq .state1*8 .state2*8
+op add .total .total 10
+sensor .state1*9 .conv*9 @totalItems
+jump 87 greaterThanEq .state1*9 .state2*9
+op add .total .total 10
+sensor .state1*10 .conv*10 @totalItems
+jump 90 greaterThanEq .state1*10 .state2*10
+op add .total .total 10
+sensor .state1*11 .conv*11 @totalItems
+jump 93 greaterThanEq .state1*11 .state2*11
+op add .total .total 10
+sensor .state1*12 .conv*12 @totalItems
+jump 96 greaterThanEq .state1*12 .state2*12
+op add .total .total 10
+sensor .state1*13 .conv*13 @totalItems
+jump 99 greaterThanEq .state1*13 .state2*13
+op add .total .total 10
+sensor .state1*14 .conv*14 @totalItems
+jump 102 greaterThanEq .state1*14 .state2*14
+op add .total .total 10
+sensor .state1*15 .conv*15 @totalItems
+jump 105 greaterThanEq .state1*15 .state2*15
+op add .total .total 10
+write .total .memory 0
+print "[gold]Item Counter[], version [gold]1.0[]            \nMonitoring [green]"
+print .found
+print "[] conveyors\nTotal items: [gold]"
+print .total
+print "[]\n"
+sensor .state2*0 .conv*0 @totalItems
+jump 114 greaterThanEq .state2*0 .state1*0
+op add .total .total 10
+sensor .state2*1 .conv*1 @totalItems
+jump 117 greaterThanEq .state2*1 .state1*1
+op add .total .total 10
+sensor .state2*2 .conv*2 @totalItems
+jump 120 greaterThanEq .state2*2 .state1*2
+op add .total .total 10
+sensor .state2*3 .conv*3 @totalItems
+jump 123 greaterThanEq .state2*3 .state1*3
+op add .total .total 10
+sensor .state2*4 .conv*4 @totalItems
+jump 126 greaterThanEq .state2*4 .state1*4
+op add .total .total 10
+sensor .state2*5 .conv*5 @totalItems
+jump 129 greaterThanEq .state2*5 .state1*5
+op add .total .total 10
+sensor .state2*6 .conv*6 @totalItems
+jump 132 greaterThanEq .state2*6 .state1*6
+op add .total .total 10
+sensor .state2*7 .conv*7 @totalItems
+jump 135 greaterThanEq .state2*7 .state1*7
+op add .total .total 10
+sensor .state2*8 .conv*8 @totalItems
+jump 138 greaterThanEq .state2*8 .state1*8
+op add .total .total 10
+sensor .state2*9 .conv*9 @totalItems
+jump 141 greaterThanEq .state2*9 .state1*9
+op add .total .total 10
+sensor .state2*10 .conv*10 @totalItems
+jump 144 greaterThanEq .state2*10 .state1*10
+op add .total .total 10
+sensor .state2*11 .conv*11 @totalItems
+jump 147 greaterThanEq .state2*11 .state1*11
+op add .total .total 10
+sensor .state2*12 .conv*12 @totalItems
+jump 150 greaterThanEq .state2*12 .state1*12
+op add .total .total 10
+sensor .state2*13 .conv*13 @totalItems
+jump 153 greaterThanEq .state2*13 .state1*13
+op add .total .total 10
+sensor .state2*14 .conv*14 @totalItems
+jump 156 greaterThanEq .state2*14 .state1*14
+op add .total .total 10
+sensor .state2*15 .conv*15 @totalItems
+jump 159 greaterThanEq .state2*15 .state1*15
+op add .total .total 10
+op sub *tmp47 @time :start
+op idiv *tmp49 *tmp47 2
+print "[lightgray]Loop time: "
+print *tmp49
 print " ms\n"
 printflush message1
-sensor *tmp18 switch1 @enabled
-jump 30 equal *tmp18 0
-control enabled switch1 0 0 0 0
-write 0 .MEMORY :lastCell
-set :n 0
-jump 0 greaterThanEq 0 @links
-write 0 .MEMORY :n
-op add :n :n 1
-jump 84 lessThan :n @links
+jump 167 equal .links @links
+end
+sensor *tmp19 switch1 @enabled
+jump 56 equal *tmp19 false
+set .total 0
+write 0 .memory 0
+end
+set .conv*0 .conv*w
+set @counter .conv*wret
+set .conv*1 .conv*w
+set @counter .conv*wret
+set .conv*2 .conv*w
+set @counter .conv*wret
+set .conv*3 .conv*w
+set @counter .conv*wret
+set .conv*4 .conv*w
+set @counter .conv*wret
+set .conv*5 .conv*w
+set @counter .conv*wret
+set .conv*6 .conv*w
+set @counter .conv*wret
+set .conv*7 .conv*w
+set @counter .conv*wret
+set .conv*8 .conv*w
+set @counter .conv*wret
+set .conv*9 .conv*w
+set @counter .conv*wret
+set .conv*10 .conv*w
+set @counter .conv*wret
+set .conv*11 .conv*w
+set @counter .conv*wret
+set .conv*12 .conv*w
+set @counter .conv*wret
+set .conv*13 .conv*w
+set @counter .conv*wret
+set .conv*14 .conv*w
+set @counter .conv*wret
+set .conv*15 .conv*w
+set @counter .conv*wret
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
 
