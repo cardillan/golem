@@ -2,21 +2,20 @@ read *tmp0 processor1 "*mainProcessor"
 jump 0 equal *tmp0 null
 write @this processor1 "*mainProcessor"
 read :findUnit*address processor1 ":findUnit*address"
-jump 4 equal switch1 null
-jump 5 equal sorter1 null
-jump 6 equal message1 null
-jump 7 equal vault1 null
+jump 4 equal sorter1 null
+jump 5 equal message1 null
+jump 6 equal vault1 null
 print "Initializing..."
 printflush message1
 write null processor1 ":findUnit:currentUnit"
 set :findUnit*finished false
 write :findUnit*address processor1 "@counter"
 wait 1e-15
-jump 13 equal :findUnit*finished false
+jump 12 equal :findUnit*finished false
 ubind :findUnit*retval
 ucontrol flag 1764335678894 0 0 0 0
 ulocate building core false @copper 0 0 0 .core
-jump 10 equal .core null
+jump 9 equal .core null
 write @unit processor1 ":findUnit:currentUnit"
 set :findUnit*finished false
 write :findUnit*address processor1 "@counter"
@@ -25,18 +24,18 @@ print "Moving to core"
 printflush message1
 sensor :moveTo.0:x .core @x
 sensor :moveTo.0:y .core @y
-ucontrol approach :moveTo.0:x :moveTo.0:y 3 0 0
-sensor *tmp26 @unit @dead
-sensor *tmp27 @unit @controller
-op notEqual *tmp28 *tmp27 @this
-op or *tmp29 *tmp26 *tmp28
-jump 34 equal *tmp29 false
+ucontrol approach :moveTo.0:x :moveTo.0:y 5 0 0
+sensor *tmp35 @unit @dead
+sensor *tmp36 @unit @controller
+op notEqual *tmp37 *tmp36 @this
+op or *tmp38 *tmp35 *tmp37
+jump 33 equal *tmp38 false
 end
-ucontrol within :moveTo.0:x :moveTo.0:y 5 *tmp33 0
-jump 27 equal *tmp33 false
+ucontrol within :moveTo.0:x :moveTo.0:y 5 *tmp42 0
+jump 26 equal *tmp42 false
 sensor :moveItems.0:item sorter1 @config
 set :message.0:text "Taking items"
-jump 40 notEqual :moveItems.0:item null
+jump 39 notEqual :moveItems.0:item null
 set :message.0:text "Please select item to transport"
 print :message.0:text
 printflush message1
@@ -45,53 +44,64 @@ op notEqual *tmp13 *tmp12 null
 sensor *tmp14 @unit @firstItem
 op notEqual *tmp15 *tmp14 :moveItems.0:item
 op land *tmp16 *tmp13 *tmp15
-jump 49 equal *tmp16 false
+jump 48 equal *tmp16 false
 ucontrol itemDrop @air :moveItems.0:capacity 0 0 0
 ucontrol itemTake .core :moveItems.0:item :moveItems.0:capacity 0 0
-sensor *tmp26 @unit @dead
-sensor *tmp27 @unit @controller
-op notEqual *tmp28 *tmp27 @this
-op or *tmp29 *tmp26 *tmp28
-jump 56 equal *tmp29 false
+sensor *tmp35 @unit @dead
+sensor *tmp36 @unit @controller
+op notEqual *tmp37 *tmp36 @this
+op or *tmp38 *tmp35 *tmp37
+jump 55 equal *tmp38 false
 end
 sensor *tmp18 @unit @totalItems
-jump 36 notEqual *tmp18 :moveItems.0:capacity
+jump 35 notEqual *tmp18 :moveItems.0:capacity
 print "Moving to vault"
 printflush message1
 sensor :moveTo.0:x vault1 @x
 sensor :moveTo.0:y vault1 @y
-ucontrol approach :moveTo.0:x :moveTo.0:y 3 0 0
-sensor *tmp26 @unit @dead
-sensor *tmp27 @unit @controller
-op notEqual *tmp28 *tmp27 @this
-op or *tmp29 *tmp26 *tmp28
-jump 69 equal *tmp29 false
+ucontrol approach :moveTo.0:x :moveTo.0:y 5 0 0
+sensor *tmp35 @unit @dead
+sensor *tmp36 @unit @controller
+op notEqual *tmp37 *tmp36 @this
+op or *tmp38 *tmp35 *tmp37
+jump 68 equal *tmp38 false
 end
-ucontrol within :moveTo.0:x :moveTo.0:y 5 *tmp33 0
-jump 62 equal *tmp33 false
+ucontrol within :moveTo.0:x :moveTo.0:y 5 *tmp42 0
+jump 61 equal *tmp42 false
 print "Dropping items"
 printflush message1
 ucontrol itemDrop vault1 :moveItems.0:capacity 0 0 0
-sensor *tmp26 @unit @dead
-sensor *tmp27 @unit @controller
-op notEqual *tmp28 *tmp27 @this
-op or *tmp29 *tmp26 *tmp28
-jump 80 equal *tmp29 false
+sensor *tmp35 @unit @dead
+sensor *tmp36 @unit @controller
+op notEqual *tmp37 *tmp36 @this
+op or *tmp38 *tmp35 *tmp37
+jump 79 equal *tmp38 false
 end
 sensor *tmp20 sorter1 @config
 op equal *tmp21 :moveItems.0:item *tmp20
 sensor *tmp22 @unit @totalItems
 op greaterThan *tmp23 *tmp22 0
 op land *tmp24 *tmp21 *tmp23
-jump 73 notEqual *tmp24 false
-jump 22 equal :findUnit*finished false
+jump 72 notEqual *tmp24 false
+jump 21 equal :findUnit*finished false
 wait 1e-15
-jump 87 equal :findUnit*finished false
+jump 86 equal :findUnit*finished false
+sensor *tmp26 :findUnit*retval @dead
+op equal *tmp27 *tmp26 false
+sensor *tmp28 :findUnit*retval @controller
+op equal *tmp29 *tmp28 processor1
+sensor *tmp30 :findUnit*retval @controlled
+op equal *tmp31 *tmp30 false
+op or *tmp32 *tmp29 *tmp31
+op land *tmp33 *tmp27 *tmp32
+jump 101 equal *tmp33 false
+ucontrol flag null 0 0 0 0
+ucontrol unbind 0 0 0 0 0
 ubind :findUnit*retval
 ucontrol flag 1764335678894 0 0 0 0
 write @unit processor1 ":findUnit:currentUnit"
 set :findUnit*finished false
 write :findUnit*address processor1 "@counter"
-jump 22 always 0 0
+jump 21 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

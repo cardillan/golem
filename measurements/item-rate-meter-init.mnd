@@ -1,0 +1,89 @@
+#set syntax = strict;
+
+module ItemRateMeterInitialization;
+
+noinit var switch, message, primaryMem, secondaryMem;
+noinit var
+    cacheSize,
+    bufferStart,
+    bufferEnd,
+    bufferStartIndex,
+    bufferEndIndex,
+    headIndex,
+    minIndex,
+    maxIndex,
+    valueIndex,
+    totalIndex;
+
+void init()
+    do
+        switch = null;
+        message = null;
+        primaryMem = null;
+        secondaryMem = null;
+
+        println(TITLE);
+        println("[salmon]Initializing...[]");
+        for var n in 0 ... @links descending do
+            var block = getlink(n);
+            println("Found: ", block);
+            case block.@type
+                when @message then
+                    message = block;
+                when @switch then
+                    switch = block;
+                when @memory-bank, @memory-cell then
+                    primaryMem = secondaryMem;
+                    secondaryMem = block;
+            end;
+        end;
+
+        println("Message: ", message);
+        println("Switch: ", switch);
+        println("Source memory: ", primaryMem);
+        println("Target memory: ", secondaryMem);
+        if primaryMem == null then
+            println("No memory.");
+        end;
+        printflush(message);
+    while secondaryMem == null;
+
+    if primaryMem == null then
+        primaryMem = secondaryMem;
+        var memSize = memorySize(primaryMem);
+        cacheSize = 50;
+        bufferStart = cacheSize;
+        bufferEnd = memSize - 7;
+        bufferStartIndex = memSize - 7;
+        bufferEndIndex = memSize - 6;
+        headIndex = memSize - 5;
+        minIndex = memSize - 4;
+        maxIndex = memSize - 3;
+        valueIndex = memSize - 2;
+        totalIndex = memSize - 1;
+    else
+        var primarySize = memorySize(primaryMem);
+        var secondarySize = memorySize(secondaryMem);
+        cacheSize = primarySize - 2;
+        valueIndex = primarySize - 2;
+        totalIndex = primarySize - 1;
+
+        bufferStart = 0;
+        bufferEnd = secondarySize - 8;
+        bufferStartIndex = secondarySize - 7;
+        bufferEndIndex = secondarySize - 6;
+        headIndex = secondarySize - 5;
+        minIndex = secondarySize - 4;
+        maxIndex = secondarySize - 3;
+    end;
+
+    secondaryMem[bufferStartIndex] = bufferStart;
+    secondaryMem[bufferEndIndex] = bufferEnd;
+end;
+
+def memorySize(block)
+    case block.@type
+        when @memory-cell then 64;
+        when @memory-bank then 512;
+    end;
+end;

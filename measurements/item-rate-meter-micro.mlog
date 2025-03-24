@@ -1,0 +1,148 @@
+set SMOOTHING 20
+printflush null
+set .switch null
+set .message null
+set .primaryMem null
+set .secondaryMem null
+print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\n[salmon]Initializing...[]\n"
+op sub :init.0:n @links 1
+jump 26 lessThan :init.0:n 0
+getlink :init.0:block :init.0:n
+print "Found: "
+print :init.0:block
+print "\n"
+sensor *tmp2 :init.0:block @type
+jump 17 notEqual *tmp2 @message
+set .message :init.0:block
+jump 24 always 0 0
+jump 20 notEqual *tmp2 @switch
+set .switch :init.0:block
+jump 24 always 0 0
+jump 22 equal *tmp2 @memory-bank
+jump 24 notEqual *tmp2 @memory-cell
+set .primaryMem .secondaryMem
+set .secondaryMem :init.0:block
+op sub :init.0:n :init.0:n 1
+jump 9 greaterThanEq :init.0:n 0
+print "Message: "
+print .message
+print "\nSwitch: "
+print .switch
+print "\nSource memory: "
+print .primaryMem
+print "\nTarget memory: "
+print .secondaryMem
+print "\n"
+jump 37 notEqual .primaryMem null
+print "No memory.\n"
+printflush .message
+jump 2 equal .secondaryMem null
+jump 58 notEqual .primaryMem null
+set .primaryMem .secondaryMem
+sensor *tmp86 .secondaryMem @type
+jump 45 notEqual *tmp86 @memory-cell
+set *tmp85 64
+jump 49 always 0 0
+jump 48 notEqual *tmp86 @memory-bank
+set *tmp85 512
+jump 49 always 0 0
+set *tmp85 null
+set .cacheSize 50
+set .bufferStart 50
+op sub .bufferEnd *tmp85 7
+op sub .bufferStartIndex *tmp85 7
+op sub .bufferEndIndex *tmp85 6
+op sub .headIndex *tmp85 5
+op sub .valueIndex *tmp85 2
+op sub .totalIndex *tmp85 1
+jump 82 always 0 0
+sensor *tmp86 .primaryMem @type
+jump 62 notEqual *tmp86 @memory-cell
+set :init.0:primarySize 64
+jump 66 always 0 0
+jump 65 notEqual *tmp86 @memory-bank
+set :init.0:primarySize 512
+jump 66 always 0 0
+set :init.0:primarySize null
+sensor *tmp86 .secondaryMem @type
+jump 70 notEqual *tmp86 @memory-cell
+set *tmp85 64
+jump 74 always 0 0
+jump 73 notEqual *tmp86 @memory-bank
+set *tmp85 512
+jump 74 always 0 0
+set *tmp85 null
+op sub .cacheSize :init.0:primarySize 2
+op sub .valueIndex :init.0:primarySize 2
+op sub .totalIndex :init.0:primarySize 1
+set .bufferStart 0
+op sub .bufferEnd *tmp85 8
+op sub .bufferStartIndex *tmp85 7
+op sub .bufferEndIndex *tmp85 6
+op sub .headIndex *tmp85 5
+write .bufferStart .secondaryMem .bufferStartIndex
+write .bufferEnd .secondaryMem .bufferEndIndex
+op min .cacheSize SMOOTHING .cacheSize
+op mul :divisor .cacheSize 15
+set :i 0
+jump 91 greaterThanEq 0 .cacheSize
+write 0 .primaryMem :i
+op add :i :i 1
+jump 88 lessThan :i .cacheSize
+set :cacheHead 0
+read *tmp39 .secondaryMem .headIndex
+op max :head .bufferStart *tmp39
+set :step 1
+set :total 0
+set :rate 0
+control enabled .switch false 0 0 0
+set :nextTick @tick
+read :prev .primaryMem .totalIndex
+set :waits 0
+set :prevTick :nextTick
+op add :nextTick :nextTick 15
+op add *tmp45 :nextTick 15
+jump 107 lessThanEq @tick *tmp45
+op add :nextTick @tick 15
+read :prev .primaryMem .totalIndex
+jump 112 greaterThanEq @tick :nextTick
+jump 0 lessThan @tick :prevTick
+op or :waits :waits :step
+wait 0.000000000000001
+jump 108 lessThan @tick :nextTick
+read :curr .primaryMem .totalIndex
+op sub :amount :curr :prev
+set :prev :curr
+read *tmp58 .primaryMem :cacheHead
+op sub *tmp59 :total *tmp58
+op add :total *tmp59 :amount
+write :amount .primaryMem :cacheHead
+op add *tmp63 :cacheHead 1
+op mod :cacheHead *tmp63 .cacheSize
+op mul :step :step 2
+jump 136 greaterThan :step 4
+jump 131 notEqual :step 2
+op div :rate :total :divisor
+op add :head :head 1
+jump 128 lessThan :head .bufferEnd
+set :head .bufferStart
+write :head .secondaryMem .headIndex
+write :rate .secondaryMem :head
+jump 145 always 0 0
+write :rate .primaryMem .valueIndex
+print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\nTotal items: [gold]"
+print :curr
+print "[]\nCurrent rate [green]"
+jump 145 always 0 0
+jump 141 notEqual :step 8
+op idiv *tmp82 :rate 0.0002777777777777778
+print *tmp82
+print "[]/min\n[lightgray]Waits: "
+jump 145 always 0 0
+print :waits
+printflush .message
+set :waits 0
+set :step 1
+sensor *tmp83 .switch @enabled
+jump 101 equal *tmp83 false
+

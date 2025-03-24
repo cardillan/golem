@@ -1,4 +1,4 @@
-# Graphs
+# Measurements
 
 This directory contains a collection of schematics oriented at measuring and displaying various quantities
 
@@ -26,3 +26,85 @@ Linked blocks which are unsupported are ignored, and they do not slow down the p
 To count items in the middle of a plastanium belt, the flow must be interrupted by different kind of transport, such as bridges or titanium conveyors:
 
 ![Screenshot of the schematics in action](item-counter-micro.png)
+
+## Item Rate Meter
+
+Monitors item counts recorded by item counter and computes rate of item production/consumption in items/tick or items/second.
+
+## External memory usage
+
+> [!TIP]
+> This chapter documents layouts of data in memory cells and memory banks used by the schematics in this directory.
+
+Schematics in this directory store measurements in memory cells or memory banks. Measurement schematics write measured quantities into these memory banks, while graphing schematics read values to be graphed from them. The following setups are supported:
+
+* Item Counter: schematic to count produced or distributed items.
+* Item Rate Meter/Level Meter: schematics to record quantities over time:
+  * Item Rate Meter computes and records item production/consumption rate from data provided by Item Counter.
+  * Level Meter records levels of items/liquids stored in containers or energy stored in batteries.
+* Level Display: displays the data recorded by Item Rate Meter/Level Meter as a graph.
+
+Item Counter/Item Rate Meter may also be paired up with Factory Monitors to display current production rate on a factory status display.
+
+All these schematics may use one or two memory blocks for data.
+
+### Single memory block
+
+A memory bank must be used as a single memory storage if graphing is required, as memory cell doesn't have enough capacity to hold all data. If graphing is not required and just a current value is being consumed by some component, a memory cell is adequate. Memory layout for a single memory block is this:
+
+| Index          | Writes | Reads | Data                                                                                             |
+|----------------|:------:|:-----:|--------------------------------------------------------------------------------------------------|
+| 0 .. 49        |   M    |   M   | Cache used by Item Rate Meter/Level Meter for smoothing out (averaging) raw data measurements    |
+| 50 .. SIZE - 8 |   M    |  M,D  | Circular buffer holding quantities recorded over time (typically sampled at a frequency of 1 Hz) |
+| SIZE - 7       |   M    |   D   | Start of the circular buffer (50)                                                                |
+| SIZE - 6       |   M    |   D   | End of the circular buffer, exclusive (SIZE - 7)                                                 |
+| SIZE - 5       |   M    |   D   | Head of the circular buffer (i.e. latest value written)                                          |
+| SIZE - 4       |  M,D   |  M,D  | Current minimum of recorded quantities                                                           |
+| SIZE - 3       |  M,D   |  M,D  | Current maximum of recorded quantities                                                           |
+| SIZE - 2       |   M    |   D   | Current measurement (item rate or level, as measured by Item Rate Meter/Level Meter)             |
+| SIZE - 1       |   C    |   M   | Total count of items as computed by Item Counter                                                 |
+
+SIZE is the size of the memory bank (512) or memory cell (64).
+
+_Writes_ and _Reads_ specifies which components write/read the given data:
+
+* `C` denotes Item Counter
+* `M` denotes Item Rate Meter/Level Meter
+* `D` denotes Display.
+
+### Two memory blocks
+
+When two memory blocks are used, they're denoted as _primary_ and _secondary_. The primary memory block may be a memory cell or a memory bank. The secondary memory block should be a memory bank, as it holds the data to be displayed. When no graphing is required, using two memory blocks is superfluous.
+
+**Primary memory**
+
+| Index         | Writes | Reads | Data                                                                                             |
+|---------------|:------:|:-----:|--------------------------------------------------------------------------------------------------|
+| 0 .. SIZE - 3 |   M    |   M   | Cache used by Item Rate Meter/Level Meter for smoothing out (averaging) raw data measurements    |
+| SIZE - 2      |   M    |   D   | Current measurement (item rate or level, as measured by Item Rate Meter/Level Meter)             |
+| SIZE - 1      |   C    |   M   | Total count of items as computed by Item Counter                                                 |
+
+**Secondary memory**
+
+| Index          | Writes | Reads | Data                                                                                             |
+|----------------|:------:|:-----:|--------------------------------------------------------------------------------------------------|
+| 0 .. SIZE - 8  |   M    |  M,D  | Circular buffer holding quantities recorded over time (typically sampled at a frequency of 1 Hz) |
+| SIZE - 7       |   M    |   D   | Start of the circular buffer (0)                                                                 |
+| SIZE - 6       |   M    |   D   | End of the circular buffer, exclusive (SIZE - 7)                                                 |
+| SIZE - 5       |   M    |   D   | Head of the circular buffer (i.e. latest value written)                                          |
+| SIZE - 4       |  M,D   |  M,D  | Current minimum of recorded quantities                                                           |
+| SIZE - 3       |  M,D   |  M,D  | Current maximum of recorded quantities                                                           |
+| SIZE - 2       |   -    |   -   | Unused                                                                                           |
+| SIZE - 1       |   -    |   -   | Unused                                                                                           |
+
+
+### External memory access by schematics type
+
+* Cache: used exclusively by the Item Rate Meter/Level Meter.
+* Circular buffer, including start index, end index and head position: values are written in by Item Rate Meter/Level Meter, and are read by Level Display.
+* Current maximum/minimum:
+  * Item Rate Meter/Level Meter: updates the minimum/maximum when a newly recorded quantity is larger than the current maximum (read/write access),
+  * Level Display: reads the minimum/maximum and uses it to draw the graph. When drawing is finished, new minimum/maximum computed from accessed values are written back.
+* Current measurement: written by Item Rate Meter/Level Meter. May be read e.g. by a Factory Monitor.
+* Total count: written by Item Counter, read by Item Rate Meter.
+

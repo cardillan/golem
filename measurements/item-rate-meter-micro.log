@@ -1,0 +1,1345 @@
+   257 instructions before optimizations.
+    42 instructions eliminated by Temp Variables Elimination.
+     2 instructions eliminated by Case Expression Optimization.
+    28 instructions eliminated by Dead Code Elimination (5 iterations).
+C:\Home\golem\measurements\item-rate-meter-init.mnd:13:5 Variable 'minIndex' is not used.
+    11 instructions eliminated by Jump Optimization (4 iterations).
+     6 instructions eliminated by Single Step Elimination (2 passes, 6 iterations).
+     1 instructions eliminated by Expression Optimization (3 iterations).
+    10 instructions eliminated by Data Flow Optimization (3 passes, 9 iterations).
+     3 instructions modified by Loop Optimization (3 iterations).
+     3 loops improved by Loop Optimization.
+    10 instructions added by Function Inlining (4 iterations).
+     3 function calls inlined by Function Inlining.
+     6 instructions eliminated by Jump Straightening (2 passes, 4 iterations).
+     2 instructions updated by JumpThreading.
+    14 instructions eliminated by Print Merging.
+   147 instructions after optimizations.
+
+Pass 1: speed optimization selection (cost limit 840):
+  * Inline function 'memorySize' defined at item-rate-meter-init.mnd:84:1 cost    15, benefit        5.3, efficiency        0.4 (+4 instructions)
+    Inline function call at item-rate-meter-init.mnd:53:23       cost     8, benefit        1.8, efficiency        0.2
+    Inline function call at item-rate-meter-init.mnd:65:27       cost     8, benefit        1.8, efficiency        0.2
+    Inline function call at item-rate-meter-init.mnd:66:29       cost     8, benefit        1.8, efficiency        0.2
+
+Modifications by Initial phase, Case Expression Optimization, iteration 1 (-2 instructions):
+ 
+    17 print :init.0:block
+    18 print "\n"
+    19 sensor *tmp2 :init.0:block @type
+-    * set *tmp3 *tmp2
+-    * jump *label10 equal *tmp3 @message
++   20 jump *label10 equal *tmp2 @message
+    21 jump *label9 always
+    22 label *label10
+    23 set .message :init.0:block
+    24 set *tmp1 .message
+    25 jump *label8 always
+    26 label *label9
+-    * jump *label12 equal *tmp3 @switch
++   27 jump *label12 equal *tmp2 @switch
+    28 jump *label11 always
+    29 label *label12
+    30 set .switch :init.0:block
+    31 set *tmp1 .switch
+    32 jump *label8 always
+    33 label *label11
+-    * jump *label14 equal *tmp3 @memory-bank
+-    * jump *label14 equal *tmp3 @memory-cell
++   34 jump *label14 equal *tmp2 @memory-bank
++   35 jump *label14 equal *tmp2 @memory-cell
+    36 jump *label13 always
+    37 label *label14
+    38 set .primaryMem .secondaryMem
+ 
+   283 end
+   284 label *label0
+   285 sensor *tmp86 :memorySize.0:block @type
+-    * set *tmp87 *tmp86
+-    * jump *label46 equal *tmp87 @memory-cell
++  286 jump *label46 equal *tmp86 @memory-cell
+   287 jump *label45 always
+   288 label *label46
+   289 set *tmp85 64
+   290 jump *label44 always
+   291 label *label45
+-    * jump *label48 equal *tmp87 @memory-bank
++  292 jump *label48 equal *tmp86 @memory-bank
+   293 jump *label47 always
+   294 label *label48
+   295 set *tmp85 512
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-18 instructions):
+ 
+    21 jump *label9 always
+    22 label *label10
+    23 set .message :init.0:block
+-    * set *tmp1 .message
+    24 jump *label8 always
+    25 label *label9
+    26 jump *label12 equal *tmp2 @switch
+    27 jump *label11 always
+    28 label *label12
+    29 set .switch :init.0:block
+-    * set *tmp1 .switch
+    30 jump *label8 always
+    31 label *label11
+    32 jump *label14 equal *tmp2 @memory-bank
+ 
+    35 label *label14
+    36 set .primaryMem .secondaryMem
+    37 set .secondaryMem :init.0:block
+-    * set *tmp1 .secondaryMem
+    38 jump *label8 always
+    39 label *label13
+-    * set *tmp1 null
+    40 label *label8
+    41 label *label6
+    42 op sub :init.0:n :init.0:n 1
+ 
+    58 jump *label15 equal *tmp4 false
+    59 print "No memory."
+    60 print "\n"
+-    * set *tmp5 "No memory."
+    61 jump *label16 always
+    62 label *label15
+-    * set *tmp5 null
+    63 label *label16
+    64 printflush .message
+    65 label *label3
+ 
+    86 op sub *tmp13 :init.0:memSize 5
+    87 set .headIndex *tmp13
+    88 op sub *tmp14 :init.0:memSize 4
+-    * set .minIndex *tmp14
+    89 op sub *tmp15 :init.0:memSize 3
+    90 set .maxIndex *tmp15
+    91 op sub *tmp16 :init.0:memSize 2
+    92 set .valueIndex *tmp16
+    93 op sub *tmp17 :init.0:memSize 1
+    94 set .totalIndex *tmp17
+-    * set *tmp8 .totalIndex
+    95 jump *label18 always
+    96 label *label17
+    97 set :memorySize.0:block .primaryMem
+ 
+   122 op sub *tmp26 :init.0:secondarySize 5
+   123 set .headIndex *tmp26
+   124 op sub *tmp27 :init.0:secondarySize 4
+-    * set .minIndex *tmp27
+   125 op sub *tmp28 :init.0:secondarySize 3
+   126 set .maxIndex *tmp28
+-    * set *tmp8 .maxIndex
+   127 label *label18
+   128 set *tmp29 .bufferStartIndex
+   129 write .bufferStart .secondaryMem *tmp29
+ 
+   170 set *tmp49 .totalIndex
+   171 read *tmp50 .primaryMem *tmp49
+   172 set :prev *tmp50
+-    * set *tmp47 :prev
+   173 jump *label29 always
+   174 label *label28
+-    * set *tmp47 null
+   175 label *label29
+   176 label *label30
+   177 op lessThan *tmp51 @tick :nextTick
+ 
+   179 op lessThan *tmp52 @tick :prevTick
+   180 jump *label33 equal *tmp52 false
+   181 jump *label27 always
+-    * set *tmp53 null
+   182 jump *label34 always
+   183 label *label33
+-    * set *tmp53 null
+   184 label *label34
+   185 op or :waits :waits :step
+   186 wait 0.000000000000001
+ 
+   215 op greaterThanEq *tmp71 :head .bufferEnd
+   216 jump *label39 equal *tmp71 false
+   217 set :head .bufferStart
+-    * set *tmp72 :head
+   218 jump *label40 always
+   219 label *label39
+-    * set *tmp72 null
+   220 label *label40
+   221 set *tmp73 .headIndex
+   222 write :head .secondaryMem *tmp73
+ 
+   237 print "Current rate [green]"
+   238 set *tmp69 "Current rate [green]"
+   239 label *label38
+-    * set *tmp67 *tmp69
+   240 jump *label36 always
+   241 label *label35
+   242 op equal *tmp79 :step 8
+ 
+   256 set :step 1
+   257 set *tmp80 :step
+   258 label *label42
+-    * set *tmp67 *tmp80
+   259 label *label36
+   260 label *label26
+   261 sensor *tmp83 .switch @enabled
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-8 instructions):
+ 
+    85 set .bufferEndIndex *tmp12
+    86 op sub *tmp13 :init.0:memSize 5
+    87 set .headIndex *tmp13
+-    * op sub *tmp14 :init.0:memSize 4
+    88 op sub *tmp15 :init.0:memSize 3
+-    * set .maxIndex *tmp15
+    89 op sub *tmp16 :init.0:memSize 2
+    90 set .valueIndex *tmp16
+    91 op sub *tmp17 :init.0:memSize 1
+ 
+   119 set .bufferEndIndex *tmp25
+   120 op sub *tmp26 :init.0:secondarySize 5
+   121 set .headIndex *tmp26
+-    * op sub *tmp27 :init.0:secondarySize 4
+   122 op sub *tmp28 :init.0:secondarySize 3
+-    * set .maxIndex *tmp28
+   123 label *label18
+   124 set *tmp29 .bufferStartIndex
+   125 write .bufferStart .secondaryMem *tmp29
+ 
+   218 write :head .secondaryMem *tmp73
+   219 set *tmp75 :head
+   220 write :rate .secondaryMem *tmp75
+-    * set *tmp69 :rate
+   221 jump *label38 always
+   222 label *label37
+   223 set *tmp77 .valueIndex
+ 
+   230 print "]"
+   231 print "\n"
+   232 print "Current rate [green]"
+-    * set *tmp69 "Current rate [green]"
+   233 label *label38
+   234 jump *label36 always
+   235 label *label35
+ 
+   241 print "[]/min"
+   242 print "\n"
+   243 print "[lightgray]Waits: "
+-    * set *tmp80 "[lightgray]Waits: "
+   244 jump *label42 always
+   245 label *label41
+   246 print :waits
+   247 printflush .message
+   248 set :waits 0
+   249 set :step 1
+-    * set *tmp80 :step
+   250 label *label42
+   251 label *label36
+   252 label *label26
+
+Modifications by Initial phase, Dead Code Elimination, iteration 3 (-2 instructions):
+ 
+    85 set .bufferEndIndex *tmp12
+    86 op sub *tmp13 :init.0:memSize 5
+    87 set .headIndex *tmp13
+-    * op sub *tmp15 :init.0:memSize 3
+    88 op sub *tmp16 :init.0:memSize 2
+    89 set .valueIndex *tmp16
+    90 op sub *tmp17 :init.0:memSize 1
+ 
+   118 set .bufferEndIndex *tmp25
+   119 op sub *tmp26 :init.0:secondarySize 5
+   120 set .headIndex *tmp26
+-    * op sub *tmp28 :init.0:secondarySize 3
+   121 label *label18
+   122 set *tmp29 .bufferStartIndex
+   123 write .bufferStart .secondaryMem *tmp29
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-42 instructions):
+ 
+    11 op sub :init.0:n @links 1
+    12 label *label5
+    13 jump *label7 lessThan :init.0:n 0
+-    * getlink *tmp0 :init.0:n
+-    * set :init.0:block *tmp0
++   14 getlink :init.0:block :init.0:n
+    15 print "Found: "
+    16 print :init.0:block
+    17 print "\n"
+ 
+    72 setaddr :memorySize.0*retaddr *label19
+    73 call *label0 :memorySize.0*retval
+    74 label *label19
+-    * set *tmp9 :memorySize.0*retval
+-    * set :init.0:memSize *tmp9
++   75 set :init.0:memSize :memorySize.0*retval
+    76 set .cacheSize 50
+    77 set .bufferStart .cacheSize
+-    * op sub *tmp10 :init.0:memSize 7
+-    * set .bufferEnd *tmp10
+-    * op sub *tmp11 :init.0:memSize 7
+-    * set .bufferStartIndex *tmp11
+-    * op sub *tmp12 :init.0:memSize 6
+-    * set .bufferEndIndex *tmp12
+-    * op sub *tmp13 :init.0:memSize 5
+-    * set .headIndex *tmp13
+-    * op sub *tmp16 :init.0:memSize 2
+-    * set .valueIndex *tmp16
+-    * op sub *tmp17 :init.0:memSize 1
+-    * set .totalIndex *tmp17
++   78 op sub .bufferEnd :init.0:memSize 7
++   79 op sub .bufferStartIndex :init.0:memSize 7
++   80 op sub .bufferEndIndex :init.0:memSize 6
++   81 op sub .headIndex :init.0:memSize 5
++   82 op sub .valueIndex :init.0:memSize 2
++   83 op sub .totalIndex :init.0:memSize 1
+    84 jump *label18 always
+    85 label *label17
+    86 set :memorySize.0:block .primaryMem
+    87 setaddr :memorySize.0*retaddr *label20
+    88 call *label0 :memorySize.0*retval
+    89 label *label20
+-    * set *tmp18 :memorySize.0*retval
+-    * set :init.0:primarySize *tmp18
++   90 set :init.0:primarySize :memorySize.0*retval
+    91 set :memorySize.0:block .secondaryMem
+    92 setaddr :memorySize.0*retaddr *label21
+    93 call *label0 :memorySize.0*retval
+    94 label *label21
+-    * set *tmp19 :memorySize.0*retval
+-    * set :init.0:secondarySize *tmp19
+-    * op sub *tmp20 :init.0:primarySize 2
+-    * set .cacheSize *tmp20
+-    * op sub *tmp21 :init.0:primarySize 2
+-    * set .valueIndex *tmp21
+-    * op sub *tmp22 :init.0:primarySize 1
+-    * set .totalIndex *tmp22
++   95 set :init.0:secondarySize :memorySize.0*retval
++   96 op sub .cacheSize :init.0:primarySize 2
++   97 op sub .valueIndex :init.0:primarySize 2
++   98 op sub .totalIndex :init.0:primarySize 1
+    99 set .bufferStart 0
+-    * op sub *tmp23 :init.0:secondarySize 8
+-    * set .bufferEnd *tmp23
+-    * op sub *tmp24 :init.0:secondarySize 7
+-    * set .bufferStartIndex *tmp24
+-    * op sub *tmp25 :init.0:secondarySize 6
+-    * set .bufferEndIndex *tmp25
+-    * op sub *tmp26 :init.0:secondarySize 5
+-    * set .headIndex *tmp26
++  100 op sub .bufferEnd :init.0:secondarySize 8
++  101 op sub .bufferStartIndex :init.0:secondarySize 7
++  102 op sub .bufferEndIndex :init.0:secondarySize 6
++  103 op sub .headIndex :init.0:secondarySize 5
+   104 label *label18
+-    * set *tmp29 .bufferStartIndex
+-    * write .bufferStart .secondaryMem *tmp29
+-    * set *tmp31 .bufferEndIndex
+-    * write .bufferEnd .secondaryMem *tmp31
++  105 write .bufferStart .secondaryMem .bufferStartIndex
++  106 write .bufferEnd .secondaryMem .bufferEndIndex
+   107 label *label1
+-    * op min *tmp33 SMOOTHING .cacheSize
+-    * set .cacheSize *tmp33
+-    * op mul *tmp34 .cacheSize 15
+-    * set :divisor *tmp34
++  108 op min .cacheSize SMOOTHING .cacheSize
++  109 op mul :divisor .cacheSize 15
+   110 set *tmp35 .cacheSize
+   111 set :i 0
+   112 label *label22
+   113 jump *label24 greaterThanEq :i *tmp35
+-    * set *tmp36 :i
+-    * write 0 .primaryMem *tmp36
++  114 write 0 .primaryMem :i
+   115 label *label23
+   116 op add :i :i 1
+   117 jump *label22 always
+   118 label *label24
+   119 set :cacheHead 0
+-    * set *tmp38 .headIndex
+-    * read *tmp39 .secondaryMem *tmp38
+-    * op max *tmp40 .bufferStart *tmp39
+-    * set :head *tmp40
++  120 read *tmp39 .secondaryMem .headIndex
++  121 op max :head .bufferStart *tmp39
+   122 set :step 1
+   123 set :total 0
+   124 set :rate 0
+-    * set *tmp41 .switch
+-    * control enabled *tmp41 false
++  125 control enabled .switch false
+   126 set :nextTick @tick
+-    * set *tmp43 .totalIndex
+-    * read *tmp44 .primaryMem *tmp43
+-    * set :prev *tmp44
++  127 read :prev .primaryMem .totalIndex
+   128 set :waits 0
+   129 label *label25
+   130 set :prevTick :nextTick
+ 
+   132 op add *tmp45 :nextTick 15
+   133 op greaterThan *tmp46 @tick *tmp45
+   134 jump *label28 equal *tmp46 false
+-    * op add *tmp48 @tick 15
+-    * set :nextTick *tmp48
+-    * set *tmp49 .totalIndex
+-    * read *tmp50 .primaryMem *tmp49
+-    * set :prev *tmp50
++  135 op add :nextTick @tick 15
++  136 read :prev .primaryMem .totalIndex
+   137 jump *label29 always
+   138 label *label28
+   139 label *label29
+ 
+   151 label *label31
+   152 jump *label30 always
+   153 label *label32
+-    * set *tmp54 .totalIndex
+-    * read *tmp55 .primaryMem *tmp54
+-    * set :curr *tmp55
+-    * op sub *tmp56 :curr :prev
+-    * set :amount *tmp56
++  154 read :curr .primaryMem .totalIndex
++  155 op sub :amount :curr :prev
+   156 set :prev :curr
+-    * set *tmp57 :cacheHead
+-    * read *tmp58 .primaryMem *tmp57
++  157 read *tmp58 .primaryMem :cacheHead
+   158 op sub *tmp59 :total *tmp58
+-    * op add *tmp60 *tmp59 :amount
+-    * set :total *tmp60
+-    * set *tmp61 :cacheHead
+-    * write :amount .primaryMem *tmp61
++  159 op add :total *tmp59 :amount
++  160 write :amount .primaryMem :cacheHead
+   161 op add *tmp63 :cacheHead 1
+-    * op mod *tmp64 *tmp63 .cacheSize
+-    * set :cacheHead *tmp64
+-    * op mul *tmp65 :step 2
+-    * set :step *tmp65
++  162 op mod :cacheHead *tmp63 .cacheSize
++  163 op mul :step :step 2
+   164 op lessThanEq *tmp66 :step 4
+   165 jump *label35 equal *tmp66 false
+   166 op equal *tmp68 :step 2
+   167 jump *label37 equal *tmp68 false
+-    * op div *tmp70 :total :divisor
+-    * set :rate *tmp70
++  168 op div :rate :total :divisor
+   169 op add :head :head 1
+   170 op greaterThanEq *tmp71 :head .bufferEnd
+   171 jump *label39 equal *tmp71 false
+ 
+   173 jump *label40 always
+   174 label *label39
+   175 label *label40
+-    * set *tmp73 .headIndex
+-    * write :head .secondaryMem *tmp73
+-    * set *tmp75 :head
+-    * write :rate .secondaryMem *tmp75
++  176 write :head .secondaryMem .headIndex
++  177 write :rate .secondaryMem :head
+   178 jump *label38 always
+   179 label *label37
+-    * set *tmp77 .valueIndex
+-    * write :rate .primaryMem *tmp77
++  180 write :rate .primaryMem .valueIndex
+   181 print "[gold]Item Rate Meter Micro[], version [gold]1.0[]"
+   182 print "\n"
+   183 print "Total items: [gold]"
+
+Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-5 instructions):
+ 
+    16 print :init.0:block
+    17 print "\n"
+    18 sensor *tmp2 :init.0:block @type
+-    * jump *label10 equal *tmp2 @message
+-    * jump *label9 always
++   19 jump *label9 notEqual *tmp2 @message
+    20 label *label10
+    21 set .message :init.0:block
+    22 jump *label8 always
+    23 label *label9
+-    * jump *label12 equal *tmp2 @switch
+-    * jump *label11 always
++   24 jump *label11 notEqual *tmp2 @switch
+    25 label *label12
+    26 set .switch :init.0:block
+    27 jump *label8 always
+    28 label *label11
+    29 jump *label14 equal *tmp2 @memory-bank
+-    * jump *label14 equal *tmp2 @memory-cell
+-    * jump *label13 always
++   30 jump *label13 notEqual *tmp2 @memory-cell
+    31 label *label14
+    32 set .primaryMem .secondaryMem
+    33 set .secondaryMem :init.0:block
+ 
+   210 end
+   211 label *label0
+   212 sensor *tmp86 :memorySize.0:block @type
+-    * jump *label46 equal *tmp86 @memory-cell
+-    * jump *label45 always
++  213 jump *label45 notEqual *tmp86 @memory-cell
+   214 label *label46
+   215 set *tmp85 64
+   216 jump *label44 always
+   217 label *label45
+-    * jump *label48 equal *tmp86 @memory-bank
+-    * jump *label47 always
++  218 jump *label47 notEqual *tmp86 @memory-bank
+   219 label *label48
+   220 set *tmp85 512
+   221 jump *label44 always
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-11 instructions):
+ 
+    50 print "Target memory: "
+    51 print .secondaryMem
+    52 print "\n"
+-    * op equal *tmp4 .primaryMem null
+-    * jump *label15 equal *tmp4 false
++   53 jump *label15 notEqual .primaryMem null
+    54 print "No memory."
+    55 print "\n"
+    56 jump *label16 always
+ 
+    58 label *label16
+    59 printflush .message
+    60 label *label3
+-    * op equal *tmp6 .secondaryMem null
+-    * jump *label2 notEqual *tmp6 false
++   61 jump *label2 equal .secondaryMem null
+    62 label *label4
+-    * op equal *tmp7 .primaryMem null
+-    * jump *label17 equal *tmp7 false
++   63 jump *label17 notEqual .primaryMem null
+    64 set .primaryMem .secondaryMem
+    65 set :memorySize.0:block .primaryMem
+    66 setaddr :memorySize.0*retaddr *label19
+ 
+   124 set :prevTick :nextTick
+   125 op add :nextTick :nextTick 15
+   126 op add *tmp45 :nextTick 15
+-    * op greaterThan *tmp46 @tick *tmp45
+-    * jump *label28 equal *tmp46 false
++  127 jump *label28 lessThanEq @tick *tmp45
+   128 op add :nextTick @tick 15
+   129 read :prev .primaryMem .totalIndex
+   130 jump *label29 always
+   131 label *label28
+   132 label *label29
+   133 label *label30
+-    * op lessThan *tmp51 @tick :nextTick
+-    * jump *label32 equal *tmp51 false
+-    * op lessThan *tmp52 @tick :prevTick
+-    * jump *label33 equal *tmp52 false
++  134 jump *label32 greaterThanEq @tick :nextTick
++  135 jump *label33 greaterThanEq @tick :prevTick
+   136 jump *label27 always
+   137 jump *label34 always
+   138 label *label33
+ 
+   152 op add *tmp63 :cacheHead 1
+   153 op mod :cacheHead *tmp63 .cacheSize
+   154 op mul :step :step 2
+-    * op lessThanEq *tmp66 :step 4
+-    * jump *label35 equal *tmp66 false
+-    * op equal *tmp68 :step 2
+-    * jump *label37 equal *tmp68 false
++  155 jump *label35 greaterThan :step 4
++  156 jump *label37 notEqual :step 2
+   157 op div :rate :total :divisor
+   158 op add :head :head 1
+-    * op greaterThanEq *tmp71 :head .bufferEnd
+-    * jump *label39 equal *tmp71 false
++  159 jump *label39 lessThan :head .bufferEnd
+   160 set :head .bufferStart
+   161 jump *label40 always
+   162 label *label39
+ 
+   177 label *label38
+   178 jump *label36 always
+   179 label *label35
+-    * op equal *tmp79 :step 8
+-    * jump *label41 equal *tmp79 false
++  180 jump *label41 notEqual :step 8
+   181 op mul *tmp81 :rate 3600
+   182 op floor *tmp82 *tmp81
+   183 print *tmp82
+ 
+   194 label *label36
+   195 label *label26
+   196 sensor *tmp83 .switch @enabled
+-    * op equal *tmp84 *tmp83 false
+-    * jump *label25 notEqual *tmp84 false
++  197 jump *label25 equal *tmp83 false
+   198 label *label27
+   199 end
+   200 label *label0
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-5 instructions):
+ 
+    31 label *label14
+    32 set .primaryMem .secondaryMem
+    33 set .secondaryMem :init.0:block
+-    * jump *label8 always
+    34 label *label13
+    35 label *label8
+    36 label *label6
+ 
+    52 jump *label15 notEqual .primaryMem null
+    53 print "No memory."
+    54 print "\n"
+-    * jump *label16 always
+    55 label *label15
+    56 label *label16
+    57 printflush .message
+ 
+   125 jump *label28 lessThanEq @tick *tmp45
+   126 op add :nextTick @tick 15
+   127 read :prev .primaryMem .totalIndex
+-    * jump *label29 always
+   128 label *label28
+   129 label *label29
+   130 label *label30
+   131 jump *label32 greaterThanEq @tick :nextTick
+   132 jump *label33 greaterThanEq @tick :prevTick
+   133 jump *label27 always
+-    * jump *label34 always
+   134 label *label33
+   135 label *label34
+   136 op or :waits :waits :step
+ 
+   154 op add :head :head 1
+   155 jump *label39 lessThan :head .bufferEnd
+   156 set :head .bufferStart
+-    * jump *label40 always
+   157 label *label39
+   158 label *label40
+   159 write :head .secondaryMem .headIndex
+
+Modifications by Iterated phase, Expression Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+   173 jump *label36 always
+   174 label *label35
+   175 jump *label41 notEqual :step 8
+-    * op mul *tmp81 :rate 3600
+-    * op floor *tmp82 *tmp81
++  176 op idiv *tmp82 :rate 0.0002777777777777778
+   177 print *tmp82
+   178 print "[]/min"
+   179 print "\n"
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    60 label *label4
+    61 jump *label17 notEqual .primaryMem null
+    62 set .primaryMem .secondaryMem
+-    * set :memorySize.0:block .primaryMem
++   63 set :memorySize.0:block .secondaryMem
+    64 setaddr :memorySize.0*retaddr *label19
+    65 call *label0 :memorySize.0*retval
+    66 label *label19
+    67 set :init.0:memSize :memorySize.0*retval
+    68 set .cacheSize 50
+-    * set .bufferStart .cacheSize
+-    * op sub .bufferEnd :init.0:memSize 7
+-    * op sub .bufferStartIndex :init.0:memSize 7
+-    * op sub .bufferEndIndex :init.0:memSize 6
+-    * op sub .headIndex :init.0:memSize 5
+-    * op sub .valueIndex :init.0:memSize 2
+-    * op sub .totalIndex :init.0:memSize 1
++   69 set .bufferStart 50
++   70 op sub .bufferEnd :memorySize.0*retval 7
++   71 op sub .bufferStartIndex :memorySize.0*retval 7
++   72 op sub .bufferEndIndex :memorySize.0*retval 6
++   73 op sub .headIndex :memorySize.0*retval 5
++   74 op sub .valueIndex :memorySize.0*retval 2
++   75 op sub .totalIndex :memorySize.0*retval 1
+    76 jump *label18 always
+    77 label *label17
+    78 set :memorySize.0:block .primaryMem
+ 
+    89 op sub .valueIndex :init.0:primarySize 2
+    90 op sub .totalIndex :init.0:primarySize 1
+    91 set .bufferStart 0
+-    * op sub .bufferEnd :init.0:secondarySize 8
+-    * op sub .bufferStartIndex :init.0:secondarySize 7
+-    * op sub .bufferEndIndex :init.0:secondarySize 6
+-    * op sub .headIndex :init.0:secondarySize 5
++   92 op sub .bufferEnd :memorySize.0*retval 8
++   93 op sub .bufferStartIndex :memorySize.0*retval 7
++   94 op sub .bufferEndIndex :memorySize.0*retval 6
++   95 op sub .headIndex :memorySize.0*retval 5
+    96 label *label18
+    97 write .bufferStart .secondaryMem .bufferStartIndex
+    98 write .bufferEnd .secondaryMem .bufferEndIndex
+ 
+   102 set *tmp35 .cacheSize
+   103 set :i 0
+   104 label *label22
+-    * jump *label24 greaterThanEq :i *tmp35
++  105 jump *label24 greaterThanEq :i .cacheSize
+   106 write 0 .primaryMem :i
+   107 label *label23
+   108 op add :i :i 1
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3 instructions):
+ 
+    64 setaddr :memorySize.0*retaddr *label19
+    65 call *label0 :memorySize.0*retval
+    66 label *label19
+-    * set :init.0:memSize :memorySize.0*retval
+    67 set .cacheSize 50
+    68 set .bufferStart 50
+    69 op sub .bufferEnd :memorySize.0*retval 7
+ 
+    83 setaddr :memorySize.0*retaddr *label21
+    84 call *label0 :memorySize.0*retval
+    85 label *label21
+-    * set :init.0:secondarySize :memorySize.0*retval
+    86 op sub .cacheSize :init.0:primarySize 2
+    87 op sub .valueIndex :init.0:primarySize 2
+    88 op sub .totalIndex :init.0:primarySize 1
+ 
+    97 label *label1
+    98 op min .cacheSize SMOOTHING .cacheSize
+    99 op mul :divisor .cacheSize 15
+-    * set *tmp35 .cacheSize
+   100 set :i 0
+   101 label *label22
+   102 jump *label24 greaterThanEq :i .cacheSize
+
+Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
+ 
+    11 op sub :init.0:n @links 1
+    12 label *label5
+    13 jump *label7 lessThan :init.0:n 0
++   14 label *label49
+    15 getlink :init.0:block :init.0:n
+    16 print "Found: "
+    17 print :init.0:block
+ 
+    36 label *label8
+    37 label *label6
+    38 op sub :init.0:n :init.0:n 1
+-    * jump *label5 always
++   39 jump *label49 greaterThanEq :init.0:n 0
+    40 label *label7
+    41 print "Message: "
+    42 print .message
+ 
+   101 set :i 0
+   102 label *label22
+   103 jump *label24 greaterThanEq :i .cacheSize
++  104 label *label50
+   105 write 0 .primaryMem :i
+   106 label *label23
+   107 op add :i :i 1
+-    * jump *label22 always
++  108 jump *label50 lessThan :i .cacheSize
+   109 label *label24
+   110 set :cacheHead 0
+   111 read *tmp39 .secondaryMem .headIndex
+ 
+   128 label *label29
+   129 label *label30
+   130 jump *label32 greaterThanEq @tick :nextTick
++  131 label *label51
+   132 jump *label33 greaterThanEq @tick :prevTick
+   133 jump *label27 always
+   134 label *label33
+ 
+   136 op or :waits :waits :step
+   137 wait 0.000000000000001
+   138 label *label31
+-    * jump *label30 always
++  139 jump *label51 lessThan @tick :nextTick
+   140 label *label32
+   141 read :curr .primaryMem .totalIndex
+   142 op sub :amount :curr :prev
+
+Modifications by Inline function 'memorySize' defined at item-rate-meter-init.mnd:84:1 (+10 instructions):
+ 
+    62 jump *label17 notEqual .primaryMem null
+    63 set .primaryMem .secondaryMem
+    64 set :memorySize.0:block .secondaryMem
+-    * setaddr :memorySize.0*retaddr *label19
+-    * call *label0 :memorySize.0*retval
+-    * label *label19
++   65 label *label52
++   66 sensor *tmp86 :memorySize.0:block @type
++   67 jump *label54 notEqual *tmp86 @memory-cell
++   68 label *label53
++   69 set *tmp85 64
++   70 jump *label57 always
++   71 label *label54
++   72 jump *label56 notEqual *tmp86 @memory-bank
++   73 label *label55
++   74 set *tmp85 512
++   75 jump *label57 always
++   76 label *label56
++   77 set *tmp85 null
++   78 label *label57
++   79 set :memorySize.0*retval *tmp85
++   80 label *label58
+    81 set .cacheSize 50
+    82 set .bufferStart 50
+    83 op sub .bufferEnd :memorySize.0*retval 7
+ 
+    89 jump *label18 always
+    90 label *label17
+    91 set :memorySize.0:block .primaryMem
+-    * setaddr :memorySize.0*retaddr *label20
+-    * call *label0 :memorySize.0*retval
+-    * label *label20
++   92 label *label59
++   93 sensor *tmp86 :memorySize.0:block @type
++   94 jump *label61 notEqual *tmp86 @memory-cell
++   95 label *label60
++   96 set *tmp85 64
++   97 jump *label64 always
++   98 label *label61
++   99 jump *label63 notEqual *tmp86 @memory-bank
++  100 label *label62
++  101 set *tmp85 512
++  102 jump *label64 always
++  103 label *label63
++  104 set *tmp85 null
++  105 label *label64
++  106 set :memorySize.0*retval *tmp85
++  107 label *label65
+   108 set :init.0:primarySize :memorySize.0*retval
+   109 set :memorySize.0:block .secondaryMem
+-    * setaddr :memorySize.0*retaddr *label21
+-    * call *label0 :memorySize.0*retval
+-    * label *label21
++  110 label *label66
++  111 sensor *tmp86 :memorySize.0:block @type
++  112 jump *label68 notEqual *tmp86 @memory-cell
++  113 label *label67
++  114 set *tmp85 64
++  115 jump *label71 always
++  116 label *label68
++  117 jump *label70 notEqual *tmp86 @memory-bank
++  118 label *label69
++  119 set *tmp85 512
++  120 jump *label71 always
++  121 label *label70
++  122 set *tmp85 null
++  123 label *label71
++  124 set :memorySize.0*retval *tmp85
++  125 label *label72
+   126 op sub .cacheSize :init.0:primarySize 2
+   127 op sub .valueIndex :init.0:primarySize 2
+   128 op sub .totalIndex :init.0:primarySize 1
+ 
+   230 jump *label25 equal *tmp83 false
+   231 label *label27
+   232 end
+-    * label *label0
+-    * sensor *tmp86 :memorySize.0:block @type
+-    * jump *label45 notEqual *tmp86 @memory-cell
+-    * label *label46
+-    * set *tmp85 64
+-    * jump *label44 always
+-    * label *label45
+-    * jump *label47 notEqual *tmp86 @memory-bank
+-    * label *label48
+-    * set *tmp85 512
+-    * jump *label44 always
+-    * label *label47
+-    * set *tmp85 null
+-    * label *label44
+-    * set :memorySize.0*retval *tmp85
+-    * label *label43
+-    * return :memorySize.0*retaddr
+-    * end
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    63 set .primaryMem .secondaryMem
+    64 set :memorySize.0:block .secondaryMem
+    65 label *label52
+-    * sensor *tmp86 :memorySize.0:block @type
++   66 sensor *tmp86 .secondaryMem @type
+    67 jump *label54 notEqual *tmp86 @memory-cell
+    68 label *label53
+    69 set *tmp85 64
+ 
+    80 label *label58
+    81 set .cacheSize 50
+    82 set .bufferStart 50
+-    * op sub .bufferEnd :memorySize.0*retval 7
+-    * op sub .bufferStartIndex :memorySize.0*retval 7
+-    * op sub .bufferEndIndex :memorySize.0*retval 6
+-    * op sub .headIndex :memorySize.0*retval 5
+-    * op sub .valueIndex :memorySize.0*retval 2
+-    * op sub .totalIndex :memorySize.0*retval 1
++   83 op sub .bufferEnd *tmp85 7
++   84 op sub .bufferStartIndex *tmp85 7
++   85 op sub .bufferEndIndex *tmp85 6
++   86 op sub .headIndex *tmp85 5
++   87 op sub .valueIndex *tmp85 2
++   88 op sub .totalIndex *tmp85 1
+    89 jump *label18 always
+    90 label *label17
+    91 set :memorySize.0:block .primaryMem
+    92 label *label59
+-    * sensor *tmp86 :memorySize.0:block @type
++   93 sensor *tmp86 .primaryMem @type
+    94 jump *label61 notEqual *tmp86 @memory-cell
+    95 label *label60
+    96 set *tmp85 64
+ 
+   105 label *label64
+   106 set :memorySize.0*retval *tmp85
+   107 label *label65
+-    * set :init.0:primarySize :memorySize.0*retval
++  108 set :init.0:primarySize *tmp85
+   109 set :memorySize.0:block .secondaryMem
+   110 label *label66
+-    * sensor *tmp86 :memorySize.0:block @type
++  111 sensor *tmp86 .secondaryMem @type
+   112 jump *label68 notEqual *tmp86 @memory-cell
+   113 label *label67
+   114 set *tmp85 64
+ 
+   127 op sub .valueIndex :init.0:primarySize 2
+   128 op sub .totalIndex :init.0:primarySize 1
+   129 set .bufferStart 0
+-    * op sub .bufferEnd :memorySize.0*retval 8
+-    * op sub .bufferStartIndex :memorySize.0*retval 7
+-    * op sub .bufferEndIndex :memorySize.0*retval 6
+-    * op sub .headIndex :memorySize.0*retval 5
++  130 op sub .bufferEnd *tmp85 8
++  131 op sub .bufferStartIndex *tmp85 7
++  132 op sub .bufferEndIndex *tmp85 6
++  133 op sub .headIndex *tmp85 5
+   134 label *label18
+   135 write .bufferStart .secondaryMem .bufferStartIndex
+   136 write .bufferEnd .secondaryMem .bufferEndIndex
+ 
+   139 op mul :divisor .cacheSize 15
+   140 set :i 0
+   141 label *label22
+-    * jump *label24 greaterThanEq :i .cacheSize
++  142 jump *label24 greaterThanEq 0 .cacheSize
+   143 label *label50
+   144 write 0 .primaryMem :i
+   145 label *label23
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-6 instructions):
+ 
+    61 label *label4
+    62 jump *label17 notEqual .primaryMem null
+    63 set .primaryMem .secondaryMem
+-    * set :memorySize.0:block .secondaryMem
+    64 label *label52
+    65 sensor *tmp86 .secondaryMem @type
+    66 jump *label54 notEqual *tmp86 @memory-cell
+ 
+    75 label *label56
+    76 set *tmp85 null
+    77 label *label57
+-    * set :memorySize.0*retval *tmp85
+    78 label *label58
+    79 set .cacheSize 50
+    80 set .bufferStart 50
+ 
+    86 op sub .totalIndex *tmp85 1
+    87 jump *label18 always
+    88 label *label17
+-    * set :memorySize.0:block .primaryMem
+    89 label *label59
+    90 sensor *tmp86 .primaryMem @type
+    91 jump *label61 notEqual *tmp86 @memory-cell
+ 
+   100 label *label63
+   101 set *tmp85 null
+   102 label *label64
+-    * set :memorySize.0*retval *tmp85
+   103 label *label65
+   104 set :init.0:primarySize *tmp85
+-    * set :memorySize.0:block .secondaryMem
+   105 label *label66
+   106 sensor *tmp86 .secondaryMem @type
+   107 jump *label68 notEqual *tmp86 @memory-cell
+ 
+   116 label *label70
+   117 set *tmp85 null
+   118 label *label71
+-    * set :memorySize.0*retval *tmp85
+   119 label *label72
+   120 op sub .cacheSize :init.0:primarySize 2
+   121 op sub .valueIndex :init.0:primarySize 2
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-1 instructions):
+ 
+    90 sensor *tmp86 .primaryMem @type
+    91 jump *label61 notEqual *tmp86 @memory-cell
+    92 label *label60
+-    * set *tmp85 64
++   93 set :init.0:primarySize 64
+    94 jump *label64 always
+    95 label *label61
+    96 jump *label63 notEqual *tmp86 @memory-bank
+    97 label *label62
+-    * set *tmp85 512
++   98 set :init.0:primarySize 512
+    99 jump *label64 always
+   100 label *label63
+-    * set *tmp85 null
++  101 set :init.0:primarySize null
+   102 label *label64
+   103 label *label65
+-    * set :init.0:primarySize *tmp85
+   104 label *label66
+   105 sensor *tmp86 .secondaryMem @type
+   106 jump *label68 notEqual *tmp86 @memory-cell
+
+Modifications by Final phase, Jump Straightening, iteration 1 (-1 instructions):
+ 
+   161 label *label30
+   162 jump *label32 greaterThanEq @tick :nextTick
+   163 label *label51
+-    * jump *label33 greaterThanEq @tick :prevTick
+-    * jump *label27 always
++  164 jump *label27 lessThan @tick :prevTick
+   165 label *label33
+   166 label *label34
+   167 op or :waits :waits :step
+
+Modifications by Final phase, Jump Threading, iteration 1:
++    0 label __start__
+     1 set SMOOTHING 20
+     2 printflush null
+     3 label *label2
+ 
+   162 label *label30
+   163 jump *label32 greaterThanEq @tick :nextTick
+   164 label *label51
+-    * jump *label27 lessThan @tick :prevTick
++  165 jump __start__ lessThan @tick :prevTick
+   166 label *label33
+   167 label *label34
+   168 op or :waits :waits :step
+ 
+   190 label *label40
+   191 write :head .secondaryMem .headIndex
+   192 write :rate .secondaryMem :head
+-    * jump *label38 always
++  193 jump *label36 always
+   194 label *label37
+   195 write :rate .primaryMem .valueIndex
+   196 print "[gold]Item Rate Meter Micro[], version [gold]1.0[]"
+
+Modifications by Final phase, Single Step Elimination, iteration 1 (-1 instructions):
+ 
+   222 sensor *tmp83 .switch @enabled
+   223 jump *label25 equal *tmp83 false
+   224 label *label27
+-    * end
+
+Modifications by Final phase, Print Merging, iteration 1 (-14 instructions):
+ 
+     5 set .message null
+     6 set .primaryMem null
+     7 set .secondaryMem null
+-    * print "[gold]Item Rate Meter Micro[], version [gold]1.0[]"
+-    * print "\n"
+-    * print "[salmon]Initializing...[]"
+-    * print "\n"
++    8 print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\n[salmon]Initializing...[]\n"
+     9 op sub :init.0:n @links 1
+    10 label *label5
+    11 jump *label7 lessThan :init.0:n 0
+ 
+    38 label *label7
+    39 print "Message: "
+    40 print .message
+-    * print "\n"
+-    * print "Switch: "
++   41 print "\nSwitch: "
+    42 print .switch
+-    * print "\n"
+-    * print "Source memory: "
++   43 print "\nSource memory: "
+    44 print .primaryMem
+-    * print "\n"
+-    * print "Target memory: "
++   45 print "\nTarget memory: "
+    46 print .secondaryMem
+    47 print "\n"
+    48 jump *label15 notEqual .primaryMem null
+-    * print "No memory."
+-    * print "\n"
++   49 print "No memory.\n"
+    50 label *label15
+    51 label *label16
+    52 printflush .message
+ 
+   186 jump *label36 always
+   187 label *label37
+   188 write :rate .primaryMem .valueIndex
+-    * print "[gold]Item Rate Meter Micro[], version [gold]1.0[]"
+-    * print "\n"
+-    * print "Total items: [gold]"
++  189 print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\nTotal items: [gold]"
+   190 print :curr
+-    * print "["
+-    * print "]"
+-    * print "\n"
+-    * print "Current rate [green]"
++  191 print "[]\nCurrent rate [green]"
+   192 label *label38
+   193 jump *label36 always
+   194 label *label35
+   195 jump *label41 notEqual :step 8
+   196 op idiv *tmp82 :rate 0.0002777777777777778
+   197 print *tmp82
+-    * print "[]/min"
+-    * print "\n"
+-    * print "[lightgray]Waits: "
++  198 print "[]/min\n[lightgray]Waits: "
+   199 jump *label42 always
+   200 label *label41
+   201 print :waits
+
+Final code before resolving virtual instructions:
+
+        label __start__                                              item-rate-meter-micro.mnd: param SMOOTHING = 20;
+    0:  set SMOOTHING 20                                             ...
+    1:  printflush null                                              item-rate-meter-micro.mnd: printflush(null);
+        label *label2                                                item-rate-meter-init.mnd: do
+    2:  set .switch null                                             item-rate-meter-init.mnd: switch = null;
+    3:  set .message null                                            item-rate-meter-init.mnd: message = null;
+    4:  set .primaryMem null                                         item-rate-meter-init.mnd: primaryMem = null;
+    5:  set .secondaryMem null                                       item-rate-meter-init.mnd: secondaryMem = null;
+    6:  print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\n[ item-rate-meter-init.mnd: println("[salmon]Initializing...[]");
+    7:  op sub :init.0:n @links 1                                    item-rate-meter-init.mnd: for var n in 0 ... @links descending do
+    8:  jump *label7 lessThan :init.0:n 0                            ...
+        label *label49                                               ...
+    9:  getlink :init.0:block :init.0:n                              item-rate-meter-init.mnd: var block = getlink(n);
+   10:  print "Found: "                                              item-rate-meter-init.mnd: println("Found: ", block);
+   11:  print :init.0:block                                          ...
+   12:  print "\n"                                                   ...
+   13:  sensor *tmp2 :init.0:block @type                             item-rate-meter-init.mnd: case block.@type
+   14:  jump *label9 notEqual *tmp2 @message                         ...
+   15:  set .message :init.0:block                                   item-rate-meter-init.mnd: message = block;
+   16:  jump *label8 always 0 0                                      item-rate-meter-init.mnd: case block.@type
+        label *label9                                                ...
+   17:  jump *label11 notEqual *tmp2 @switch                         ...
+   18:  set .switch :init.0:block                                    item-rate-meter-init.mnd: switch = block;
+   19:  jump *label8 always 0 0                                      item-rate-meter-init.mnd: case block.@type
+        label *label11                                               ...
+   20:  jump *label14 equal *tmp2 @memory-bank                       ...
+   21:  jump *label13 notEqual *tmp2 @memory-cell                    ...
+        label *label14                                               ...
+   22:  set .primaryMem .secondaryMem                                item-rate-meter-init.mnd: primaryMem = secondaryMem;
+   23:  set .secondaryMem :init.0:block                              item-rate-meter-init.mnd: secondaryMem = block;
+        label *label13                                               item-rate-meter-init.mnd: case block.@type
+        label *label8                                                ...
+   24:  op sub :init.0:n :init.0:n 1                                 item-rate-meter-init.mnd: for var n in 0 ... @links descending do
+   25:  jump *label49 greaterThanEq :init.0:n 0                      ...
+        label *label7                                                ...
+   26:  print "Message: "                                            item-rate-meter-init.mnd: println("Message: ", message);
+   27:  print .message                                               ...
+   28:  print "\nSwitch: "                                           item-rate-meter-init.mnd: println("Switch: ", switch);
+   29:  print .switch                                                ...
+   30:  print "\nSource memory: "                                    item-rate-meter-init.mnd: println("Source memory: ", primaryMem);
+   31:  print .primaryMem                                            ...
+   32:  print "\nTarget memory: "                                    item-rate-meter-init.mnd: println("Target memory: ", secondaryMem);
+   33:  print .secondaryMem                                          ...
+   34:  print "\n"                                                   ...
+   35:  jump *label15 notEqual .primaryMem null                      item-rate-meter-init.mnd: if primaryMem == null then
+   36:  print "No memory.\n"                                         item-rate-meter-init.mnd: println("No memory.");
+        label *label15                                               item-rate-meter-init.mnd: if primaryMem == null then
+   37:  printflush .message                                          item-rate-meter-init.mnd: printflush(message);
+   38:  jump *label2 equal .secondaryMem null                        item-rate-meter-init.mnd: do
+   39:  jump *label17 notEqual .primaryMem null                      item-rate-meter-init.mnd: if primaryMem == null then
+   40:  set .primaryMem .secondaryMem                                item-rate-meter-init.mnd: primaryMem = secondaryMem;
+   41:  sensor *tmp86 .secondaryMem @type                            item-rate-meter-init.mnd: case block.@type
+   42:  jump *label54 notEqual *tmp86 @memory-cell                   ...
+   43:  set *tmp85 64                                                ...
+   44:  jump *label57 always 0 0                                     ...
+        label *label54                                               ...
+   45:  jump *label56 notEqual *tmp86 @memory-bank                   ...
+   46:  set *tmp85 512                                               ...
+   47:  jump *label57 always 0 0                                     ...
+        label *label56                                               ...
+   48:  set *tmp85 null                                              ...
+        label *label57                                               ...
+   49:  set .cacheSize 50                                            item-rate-meter-init.mnd: cacheSize = 50;
+   50:  set .bufferStart 50                                          item-rate-meter-init.mnd: bufferStart = cacheSize;
+   51:  op sub .bufferEnd *tmp85 7                                   item-rate-meter-init.mnd: bufferEnd = memSize - 7;
+   52:  op sub .bufferStartIndex *tmp85 7                            item-rate-meter-init.mnd: bufferStartIndex = memSize - 7;
+   53:  op sub .bufferEndIndex *tmp85 6                              item-rate-meter-init.mnd: bufferEndIndex = memSize - 6;
+   54:  op sub .headIndex *tmp85 5                                   item-rate-meter-init.mnd: headIndex = memSize - 5;
+   55:  op sub .valueIndex *tmp85 2                                  item-rate-meter-init.mnd: valueIndex = memSize - 2;
+   56:  op sub .totalIndex *tmp85 1                                  item-rate-meter-init.mnd: totalIndex = memSize - 1;
+   57:  jump *label18 always 0 0                                     item-rate-meter-init.mnd: if primaryMem == null then
+        label *label17                                               ...
+   58:  sensor *tmp86 .primaryMem @type                              item-rate-meter-init.mnd: case block.@type
+   59:  jump *label61 notEqual *tmp86 @memory-cell                   ...
+   60:  set :init.0:primarySize 64                                   ...
+   61:  jump *label64 always 0 0                                     ...
+        label *label61                                               ...
+   62:  jump *label63 notEqual *tmp86 @memory-bank                   ...
+   63:  set :init.0:primarySize 512                                  ...
+   64:  jump *label64 always 0 0                                     ...
+        label *label63                                               ...
+   65:  set :init.0:primarySize null                                 ...
+        label *label64                                               ...
+   66:  sensor *tmp86 .secondaryMem @type                            ...
+   67:  jump *label68 notEqual *tmp86 @memory-cell                   ...
+   68:  set *tmp85 64                                                ...
+   69:  jump *label71 always 0 0                                     ...
+        label *label68                                               ...
+   70:  jump *label70 notEqual *tmp86 @memory-bank                   ...
+   71:  set *tmp85 512                                               ...
+   72:  jump *label71 always 0 0                                     ...
+        label *label70                                               ...
+   73:  set *tmp85 null                                              ...
+        label *label71                                               ...
+   74:  op sub .cacheSize :init.0:primarySize 2                      item-rate-meter-init.mnd: cacheSize = primarySize - 2;
+   75:  op sub .valueIndex :init.0:primarySize 2                     item-rate-meter-init.mnd: valueIndex = primarySize - 2;
+   76:  op sub .totalIndex :init.0:primarySize 1                     item-rate-meter-init.mnd: totalIndex = primarySize - 1;
+   77:  set .bufferStart 0                                           item-rate-meter-init.mnd: bufferStart = 0;
+   78:  op sub .bufferEnd *tmp85 8                                   item-rate-meter-init.mnd: bufferEnd = secondarySize - 8;
+   79:  op sub .bufferStartIndex *tmp85 7                            item-rate-meter-init.mnd: bufferStartIndex = secondarySize - 7;
+   80:  op sub .bufferEndIndex *tmp85 6                              item-rate-meter-init.mnd: bufferEndIndex = secondarySize - 6;
+   81:  op sub .headIndex *tmp85 5                                   item-rate-meter-init.mnd: headIndex = secondarySize - 5;
+        label *label18                                               item-rate-meter-init.mnd: if primaryMem == null then
+   82:  write .bufferStart .secondaryMem .bufferStartIndex           item-rate-meter-init.mnd: secondaryMem[bufferStartIndex] = bufferStart;
+   83:  write .bufferEnd .secondaryMem .bufferEndIndex               item-rate-meter-init.mnd: secondaryMem[bufferEndIndex] = bufferEnd;
+   84:  op min .cacheSize SMOOTHING .cacheSize                       item-rate-meter-micro.mnd: cacheSize = min(SMOOTHING, cacheSize);
+   85:  op mul :divisor .cacheSize 15                                item-rate-meter-micro.mnd: var divisor = cacheSize * MEASUREMENT;
+   86:  set :i 0                                                     item-rate-meter-micro.mnd: for var i in 0 ... cacheSize do primaryMem[i] = 0; end;
+   87:  jump *label24 greaterThanEq 0 .cacheSize                     ...
+        label *label50                                               ...
+   88:  write 0 .primaryMem :i                                       ...
+   89:  op add :i :i 1                                               ...
+   90:  jump *label50 lessThan :i .cacheSize                         ...
+        label *label24                                               ...
+   91:  set :cacheHead 0                                             item-rate-meter-micro.mnd: var cacheHead = 0;
+   92:  read *tmp39 .secondaryMem .headIndex                         item-rate-meter-micro.mnd: var head = max(bufferStart, secondaryMem[headIndex]);
+   93:  op max :head .bufferStart *tmp39                             ...
+   94:  set :step 1                                                  item-rate-meter-micro.mnd: var step = 1;
+   95:  set :total 0                                                 item-rate-meter-micro.mnd: var total = 0;
+   96:  set :rate 0                                                  item-rate-meter-micro.mnd: var rate = 0;
+   97:  control enabled .switch false 0 0 0                          item-rate-meter-micro.mnd: switch.enabled = false;
+   98:  set :nextTick @tick                                          item-rate-meter-micro.mnd: var nextTick = @tick;
+   99:  read :prev .primaryMem .totalIndex                           item-rate-meter-micro.mnd: var prev = primaryMem[totalIndex];
+  100:  set :waits 0                                                 item-rate-meter-micro.mnd: var waits = 0;
+        label *label25                                               item-rate-meter-micro.mnd: MainLoop:
+  101:  set :prevTick :nextTick                                      item-rate-meter-micro.mnd: prevTick = nextTick;
+  102:  op add :nextTick :nextTick 15                                item-rate-meter-micro.mnd: nextTick += MEASUREMENT;
+  103:  op add *tmp45 :nextTick 15                                   item-rate-meter-micro.mnd: if @tick > nextTick + MEASUREMENT then
+  104:  jump *label28 lessThanEq @tick *tmp45                        ...
+  105:  op add :nextTick @tick 15                                    item-rate-meter-micro.mnd: nextTick = @tick + MEASUREMENT;
+  106:  read :prev .primaryMem .totalIndex                           item-rate-meter-micro.mnd: prev = primaryMem[totalIndex];
+        label *label28                                               item-rate-meter-micro.mnd: if @tick > nextTick + MEASUREMENT then
+  107:  jump *label32 greaterThanEq @tick :nextTick                  item-rate-meter-micro.mnd: while @tick < nextTick do
+        label *label51                                               ...
+  108:  jump __start__ lessThan @tick :prevTick                      item-rate-meter-micro.mnd: if @tick < prevTick then
+  109:  op or :waits :waits :step                                    item-rate-meter-micro.mnd: waits |= step;
+  110:  wait 0.000000000000001                                       item-rate-meter-micro.mnd: wait(1e-15);
+  111:  jump *label51 lessThan @tick :nextTick                       item-rate-meter-micro.mnd: while @tick < nextTick do
+        label *label32                                               ...
+  112:  read :curr .primaryMem .totalIndex                           item-rate-meter-micro.mnd: var curr = primaryMem[totalIndex];
+  113:  op sub :amount :curr :prev                                   item-rate-meter-micro.mnd: var amount = curr - prev;
+  114:  set :prev :curr                                              item-rate-meter-micro.mnd: prev = curr;
+  115:  read *tmp58 .primaryMem :cacheHead                           item-rate-meter-micro.mnd: total = total - primaryMem[cacheHead] + amount;
+  116:  op sub *tmp59 :total *tmp58                                  ...
+  117:  op add :total *tmp59 :amount                                 ...
+  118:  write :amount .primaryMem :cacheHead                         item-rate-meter-micro.mnd: primaryMem[cacheHead] = amount;
+  119:  op add *tmp63 :cacheHead 1                                   item-rate-meter-micro.mnd: cacheHead = (cacheHead + 1) % cacheSize;
+  120:  op mod :cacheHead *tmp63 .cacheSize                          ...
+  121:  op mul :step :step 2                                         item-rate-meter-micro.mnd: step = step * 2;
+  122:  jump *label35 greaterThan :step 4                            item-rate-meter-micro.mnd: if step <= 4 then
+  123:  jump *label37 notEqual :step 2                               item-rate-meter-micro.mnd: if step == 2 then
+  124:  op div :rate :total :divisor                                 item-rate-meter-micro.mnd: rate = total / divisor;
+  125:  op add :head :head 1                                         item-rate-meter-micro.mnd: if ++head >= bufferEnd then
+  126:  jump *label39 lessThan :head .bufferEnd                      ...
+  127:  set :head .bufferStart                                       item-rate-meter-micro.mnd: head = bufferStart;
+        label *label39                                               item-rate-meter-micro.mnd: if ++head >= bufferEnd then
+  128:  write :head .secondaryMem .headIndex                         item-rate-meter-micro.mnd: secondaryMem[headIndex] = head;
+  129:  write :rate .secondaryMem :head                              item-rate-meter-micro.mnd: secondaryMem[head] = rate;
+  130:  jump *label36 always 0 0                                     item-rate-meter-micro.mnd: if step == 2 then
+        label *label37                                               ...
+  131:  write :rate .primaryMem .valueIndex                          item-rate-meter-micro.mnd: primaryMem[valueIndex] = rate;
+  132:  print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\nT item-rate-meter-micro.mnd: println($"Total items: [gold]$curr[]");
+  133:  print :curr                                                  ...
+  134:  print "[]\nCurrent rate [green]"                             item-rate-meter-micro.mnd: print("Current rate [green]");
+  135:  jump *label36 always 0 0                                     item-rate-meter-micro.mnd: if step <= 4 then
+        label *label35                                               ...
+  136:  jump *label41 notEqual :step 8                               item-rate-meter-micro.mnd: if step == 8 then
+  137:  op idiv *tmp82 :rate 0.0002777777777777778                   item-rate-meter-micro.mnd: println(floor(rate * 3600), "[]/min");
+  138:  print *tmp82                                                 ...
+  139:  print "[]/min\n[lightgray]Waits: "                           item-rate-meter-micro.mnd: print("[lightgray]Waits: ");
+  140:  jump *label42 always 0 0                                     item-rate-meter-micro.mnd: if step == 8 then
+        label *label41                                               ...
+  141:  print :waits                                                 item-rate-meter-micro.mnd: print(waits);
+  142:  printflush .message                                          item-rate-meter-micro.mnd: printflush(message);
+  143:  set :waits 0                                                 item-rate-meter-micro.mnd: waits = 0;
+  144:  set :step 1                                                  item-rate-meter-micro.mnd: step = 1;
+        label *label42                                               item-rate-meter-micro.mnd: if step == 8 then
+        label *label36                                               item-rate-meter-micro.mnd: if step <= 4 then
+  145:  sensor *tmp83 .switch @enabled                               item-rate-meter-micro.mnd: while !switch.@enabled;
+  146:  jump *label25 equal *tmp83 false                             item-rate-meter-micro.mnd: MainLoop:
+
+
+Performance: parsed in 222 ms, compiled in 223 ms, optimized in 219 ms, run in 20 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  No response from Mlog Watcher - maybe an old version is installed?
+
+Program output (536 steps):
+[gold]Item Rate Meter Micro[], version [gold]1.0[]
+[salmon]Initializing...[]
+Found: message
+Found: message
+Found: message
+Found: message
+Found: message
+Found: message
+Found: message
+Found: message
+Found: message
+Found: display
+Found: display
+Found: display
+Found: display
+Found: display
+Found: display
+Found: display
+Found: display
+Found: display
+Found: bank
+Found: bank
+Found: bank
+Found: bank
+Found: bank
+Found: bank
+Found: bank
+Found: bank
+Found: bank
+Found: cell
+Found: cell
+Found: cell
+Found: cell
+Found: cell
+Found: cell
+Found: cell
+Found: cell
+Found: cell
+Message: message
+Switch: null
+Source memory: cell
+Target memory: cell
+
+Execution exception at instruction 110: wait 0.000000000000001:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

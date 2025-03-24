@@ -7,16 +7,20 @@ set .display null
 set .memory null
 print "Mandelbrot Generator"
 set :findLinkedBlocks.0:n @links
-jump 20 lessThanEq :findLinkedBlocks.0:n 0
+jump 24 lessThanEq :findLinkedBlocks.0:n 0
 op sub :findLinkedBlocks.0:n :findLinkedBlocks.0:n 1
 getlink :findLinkedBlocks.0:block :findLinkedBlocks.0:n
 print "\nFound: "
 print :findLinkedBlocks.0:block
 sensor :findLinkedBlocks.0:type :findLinkedBlocks.0:block @type
-jump 17 notEqual @large-logic-display :findLinkedBlocks.0:type
-set .display :findLinkedBlocks.0:block
-jump 19 notEqual @memory-bank :findLinkedBlocks.0:type
-set .memory :findLinkedBlocks.0:block
+set :findLinkedBlocks.0:variable .display
+jump 18 notEqual @large-logic-display :findLinkedBlocks.0:type
+set :findLinkedBlocks.0:variable :findLinkedBlocks.0:block
+set .display :findLinkedBlocks.0:variable
+set :findLinkedBlocks.0:variable .memory
+jump 22 notEqual @memory-bank :findLinkedBlocks.0:type
+set :findLinkedBlocks.0:variable :findLinkedBlocks.0:block
+set .memory :findLinkedBlocks.0:variable
 jump 10 greaterThan :findLinkedBlocks.0:n 0
 print "\nDisplay: "
 print .display
@@ -26,38 +30,38 @@ print .memory
 op and :findLinkedBlocks.0:foundAll :findLinkedBlocks.0:foundAll .memory
 printflush null
 jump 5 equal :findLinkedBlocks.0:foundAll false
-jump 41 greaterThanEq .PROC_STATE_INDEX 512
+jump 45 greaterThanEq .PROC_STATE_INDEX 512
 read *tmp124 .memory .PROC_ID_INDEX
-jump 33 notEqual *tmp124 .PROCESSOR_ID
+jump 37 notEqual *tmp124 .PROCESSOR_ID
 write 0 .memory .PROC_STATE_INDEX
-jump 41 always 0 0
+jump 45 always 0 0
 read *tmp130 .memory .PROC_ID_INDEX
-jump 38 notEqual *tmp130 0
+jump 42 notEqual *tmp130 0
 write .PROCESSOR_ID .memory .PROC_ID_INDEX
 write 0 .memory .PROC_STATE_INDEX
-jump 41 always 0 0
+jump 45 always 0 0
 op add .PROC_ID_INDEX .PROC_ID_INDEX 2
 op add .PROC_STATE_INDEX .PROC_STATE_INDEX 2
-jump 29 lessThan .PROC_STATE_INDEX 512
+jump 33 lessThan .PROC_STATE_INDEX 512
 read *tmp0 .memory 64
-jump 28 equal .start *tmp0
+jump 32 equal .start *tmp0
 read *tmp0 .memory 64
 set .start *tmp0
 read *tmp1 .memory 65
 set .stop *tmp1
-jump 60 greaterThanEq .PROC_STATE_INDEX 512
+jump 64 greaterThanEq .PROC_STATE_INDEX 512
 read *tmp124 .memory .PROC_ID_INDEX
-jump 52 notEqual *tmp124 .PROCESSOR_ID
+jump 56 notEqual *tmp124 .PROCESSOR_ID
 write *tmp0 .memory .PROC_STATE_INDEX
-jump 60 always 0 0
+jump 64 always 0 0
 read *tmp130 .memory .PROC_ID_INDEX
-jump 57 notEqual *tmp130 0
+jump 61 notEqual *tmp130 0
 write .PROCESSOR_ID .memory .PROC_ID_INDEX
 write *tmp0 .memory .PROC_STATE_INDEX
-jump 60 always 0 0
+jump 64 always 0 0
 op add .PROC_ID_INDEX .PROC_ID_INDEX 2
 op add .PROC_STATE_INDEX .PROC_STATE_INDEX 2
-jump 48 lessThan .PROC_STATE_INDEX 512
+jump 52 lessThan .PROC_STATE_INDEX 512
 read .ZOOM .memory 68
 op div *tmp26 -88 .ZOOM
 read *tmp2 .memory 66
@@ -79,17 +83,17 @@ op mul *tmp32 17 :line
 op mod :x *tmp32 176
 op add :position :x 158
 read *tmp36 .memory :position
-jump 860 notEqual *tmp36 0
+jump 864 notEqual *tmp36 0
 write .PROCESSOR_ID .memory :position
 set :y 0
 op div *tmp42 :x .ZOOM
 op add :compute.0:zx *tmp42 .OFFSET_X
 op div *tmp44 :y .ZOOM
 op add :compute.0:zy *tmp44 .OFFSET_Y
-jump 92 equal .JULIA false
+jump 96 equal .JULIA false
 set :compute.0:cx .JULIA_X
 set :compute.0:cy .JULIA_Y
-jump 108 always 0 0
+jump 112 always 0 0
 set :compute.0:cx :compute.0:zx
 set :compute.0:cy :compute.0:zy
 op sub *tmp47 :compute.0:zx 0.25
@@ -98,14 +102,14 @@ op mul *tmp49 2 :compute.0:p
 op mul *tmp50 *tmp49 :compute.0:p
 op sub *tmp51 :compute.0:p *tmp50
 op add *tmp52 *tmp51 0.25
-jump 103 greaterThan :compute.0:zx *tmp52
+jump 107 greaterThan :compute.0:zx *tmp52
 set *tmp41 63
-jump 811 always 0 0
+jump 815 always 0 0
 op add *tmp55 :compute.0:zx 1
 op len *tmp56 *tmp55 :compute.0:zy
-jump 108 greaterThan *tmp56 0.25
+jump 112 greaterThan *tmp56 0.25
 set *tmp41 63
-jump 811 always 0 0
+jump 815 always 0 0
 set :compute.0:i 0
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -116,7 +120,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 set :compute.0:i 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -127,7 +131,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 1 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -138,7 +142,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 2 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -149,7 +153,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 3 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -160,7 +164,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 4 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -171,7 +175,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 5 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -182,7 +186,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 6 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -193,7 +197,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 7 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -204,7 +208,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 8 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -215,7 +219,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 9 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -226,7 +230,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 10 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -237,7 +241,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 11 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -248,7 +252,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 12 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -259,7 +263,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 13 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -270,7 +274,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 14 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -281,7 +285,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 15 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -292,7 +296,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 16 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -303,7 +307,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 17 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -314,7 +318,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 18 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -325,7 +329,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 19 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -336,7 +340,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 20 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -347,7 +351,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 21 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -358,7 +362,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 22 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -369,7 +373,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 23 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -380,7 +384,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 24 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -391,7 +395,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 25 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -402,7 +406,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 26 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -413,7 +417,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 27 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -424,7 +428,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 28 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -435,7 +439,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 29 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -446,7 +450,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 30 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -457,7 +461,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 31 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -468,7 +472,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 32 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -479,7 +483,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 33 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -490,7 +494,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 34 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -501,7 +505,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 35 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -512,7 +516,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 36 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -523,7 +527,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 37 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -534,7 +538,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 38 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -545,7 +549,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 39 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -556,7 +560,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 40 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -567,7 +571,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 41 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -578,7 +582,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 42 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -589,7 +593,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 43 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -600,7 +604,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 44 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -611,7 +615,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 45 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -622,7 +626,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 46 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -633,7 +637,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 47 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -644,7 +648,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 48 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -655,7 +659,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 49 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -666,7 +670,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 50 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -677,7 +681,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 51 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -688,7 +692,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 52 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -699,7 +703,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 53 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -710,7 +714,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 54 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -721,7 +725,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 55 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -732,7 +736,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 56 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -743,7 +747,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 57 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -754,7 +758,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 58 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -765,7 +769,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 59 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -776,7 +780,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 60 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -787,7 +791,7 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 61 1
 set :compute.0:x1 :compute.0:zx
 op mul *tmp59 :compute.0:zx :compute.0:zx
@@ -798,10 +802,10 @@ op mul *tmp63 2 :compute.0:x1
 op mul *tmp64 *tmp63 :compute.0:zy
 op add :compute.0:zy *tmp64 :compute.0:cy
 op len :compute.0:dist :compute.0:zx :compute.0:zy
-jump 802 greaterThanEq :compute.0:dist 64
+jump 806 greaterThanEq :compute.0:dist 64
 op add :compute.0:i 62 1
 op mul *tmp69 .SMOOTH 63
-jump 810 greaterThanEq :compute.0:i *tmp69
+jump 814 greaterThanEq :compute.0:i *tmp69
 op log *tmp72 :compute.0:dist 0
 op mul *tmp73 *tmp72 0.36067376022224085
 op log *tmp74 *tmp73 0
@@ -809,11 +813,11 @@ op mul *tmp75 *tmp74 1.4426950408889634
 op sub :compute.0:correction 4 *tmp75
 op add :compute.0:i :compute.0:i :compute.0:correction
 set *tmp41 :compute.0:i
-jump 850 equal .SMOOTH false
-jump 815 notEqual *tmp41 63
+jump 854 equal .SMOOTH false
+jump 819 notEqual *tmp41 63
 draw color 0 0 0 255 0 0
-jump 852 always 0 0
-jump 828 notEqual .PALETTE 2
+jump 856 always 0 0
+jump 832 notEqual .PALETTE 2
 op sub *tmp82 32 *tmp41
 op abs *tmp83 *tmp82 0
 op mul *tmp84 7 *tmp83
@@ -825,8 +829,8 @@ op sub :drawPixel.0:g 240 *tmp88
 op mul *tmp92 4 *tmp83
 op add :drawPixel.0:b 120 *tmp92
 draw color :drawPixel.0:r :drawPixel.0:g :drawPixel.0:b 255 0 0
-jump 852 always 0 0
-jump 840 notEqual .PALETTE 3
+jump 856 always 0 0
+jump 844 notEqual .PALETTE 3
 op div *tmp95 *tmp41 0.175
 op sin *tmp96 *tmp95 0
 op mul :drawPixel.0:r 255 *tmp96
@@ -837,35 +841,35 @@ op abs *tmp103 *tmp102 0
 op mul *tmp104 4 *tmp103
 op add :drawPixel.0:b 100 *tmp104
 draw color :drawPixel.0:r :drawPixel.0:g :drawPixel.0:b 255 0 0
-jump 852 always 0 0
-jump 846 notEqual .PALETTE 4
+jump 856 always 0 0
+jump 850 notEqual .PALETTE 4
 op mul :drawPixel.0:r 4 *tmp41
 op mul *tmp107 1.5 *tmp41
 op add :drawPixel.0:g 96 *tmp107
 draw color :drawPixel.0:r :drawPixel.0:g 0 255 0 0
-jump 852 always 0 0
+jump 856 always 0 0
 op mul *tmp109 4 *tmp41
 op sub :drawPixel.0:r 255 *tmp109
 draw color :drawPixel.0:r :drawPixel.0:r 0 255 0 0
-jump 852 always 0 0
+jump 856 always 0 0
 read *tmp112 .memory *tmp41
 draw col *tmp112 0 0 0 0 0
 draw rect :x :y 1 1 0 0
 drawflush .display
 read *tmp114 .memory :position
-jump 860 notEqual *tmp114 .PROCESSOR_ID
+jump 864 notEqual *tmp114 .PROCESSOR_ID
 read *tmp1 .memory 65
-jump 867 notEqual .stop *tmp1
+jump 871 notEqual .stop *tmp1
 op add :y :y 1
-jump 84 lessThan :y 176
+jump 88 lessThan :y 176
 op add :line :line :increment
-jump 865 lessThanEq :line 176
+jump 869 lessThanEq :line 176
 op div :next_increment :next_increment 2
 set :increment :next_increment
 op div :line :next_increment 2
 op add :lines :lines 1
-jump 77 lessThan :lines 176
+jump 81 lessThan :lines 176
 drawflush .display
-jump 28 always 0 0
+jump 32 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

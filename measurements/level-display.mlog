@@ -1,89 +1,89 @@
-set DISPLAY null
-set MEMORY null
-set MESSAGE null
-set SWITCH null
+set .DISPLAY null
+set .MEMORY null
+set .MESSAGE null
+set .SWITCH null
 print "Item/Liquid/Energy Level Display"
-set n @links
-jump 25 lessThanEq n 0
-op sub n n 1
-getlink block n
+set :n @links
+jump 25 lessThanEq :n 0
+op sub :n :n 1
+getlink :block :n
 print "\nFound: "
-print block
-sensor __tmp16 block @type
-jump 15 notEqual __tmp16 @large-logic-display
-set DISPLAY block
+print :block
+sensor *tmp17 :block @type
+jump 15 notEqual *tmp17 @large-logic-display
+set .DISPLAY :block
 jump 24 always 0 0
-jump 18 notEqual __tmp16 @message
-set MESSAGE block
+jump 18 notEqual *tmp17 @message
+set .MESSAGE :block
 jump 24 always 0 0
-jump 21 notEqual __tmp16 @switch
-set SWITCH block
+jump 21 notEqual *tmp17 @switch
+set .SWITCH :block
 jump 24 always 0 0
-jump 23 equal __tmp16 @memory-bank
-jump 24 notEqual __tmp16 @memory-cell
-set MEMORY block
-jump 7 greaterThan n 0
+jump 23 equal *tmp17 @memory-bank
+jump 24 notEqual *tmp17 @memory-cell
+set .MEMORY :block
+jump 7 greaterThan :n 0
 print "\nMessage: "
-print MESSAGE
+print .MESSAGE
 print "\nSwitch: "
-print SWITCH
+print .SWITCH
 print "\nMemory: "
-print MEMORY
+print .MEMORY
 print "\nDisplay: "
-print DISPLAY
-op equal __tmp18 MEMORY null
-op equal __tmp19 DISPLAY null
-op or __tmp20 __tmp18 __tmp19
-jump 38 equal __tmp20 false
+print .DISPLAY
+op equal *tmp19 .MEMORY null
+op equal *tmp20 .DISPLAY null
+op or *tmp22 *tmp19 *tmp20
+jump 38 equal *tmp22 false
 print "\nNo memory or display."
-printflush MESSAGE
-jump 4 notEqual __tmp20 false
-read CURRENT_INDEX MEMORY 1
-read R0 MEMORY 3
-read G0 MEMORY 4
-read B0 MEMORY 5
-read R1 MEMORY 6
-read G1 MEMORY 7
-read B1 MEMORY 8
+printflush .MESSAGE
+jump 4 notEqual *tmp22 false
+read .CURRENT_INDEX .MEMORY 1
+read .R0 .MEMORY 3
+read .G0 .MEMORY 4
+read .B0 .MEMORY 5
+read .R1 .MEMORY 6
+read .G1 .MEMORY 7
+read .B1 .MEMORY 8
 draw stroke 1 0 0 0 0 0
-sensor __tmp30 SWITCH @enabled
-jump 87 notEqual __tmp30 0
-set start @time
+sensor *tmp38 .SWITCH @enabled
+jump 87 notEqual *tmp38 0
+set :start @time
 draw clear 0 0 80 0 0 0
-draw color R0 G0 B0 255 0 0
+draw color .R0 .G0 .B0 255 0 0
 draw rect 10 10 156 156 0 0
-read head MEMORY CURRENT_INDEX
-read last MEMORY head
+read :head .MEMORY .CURRENT_INDEX
+read :last .MEMORY :head
 print "Item/Liquid/Energy Level Display\nIndex: "
-print head
+print :head
 print "\nValue: "
-print last
-draw color R1 G1 B1 255 0 0
-set x 159
-op sub head head 1
-read value MEMORY head
-op sub x1 x 5
-draw line x last x1 value 0 0
-set x x1
-set last value
-jump 62 greaterThan x1 10
+print :last
+draw color .R1 .G1 .B1 255 0 0
+set :x 159
+op sub :head :head 1
+read :value .MEMORY :head
+op sub :x1 :x 5
+draw line :x :last :x1 :value 0 0
+set :x :x1
+set :last :value
+jump 62 greaterThan :x1 10
 draw color 255 255 255 255 0 0
 draw lineRect 10 10 156 156 0 0
-op sub __tmp39 @time start
+op sub *tmp49 @time :start
 print "\nTime: "
-print __tmp39
-op div __tmp40 @time 100
-op ceil __tmp41 __tmp40 0
-op mul wait 100 __tmp41
-set loops 0
-jump 81 greaterThanEq @time wait
-op add loops loops 1
-jump 79 lessThan @time wait
-drawflush DISPLAY
+print *tmp49
+op div *tmp50 @time 100
+op ceil *tmp51 *tmp50 0
+op mul :wait 100 *tmp51
+set :loops 0
+jump 81 greaterThanEq @time :wait
+op add :loops :loops 1
+jump 79 lessThan @time :wait
+drawflush .DISPLAY
 print "\nWait loops: "
-print loops
-printflush MESSAGE
-sensor __tmp30 SWITCH @enabled
-jump 50 equal __tmp30 0
+print :loops
+printflush .MESSAGE
+sensor *tmp38 .SWITCH @enabled
+jump 50 equal *tmp38 0
 control enabled switch1 0 0 0 0
 

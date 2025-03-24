@@ -7,133 +7,105 @@
 const VERSION = "1.0";
 const TITLE = "[gold]Item Rate Meter[], version [gold]" + VERSION + "[]";
 
-// Measurement interval
-param TICKS = 60;
+require "item-rate-meter-init.mnd";
 
-// Size of averaging window
-const SAMPLES = 10;
-
-var samples[SAMPLES];
-
-noinit var switch, message, srcMem, dstMem;
-noinit var startIndex, memSize;
-
-void initialize()
-    do
-        switch = null;
-        message = null;
-        srcMem = null;
-        dstMem = null;
-
-        println($"$TITLE            ");
-        for var n in 0 ... @links descending do
-            var block = getlink(n);
-            print("\nFound: ", block);
-            case block.@type
-                when @message then
-                    message = block;
-                when @switch then
-                    switch = block;
-                when @memory-bank, @memory-cell then
-                    dstMem = srcMem;
-                    srcMem = block;
-            end;
-        end;
-    
-        print("\nMessage: ", message);
-        print("\nSwitch: ", switch);
-        print("\nSource memory: ", srcMem);
-        print("\nTarget memory: ", dstMem);
-        if srcMem == null then
-            print("\nNo memory.");
-        end;
-        printflush(message);
-    while srcMem == null;
-
-    if dstMem == null then
-        dstMem = srcMem;
-    end;
-
-    memSize = case dstMem.@type
-        when @memory-cell then 64;
-        when @memory-bank then 512;
-        else 0;
-    end;
-
-    if srcMem == dstMem then
-        memSize -= 1;
-        startIndex = 1;
-    else
-        startIndex = 0;
-    end;
-end;
+param MEASUREMENT = 15;         // Measurement interval in ticks
+param UPDATE = 60;              // Update interval in ticks
+param SMOOTHING = 20;           // Size of averaging window
 
 begin
-    initialize();
+    init();
 
-    var prevTick = @tick;
-    var prev = srcMem[0];
-    var currTick = prevTick;
-    var curr = prev;
-    var index = max(startIndex, dstMem[startIndex]);
-    var nextTick = prevTick;
+    // Clearing up cache
+    cacheSize = min(SMOOTHING, cacheSize);
+    for var i in 0 ... cacheSize do primaryMem[i] = 0; end;
+    var cacheHead = 0;
+    var samples = 0;
+
+    var head = max(bufferStart, secondaryMem[headIndex]);
+    var total = 0;
+    var iteration = 0;
 
     switch.enabled = false;
-    do
-        var start = @time;
-        nextTick += TICKS;
+    var prevTick;
+    var nextTick = @tick;
+    var prev = primaryMem[totalIndex];
+    var minWaits = 1e10;
 
-        if @tick > nextTick + TICKS then
+    var first = true;
+
+MainLoop:
+    do
+        prevTick = nextTick;
+        nextTick += MEASUREMENT;
+        if @tick > nextTick + MEASUREMENT then
             // @tick has jumped too far to the future, reset it
-            currTick = @tick;
-            currTick = prevTick + TICKS;
-            curr = srcMem[0];
-            println("[red]ERR[]");
+            // Either the processor lags, or there was map reload
+            nextTick = @tick + MEASUREMENT;
+            prev = primaryMem[totalIndex];
         end;
 
-        prevTick = currTick;
-        prev = curr;
-
+        var waits = 0;
         while @tick < nextTick do
             if @tick < prevTick then
                 // Ticks can decrease after a map reload.
-                // Restart everything not to be stuck in a very long loop
-                end();
-            else
-                var value = srcMem[0];
-                if value != curr then
-                    currTick = @tick;
-                    curr = value;
-                end;
+                // Restart everything to prevent getting stuck in a long loop
+                break MainLoop;
             end;
-        end;
 
+            // Wait till next tick, save execution quota
+            waits++;
+            wait(1e-15);
+        end;
+        minWaits = min(waits, minWaits);
+
+        var curr = primaryMem[totalIndex];
         var amount = curr - prev;
-        var time = currTick - prevTick;
-        var rate = amount == 0 ? 0 : max(amount / time, 0);  // Items per tick
+        prev = curr;
 
-        samples[1 ... SAMPLES] = samples[0 ... SAMPLES - 1];
-        samples[0] = rate;
+        // Update total: subtract oldest value, add newest value
+        total = total - primaryMem[cacheHead] + amount;
+        primaryMem[cacheHead] = amount;
+        cacheHead = (cacheHead + 1) % cacheSize;
 
-        var total = samples[0];
-        for var i in samples[1 ... SAMPLES] do total += i; end;
-        var average = total / SAMPLES;
+        // Update samples
+        if samples < cacheSize then samples++; end;
 
-        index++;
-        if index >= memSize then
-            index = startIndex + 1;
+        iteration += MEASUREMENT;
+        if iteration >= UPDATE then
+            var rate = total / samples / MEASUREMENT;   // items per tick
+            if ++head >= bufferEnd then
+                head = bufferStart;
+            end;
+
+            if first then
+                secondaryMem[minIndex] = rate;
+                secondaryMem[maxIndex] = rate;
+                first = false;
+            end;
+
+            primaryMem[valueIndex] = rate;
+            secondaryMem[headIndex] = head;
+            secondaryMem[head] = rate;
+
+            var min = min(secondaryMem[minIndex], rate);
+            secondaryMem[minIndex] = min;
+            var max = max(secondaryMem[maxIndex], rate);
+            secondaryMem[maxIndex] = max;
+
+            println($"$TITLE            ");
+            if samples < cacheSize then
+                println($"[salmon]Initializing...[]");
+            end;
+            println($"Total items: [gold]$curr[]");
+            println($"Current rate: [green]$[]/min", floor(rate * 3600));
+            println($"Minimum: [gold]$[]/min", floor(min * 3600));
+            println($"Maximum: [gold]$[]/min", floor(max * 3600));
+            println($"Smoothing: $cacheSize");
+            print($"[lightgray]Waits: $minWaits");
+            minWaits = 1e10;
+            printflush(message);
+            iteration -= UPDATE;
         end;
-        dstMem[startIndex] = index;
-        dstMem[index] = average;
-
-        println($"$TITLE            ");
-        println($"Total items: [gold]$curr[]");
-        println($"Current rate [green]${floor(average * 3600)}[]/min");
-        println($"  memory start: [gold]$startIndex[]\n");
-        println($"  memory index: [gold]$index[]\n");
-        print($"[lightgray]Loop time: ${floor(@time - start)} ms");
-        printflush(message);
     while !switch.@enabled;
 end;
-
-

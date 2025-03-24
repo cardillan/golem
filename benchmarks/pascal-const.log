@@ -1,10 +1,10 @@
     52 instructions before optimizations.
-     1 instructions eliminated by Temp Variables Elimination.
+     3 instructions eliminated by Temp Variables Elimination.
      3 instructions eliminated by Dead Code Elimination (3 iterations).
     44 instructions eliminated by Jump Normalization (4 iterations).
      1 instructions eliminated by Jump Optimization (4 iterations).
     10 instructions eliminated by Single Step Elimination (2 passes, 6 iterations).
-   214 instructions eliminated by Data Flow Optimization (18 passes, 65 iterations).
+   212 instructions eliminated by Data Flow Optimization (18 passes, 65 iterations).
      1 instructions eliminated by Loop Optimization (3 iterations).
      3 loops improved by Loop Optimization.
    585 instructions added by Loop Unrolling (20 iterations).
@@ -205,7 +205,7 @@ Modifications by Initial phase, Dead Code Elimination, iteration 1 (-3 instructi
     46 label *label7
     47 op add :c :c 1
 
-Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-1 instructions):
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-3 instructions):
  
     15 label *label3
     16 jump *label5 greaterThan :j *tmp3
@@ -216,28 +216,46 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-1 inst
     19 set *tmp9 :j
     20 read *tmp8 :previousLine *tmp7
     21 read *tmp10 :previousLine *tmp9
+ 
+    25 op add :j :j 1
+    26 jump *label3 always
+    27 label *label5
+-    * set *tmp12 :lineLength
+-    * write 1 :currentLine *tmp12
++   28 write 1 :currentLine :lineLength
+    29 op add :lineLength :lineLength 1
+    30 set *tmp15 :lineLength
+    31 set :c 0
+    32 label *label6
+    33 jump *label8 greaterThanEq :c *tmp15
+-    * set *tmp16 :c
+-    * read *tmp17 :currentLine *tmp16
++   34 read *tmp17 :currentLine :c
+    35 print *tmp17
+    36 op sub *tmp18 :lineLength 1
+    37 op lessThan *tmp19 :c *tmp18
 
 Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-1 instructions):
  
-    36 read *tmp17 :currentLine *tmp16
-    37 print *tmp17
-    38 op sub *tmp18 :lineLength 1
+    34 read *tmp17 :currentLine :c
+    35 print *tmp17
+    36 op sub *tmp18 :lineLength 1
 -    * op lessThan *tmp19 :c *tmp18
 -    * jump *label9 equal *tmp19 false
-+   39 jump *label9 greaterThanEq :c *tmp18
-    40 print " "
-    41 jump *label10 always
-    42 label *label9
++   37 jump *label9 greaterThanEq :c *tmp18
+    38 print " "
+    39 jump *label10 always
+    40 label *label9
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
  
-    38 op sub *tmp18 :lineLength 1
-    39 jump *label9 greaterThanEq :c *tmp18
-    40 print " "
+    36 op sub *tmp18 :lineLength 1
+    37 jump *label9 greaterThanEq :c *tmp18
+    38 print " "
 -    * jump *label10 always
-    41 label *label9
-    42 label *label10
-    43 label *label7
+    39 label *label9
+    40 label *label10
+    41 label *label7
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
  
@@ -269,24 +287,17 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
     24 label *label4
     25 op add :j :j 1
     26 jump *label3 always
-    27 label *label5
-    28 set *tmp12 :lineLength
--    * write 1 :currentLine *tmp12
-+   29 write 1 :currentLine :lineLength
-    30 op add :lineLength :lineLength 1
-    31 set *tmp15 :lineLength
-    32 set :c 0
-    33 label *label6
+ 
+    30 set *tmp15 :lineLength
+    31 set :c 0
+    32 label *label6
 -    * jump *label8 greaterThanEq :c *tmp15
-+   34 jump *label8 greaterThanEq :c :lineLength
-    35 set *tmp16 :c
--    * read *tmp17 :currentLine *tmp16
-+   36 read *tmp17 :currentLine :c
-    37 print *tmp17
-    38 op sub *tmp18 :lineLength 1
-    39 jump *label9 greaterThanEq :c *tmp18
++   33 jump *label8 greaterThanEq :c :lineLength
+    34 read *tmp17 :currentLine :c
+    35 print *tmp17
+    36 op sub *tmp18 :lineLength 1
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-6 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-4 instructions):
  
     10 label *label0
     11 jump *label2 greaterThan :i 10
@@ -302,20 +313,13 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-6
     18 read *tmp10 :previousLine :j
     19 op add *tmp11 *tmp8 *tmp10
  
-    22 op add :j :j 1
-    23 jump *label3 always
     24 label *label5
--    * set *tmp12 :lineLength
     25 write 1 :currentLine :lineLength
     26 op add :lineLength :lineLength 1
 -    * set *tmp15 :lineLength
     27 set :c 0
     28 label *label6
     29 jump *label8 greaterThanEq :c :lineLength
--    * set *tmp16 :c
-    30 read *tmp17 :currentLine :c
-    31 print *tmp17
-    32 op sub *tmp18 :lineLength 1
 
 Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1 (-1 instructions):
  
@@ -6280,10 +6284,10 @@ Final code before resolving virtual instructions:
   351:  printflush message1                                          printflush(message1);
 
 
-Performance: parsed in 91 ms, compiled in 143 ms, optimized in 408 ms, run in 14 ms.
-Error connecting to Mlog Watcher: Connection refused: connect
-  - make sure Mindustry with active Mlog Watcher mod is running
-  - verify Mlog Watcher listens on port 9992
+Performance: parsed in 102 ms, compiled in 168 ms, optimized in 431 ms, run in 11 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  No response from Mlog Watcher - maybe an old version is installed?
 
 Program output (352 steps):
 1
