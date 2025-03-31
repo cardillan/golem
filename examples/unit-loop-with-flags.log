@@ -1,0 +1,366 @@
+    68 instructions before optimizations.
+     4 instructions eliminated by Temp Variables Elimination.
+    15 instructions eliminated by Dead Code Elimination (4 iterations).
+     1 instructions eliminated by Jump Normalization (3 iterations).
+     5 instructions eliminated by Jump Optimization (3 iterations).
+     3 instructions eliminated by Single Step Elimination (4 iterations).
+     1 instructions eliminated by Jump Straightening (3 iterations).
+     4 instructions updated by JumpThreading.
+     2 instructions eliminated by Unreachable Code Elimination.
+    37 instructions after optimizations.
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-9 instructions):
+ 
+    13 set :firstUnit *tmp2
+    14 set :active 0
+    15 set :change 0
+-    * set *tmp1 :change
+    16 jump *label4 always
+    17 label *label3
+    18 op equal *tmp3 @unit :firstUnit
+ 
+    29 label *label5
+    30 set *tmp4 null
+    31 label *label6
+-    * set *tmp1 *tmp4
+    32 label *label4
+    33 sensor *tmp6 @unit @flag
+    34 set :unitFlag *tmp6
+ 
+    38 op greaterThan *tmp9 :change 0
+    39 jump *label9 equal *tmp9 false
+    40 remark "We're acquiring a new unit"
+-    * set *tmp11 :change
+    41 op sub :change :change 1
+    42 ucontrol flag myFlag
+    43 set *tmp10 null
+ 
+    47 jump *label1 always
+    48 set *tmp10 null
+    49 label *label10
+-    * set *tmp8 *tmp10
+    50 jump *label8 always
+    51 label *label7
+    52 remark "If not our unit, skip it"
+ 
+    58 label *label11
+    59 set *tmp13 null
+    60 label *label12
+-    * set *tmp8 *tmp13
+    61 label *label8
+    62 remark "This is our unit."
+    63 op lessThan *tmp14 :change 0
+ 
+    65 remark "The unit is superfluous: free it"
+    66 ucontrol flag 0
+    67 ucontrol unbind
+-    * set *tmp16 :change
+    68 op add :change :change 1
+    69 remark "Skip processing for this unit"
+    70 jump *label1 always
+-    * set *tmp15 null
+    71 jump *label14 always
+    72 label *label13
+-    * set *tmp15 null
+    73 label *label14
+    74 remark "We found an active unit, count it"
+-    * set *tmp17 :active
+    75 op add :active :active 1
+    76 remark "Handle your unit here"
+    77 op mul *tmp18 30 :active
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-6 instructions):
+ 
+    24 set :change *tmp5
+    25 remark "Counts active units. Contains valid value when completing the loop."
+    26 set :active 0
+-    * set *tmp4 :active
+    27 jump *label6 always
+    28 label *label5
+-    * set *tmp4 null
+    29 label *label6
+    30 label *label4
+    31 sensor *tmp6 @unit @flag
+ 
+    38 remark "We're acquiring a new unit"
+    39 op sub :change :change 1
+    40 ucontrol flag myFlag
+-    * set *tmp10 null
+    41 jump *label10 always
+    42 label *label9
+    43 remark "We don't need a new unit, skip it"
+    44 jump *label1 always
+-    * set *tmp10 null
+    45 label *label10
+    46 jump *label8 always
+    47 label *label7
+ 
+    49 op notEqual *tmp12 :unitFlag myFlag
+    50 jump *label11 equal *tmp12 false
+    51 jump *label1 always
+-    * set *tmp13 null
+    52 jump *label12 always
+    53 label *label11
+-    * set *tmp13 null
+    54 label *label12
+    55 label *label8
+    56 remark "This is our unit."
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-4 instructions):
+ 
+     9 remark "Remember first unit we found to be aware we're looping again"
+    10 sensor *tmp0 :firstUnit @dead
+    11 jump *label3 equal *tmp0 false
+-    * set *tmp2 @unit
+-    * set :firstUnit *tmp2
++   12 set :firstUnit @unit
+    13 set :active 0
+    14 set :change 0
+    15 jump *label4 always
+ 
+    19 remark "We've completed a loop: visited all existing units once"
+    20 remark "Compute how many units we want to acquire/release to meet the target"
+    21 remark "When change is negative, we need to drop units"
+-    * op sub *tmp5 target :active
+-    * set :change *tmp5
++   22 op sub :change target :active
+    23 remark "Counts active units. Contains valid value when completing the loop."
+    24 set :active 0
+    25 jump *label6 always
+    26 label *label5
+    27 label *label6
+    28 label *label4
+-    * sensor *tmp6 @unit @flag
+-    * set :unitFlag *tmp6
++   29 sensor :unitFlag @unit @flag
+    30 op equal *tmp7 :unitFlag 0
+    31 jump *label7 equal *tmp7 false
+    32 remark "This is a free unit"
+ 
+    66 op add :active :active 1
+    67 remark "Handle your unit here"
+    68 op mul *tmp18 30 :active
+-    * op add *tmp19 *tmp18 @tick
+-    * set :angle *tmp19
++   69 op add :angle *tmp18 @tick
+    70 op sin *tmp20 :angle
+    71 op mul *tmp21 15 *tmp20
+    72 op add *tmp22 @thisx *tmp21
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+ 
+     4 remark "Flag to mark our units"
+     5 set myFlag 12344567.89456
+     6 label *label0
+-    * jump *label2 equal true false
+     7 ubind type
+     8 remark "Remember first unit we found to be aware we're looping again"
+     9 sensor *tmp0 :firstUnit @dead
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-5 instructions):
+ 
+    13 set :change 0
+    14 jump *label4 always
+    15 label *label3
+-    * op equal *tmp3 @unit :firstUnit
+-    * jump *label5 equal *tmp3 false
++   16 jump *label5 notEqual @unit :firstUnit
+    17 remark "We've completed a loop: visited all existing units once"
+    18 remark "Compute how many units we want to acquire/release to meet the target"
+    19 remark "When change is negative, we need to drop units"
+ 
+    25 label *label6
+    26 label *label4
+    27 sensor :unitFlag @unit @flag
+-    * op equal *tmp7 :unitFlag 0
+-    * jump *label7 equal *tmp7 false
++   28 jump *label7 notEqual :unitFlag 0
+    29 remark "This is a free unit"
+-    * op greaterThan *tmp9 :change 0
+-    * jump *label9 equal *tmp9 false
++   30 jump *label9 lessThanEq :change 0
+    31 remark "We're acquiring a new unit"
+    32 op sub :change :change 1
+    33 ucontrol flag myFlag
+ 
+    39 jump *label8 always
+    40 label *label7
+    41 remark "If not our unit, skip it"
+-    * op notEqual *tmp12 :unitFlag myFlag
+-    * jump *label11 equal *tmp12 false
++   42 jump *label11 equal :unitFlag myFlag
+    43 jump *label1 always
+    44 jump *label12 always
+    45 label *label11
+    46 label *label12
+    47 label *label8
+    48 remark "This is our unit."
+-    * op lessThan *tmp14 :change 0
+-    * jump *label13 equal *tmp14 false
++   49 jump *label13 greaterThanEq :change 0
+    50 remark "The unit is superfluous: free it"
+    51 ucontrol flag 0
+    52 ucontrol unbind
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-3 instructions):
+ 
+    20 op sub :change target :active
+    21 remark "Counts active units. Contains valid value when completing the loop."
+    22 set :active 0
+-    * jump *label6 always
+    23 label *label5
+    24 label *label6
+    25 label *label4
+ 
+    40 remark "If not our unit, skip it"
+    41 jump *label11 equal :unitFlag myFlag
+    42 jump *label1 always
+-    * jump *label12 always
+    43 label *label11
+    44 label *label12
+    45 label *label8
+ 
+    51 op add :change :change 1
+    52 remark "Skip processing for this unit"
+    53 jump *label1 always
+-    * jump *label14 always
+    54 label *label13
+    55 label *label14
+    56 remark "We found an active unit, count it"
+
+Modifications by Final phase, Jump Straightening, iteration 1 (-1 instructions):
+ 
+    38 jump *label8 always
+    39 label *label7
+    40 remark "If not our unit, skip it"
+-    * jump *label11 equal :unitFlag myFlag
+-    * jump *label1 always
++   41 jump *label1 notEqual :unitFlag myFlag
+    42 label *label11
+    43 label *label12
+    44 label *label8
+
+Modifications by Final phase, Jump Threading, iteration 1:
+ 
+    30 remark "We're acquiring a new unit"
+    31 op sub :change :change 1
+    32 ucontrol flag myFlag
+-    * jump *label10 always
++   33 jump *label8 always
+    34 label *label9
+    35 remark "We don't need a new unit, skip it"
+-    * jump *label1 always
++   36 jump *label0 always
+    37 label *label10
+    38 jump *label8 always
+    39 label *label7
+    40 remark "If not our unit, skip it"
+-    * jump *label1 notEqual :unitFlag myFlag
++   41 jump *label0 notEqual :unitFlag myFlag
+    42 label *label11
+    43 label *label12
+    44 label *label8
+ 
+    49 ucontrol unbind
+    50 op add :change :change 1
+    51 remark "Skip processing for this unit"
+-    * jump *label1 always
++   52 jump *label0 always
+    53 label *label13
+    54 label *label14
+    55 remark "We found an active unit, count it"
+
+Modifications by Final phase, Unreachable Code Elimination, iteration 1 (-2 instructions):
+ 
+    34 label *label9
+    35 remark "We don't need a new unit, skip it"
+    36 jump *label0 always
+-    * label *label10
+-    * jump *label8 always
+    37 label *label7
+    38 remark "If not our unit, skip it"
+    39 jump *label0 notEqual :unitFlag myFlag
+ 
+    65 remark "End of unit handling"
+    66 label *label1
+    67 jump *label0 always
+-    * label *label2
+-    * end
+
+Final code before resolving virtual instructions:
+
+    0:  remark "Number of units we want to control"                  /// Number of units we want to control
+    0:  set target 2                                                 param target = 2;
+    1:  remark "Type of unit"                                        /// Type of unit
+    1:  set type @mono                                               param type = @mono;
+    2:  remark "Flag to mark our units"                              /// Flag to mark our units
+    2:  set myFlag 12344567.89456                                    param myFlag = 12344567.89456;
+        label *label0                                                while true do
+    3:  ubind type                                                   ubind(type);
+    4:  remark "Remember first unit we found to be aware we're loopi /// Remember first unit we found to be aware we're looping again
+    4:  sensor *tmp0 :firstUnit @dead                                if firstUnit.@dead then
+    5:  jump *label3 equal *tmp0 false                               ...
+    6:  set :firstUnit @unit                                         firstUnit = @unit;
+    7:  set :active 0                                                active = 0;
+    8:  set :change 0                                                change = 0;
+    9:  jump *label4 always 0 0                                      if firstUnit.@dead then
+        label *label3                                                ...
+   10:  jump *label5 notEqual @unit :firstUnit                       elsif @unit == firstUnit then
+   11:  remark "We've completed a loop: visited all existing units o /// We've completed a loop: visited all existing units once
+   11:  remark "Compute how many units we want to acquire/release to /// Compute how many units we want to acquire/release to meet the target
+   11:  remark "When change is negative, we need to drop units"      /// When change is negative, we need to drop units
+   11:  op sub :change target :active                                change = target - active;
+   12:  remark "Counts active units. Contains valid value when compl /// Counts active units. Contains valid value when completing the loop.
+   12:  set :active 0                                                active = 0;
+        label *label5                                                elsif @unit == firstUnit then
+        label *label4                                                if firstUnit.@dead then
+   13:  sensor :unitFlag @unit @flag                                 var unitFlag = @unit.@flag;
+   14:  jump *label7 notEqual :unitFlag 0                            if unitFlag == 0 then
+   15:  remark "This is a free unit"                                 /// This is a free unit
+   15:  jump *label9 lessThanEq :change 0                            if change > 0 then
+   16:  remark "We're acquiring a new unit"                          /// We're acquiring a new unit
+   16:  op sub :change :change 1                                     if change > 0 then
+   17:  ucontrol flag myFlag 0 0 0 0                                 flag(myFlag);
+   18:  jump *label8 always 0 0                                      if change > 0 then
+        label *label9                                                ...
+   19:  remark "We don't need a new unit, skip it"                   /// We don't need a new unit, skip it
+   19:  jump *label0 always 0 0                                      continue;
+        label *label7                                                if unitFlag == 0 then
+   20:  remark "If not our unit, skip it"                            /// If not our unit, skip it
+   20:  jump *label0 notEqual :unitFlag myFlag                       if unitFlag != myFlag then
+        label *label8                                                if unitFlag == 0 then
+   21:  remark "This is our unit."                                   /// This is our unit.
+   21:  jump *label13 greaterThanEq :change 0                        if change < 0 then
+   22:  remark "The unit is superfluous: free it"                    /// The unit is superfluous: free it
+   22:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   23:  ucontrol unbind 0 0 0 0 0                                    unbind();
+   24:  op add :change :change 1                                     if change < 0 then
+   25:  remark "Skip processing for this unit"                       /// Skip processing for this unit
+   25:  jump *label0 always 0 0                                      continue;
+        label *label13                                               if change < 0 then
+   26:  remark "We found an active unit, count it"                   /// We found an active unit, count it
+   26:  op add :active :active 1                                     while true do
+   27:  remark "Handle your unit here"                               /// Handle your unit here
+   27:  op mul *tmp18 30 :active                                     var angle = 30 * active + @tick;
+   28:  op add :angle *tmp18 @tick                                   ...
+   29:  op sin *tmp20 :angle 0                                       move(@thisx + 15 * sin(angle), @thisy + 15 * cos(angle));
+   30:  op mul *tmp21 15 *tmp20                                      ...
+   31:  op add *tmp22 @thisx *tmp21                                  ...
+   32:  op cos *tmp23 :angle 0                                       ...
+   33:  op mul *tmp24 15 *tmp23                                      ...
+   34:  op add *tmp25 @thisy *tmp24                                  ...
+   35:  ucontrol move *tmp22 *tmp25 0 0 0                            ...
+   36:  remark "End of unit handling"                                /// End of unit handling
+   36:  jump *label0 always 0 0                                      while true do
+
+
+Performance: parsed in 108 ms, compiled in 168 ms, optimized in 87 ms, run in 4 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
+
+Program output (7 steps):
+The program didn't generate any output.
+Execution exception at instruction 6: ubind type:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

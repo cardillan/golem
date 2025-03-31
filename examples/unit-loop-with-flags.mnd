@@ -1,0 +1,69 @@
+#set syntax = strict;
+#set remarks = comments;
+
+/// Number of units we want to control
+param target = 2;
+
+/// Type of unit
+param type = @mono;
+
+/// Flag to mark our units
+param myFlag = 12344567.89456;
+
+begin
+    noinit var firstUnit, active, change;
+
+    while true do
+        ubind(type);
+        /// Remember first unit we found to be aware we're looping again
+        if firstUnit.@dead then
+            firstUnit = @unit;
+            active = 0;
+            change = 0;
+        elsif @unit == firstUnit then
+            /// We've completed a loop: visited all existing units once
+            /// Compute how many units we want to acquire/release to meet the target
+            /// When change is negative, we need to drop units
+            change = target - active;
+
+            /// Counts active units. Contains valid value when completing the loop.
+            active = 0;
+        end;
+        var unitFlag = @unit.@flag;
+
+        if unitFlag == 0 then
+            /// This is a free unit
+            if change > 0 then
+                /// We're acquiring a new unit
+                change--;
+                flag(myFlag);
+            else
+                /// We don't need a new unit, skip it
+                continue;
+            end;
+        else
+            /// If not our unit, skip it
+            if unitFlag != myFlag then
+                continue;
+            end;
+        end;
+
+        /// This is our unit.
+        if change < 0 then
+            /// The unit is superfluous: free it
+            flag(0);
+            unbind();
+            change++;
+            /// Skip processing for this unit
+            continue;
+        end;
+
+        /// We found an active unit, count it
+        active++;
+
+        /// Handle your unit here
+        var angle = 30 * active + @tick;
+        move(@thisx + 15 * sin(angle), @thisy + 15 * cos(angle));
+        /// End of unit handling
+    end;
+end;

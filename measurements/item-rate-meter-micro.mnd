@@ -59,7 +59,7 @@ MainLoop:
             end;
 
             // Waits bitmap
-            waits |= step;
+            waits += step;
 
             // Wait till next tick, save execution quota
             wait(1e-15);
@@ -74,7 +74,7 @@ MainLoop:
         primaryMem[cacheHead] = amount;
         cacheHead = (cacheHead + 1) % cacheSize;
 
-        step = step * 2;
+        step *= 10;
 
         // Step determines the section of code to run
         // It takes a value of 2, 4, 8 or 16, after which it loops back to 2 (due to the above multiplication)
@@ -82,25 +82,25 @@ MainLoop:
         // variable when a wait actually happens.
 
         // Binary search: two jumps for each possible value of step
-        if step <= 4 then
-            if step == 2 then
+        if step <= 100 then
+            if step == 10 then
                 rate = total / divisor;
                 if ++head >= bufferEnd then
                     head = bufferStart;
                 end;
                 secondaryMem[headIndex] = head;
                 secondaryMem[head] = rate;
-            else  // step == 4
+            else  // step == 100
                 primaryMem[valueIndex] = rate;
                 println($"$TITLE");
                 println($"Total items: [gold]$curr[]");
                 print("Current rate [green]");
             end;
         else
-            if step == 8 then
+            if step == 1000 then
                 println(floor(rate * 3600), "[]/min");
                 print("[lightgray]Waits: ");
-            else // step == 16
+            else // step == 10000
                 // If waits os not equal to 15, a step took too long to execute
                 // Possible to add 3 instructions
                 print(waits);

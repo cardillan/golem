@@ -1,0 +1,56 @@
+# Number of units we want to control
+set target 2
+# Type of unit
+set type @mono
+# Flag to mark our units
+set myFlag 12344567.89456
+ubind type
+# Remember first unit we found to be aware we're looping again
+sensor *tmp0 :firstUnit @dead
+jump 10 equal *tmp0 false
+set :firstUnit @unit
+set :active 0
+set :change 0
+jump 13 always 0 0
+jump 13 notEqual @unit :firstUnit
+# We've completed a loop: visited all existing units once
+# Compute how many units we want to acquire/release to meet the target
+# When change is negative, we need to drop units
+op sub :change target :active
+# Counts active units. Contains valid value when completing the loop.
+set :active 0
+sensor :unitFlag @unit @flag
+jump 20 notEqual :unitFlag 0
+# This is a free unit
+jump 19 lessThanEq :change 0
+# We're acquiring a new unit
+op sub :change :change 1
+ucontrol flag myFlag 0 0 0 0
+jump 21 always 0 0
+# We don't need a new unit, skip it
+jump 3 always 0 0
+# If not our unit, skip it
+jump 3 notEqual :unitFlag myFlag
+# This is our unit.
+jump 26 greaterThanEq :change 0
+# The unit is superfluous: free it
+ucontrol flag 0 0 0 0 0
+ucontrol unbind 0 0 0 0 0
+op add :change :change 1.5e10
+# Skip processing for this unit
+jump 3 always 0 0
+# We found an active unit, count it
+op add :active :active 1
+# Handle your unit here
+op mul *tmp18 30 :active
+op add :angle *tmp18 @tick
+op sin *tmp20 :angle 0
+op mul *tmp21 15 *tmp20
+op add *tmp22 @thisx *tmp21
+op cos *tmp23 :angle 0
+op mul *tmp24 15 *tmp23
+op add *tmp25 @thisy *tmp24
+ucontrol move *tmp22 *tmp25 0 0 0
+# End of unit handling
+jump 3 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
