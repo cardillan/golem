@@ -1,0 +1,47 @@
+op mul *tmp0 @mapw @thisy
+op add *tmp1 @thisx *tmp0
+op add .ID *tmp1 1
+set .slot 0
+jump 4 equal bank1 null
+jump 5 equal display1 null
+sensor *tmp3 bank1 @x
+op sub *tmp4 @thisx *tmp3
+op sub *tmp5 *tmp4 1.5
+op round .px *tmp5 0
+sensor *tmp7 bank1 @y
+op sub *tmp8 @thisy *tmp7
+op add *tmp9 *tmp8 0.5
+op round .py *tmp9 0
+op mul *tmp11 .px 30
+op add .x 17 *tmp11
+op mul *tmp13 .py 30
+op add .y 17 *tmp13
+draw reset 0 0 0 0 0 0
+drawflush display1
+set :count 0
+op sub *tmp26 .x 15
+op sub *tmp27 .y 15
+read *tmp16 bank1 .slot
+jump 27 notEqual *tmp16 0
+write .ID bank1 .slot
+jump 30 always 0 0
+read *tmp22 bank1 .slot
+jump 30 equal *tmp22 .ID
+op add .slot .slot 1
+print .slot
+draw color 0 0 80 255 0 0
+draw rect *tmp26 *tmp27 30 30 0 0
+draw color 0 255 0 255 0 0
+draw print .x .y center 0 0 0
+drawflush display1
+read *tmp29 bank1 :count
+jump 41 lessThanEq *tmp29 0
+op add :count :count 1
+read *tmp29 bank1 :count
+jump 38 greaterThan *tmp29 0
+print "Found {0} active processors."
+format :count
+printflush message1
+jump 23 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

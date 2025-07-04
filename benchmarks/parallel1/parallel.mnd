@@ -1,0 +1,29 @@
+#set target = 8;
+#set syntax = strict;
+
+const PROCESSORS = 16;
+
+var ID = @thisx + @mapw * @thisy + 1;
+var slot = 0; //floor(rand(PROCESSORS));
+
+guarded linked memory = cell1, sorter1;
+linked message1;
+
+begin
+    var count = 0;
+
+    while true do
+        if memory[slot] == 0 then
+            memory[slot] = ID;
+        elsif memory[slot] != ID then
+            slot++;
+        end;
+
+        sorter1.config = lookup(:item, slot);
+
+        while memory[count] > 0 do count++; end;
+
+        print($"Found $count active processors.");
+        printflush(message1);
+    end;
+end;

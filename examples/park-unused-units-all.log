@@ -1,0 +1,342 @@
+    55 instructions before optimizations.
+     2 instructions eliminated by Temp Variables Elimination.
+    10 instructions eliminated by Dead Code Elimination (5 iterations).
+     6 instructions eliminated by Jump Optimization (2 passes, 5 iterations).
+     5 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
+     3 instructions eliminated by Data Flow Optimization (5 iterations).
+     2 instructions eliminated by Jump Straightening (5 iterations).
+    27 instructions after optimizations.
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-6 instructions):
+ 
+     7 op equal *tmp1 @unit null
+     8 jump *label3 equal *tmp1 false
+     9 jump *label1 always
+-    * set *tmp2 null
+    10 jump *label4 always
+    11 label *label3
+-    * set *tmp2 null
+    12 label *label4
+    13 sensor *tmp3 @unit @controlled
+    14 jump *label5 equal *tmp3 false
+ 
+    21 label *label7
+    22 set *tmp7 null
+    23 label *label8
+-    * set *tmp4 *tmp7
+    24 jump *label6 always
+    25 label *label5
+-    * set *tmp4 null
+    26 label *label6
+    27 # "Function: def inRadius(in x, in y, in radius)"
+    28 set :inRadius:x x
+ 
+    41 ucontrol boost true
+    42 ucontrol flag 2435345345
+    43 ucontrol pathfind x y
+-    * set *tmp16 null
+    44 jump *label11 always
+    45 label *label10
+    46 sensor *tmp17 @unit @flag
+ 
+    54 label *label12
+    55 set *tmp19 null
+    56 label *label13
+-    * set *tmp16 *tmp19
+    57 label *label11
+    58 label *label1
+    59 op add :i :i 1
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-4 instructions):
+ 
+    16 op notEqual *tmp6 *tmp5 @this
+    17 jump *label7 equal *tmp6 false
+    18 jump *label1 always
+-    * set *tmp7 null
+    19 jump *label8 always
+    20 label *label7
+-    * set *tmp7 null
+    21 label *label8
+    22 jump *label6 always
+    23 label *label5
+ 
+    47 ucontrol boost false
+    48 ucontrol flag 0
+    49 ucontrol unbind
+-    * set *tmp19 null
+    50 jump *label13 always
+    51 label *label12
+-    * set *tmp19 null
+    52 label *label13
+    53 label *label11
+    54 label *label1
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 instructions):
+ 
+     1 set y @thisy
+     2 set :i 0
+     3 label *label0
+-    * lookup unit *tmp0 :i
+-    * set :type *tmp0
++    4 lookup unit :type :i
+     5 ubind :type
+     6 op equal *tmp1 @unit null
+     7 jump *label3 equal *tmp1 false
+ 
+    30 sensor *tmp11 @unit @y
+    31 op sub *tmp12 :inRadius:y *tmp11
+    32 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp14 *tmp13 :inRadius:radius
+-    * set *tmp8 *tmp14
++   33 op lessThan *tmp8 *tmp13 :inRadius:radius
+    34 label *label9
+    35 op equal *tmp15 *tmp8 false
+    36 jump *label10 equal *tmp15 false
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-5 instructions):
+ 
+     3 label *label0
+     4 lookup unit :type :i
+     5 ubind :type
+-    * op equal *tmp1 @unit null
+-    * jump *label3 equal *tmp1 false
++    6 jump *label3 notEqual @unit null
+     7 jump *label1 always
+     8 jump *label4 always
+     9 label *label3
+ 
+    11 sensor *tmp3 @unit @controlled
+    12 jump *label5 equal *tmp3 false
+    13 sensor *tmp5 @unit @controller
+-    * op notEqual *tmp6 *tmp5 @this
+-    * jump *label7 equal *tmp6 false
++   14 jump *label7 equal *tmp5 @this
+    15 jump *label1 always
+    16 jump *label8 always
+    17 label *label7
+ 
+    30 op len *tmp13 *tmp10 *tmp12
+    31 op lessThan *tmp8 *tmp13 :inRadius:radius
+    32 label *label9
+-    * op equal *tmp15 *tmp8 false
+-    * jump *label10 equal *tmp15 false
++   33 jump *label10 notEqual *tmp8 false
+    34 ucontrol boost true
+    35 ucontrol flag 2435345345
+    36 ucontrol pathfind x y
+    37 jump *label11 always
+    38 label *label10
+    39 sensor *tmp17 @unit @flag
+-    * op notEqual *tmp18 *tmp17 0
+-    * jump *label12 equal *tmp18 false
++   40 jump *label12 equal *tmp17 0
+    41 ucontrol boost false
+    42 ucontrol flag 0
+    43 ucontrol unbind
+ 
+    47 label *label11
+    48 label *label1
+    49 op add :i :i 1
+-    * op lessThan *tmp20 :i @unitCount
+-    * jump *label0 notEqual *tmp20 false
++   50 jump *label0 lessThan :i @unitCount
+    51 label *label2
+    52 end
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-4 instructions):
+ 
+     5 ubind :type
+     6 jump *label3 notEqual @unit null
+     7 jump *label1 always
+-    * jump *label4 always
+     8 label *label3
+     9 label *label4
+    10 sensor *tmp3 @unit @controlled
+ 
+    12 sensor *tmp5 @unit @controller
+    13 jump *label7 equal *tmp5 @this
+    14 jump *label1 always
+-    * jump *label8 always
+    15 label *label7
+    16 label *label8
+-    * jump *label6 always
+    17 label *label5
+    18 label *label6
+    19 # "Function: def inRadius(in x, in y, in radius)"
+ 
+    38 ucontrol boost false
+    39 ucontrol flag 0
+    40 ucontrol unbind
+-    * jump *label13 always
+    41 label *label12
+    42 label *label13
+    43 label *label11
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    21 set :inRadius:y y
+    22 set :inRadius:radius 8
+    23 sensor *tmp9 @unit @x
+-    * op sub *tmp10 :inRadius:x *tmp9
++   24 op sub *tmp10 x *tmp9
+    25 sensor *tmp11 @unit @y
+-    * op sub *tmp12 :inRadius:y *tmp11
++   26 op sub *tmp12 y *tmp11
+    27 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 :inRadius:radius
++   28 op lessThan *tmp8 *tmp13 8
+    29 label *label9
+    30 jump *label10 notEqual *tmp8 false
+    31 ucontrol boost true
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3 instructions):
+ 
+    17 label *label5
+    18 label *label6
+    19 # "Function: def inRadius(in x, in y, in radius)"
+-    * set :inRadius:x x
+-    * set :inRadius:y y
+-    * set :inRadius:radius 8
+    20 sensor *tmp9 @unit @x
+    21 op sub *tmp10 x *tmp9
+    22 sensor *tmp11 @unit @y
+
+Modifications by Iterated phase, Jump Optimization, pass 2, iteration 1 (-1 instructions):
+ 
+    22 sensor *tmp11 @unit @y
+    23 op sub *tmp12 y *tmp11
+    24 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+    25 label *label9
+-    * jump *label10 notEqual *tmp8 false
++   26 jump *label10 lessThan *tmp13 8
+    27 ucontrol boost true
+    28 ucontrol flag 2435345345
+    29 ucontrol pathfind x y
+
+Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
+ 
+     6 jump *label3 notEqual @unit null
+     7 jump *label1 always
+     8 label *label3
+-    * label *label4
+     9 sensor *tmp3 @unit @controlled
+    10 jump *label5 equal *tmp3 false
+    11 sensor *tmp5 @unit @controller
+    12 jump *label7 equal *tmp5 @this
+    13 jump *label1 always
+    14 label *label7
+-    * label *label8
+    15 label *label5
+-    * label *label6
+    16 # "Function: def inRadius(in x, in y, in radius)"
+    17 sensor *tmp9 @unit @x
+    18 op sub *tmp10 x *tmp9
+    19 sensor *tmp11 @unit @y
+    20 op sub *tmp12 y *tmp11
+    21 op len *tmp13 *tmp10 *tmp12
+-    * label *label9
+    22 jump *label10 lessThan *tmp13 8
+    23 ucontrol boost true
+    24 ucontrol flag 2435345345
+ 
+    31 ucontrol flag 0
+    32 ucontrol unbind
+    33 label *label12
+-    * label *label13
+    34 label *label11
+    35 label *label1
+    36 op add :i :i 1
+    37 jump *label0 lessThan :i @unitCount
+-    * label *label2
+    38 end
+
+Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-2 instructions):
+ 
+     3 label *label0
+     4 lookup unit :type :i
+     5 ubind :type
+-    * jump *label3 notEqual @unit null
+-    * jump *label1 always
++    6 jump *label1 equal @unit null
+     7 label *label3
+     8 sensor *tmp3 @unit @controlled
+     9 jump *label5 equal *tmp3 false
+    10 sensor *tmp5 @unit @controller
+-    * jump *label7 equal *tmp5 @this
+-    * jump *label1 always
++   11 jump *label1 notEqual *tmp5 @this
+    12 label *label7
+    13 label *label5
+    14 # "Function: def inRadius(in x, in y, in radius)"
+
+Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
+ 
+     4 lookup unit :type :i
+     5 ubind :type
+     6 jump *label1 equal @unit null
+-    * label *label3
+     7 sensor *tmp3 @unit @controlled
+     8 jump *label5 equal *tmp3 false
+     9 sensor *tmp5 @unit @controller
+    10 jump *label1 notEqual *tmp5 @this
+-    * label *label7
+    11 label *label5
+    12 # "Function: def inRadius(in x, in y, in radius)"
+    13 sensor *tmp9 @unit @x
+
+Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
+ 
+    31 label *label1
+    32 op add :i :i 1
+    33 jump *label0 lessThan :i @unitCount
+-    * end
+
+Final code before resolving virtual instructions:
+
+    0:  set x @thisx                                                 param x = @thisx;
+    1:  set y @thisy                                                 param y = @thisy;
+    2:  set :i 0                                                     var i = 0;
+        label *label0                                                do
+    3:  lookup unit :type :i                                         var type = lookup(:unit, i);
+    4:  ubind :type                                                  ubind(type);
+    5:  jump *label1 equal @unit null                                if @unit == null then continue; end;
+    6:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+    7:  jump *label5 equal *tmp3 false                               ...
+    8:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+    9:  jump *label1 notEqual *tmp5 @this                            ...
+        label *label5                                                if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+   10:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+   11:  op sub *tmp10 x *tmp9                                        ...
+   12:  sensor *tmp11 @unit @y                                       ...
+   13:  op sub *tmp12 y *tmp11                                       ...
+   14:  op len *tmp13 *tmp10 *tmp12                                  ...
+   15:  jump *label10 lessThan *tmp13 8                              if !inRadius(x, y, RADIUS) then
+   16:  ucontrol boost true 0 0 0 0                                  boost(true);
+   17:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+   18:  ucontrol pathfind x y 0 0 0                                  pathfind(x, y);
+   19:  jump *label11 always 0 0                                     if !inRadius(x, y, RADIUS) then
+        label *label10                                               ...
+   20:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+   21:  jump *label12 equal *tmp17 0                                 ...
+   22:  ucontrol boost false 0 0 0 0                                 boost(false);
+   23:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   24:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label12                                               elsif @unit.@flag != 0 then
+        label *label11                                               if !inRadius(x, y, RADIUS) then
+        label *label1                                                do
+   25:  op add :i :i 1                                               while ++i < @unitCount;
+   26:  jump *label0 lessThan :i @unitCount                          do
+
+
+Performance: parsed in 121 ms, compiled in 215 ms, optimized in 134 ms, run in 3 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: success.
+
+Program output (5 steps):
+The program didn't generate any output.
+Execution exception at instruction 4: ubind :type:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

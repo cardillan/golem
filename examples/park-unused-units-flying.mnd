@@ -1,0 +1,38 @@
+#set syntax = strict;
+#set symbolic-labels = true;
+
+param x = @thisx;
+param y = @thisy;
+
+const FLAG = 2435345345;
+const RADIUS = 8;
+
+def inRadius(x, y, radius)
+    len(x - @unit.@x, y - @unit.@y) < radius;
+end;
+
+begin
+    for var type in
+        @nova, @pulsar, @quasar, @vela,
+        @flare, @horizon, @zenith, @antumbra, @eclipse,
+        @mono, @poly, @mega, @quad, @oct,
+        @avert, @obviate, @quell, @disrupt, @evoke,
+        @incite, @emanate
+    do
+        ubind(type);
+        if @unit == null then continue; end;
+        if @unit.@controlled then
+            if @unit.@controller != @this then continue; end;
+        end;
+
+        if !inRadius(x, y, RADIUS) then
+            boost(true);
+            flag(FLAG);
+            move(x, y);
+        elsif @unit.@flag != 0 then
+            boost(false);
+            flag(0);
+            unbind();
+        end;
+    end;
+end;

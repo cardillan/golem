@@ -1,0 +1,41 @@
+#set target = 8;
+#set syntax = strict;
+
+const PROCESSORS = 16;
+
+var ID = @thisx + @mapw * @thisy + 1;
+var slot = 0; //floor(rand(PROCESSORS));
+
+guarded linked memory = bank1, display1;
+linked message1;
+
+var px = round(@thisx - memory.@x - 1.5);
+var py = round(@thisy - memory.@y + 0.5);
+var x = 17 + px * 30;
+var y = 17 + py * 30;
+
+begin
+    reset();
+    drawflush(display1);
+    var count = 0;
+
+    while true do
+        if memory[slot] == 0 then
+            memory[slot] = ID;
+        elsif memory[slot] != ID then
+            slot++;
+        end;
+
+        print(slot);
+        color(0, 0, 80, 255);
+        rect(x - 15, y - 15, 30, 30);
+        color(0, 255, 0, 255);
+        drawPrint(x, y, :center);
+        drawflush(display1);
+
+        while memory[count] > 0 do count++; end;
+
+        print($"Found $count active processors.");
+        printflush(message1);
+    end;
+end;
