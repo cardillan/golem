@@ -52,17 +52,19 @@ All these schematics may use one or two memory blocks for data.
 
 A memory bank must be used as a single memory storage if graphing is required, as memory cell doesn't have enough capacity to hold all data. If graphing is not required and just a current value is being consumed by some component, a memory cell is adequate. Memory layout for a single memory block is this:
 
-| Index          | Writes | Reads | Data                                                                                             |
-|----------------|:------:|:-----:|--------------------------------------------------------------------------------------------------|
-| 0 .. 49        |   M    |   M   | Cache used by Item Rate Meter/Level Meter for smoothing out (averaging) raw data measurements    |
-| 50 .. SIZE - 8 |   M    |  M,D  | Circular buffer holding quantities recorded over time (typically sampled at a frequency of 1 Hz) |
-| SIZE - 7       |   M    |   D   | Start of the circular buffer (50)                                                                |
-| SIZE - 6       |   M    |   D   | End of the circular buffer, exclusive (SIZE - 7)                                                 |
-| SIZE - 5       |   M    |   D   | Head of the circular buffer (i.e. latest value written)                                          |
-| SIZE - 4       |  M,D   |  M,D  | Current minimum of recorded quantities                                                           |
-| SIZE - 3       |  M,D   |  M,D  | Current maximum of recorded quantities                                                           |
-| SIZE - 2       |   M    |   D   | Current measurement (item rate or level, as measured by Item Rate Meter/Level Meter)             |
-| SIZE - 1       |   C    |   M   | Total count of items as computed by Item Counter                                                 |
+| Index           | Writes | Reads | Data                                                                                             |
+|-----------------|:------:|:-----:|--------------------------------------------------------------------------------------------------|
+| 0 .. 49         |   M    |   M   | Cache used by Item Rate Meter/Level Meter for smoothing out (averaging) raw data measurements    |
+| 50 .. SIZE - 10 |   M    |  M,D  | Circular buffer holding quantities recorded over time (typically sampled at a frequency of 1 Hz) |
+| SIZE - 9        |   M    |   D   | Foreground graph color                                                                           |
+| SIZE - 8        |   M    |   D   | Background graph color                                                                           |
+| SIZE - 7        |   M    |   D   | Start of the circular buffer (50)                                                                |
+| SIZE - 6        |   M    |   D   | End of the circular buffer, exclusive (SIZE - 7)                                                 |
+| SIZE - 5        |   M    |   D   | Head of the circular buffer (i.e. latest value written)                                          |
+| SIZE - 4        |  M,D   |  M,D  | Current minimum of recorded quantities                                                           |
+| SIZE - 3        |  M,D   |  M,D  | Current maximum of recorded quantities                                                           |
+| SIZE - 2        |   M    |   D   | Current measurement (item rate or level, as measured by Item Rate Meter/Level Meter)             |
+| SIZE - 1        |   C    |   M   | Total count of items as computed by Item Counter                                                 |
 
 SIZE is the size of the memory bank (512) or memory cell (64).
 
@@ -88,7 +90,9 @@ When two memory blocks are used, they're denoted as _primary_ and _secondary_. T
 
 | Index          | Writes | Reads | Data                                                                                             |
 |----------------|:------:|:-----:|--------------------------------------------------------------------------------------------------|
-| 0 .. SIZE - 8  |   M    |  M,D  | Circular buffer holding quantities recorded over time (typically sampled at a frequency of 1 Hz) |
+| 0 .. SIZE - 10 |   M    |  M,D  | Circular buffer holding quantities recorded over time (typically sampled at a frequency of 1 Hz) |
+| SIZE - 9       |   M    |   D   | Foreground graph color                                                                           |
+| SIZE - 8       |   M    |   D   | Background graph color                                                                           |
 | SIZE - 7       |   M    |   D   | Start of the circular buffer (0)                                                                 |
 | SIZE - 6       |   M    |   D   | End of the circular buffer, exclusive (SIZE - 7)                                                 |
 | SIZE - 5       |   M    |   D   | Head of the circular buffer (i.e. latest value written)                                          |
@@ -101,6 +105,7 @@ When two memory blocks are used, they're denoted as _primary_ and _secondary_. T
 ### External memory access by schematics type
 
 * Cache: used exclusively by the Item Rate Meter/Level Meter.
+* Graph colors: written by the Item rate/level meters. The colors are chosen to correspond to the quantity being metered. 
 * Circular buffer, including start index, end index and head position: values are written in by Item Rate Meter/Level Meter, and are read by Level Display.
 * Current maximum/minimum:
   * Item Rate Meter/Level Meter: updates the minimum/maximum when a newly recorded quantity is larger than the current maximum (read/write access),

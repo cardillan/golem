@@ -1,5 +1,6 @@
-// Item counter for logic processor. Can handle 20 plastanium conveyors at once.
-// For safety, the limit is set to 16.
+// Computes rate of item production/consumption from  values produced by item counter,
+// recording the values over time in a memory bank.
+// Variant for micro processor, doesn't update minimum or maximum
 
 //#set target = 8;
 #set syntax = strict;
@@ -77,8 +78,8 @@ MainLoop:
         step *= 10;
 
         // Step determines the section of code to run
-        // It takes a value of 2, 4, 8 or 16, after which it loops back to 2 (due to the above multiplication)
-        // Multiples of 2 are used, instead of increments, since the step gets or-ed to the `waits`
+        // It takes a value of 10, 100, 1000 or 10000, after which it loops back to 10 (due to the above multiplication)
+        // Powers of 10 are used, instead of increments, since the step gets added to the `waits`
         // variable when a wait actually happens.
 
         // Binary search: two jumps for each possible value of step
@@ -101,8 +102,7 @@ MainLoop:
                 println(floor(rate * 3600), "[]/min");
                 print("[lightgray]Waits: ");
             else // step == 10000
-                // If waits os not equal to 15, a step took too long to execute
-                // Possible to add 3 instructions
+                // If waits isn't at least 1 in each decimal place, some step took too long to execute
                 print(waits);
                 printflush(message);
                 waits = 0;
