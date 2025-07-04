@@ -1,0 +1,398 @@
+#set target = 8;
+//#set syntax = strict;
+#set function-inlining = none;
+#set sort-variables;
+//#set unreachable-code-elimination = none;
+//#set optimization = none;
+
+module phase1;
+
+// Linked variables
+linked message1, processor1;
+var core, coreX, coreY;
+
+const DROP_MINING_RADIUS = 7;
+const REGULAR_RADIUS =  5;     // or build
+
+// At this point, we're only using a poly
+const capacity = 30;
+
+// Built blocks
+var
+    press = null,
+    generator = null,
+    battery = null,
+    smelter = null,
+    titanium_drill = null,
+    unloader1 = null,
+    unloader2 = null,
+    processor = null,
+    kiln = null;
+
+// Targets to be met for the next build
+volatile var
+    nextBlock = "",
+    copperTarget = 0,
+    leadTarget = 0,
+    graphiteTarget = 0,
+    siliconTarget = 0,
+    titaniumTarget = 0,
+    powerTarget = 0,
+    status1 = "",
+    status2 = "", item2 = "", block2 = "",
+    status3 = "";
+
+remote processor var
+    pressEnabled,
+    smelterEnabled;
+
+// Blocks layout around the core and build requirements
+
+//                     Block type                 X     Y   Cu  Pb   C  Si  Ti   R   Cfg
+const PRESS[]       = (@graphite-press,        -1.5, +2.5,  75, 30,  0,  0,  0,  0, null);
+const GENERATOR[]   = (@combustion-generator,     0,   +3,  25, 15,  0,  0,  0,  0, null);
+const BATTERY1[]    = (@battery,                  0,   +4,   5, 20,  0,  0,  0,  0, null);
+const BATTERY2[]    = (@battery,                 -1,   +4,   5, 20,  0,  0,  0,  0, null);
+const SMELTER[]     = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0, null);
+const UNLOADER1[]   = (@unloader,                 0,   +2,   0,  0,  0, 30, 25,  0, null);
+const UNLOADER2[]   = (@unloader,                -2,    0,   0,  0,  0, 30, 25,  0, null);
+const POWER_NODE[]  = (@power-node,              -2,   +1,   2,  6,  0,  0,  0,  0, null);
+const AIR_FACTORY[] = (@air-factory,             -4,   -1,  60, 70,  0,  0,  0,  3, @mono);
+const PROCESSOR[]   = (@micro-processor,         +1,   +4,  90, 50,  0, 50,  0,  0, processor1);
+
+const UNLOADER3[]   = (@unloader,                +2,    0,   0,  0,  0, 30, 25,  0, null);
+const KILN[]        = (@kiln,                  +3.5, +0.5,  60, 30,  0,  0,  0,  0, null);
+
+
+// Non-core based blocks
+const PNEU_DRILL[]  = (@pneumatic-drill,          0,    0,  18,  0, 10,  0,  0,  0, null);
+
+// UTILITY FUNCTIONS
+
+inline void status1(text)
+    status1 = text;
+end;
+
+inline void status2(text, item, block)
+    status2 = text;
+    item2 = item;
+    block2 = block;
+end;
+
+inline void status3(text)
+    status3 = text;
+end;
+
+inline void error(text...)
+    print("[salmon]", text);
+    printflush(message1);
+    stopProcessor();
+end;
+
+// BASIC OPERATIONS
+// ALL THESE WAIT FOR COMPLETION
+
+// Moves the unit to a given distance from the location
+void moveTo(x, y, radius)
+    status3("Moving...");
+    while !within(x, y, radius) do
+        approach(x, y, radius - 0.5);
+    end;
+end;
+
+// Moves the unit to a mining distance from the location
+void moveTo(x, y)
+    moveTo(x, y, REGULAR_RADIUS);
+end;
+
+// Moves the unit to the given location, ensuring it is empty on arrival
+void moveToEmpty(x, y)
+    // If ore is held, try to drop it now, but if it doesn't happen due to cooldown,
+    // use the trip for cooldown
+    if @unit.@firstItem != null then itemDrop(@air, 1000); end;
+    moveTo(x, y);
+
+    // Now drop it for real
+    while @unit.@firstItem != null do
+        itemDrop(@air, 1000);
+    end;
+end;
+
+// Moves the unit to the a given distance from a block
+void moveToBlock(block, radius)
+    moveTo(block.@x, block.@y, radius);
+end;
+
+// Drops all items to block (does nothing when empty)
+// - moves to a drop distance from the block
+// - makes sure everything is dropped or the block is full
+void depositItems(block, item, fromMining)
+    status3("Depositing...");
+    if @unit.@firstItem == item then
+        moveToBlock(block, fromMining && block == core ? DROP_MINING_RADIUS : REGULAR_RADIUS);
+        var cap = block.@itemCapacity;
+        do
+            itemDrop(block, capacity);
+            if block.sensor(item) >= cap then break; end;
+        while @unit.@firstItem != null;
+    else
+        // Wrong item(!)
+        while @unit.@firstItem != null do
+            itemDrop(@air, 1000);
+        end;
+    end;
+end;
+
+// Locates the ore, crashes when not successful
+void locateOre(ore, out x, out y)
+    if !ulocate(:ore, ore, out x, out y) then
+        error("Cannot locate ", ore);
+    end;
+end;
+
+// Mines given amount of ore and deposits it to given block
+void mineOre(ore, amount, block)
+    var x, y;
+    locateOre(ore, out x, out y);
+
+    moveToEmpty(x, y);
+
+    status3("Mining...");
+    do
+        // Okay, not sure how it can happen, but it does sometimes
+        var item = @unit.@firstItem;
+        if item != null && item != ore then break; end;
+
+        mine(x, y);
+    while @unit.@totalItems < amount;
+
+    // We need to stop mining. stop() somehow interferes with building.
+    unbind();
+
+    // And drop it
+    depositItems(block, ore, true);
+end;
+
+// Mines to the core
+void mineOre(ore)
+    mineOre(ore, capacity, core);
+end;
+
+// SUPPLY OPERATIONS
+
+void fetchBlock(block, item)
+    status2("Fetching ", item, block);
+    moveToEmpty(block.@x, block.@y);
+
+    do
+        itemTake(block, item, capacity);
+        var unitItem = @unit.@firstItem;
+        if unitItem != null and unitItem != item then
+            itemDrop(@air, 1000);
+        end;
+     while @unit.sensor(item) < capacity and block.sensor(item);
+
+    depositItems(core, item, false);
+end;
+
+// Supplies the block with the given amount of ore
+inline void supplyBlock(block, ore)
+    status2("Supplying ", ore, block);
+    var missing = block.@itemCapacity - block.sensor(ore);
+    if missing > 0 then
+        mineOre(ore, missing, block);
+    end;
+end;
+
+// Returns true when all targets are met
+void supplyBlocks()
+    var supplied = false;
+
+    if unloader1 == null then
+        if core.@graphite < graphiteTarget then
+            if press.@coal < 5 then
+                status1("Meeting the graphite target");
+                supplyBlock(press, @coal);
+                supplied = true;
+            end;
+        end;
+
+        if core.@silicon < siliconTarget then
+            if smelter.@coal < 5 then
+                status1("Meeting the silicon target (coal)");
+                supplyBlock(smelter, @coal);
+                supplied = true;
+            elsif smelter.@sand < 5 then
+                status1("Meeting the silicon target (sand)");
+                supplyBlock(smelter, @sand);
+                supplied = true;
+            end;
+        end;
+
+        if battery.@totalPower < powerTarget then
+            status1("Supplying generator");
+            supplyBlock(generator, @coal);
+            supplied = true;
+        end;
+    end;
+
+    if titanium_drill.@titanium < 7 then
+        if core.@copper < copperTarget then
+            status1("Meeting the copper target");
+            status2("Mining ", @copper, "core");
+            mineOre(@copper);
+        elsif core.@lead < leadTarget then
+            status1("Meeting the lead target");
+            status2("Mining ", @lead, "core");
+            mineOre(@lead);
+        elsif !supplied then
+            status1("Supplying base");
+            var coal = core.@coal;
+            var sand = core.@sand;
+            var ore = coal <= sand ? @coal : @sand;
+            status2("Mining ", ore, "core");
+            mineOre(ore);
+        end;
+    else
+        status1("Fetching titanium");
+        fetchBlock(titanium_drill, @titanium);
+    end;
+end;
+
+void meetTarget(block, copper, lead, graphite, silicon, titanium)
+    nextBlock = block;
+    copperTarget = copper;
+    leadTarget = lead;
+    graphiteTarget = graphite;
+    siliconTarget = silicon;
+    titaniumTarget = titanium;
+
+    while core.@copper < copperTarget
+        || core.@lead < leadTarget
+        || core.@graphite < graphiteTarget
+        || core.@silicon < siliconTarget
+        || core.@titanium < titaniumTarget
+    do
+        supplyBlocks();
+    end;
+end;
+
+// BUILDING OPERATIONS
+
+def buildBlockAt(block, x, y, rotation, config)
+    moveTo(x, y);
+
+    status3("Building...");
+    var type;
+    var building = getBlock(x, y, out type);
+    if building != null then
+        // The block is already there
+        if type == block then return building; end;
+        error("Cannot build at (", x, ", ", y, "), tile already contains ", building);
+    end;
+
+    build(x, y, block, rotation, config);
+    do
+        var floor;
+        building = getBlock(x, y, out type, out floor);
+    while type != block;
+
+    return building;
+end;
+
+def buildBlockFromConfig(block, x, y, copper, lead, graphite, silicon, titanium, rotation, config)
+    meetTarget(block, copper, lead, graphite, silicon, titanium);
+    return buildBlockAt(block, x, y, rotation, config);
+end;
+
+// Builds a block
+inline def buildBlock(ref cfg)
+    for var block, offsetX, offsetY, copper, lead, graphite, silicon, titanium, rotation, config in cfg do
+        var x = coreX + offsetX;
+        var y = coreY + offsetY;
+        return buildBlockFromConfig(block, x, y, copper, lead, graphite, silicon, titanium, rotation, config);
+    end;
+end;
+
+inline def checkOre(x, y, in out count)
+    var floor, type;
+    getBlock(x, y, out type, out floor);
+//    println($"Floor at $x, $y: $floor (type: $type)");
+    if floor == @ore-titanium then count++; end;
+end;
+
+def buildTitaniumDrill()
+    for var block, offsetX, offsetY, copper, lead, graphite, silicon, titanium, config, rotation in PNEU_DRILL do
+        meetTarget(block, copper, lead, graphite, silicon, titanium);
+    end;
+
+    var x, y;
+    locateOre(@titanium, out x, out y);
+    moveTo(x, y);
+
+    //println($"Found ore at $x, $y");
+
+    // Try to find the best match
+    var best = 0, bx = 0, by = 0;
+    for var xx in 1, 1, -1, -1; var yy in 1, -1, 1, -1 do
+        var count = 0;
+        checkOre(x + xx, y, in out count);
+        checkOre(x, y + yy, in out count);
+        checkOre(x + xx, y + yy, in out count);
+
+        if count > best then
+            //println($"Best so far with count: $count");
+            bx = xx;
+            by = yy;
+            best = count;
+            if count == 3 then break; end;
+        end;
+    end;
+
+    x += bx / 2;
+    y += by / 2;
+
+    //println($"Building drill at $x, $y");
+    //printflush(message1);
+
+    return buildBlockAt(@pneumatic-drill, x, y, null, 0);
+end;
+
+// MAIN
+
+begin
+    do
+        ubind(@poly);
+        core = ulocate(:building, :core, false, out coreX, out coreY);
+    while core == null;
+
+    // Basic blocks: copper and lead
+    press = buildBlock(ref PRESS);
+    battery = buildBlock(ref BATTERY1);
+    generator = buildBlock(ref GENERATOR);
+
+    powerTarget = 1000;
+
+    buildBlock(ref BATTERY2);
+    smelter = buildBlock(ref SMELTER);
+
+    titanium_drill = buildTitaniumDrill();
+    unloader1 = buildBlock(ref UNLOADER1);
+    unloader2 = buildBlock(ref UNLOADER2);
+
+    buildBlock(ref POWER_NODE);
+    processor = buildBlock(ref PROCESSOR);
+
+    pressEnabled = false;
+
+    buildBlock(ref AIR_FACTORY);
+
+    meetTarget("nothing", 0, 15, 0, 30, 0);
+
+    while true do
+        supplyBlocks();
+    end;
+
+    stop();
+    error("Done");
+end;

@@ -1,0 +1,79 @@
+//schematic
+//    name = "Skye's Jam by Cardillan"
+//    tag = "Cardillan"
+//
+//p0-message1:
+//    @message             at ( 0,  6) text "Skye's Jam by Cardillan"
+//p0-processor2:
+//    @logic-processor     at ( 0,  0) processor mindcode = file "phase2.mnd" end
+//p0-processor1:
+//    @logic-processor     at ( 0,  2) processor
+//        links p1-processor1 end
+//        mindcode = file "phase1.mnd"
+//     end
+//    @logic-processor     at ( 0,  4) processor
+//        links p0-* end
+//        mindcode = file "main.mnd"
+//    end
+//p0-display1:
+//    @large-logic-display at ( 2,  0)
+//p1-processor1:
+//    @micro-processor     at ( 0,  -1) processor
+//        links
+//            -(6, 6) as factory1
+//            -(3, 2) as press1
+//            -(1, 2) as unloader1
+//            -(0, 2) as smelter1
+//            -(3, 4) as unloader2
+//            -(1, 1) as generator1
+//            -(1, 0) as battery1
+//        end
+//        mindcode = file "controller.mnd"
+//    end
+//end
+
+
+schematic
+    name = "Skye's Jam by Cardillan"
+    tag = "Cardillan"
+
+p2-processor1:
+    @micro-processor     at ( 0,  0) processor
+        links
+            -(6, 6) as factory1 virtual
+            -(3, 2) as press1 virtual
+            -(1, 2) as unloader1 virtual
+            -(0, 2) as smelter1 virtual
+            -(3, 4) as unloader2 virtual
+            -(1, 1) as generator1 virtual
+            -(1, 0) as battery1 virtual
+        end
+        mindcode = file "controller.mnd"
+    end
+p3-message1:
+    @message             at ( 1,  0) text ""
+p3-processor2:
+    @logic-processor     at ( 0,  1) processor
+        links
+        end
+        mindcode = file "phase2.mnd"
+    end
+p3-processor1:
+    @logic-processor     at ( 0,  3) processor
+        links
+            p2-processor1 as processor1
+        end
+        mindcode = file "phase1.mnd"
+    end
+    @logic-processor     at ( 0,  5) processor
+        links
+            p3-processor2 as processor2
+            p3-processor1 as processor1
+            p3-display1 as display1
+            p3-message1 as message1
+        end
+        mindcode = file "main.mnd"
+    end
+p3-display1:
+    @large-logic-display at ( 2,  1)
+end

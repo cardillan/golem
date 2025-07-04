@@ -1,0 +1,70 @@
+    12 instructions before optimizations.
+     2 instructions eliminated by Temp Variables Elimination (2 iterations).
+     1 instructions eliminated by Jump Normalization (4 iterations).
+     1 instructions eliminated by Unreachable Code Elimination (2 iterations).
+     8 instructions after optimizations.
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 instructions):
+ 
+     1 set .smelterEnabled true
+     2 label *label0
+     3 jump *label2 equal true false
+-    * set *tmp1 .pressEnabled
+-    * control enabled press1 *tmp1
+-    * set *tmp3 .smelterEnabled
+-    * control enabled smelter1 *tmp3
++    4 control enabled press1 .pressEnabled
++    5 control enabled smelter1 .smelterEnabled
+     6 sensor *tmp5 battery1 @totalPower
+     7 op lessThan *tmp6 *tmp5 3500
+     8 control enabled generator1 *tmp6
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+     0 set .pressEnabled true
+     1 set .smelterEnabled true
+     2 label *label0
+-    * jump *label2 equal true false
+     3 control enabled press1 .pressEnabled
+     4 control enabled smelter1 .smelterEnabled
+     5 sensor *tmp5 battery1 @totalPower
+
+Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
+ 
+     5 sensor *tmp5 battery1 @totalPower
+     6 op lessThan *tmp6 *tmp5 3500
+     7 control enabled generator1 *tmp6
+-    * label *label1
+     8 jump *label0 always
+-    * label *label2
+     9 end
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
+ 
+     6 op lessThan *tmp6 *tmp5 3500
+     7 control enabled generator1 *tmp6
+     8 jump *label0 always
+-    * end
+
+Final code before resolving virtual instructions:
+
+    0:  set .pressEnabled true                                       volatile var
+    1:  set .smelterEnabled true                                     ...
+        label *label0                                                while true do
+    2:  control enabled press1 .pressEnabled 0 0 0                   press1.enabled = pressEnabled;
+    3:  control enabled smelter1 .smelterEnabled 0 0 0               smelter1.enabled = smelterEnabled;
+    4:  sensor *tmp5 battery1 @totalPower                            generator1.enabled = battery1.@totalPower < 3500;
+    5:  op lessThan *tmp6 *tmp5 3500                                 ...
+    6:  control enabled generator1 *tmp6 0 0 0                       ...
+    7:  jump *label0 always 0 0                                      while true do
+
+
+Performance: parsed in 97 ms, compiled in 180 ms, optimized in 71 ms, run in 5 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: success.
+
+Program output (5 steps):
+The program didn't generate any output.
+Execution exception at instruction 4: sensor *tmp5 battery1 @totalPower:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)
