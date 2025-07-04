@@ -1,0 +1,21 @@
+#set target = 8W;
+#set symbolic-labels = true;
+
+require "clear-area-0.mnd" remote processor1;
+require "clear-area-1.mnd" remote processor2;
+require "clear-area-2.mnd" remote processor3;
+
+begin
+    switch1.enabled = false;
+    while true do
+        if switch1.enabled then
+            switch1.enabled = false;
+            async(clearArea0());
+            async(clearArea1());
+            async(clearArea2());
+            await(clearArea0);
+            await(clearArea1);
+            await(clearArea2);
+        end;
+    end;
+end;

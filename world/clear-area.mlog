@@ -1,0 +1,41 @@
+# Mlog code compiled with support for symbolic labels
+# You can safely add/remove instructions, in most parts of the program
+# Pay closer attention to sections of the program manipulating @counter
+label_0:
+    read *tmp0 processor1 "*mainProcessor"
+    jump label_0 equal *tmp0 null
+    write @this processor1 "*mainProcessor"
+    read :clearArea0*address processor1 ":clearArea0*address"
+label_4:
+    read *tmp1 processor2 "*mainProcessor"
+    jump label_4 equal *tmp1 null
+    write @this processor2 "*mainProcessor"
+    read :clearArea1*address processor2 ":clearArea1*address"
+label_8:
+    read *tmp2 processor3 "*mainProcessor"
+    jump label_8 equal *tmp2 null
+    write @this processor3 "*mainProcessor"
+    read :clearArea2*address processor3 ":clearArea2*address"
+    control enabled switch1 false 0 0 0
+label_13:
+        sensor *tmp4 switch1 @enabled
+        jump label_13 equal *tmp4 false
+            control enabled switch1 false 0 0 0
+            set :clearArea0*finished false
+            write :clearArea0*address processor1 "@counter"
+            set :clearArea1*finished false
+            write :clearArea1*address processor2 "@counter"
+            set :clearArea2*finished false
+            write :clearArea2*address processor3 "@counter"
+        label_22:
+            wait 1e-15
+            jump label_22 equal :clearArea0*finished false
+        label_24:
+            wait 1e-15
+            jump label_24 equal :clearArea1*finished false
+        label_26:
+            wait 1e-15
+            jump label_26 equal :clearArea2*finished false
+        jump label_13 always 0 0
+        print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

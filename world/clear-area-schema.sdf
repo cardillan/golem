@@ -1,0 +1,55 @@
+schematic
+    name = "Clear Area"
+
+switch1:    @world-switch        at ( 0,  0) disabled
+            @world-processor     at ( 1,  0) processor
+                links * end
+                mindcode = main
+            end
+processor1: @world-processor     at ( 2,  0) processor mindcode = clear end
+processor2: @world-processor     at ( 3,  0) processor mindcode = clear end
+processor3: @world-processor     at ( 4,  0) processor mindcode = clear end
+end
+
+main = """
+    #set target = 8W;
+    require "clear" remote processor1, processor2, processor3;
+
+    begin
+        switch1.enabled = false;
+        while true do
+            if switch1.enabled then
+                switch1.enabled = false;
+                async(processor1.clearArea(0, 200));
+                async(processor2.clearArea(200, 400));
+                async(processor3.clearArea(400, 600));
+                await(processor1.clearArea);
+                await(processor2.clearArea);
+                await(processor3.clearArea);
+            end;
+        end;
+    end;
+"""
+
+clear = """
+    #set target = 8W;
+    module clear1;
+
+    const minY = 0;
+    const maxY = 150;
+
+    begin
+        setrate(1000);
+    end;
+
+    remote void clearArea(minX, maxX)
+        for var x in minX ... maxX do
+            for var y in minY ... maxY do
+                var building = getblock(:building, x, y);
+                if building.@ammoCapacity > 0 then
+                    setblock(:block, @air, x, y, 0, 0);
+                end;
+            end;
+        end;
+    end;
+    """

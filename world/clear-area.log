@@ -1,0 +1,122 @@
+    34 instructions before optimizations.
+     2 instructions eliminated by Dead Code Elimination (4 iterations).
+     1 instructions eliminated by Jump Normalization (4 iterations).
+     1 instructions eliminated by Single Step Elimination (5 iterations).
+     1 instructions updated by JumpThreading.
+     1 instructions eliminated by Unreachable Code Elimination (2 iterations).
+    29 instructions after optimizations.
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-2 instructions):
+ 
+    33 label *label13
+    34 wait 1e-15
+    35 jump *label13 equal :clearArea2*finished false
+-    * set *tmp5 :clearArea2*retval
+    36 jump *label10 always
+    37 label *label9
+-    * set *tmp5 null
+    38 label *label10
+    39 label *label7
+    40 jump *label6 always
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+ 
+    14 read :clearArea2*address processor3 ":clearArea2*address"
+    15 control enabled switch1 false
+    16 label *label6
+-    * jump *label8 equal true false
+    17 sensor *tmp4 switch1 @enabled
+    18 jump *label9 equal *tmp4 false
+    19 control enabled switch1 false
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
+ 
+    32 label *label13
+    33 wait 1e-15
+    34 jump *label13 equal :clearArea2*finished false
+-    * jump *label10 always
+    35 label *label9
+    36 label *label10
+    37 label *label7
+
+Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
+ 
+    33 wait 1e-15
+    34 jump *label13 equal :clearArea2*finished false
+    35 label *label9
+-    * label *label10
+-    * label *label7
+    36 jump *label6 always
+-    * label *label8
+    37 end
+
+Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
+ 
+    15 control enabled switch1 false
+    16 label *label6
+    17 sensor *tmp4 switch1 @enabled
+-    * jump *label9 equal *tmp4 false
++   18 jump *label6 equal *tmp4 false
+    19 control enabled switch1 false
+    20 set :clearArea0*finished false
+    21 write :clearArea0*address processor1 "@counter"
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
+ 
+    32 label *label13
+    33 wait 1e-15
+    34 jump *label13 equal :clearArea2*finished false
+-    * label *label9
+    35 jump *label6 always
+-    * end
+
+Final code before resolving virtual instructions:
+
+        label *label3                                                clear-area.mnd: require "clear-area-0.mnd" remote processor1;
+    0:  read *tmp0 processor1 "*mainProcessor"                       ...
+    1:  jump *label3 equal *tmp0 null                                ...
+    2:  write @this processor1 "*mainProcessor"                      ...
+    3:  read :clearArea0*address processor1 ":clearArea0*address"    ...
+        label *label4                                                clear-area.mnd: require "clear-area-1.mnd" remote processor2;
+    4:  read *tmp1 processor2 "*mainProcessor"                       ...
+    5:  jump *label4 equal *tmp1 null                                ...
+    6:  write @this processor2 "*mainProcessor"                      ...
+    7:  read :clearArea1*address processor2 ":clearArea1*address"    ...
+        label *label5                                                clear-area.mnd: require "clear-area-2.mnd" remote processor3;
+    8:  read *tmp2 processor3 "*mainProcessor"                       ...
+    9:  jump *label5 equal *tmp2 null                                ...
+   10:  write @this processor3 "*mainProcessor"                      ...
+   11:  read :clearArea2*address processor3 ":clearArea2*address"    ...
+   12:  control enabled switch1 false 0 0 0                          clear-area.mnd: switch1.enabled = false;
+        label *label6                                                clear-area.mnd: while true do
+   13:  sensor *tmp4 switch1 @enabled                                clear-area.mnd: if switch1.enabled then
+   14:  jump *label6 equal *tmp4 false                               ...
+   15:  control enabled switch1 false 0 0 0                          clear-area.mnd: switch1.enabled = false;
+   16:  set :clearArea0*finished false                               clear-area.mnd: async(clearArea0());
+   17:  write :clearArea0*address processor1 "@counter"              ...
+   18:  set :clearArea1*finished false                               clear-area.mnd: async(clearArea1());
+   19:  write :clearArea1*address processor2 "@counter"              ...
+   20:  set :clearArea2*finished false                               clear-area.mnd: async(clearArea2());
+   21:  write :clearArea2*address processor3 "@counter"              ...
+        label *label11                                               clear-area.mnd: await(clearArea0);
+   22:  wait 1e-15                                                   ...
+   23:  jump *label11 equal :clearArea0*finished false               ...
+        label *label12                                               clear-area.mnd: await(clearArea1);
+   24:  wait 1e-15                                                   ...
+   25:  jump *label12 equal :clearArea1*finished false               ...
+        label *label13                                               clear-area.mnd: await(clearArea2);
+   26:  wait 1e-15                                                   ...
+   27:  jump *label13 equal :clearArea2*finished false               ...
+   28:  jump *label6 always 0 0                                      clear-area.mnd: while true do
+
+
+Performance: parsed in 164 ms, compiled in 246 ms, optimized in 85 ms, run in 7 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: success.
+
+Program output (1 steps):
+The program didn't generate any output.
+Execution exception at instruction 0: read *tmp0 processor1 "*mainProcessor":
+Variable 'processor1' is not an object.
+(Use the '#set err-not-an-object = false;' directive or the '--err-not-an-object false' command line option to ignore this exception.)
