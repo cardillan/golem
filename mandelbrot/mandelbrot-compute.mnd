@@ -1,3 +1,5 @@
+#set target = 8;
+
 require blocks;
 require "mandelbrot-common.mnd";
 
@@ -31,8 +33,10 @@ var PROCESSOR_ID = @this.@x + 10000 * @this.@y;
 var PROC_ID_INDEX = PROCESSORS;
 var PROC_STATE_INDEX = PROCESSORS + 1;
 
-// Batch drawing operations to limit drawflush frequency
 var start = 0, stop;
+
+// Processor graphics buffer usage
+noinit var localBuffer;
 
 begin
     findLinkedBlocks("Mandelbrot Generator", null,
@@ -40,7 +44,11 @@ begin
         @memory-bank,           "Memory",   out memory,     true
     );
 
+MainLoop:
     while true do
+        localBuffer = 0;
+        drawflush(null);
+
         // Waiting for a start signal
         do
             // setState finds a non-conflicting processor slot
@@ -70,7 +78,6 @@ begin
         var next_increment = 16;
         wait(rand(0.1));
 
-    MasterLoop:
         for var lines in 0 ... DISPLAY_SIZE_LARGE do
             // Find a line
             var x = (SKIP * line) % DISPLAY_SIZE_LARGE;
@@ -88,7 +95,7 @@ begin
                     end;
 
                     if stop != $STOP then
-                        break MasterLoop;        // Break is signalled
+                        continue MainLoop;        // Break is signalled
                     end;
                 end;
             end;
@@ -100,7 +107,7 @@ begin
             end;
         end;
 
-        drawflush(display);
+        flushLocalBuffer();
     end;
 end;
 
@@ -149,41 +156,70 @@ def compute(x, y)
     return i;
 end;
 
-void drawPixel(x, y, iterations)
+noinline void drawPixel(x, y, iterations)
+    var color;
     if SMOOTH then
         if iterations == MAX_DEPTH then
-            color(0, 0, 0, 255);
+            color = %[black];
         else
             var r, g, b;
             case PALETTE
                 when 2 then
-                    r = 255 - 7 * abs(32 - iterations);
-                    g = 240 - 6 * abs(iterations - 32);
-                    b = 120 + 4 * abs(32 - iterations);
-                    color(r, g, b, 255);
+                    r = 255/255 - 7 * abs(32 - iterations) / 255;
+                    g = 240/255 - 6 * abs(iterations - 32) / 255;
+                    b = 120/255 + 4 * abs(32 - iterations) / 255;
+                    color = packcolor(r, g, b, 1);
 
                 when 3 then
-                    r = 255 * sin(iterations / MAX_DEPTH * 360);
-                    g = 255 * cos(iterations / MAX_DEPTH * 360);
-                    b = 100 + 4 * abs(iterations - 32);
-                    color(r, g, b, 255);
+                    r = sin(iterations / MAX_DEPTH * 360);
+                    g = cos(iterations / MAX_DEPTH * 360);
+                    b = 100/255 + 4 * abs(iterations - 32) / 255;
+                    color = packcolor(r, g, b, 1);
 
                 when 4 then
-                    r = 4 * iterations;
-                    g = 96 + 1.5 * iterations;
-                    color(r, g, 0, 255);
+                    r = 4 * iterations / 255;
+                    g = 96 + 1.5 * iterations / 255;
+                    color = packcolor(r, g, 0, 1);
 
                 else
-                    r = 255 - 4 * iterations;
-                    color(r, r, 0, 255);
+                    r = 1 - 4 * iterations / 255;
+                    color = packcolor(r, r, 0, 1);
             end;
         end;
     else
-        col(memory[iterations]);
+        color = memory[iterations];
     end;
 
+    if localBuffer >= 254 then
+        // The local buffer is full
+        // This waits until local buffer empties
+        flushLocalBuffer();
+    end;
+
+    col(color);
     rect(x, y, 1, 1);
+    localBuffer += 2;
+
+    var disabled = 1 - display.enabled;
+    var usage = display.@bufferUsage + disabled * 900;
+    if usage < 100 then
+        drawflush(display);
+        localBuffer = 0;
+    elsif usage < 1800 / localBuffer then
+        drawflush(display);
+        localBuffer = 0;
+    end;
+end;
+
+void flushLocalBuffer()
+    do while !display.@enabled;
+    if localBuffer > 4 then
+        do
+            wait(1e-4);
+        while display.@bufferUsage > 250;
+    end;
     drawflush(display);
+    localBuffer = 0;
 end;
 
 void setState(state)
