@@ -1,0 +1,394 @@
+    82 instructions before optimizations.
+     2 instructions eliminated by Temp Variables Elimination (2 iterations).
+    14 instructions eliminated by Dead Code Elimination (6 iterations).
+     1 instructions eliminated by Jump Normalization (4 iterations).
+     7 instructions eliminated by Jump Optimization (4 iterations).
+     3 instructions eliminated by Single Step Elimination (5 iterations).
+     1 instructions eliminated by Jump Straightening (4 iterations).
+     3 instructions updated by JumpThreading.
+     3 instructions eliminated by Unreachable Code Elimination (2 iterations).
+    51 instructions after optimizations.
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-8 instructions):
+ 
+    21 op equal *tmp12 factory1 null
+    22 jump *label5 equal *tmp12 false
+    23 jump *label3 always
+-    * set *tmp13 null
+    24 jump *label6 always
+    25 label *label5
+-    * set *tmp13 null
+    26 label *label6
+    27 op equal *tmp14 .unitToProduce null
+    28 jump *label7 equal *tmp14 false
+    29 control enabled factory1 false
+    30 control config factory1 @mono
+    31 set .lastProgress -1
+-    * set *tmp15 .lastProgress
+    32 jump *label8 always
+    33 label *label7
+    34 sensor *tmp18 factory1 @progress
+ 
+    59 label *label12
+    60 set *tmp21 *tmp26
+    61 label *label10
+-    * set *tmp15 *tmp21
+    62 label *label8
+    63 op notEqual *tmp32 generator2 null
+    64 jump *label13 equal *tmp32 false
+ 
+    72 label *label15
+    73 set *tmp36 null
+    74 label *label16
+-    * set *tmp33 *tmp36
+    75 jump *label14 always
+    76 label *label13
+-    * set *tmp33 null
+    77 label *label14
+    78 sensor *tmp38 factory1 @silicon
+    79 op lessThan *tmp39 *tmp38 30
+    80 jump *label17 equal *tmp39 false
+    81 control config unloader2 @silicon
+-    * set *tmp40 @silicon
+    82 jump *label18 always
+    83 label *label17
+    84 control config unloader2 @lead
+-    * set *tmp40 @lead
+    85 label *label18
+    86 label *label3
+    87 jump *label2 always
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-4 instructions):
+ 
+    39 control enabled factory1 false
+    40 control config factory1 @mono
+    41 set .lastProgress 0
+-    * set *tmp21 .lastProgress
+    42 jump *label10 always
+    43 label *label9
+    44 sensor *tmp24 factory1 @config
+ 
+    56 set .lastProgress *tmp31
+    57 set *tmp26 .lastProgress
+    58 label *label12
+-    * set *tmp21 *tmp26
+    59 label *label10
+    60 label *label8
+    61 op notEqual *tmp32 generator2 null
+ 
+    65 jump *label15 equal *tmp35 false
+    66 control config unloader2 @coal
+    67 jump *label3 always
+-    * set *tmp36 null
+    68 jump *label16 always
+    69 label *label15
+-    * set *tmp36 null
+    70 label *label16
+    71 jump *label14 always
+    72 label *label13
+
+Modifications by Initial phase, Dead Code Elimination, iteration 3 (-2 instructions):
+ 
+    48 set *tmp29 .unitToProduce
+    49 control config factory1 *tmp29
+    50 set .lastProgress 0
+-    * set *tmp26 .lastProgress
+    51 jump *label12 always
+    52 label *label11
+    53 control enabled factory1 true
+    54 sensor *tmp31 factory1 @progress
+    55 set .lastProgress *tmp31
+-    * set *tmp26 .lastProgress
+    56 label *label12
+    57 label *label10
+    58 label *label8
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 instructions):
+ 
+    45 op notEqual *tmp25 *tmp24 .unitToProduce
+    46 jump *label11 equal *tmp25 false
+    47 control enabled factory1 true
+-    * set *tmp29 .unitToProduce
+-    * control config factory1 *tmp29
++   48 control config factory1 .unitToProduce
+    49 set .lastProgress 0
+    50 jump *label12 always
+    51 label *label11
+    52 control enabled factory1 true
+-    * sensor *tmp31 factory1 @progress
+-    * set .lastProgress *tmp31
++   53 sensor .lastProgress factory1 @progress
+    54 label *label12
+    55 label *label10
+    56 label *label8
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+ 
+     5 set *signature "0:v1"
+     6 label *label0
+     7 label *label2
+-    * jump *label4 equal true false
+     8 sensor *tmp1 shard1 @copper
+     9 op lessThan *tmp2 *tmp1 .pressTarget
+    10 control enabled press1 *tmp2
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-7 instructions):
+ 
+    17 sensor *tmp10 battery1 @totalPower
+    18 op lessThan *tmp11 *tmp10 3800
+    19 control enabled generator1 *tmp11
+-    * op equal *tmp12 factory1 null
+-    * jump *label5 equal *tmp12 false
++   20 jump *label5 notEqual factory1 null
+    21 jump *label3 always
+    22 jump *label6 always
+    23 label *label5
+    24 label *label6
+-    * op equal *tmp14 .unitToProduce null
+-    * jump *label7 equal *tmp14 false
++   25 jump *label7 notEqual .unitToProduce null
+    26 control enabled factory1 false
+    27 control config factory1 @mono
+    28 set .lastProgress -1
+ 
+    30 label *label7
+    31 sensor *tmp18 factory1 @progress
+    32 op add *tmp19 *tmp18 0.1
+-    * op greaterThan *tmp20 .lastProgress *tmp19
+-    * jump *label9 equal *tmp20 false
++   33 jump *label9 lessThanEq .lastProgress *tmp19
+    34 set .unitToProduce null
+    35 control enabled factory1 false
+    36 control config factory1 @mono
+ 
+    38 jump *label10 always
+    39 label *label9
+    40 sensor *tmp24 factory1 @config
+-    * op notEqual *tmp25 *tmp24 .unitToProduce
+-    * jump *label11 equal *tmp25 false
++   41 jump *label11 equal *tmp24 .unitToProduce
+    42 control enabled factory1 true
+    43 control config factory1 .unitToProduce
+    44 set .lastProgress 0
+ 
+    49 label *label12
+    50 label *label10
+    51 label *label8
+-    * op notEqual *tmp32 generator2 null
+-    * jump *label13 equal *tmp32 false
++   52 jump *label13 equal generator2 null
+    53 sensor *tmp34 generator2 @coal
+-    * op lessThan *tmp35 *tmp34 3
+-    * jump *label15 equal *tmp35 false
++   54 jump *label15 greaterThanEq *tmp34 3
+    55 control config unloader2 @coal
+    56 jump *label3 always
+    57 jump *label16 always
+ 
+    61 label *label13
+    62 label *label14
+    63 sensor *tmp38 factory1 @silicon
+-    * op lessThan *tmp39 *tmp38 30
+-    * jump *label17 equal *tmp39 false
++   64 jump *label17 greaterThanEq *tmp38 30
+    65 control config unloader2 @silicon
+    66 jump *label18 always
+    67 label *label17
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-3 instructions):
+ 
+    19 control enabled generator1 *tmp11
+    20 jump *label5 notEqual factory1 null
+    21 jump *label3 always
+-    * jump *label6 always
+    22 label *label5
+    23 label *label6
+    24 jump *label7 notEqual .unitToProduce null
+ 
+    53 jump *label15 greaterThanEq *tmp34 3
+    54 control config unloader2 @coal
+    55 jump *label3 always
+-    * jump *label16 always
+    56 label *label15
+    57 label *label16
+-    * jump *label14 always
+    58 label *label13
+    59 label *label14
+    60 sensor *tmp38 factory1 @silicon
+
+Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
+ 
+    20 jump *label5 notEqual factory1 null
+    21 jump *label3 always
+    22 label *label5
+-    * label *label6
+    23 jump *label7 notEqual .unitToProduce null
+    24 control enabled factory1 false
+    25 control config factory1 @mono
+ 
+    53 control config unloader2 @coal
+    54 jump *label3 always
+    55 label *label15
+-    * label *label16
+    56 label *label13
+-    * label *label14
+    57 sensor *tmp38 factory1 @silicon
+    58 jump *label17 greaterThanEq *tmp38 30
+    59 control config unloader2 @silicon
+ 
+    63 label *label18
+    64 label *label3
+    65 jump *label2 always
+-    * label *label4
+-    * label *label1
+    66 wait 1e12
+    67 jump *label0 always
+    68 end
+
+Modifications by Jumps phase, Jump Straightening, pass 3, iteration 1 (-1 instructions):
+ 
+    17 sensor *tmp10 battery1 @totalPower
+    18 op lessThan *tmp11 *tmp10 3800
+    19 control enabled generator1 *tmp11
+-    * jump *label5 notEqual factory1 null
+-    * jump *label3 always
++   20 jump *label3 equal factory1 null
+    21 label *label5
+    22 jump *label7 notEqual .unitToProduce null
+    23 control enabled factory1 false
+
+Modifications by Jumps phase, Jump Optimization, pass 3, iteration 1:
+ 
+    18 op lessThan *tmp11 *tmp10 3800
+    19 control enabled generator1 *tmp11
+    20 jump *label3 equal factory1 null
+-    * label *label5
+    21 jump *label7 notEqual .unitToProduce null
+    22 control enabled factory1 false
+    23 control config factory1 @mono
+
+Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
+ 
+    17 sensor *tmp10 battery1 @totalPower
+    18 op lessThan *tmp11 *tmp10 3800
+    19 control enabled generator1 *tmp11
+-    * jump *label3 equal factory1 null
++   20 jump *label2 equal factory1 null
+    21 jump *label7 notEqual .unitToProduce null
+    22 control enabled factory1 false
+    23 control config factory1 @mono
+ 
+    49 sensor *tmp34 generator2 @coal
+    50 jump *label15 greaterThanEq *tmp34 3
+    51 control config unloader2 @coal
+-    * jump *label3 always
++   52 jump *label2 always
+    53 label *label15
+    54 label *label13
+    55 sensor *tmp38 factory1 @silicon
+    56 jump *label17 greaterThanEq *tmp38 30
+    57 control config unloader2 @silicon
+-    * jump *label18 always
++   58 jump *label2 always
+    59 label *label17
+    60 control config unloader2 @lead
+    61 label *label18
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-3 instructions):
+ 
+    58 jump *label2 always
+    59 label *label17
+    60 control config unloader2 @lead
+-    * label *label18
+-    * label *label3
+    61 jump *label2 always
+-    * wait 1e12
+-    * jump *label0 always
+-    * end
+
+Modifications by Jumps phase, Dead Code Elimination, pass 3, iteration 1:
+ 
+     3 set .unitToProduce null
+     4 set .lastProgress -1
+     5 set *signature "0:v1"
+-    * label *label0
+     6 label *label2
+     7 sensor *tmp1 shard1 @copper
+     8 op lessThan *tmp2 *tmp1 .pressTarget
+
+Final code before resolving virtual instructions:
+
+    0:  set .pressTarget 0                                           remote var
+    1:  set .smelterTarget 30                                        ...
+    2:  set .kilnTarget 30                                           ...
+    3:  set .unitToProduce null                                      ...
+    4:  set .lastProgress -1                                         var lastProgress = -1;
+    5:  set *signature "0:v1"                                        #set target = 8;
+        label *label2                                                while true do
+    6:  sensor *tmp1 shard1 @copper                                  press1.enabled = shard1.@copper < pressTarget;
+    7:  op lessThan *tmp2 *tmp1 .pressTarget                         ...
+    8:  control enabled press1 *tmp2 0 0 0                           ...
+    9:  sensor *tmp4 shard1 @silicon                                 smelter1.enabled = shard1.@silicon < smelterTarget;
+   10:  op lessThan *tmp5 *tmp4 .smelterTarget                       ...
+   11:  control enabled smelter1 *tmp5 0 0 0                         ...
+   12:  sensor *tmp7 shard1 @metaglass                               kiln1.enabled = shard1.@metaglass < kilnTarget;
+   13:  op lessThan *tmp8 *tmp7 .kilnTarget                          ...
+   14:  control enabled kiln1 *tmp8 0 0 0                            ...
+   15:  sensor *tmp10 battery1 @totalPower                           generator1.enabled = battery1.@totalPower < 3800;
+   16:  op lessThan *tmp11 *tmp10 3800                               ...
+   17:  control enabled generator1 *tmp11 0 0 0                      ...
+   18:  jump *label2 equal factory1 null                             if factory1 == null then continue; end;
+   19:  jump *label7 notEqual .unitToProduce null                    if unitToProduce == null then
+   20:  control enabled factory1 false 0 0 0                         factory1.enabled = false;
+   21:  control config factory1 @mono 0 0 0                          factory1.config = @mono;
+   22:  set .lastProgress -1                                         lastProgress = -1;
+   23:  jump *label8 always 0 0                                      if unitToProduce == null then
+        label *label7                                                ...
+   24:  sensor *tmp18 factory1 @progress                             elsif lastProgress > factory1.@progress + 0.1 then
+   25:  op add *tmp19 *tmp18 0.1                                     ...
+   26:  jump *label9 lessThanEq .lastProgress *tmp19                 ...
+   27:  set .unitToProduce null                                      unitToProduce = null;
+   28:  control enabled factory1 false 0 0 0                         factory1.enabled = false;
+   29:  control config factory1 @mono 0 0 0                          factory1.config = @mono;
+   30:  set .lastProgress 0                                          lastProgress = 0;
+   31:  jump *label10 always 0 0                                     elsif lastProgress > factory1.@progress + 0.1 then
+        label *label9                                                ...
+   32:  sensor *tmp24 factory1 @config                               elsif factory1.config != unitToProduce then
+   33:  jump *label11 equal *tmp24 .unitToProduce                    ...
+   34:  control enabled factory1 true 0 0 0                          factory1.enabled = true;
+   35:  control config factory1 .unitToProduce 0 0 0                 factory1.config = unitToProduce;
+   36:  set .lastProgress 0                                          lastProgress = 0;
+   37:  jump *label12 always 0 0                                     elsif factory1.config != unitToProduce then
+        label *label11                                               ...
+   38:  control enabled factory1 true 0 0 0                          factory1.enabled = true;
+   39:  sensor .lastProgress factory1 @progress                      lastProgress = factory1.@progress;
+        label *label12                                               elsif factory1.config != unitToProduce then
+        label *label10                                               elsif lastProgress > factory1.@progress + 0.1 then
+        label *label8                                                if unitToProduce == null then
+   40:  jump *label13 equal generator2 null                          if generator2 != null then
+   41:  sensor *tmp34 generator2 @coal                               if generator2.@coal < 3 then
+   42:  jump *label15 greaterThanEq *tmp34 3                         ...
+   43:  control config unloader2 @coal 0 0 0                         unloader2.config = @coal;
+   44:  jump *label2 always 0 0                                      continue;
+        label *label15                                               if generator2.@coal < 3 then
+        label *label13                                               if generator2 != null then
+   45:  sensor *tmp38 factory1 @silicon                              if factory1.@silicon < 30 then
+   46:  jump *label17 greaterThanEq *tmp38 30                        ...
+   47:  control config unloader2 @silicon 0 0 0                      unloader2.config = @silicon;
+   48:  jump *label2 always 0 0                                      if factory1.@silicon < 30 then
+        label *label17                                               ...
+   49:  control config unloader2 @lead 0 0 0                         unloader2.config = @lead;
+   50:  jump *label2 always 0 0                                      while true do
+
+
+Performance: parsed in 137 ms, compiled in 183 ms, optimized in 141 ms, run in 8 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
+
+Program output (7 steps):
+The program didn't generate any output.
+Execution exception at instruction 6: sensor *tmp1 shard1 @copper:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)
