@@ -1,53 +1,53 @@
-set .pressTarget 0
-set .smelterTarget 30
-set .kilnTarget 30
-set .unitToProduce null
 set .lastProgress -1
 set *signature "0:v1"
-sensor *tmp1 shard1 @copper
-op lessThan *tmp2 *tmp1 .pressTarget
-control enabled press1 *tmp2 0 0 0
-sensor *tmp4 shard1 @silicon
-op lessThan *tmp5 *tmp4 .smelterTarget
-control enabled smelter1 *tmp5 0 0 0
-sensor *tmp7 shard1 @metaglass
-op lessThan *tmp8 *tmp7 .kilnTarget
-control enabled kiln1 *tmp8 0 0 0
-sensor *tmp10 battery1 @totalPower
-op lessThan *tmp11 *tmp10 3800
-control enabled generator1 *tmp11 0 0 0
-jump 6 equal factory1 null
+set *tmp0 .press
+sensor *tmp2 .core @graphite
+op lessThan *tmp3 *tmp2 .pressTarget
+control enabled *tmp0 *tmp3 0 0 0
+set *tmp4 .smelter
+sensor *tmp6 .core @silicon
+op lessThan *tmp7 *tmp6 .smelterTarget
+control enabled *tmp4 *tmp7 0 0 0
+set *tmp8 .kiln
+sensor *tmp10 .core @metaglass
+op lessThan *tmp11 *tmp10 .kilnTarget
+control enabled *tmp8 *tmp11 0 0 0
+set *tmp12 .generator
+sensor *tmp14 .battery @totalPower
+op lessThan *tmp15 *tmp14 3800
+control enabled *tmp12 *tmp15 0 0 0
+jump 2 equal .factory null
 jump 24 notEqual .unitToProduce null
-control enabled factory1 false 0 0 0
-control config factory1 @mono 0 0 0
+control enabled .factory false 0 0 0
+control config .factory @mono 0 0 0
 set .lastProgress -1
 jump 40 always 0 0
-sensor *tmp18 factory1 @progress
-op add *tmp19 *tmp18 0.1
-jump 32 lessThanEq .lastProgress *tmp19
+sensor *tmp24 .factory @progress
+op add *tmp25 *tmp24 0.1
+jump 32 lessThanEq .lastProgress *tmp25
 set .unitToProduce null
-control enabled factory1 false 0 0 0
-control config factory1 @mono 0 0 0
+control enabled .factory false 0 0 0
+control config .factory @mono 0 0 0
 set .lastProgress 0
 jump 40 always 0 0
-sensor *tmp24 factory1 @config
-jump 38 equal *tmp24 .unitToProduce
-control enabled factory1 true 0 0 0
-control config factory1 .unitToProduce 0 0 0
+sensor *tmp33 .factory @config
+jump 38 equal *tmp33 .unitToProduce
+control enabled .factory true 0 0 0
+control config .factory .unitToProduce 0 0 0
 set .lastProgress 0
 jump 40 always 0 0
-control enabled factory1 true 0 0 0
-sensor .lastProgress factory1 @progress
-jump 45 equal generator2 null
-sensor *tmp34 generator2 @coal
-jump 45 greaterThanEq *tmp34 3
-control config unloader2 @coal 0 0 0
-jump 6 always 0 0
-sensor *tmp38 factory1 @silicon
-jump 49 greaterThanEq *tmp38 30
-control config unloader2 @silicon 0 0 0
-jump 6 always 0 0
-control config unloader2 @lead 0 0 0
-jump 6 always 0 0
+control enabled .factory true 0 0 0
+sensor .lastProgress .factory @progress
+jump 45 equal .generator2 null
+sensor *tmp46 .generator2 @coal
+jump 45 greaterThanEq *tmp46 3
+control config .unloader2 @coal 0 0 0
+jump 2 always 0 0
+sensor *tmp51 .factory @silicon
+jump 49 greaterThanEq *tmp51 30
+control config .unloader2 @silicon 0 0 0
+jump 2 always 0 0
+control config .unloader2 @lead 0 0 0
+jump 2 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

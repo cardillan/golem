@@ -1,7 +1,7 @@
 #set target = 8;
 #set syntax = strict;
 #set function-inlining = none;
-//#set sort-variables;
+#set sort-variables;
 //#set loop-hoisting = none;
 //#set unreachable-code-elimination = none;
 //#set optimization = none;
@@ -29,6 +29,8 @@ var
     titanium_drill = null,
     unloader1 = null,
     unloader2 = null,
+    factory = null,
+    generator2 = null,
     kiln = null;
 
 // Targets to be met for the next build
@@ -50,8 +52,8 @@ remote var
     status3 = "";
 
 var
-    updatedSiliconTarget,
     updatedGraphiteTarget,
+    updatedSiliconTarget,
     titaniumTrigger = 7;
 
 // Blocks layout around the core and build requirements
@@ -68,27 +70,28 @@ const CFG_METAGLASS   = CFG_TITANIUM + 1;
 const CFG_ROTATION    = CFG_METAGLASS + 1;
 const CFG_CONFIG      = CFG_ROTATION + 1;
 
-//                     Block type                 X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
-const PRESS[]       = (@graphite-press,        -1.5, +2.5,  75, 30,  0,  0,  0,  0,  0, null);
-const GENERATOR[]   = (@combustion-generator,   0.0, +3.0,  25, 15,  0,  0,  0,  0,  0, null);
-const BATTERY1[]    = (@battery,                0.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
-const BATTERY2[]    = (@battery,               -1.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
-const SMELTER[]     = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0,  0, null);
-const UNLOADER1[]   = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
-const UNLOADER2[]   = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
-const POWER_NODE[]  = (@power-node,            -1.0, -2.0,   2,  6,  0,  0,  0,  0,  0, null);
-const PROCESSOR[]   = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor1);
-const SORTER[]      = (@sorter,                -3.0,  1.0,   2,  2,  0,  0,  0,  0,  0, @coal);
-const AIR_FACTORY[] = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
+//                         Block type                 X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
+const PRESS[]           = (@graphite-press,        -1.5, +2.5,  75, 30,  0,  0,  0,  0,  0, null);
+const GENERATOR[]       = (@combustion-generator,   0.0, +3.0,  25, 15,  0,  0,  0,  0,  0, null);
+const BATTERY1[]        = (@battery,                0.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
+const BATTERY2[]        = (@battery,               -1.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
+const SMELTER[]         = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0,  0, null);
+const UNLOADER1[]       = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
+const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
+const POWER_NODE[]      = (@power-node,            -2.0, -1.0,   2,  6,  0,  0,  0,  0,  0, null);
+const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor1);
+const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
+const AIR_FACTORY[]     = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
 
-const UNLOADER3[]   = (@unloader,              +2.0,  0.0,   0,  0,  0, 30, 25,  0,  0, null);
-const KILN[]        = (@kiln,                  +3.5, +0.5,  60, 30, 30,  0,  0,  0,  0, null);
-const JUNCTION[]    = (@junction,              +2.0, +1.0,   3,  0,  0,  0,  0,  0,  0, null);
-const WATER_EXT[]   = (@water-extractor,       -3.5, +3.5,  30, 30, 30,  0,  0, 30,  0, null);
-const STEAM_GEN[]   = (@steam-generator,       -4.5, +1.5,  35, 40, 25, 30,  0,  0,  0, null);
+const UNLOADER3[]       = (@unloader,              +2.0,  0.0,   0,  0,  0, 30, 25,  0,  0, null);
+const KILN[]            = (@kiln,                  +3.5, +0.5,  60, 30, 30,  0,  0,  0,  0, null);
+const JUNCTION[]        = (@junction,              +2.0, +1.0,   3,  0,  0,  0,  0,  0,  0, null);
+const WATER_EXT[]       = (@water-extractor,       -3.5, +4.5,  30, 30, 30,  0,  0, 30,  0, null);
+const STEAM_GEN[]       = (@steam-generator,       -3.5, +2.5,  35, 40, 25, 30,  0,  0,  0, null);
+const SORTER[]          = (@sorter,                -4.0,  1.0,   2,  2,  0,  0,  0,  0,  0, @coal);
 
 // Non-core based blocks
-const PNEU_DRILL[]  = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0,  0,  0,  0, null);
+const PNEU_DRILL[]      = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0,  0,  0,  0, null);
 
 // UTILITY FUNCTIONS
 
@@ -243,7 +246,7 @@ void supplyBlocks()
                 supplyBlock(press, @coal);
                 supplied = true;
             end;
-        end;
+            end;
 
         if core.@silicon < updatedSiliconTarget then
             if smelter.@coal < 5 then
@@ -261,7 +264,7 @@ void supplyBlocks()
             status1("Supplying generator");
             supplyBlock(generator, @coal);
             supplied = true;
-        end;
+       end;
     elsif processor != null then
         // As soon as we have a processor, coal is the topmost priority
         if core.@coal < 10 then
@@ -321,7 +324,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     if processor == null then
         updatedGraphiteTarget = max(10, graphiteTarget);
         updatedSiliconTarget = max(10, siliconTarget);
-    else
+        else
         processor.pressTarget = graphiteTarget + 30;
         processor.smelterTarget = siliconTarget + 30;
         processor.kilnTarget = metaglassTarget + 30;
@@ -378,31 +381,33 @@ inline def buildBlockFromCfg(ref cfg)
     end;
 end;
 
-inline def checkOre(x, y, in out count)
+inline def moveToNextLocation(ref distance, ref angle)
+    moveTo(@unit.@x + sin(angle) * distance, @unit.@y + cos(angle) * distance);
+    distance += 4;
+    angle += 45;
+end;
+
+inline def locateOreAway(ore, out x, out y, in out distance, in out angle)
+    while true do
+        locateOre(ore, out x, out y);
+        if abs(x - coreX) >= 8 or abs(y - coreY) >= 8 then break; end;
+
+        moveToNextLocation(ref distance, ref angle);
+    end;
+end;
+
+inline def checkOre(x, y, ore, in out count)
     var floor;
     getBlock(x, y, , out floor);
-    if floor == @ore-titanium then count++; end;
-end;
-
-def moveRandom(distance)
-    var angle = rand(360);
-    moveTo(@unit.@x + sin(angle) * distance, @unit.@y + cos(angle) * distance);
-end;
-
-inline def locateOreAway(ore, out x, out y)
-    var distance = 25;
-    do
-        locateOre(ore, out x, out y);
-        if abs(x - coreX) < 8 and abs(y - coreY) < 8 then
-            moveRandom(distance);
-        else
-            break;
-        end;
-    while true;
+    if floor == ore then count++; end;
 end;
 
 inline def buildTitaniumDrillCfg(ref cfg)
+    var distance = 32;
+    var angle = 0;
     var attempts = 0;
+    var minimum = 3;
+
     while true do
         meetTarget(
             cfg[CFG_BLOCK_TYPE],
@@ -414,43 +419,56 @@ inline def buildTitaniumDrillCfg(ref cfg)
             cfg[CFG_METAGLASS]);
 
         var x, y;
-        locateOreAway(@titanium, out x, out y);
+        locateOreAway(@titanium, out x, out y, in out distance, in out angle);
         moveTo(x, y);
 
-        //println($"Found ore at $x, $y");
-
         // Try to find the best match
-        var best = 0, bx = 0, by = 0;
-        for var xx in 1, 1, -1, -1; var yy in 1, -1, 1, -1 do
-            var count = 0;
-        checkOre(x + xx, y, in out count);
-        checkOre(x, y + yy, in out count);
-        checkOre(x + xx, y + yy, in out count);
+        var ax = x, ay = y;
+        var best = 0, dx = 0, dy = 0;
 
-            if count > best then
-                //println($"Best so far with count: $count");
-                bx = xx;
-                by = yy;
-                best = count;
-                if count >= 4 then break; end;
+    SearchLoop:
+        for var searches in 0 ... 5 do
+            ax += dx;
+            ay += dy;
+            best = 0;
+
+            for var xx in 1, 1, -1, -1; var yy in 1, -1, 1, -1 do
+                var count = 0;
+                checkOre(ax, ay, @ore-titanium, in out count);
+                checkOre(ax + xx, ay, @ore-titanium, in out count);
+                checkOre(ax, ay + yy, @ore-titanium, in out count);
+                checkOre(ax + xx, ay + yy, @ore-titanium, in out count);
+
+                if count > best then
+                    dx = xx;
+                    dy = yy;
+                    best = count;
+                    if count >= 4 then break SearchLoop; end;
+                end;
             end;
+//            println("Search ", searches + 1);
+//            println($"ax: $ax, ay: $ay");
+//            println($"dx: $dy, dy: $dy");
+//            printflush(message1);
         end;
 
-        if best > 0 then
-            bx = x + bx / 2;
-            by = y + by / 2;
+        if best > minimum then
+            ax = ax + dx / 2;
+            ay = ay + dy / 2;
 
-            var result = buildBlockAt(@pneumatic-drill, bx, by, null, 0, true);
+            var result = buildBlockAt(@pneumatic-drill, ax, ay, null, 0, true);
             if result != null then return result; end;
 
-            // Try to patch the spot to disable it
+            // Try to patch the original spot to disable it
             build(x, y, @conveyor, 0, null);
+            break;
         end;
 
         // No luck. Go elsewhere
         if ++attempts > 5 then
-            moveRandom(40);
+            moveToNextLocation(ref distance, ref angle);
             attempts = 0;
+            minimum = max(minimum - 1, 1);
         end;
     end;
 end;
@@ -461,7 +479,7 @@ end;
 
 // MAIN
 
-remote void buildCore()
+void backgroundProcess()
     do
         ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
@@ -484,17 +502,31 @@ remote void buildCore()
     buildBlockFromCfg(ref POWER_NODE);
     processor = buildBlockFromCfg(ref PROCESSOR);
 
-    buildBlockFromCfg(ref AIR_FACTORY);
+    processor.core = core;
+    processor.battery = battery;
+    processor.generator = generator;
+    processor.smelter = smelter;
+    processor.press = press;
+
+    factory = buildBlockFromCfg(ref AIR_FACTORY);
+    processor.factory = factory;
+
     unloader2 = buildBlockFromCfg(ref UNLOADER2);
-    buildBlockFromCfg(ref SORTER);
+    processor.unloader2 = unloader2;
+
+    buildBlockFromCfg(ref OVERFLOW_GATE);
 
     processor.unitToProduce = @mono;
 
     buildBlockFromCfg(ref UNLOADER3);
     buildBlockFromCfg(ref KILN);
+    processor.kiln = kiln;
+
     buildBlockFromCfg(ref JUNCTION);
     buildBlockFromCfg(ref WATER_EXT);
-    buildBlockFromCfg(ref STEAM_GEN);
+    generator2 = buildBlockFromCfg(ref STEAM_GEN);
+    processor.generator2 = generator2;
+    buildBlockFromCfg(ref SORTER);
 
     //meetTarget("nothing", 0, 15, 0, 30, 0, 0);
 
@@ -504,4 +536,6 @@ remote void buildCore()
 
     stop();
     error("Done");
+
+    print(nextBlock, totalTargets, transportTarget, transportItem, status1, status2, status3, item2, block2);
 end;

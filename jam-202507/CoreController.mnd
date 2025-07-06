@@ -1,53 +1,54 @@
 #set target = 8;
 #set syntax = strict;
+#set sort-variables;
 
 module CoreController;
 
-linked
-    press1,
-    smelter1,
-    kiln1,
-    generator1,
-    battery1,
-    factory1,
+remote noinit var
+    core,
+    press,
+    smelter,
+    kiln,
+    generator,
+    battery,
+    factory,
     unloader2,
     generator2,
-    shard1;
 
-remote var
-    pressTarget = 0,
-    smelterTarget = 30,
-    kilnTarget = 30,
-    unitToProduce = null;
+    pressTarget,
+    smelterTarget,
+    kilnTarget,
+    unitToProduce;
 
 // TODO error when backgroundProcess() contains local variables
 var lastProgress = -1;
 
 void backgroundProcess()
     while true do
-        press1.enabled = shard1.@copper < pressTarget;
-        smelter1.enabled = shard1.@silicon < smelterTarget;
-        kiln1.enabled = shard1.@metaglass < kilnTarget;
-        generator1.enabled = battery1.@totalPower < 3800;
+        press.enabled = core.@graphite < pressTarget;
+        smelter.enabled = core.@silicon < smelterTarget;
+        kiln.enabled = core.@metaglass < kilnTarget;
+        generator.enabled = battery.@totalPower < 1000;
+        generator2.enabled = battery.@totalPower < 3500;
 
-        if factory1 == null then continue; end;
+        if factory == null then continue; end;
 
         if unitToProduce == null then
-            factory1.enabled = false;
-            factory1.config = @mono;
+            factory.enabled = false;
+            factory.config = @mono;
             lastProgress = -1;
-        elsif lastProgress > factory1.@progress + 0.1 then
+        elsif lastProgress > factory.@progress + 0.1 then
             unitToProduce = null;
-            factory1.enabled = false;
-            factory1.config = @mono;
+            factory.enabled = false;
+            factory.config = @mono;
             lastProgress = 0;
-        elsif factory1.config != unitToProduce then
-            factory1.enabled = true;
-            factory1.config = unitToProduce;
+        elsif factory.config != unitToProduce then
+            factory.enabled = true;
+            factory.config = unitToProduce;
             lastProgress = 0;
         else
-            factory1.enabled = true;
-            lastProgress = factory1.@progress;
+            factory.enabled = true;
+            lastProgress = factory.@progress;
         end;
 
         if generator2 != null then
@@ -57,7 +58,7 @@ void backgroundProcess()
             end;
         end;
 
-        if factory1.@silicon < 30 then
+        if factory.@silicon < 30 then
             unloader2.config = @silicon;
         else
             unloader2.config = @lead;

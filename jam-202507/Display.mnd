@@ -1,11 +1,9 @@
 #set target = 8;
 #set syntax = strict;
-#set function-inlining = none;
+//#set function-inlining = none;
+#set sort-variables;
 
 require "CoreBuilder.mnd" remote processor1;
-
-// TODO when not volatile, gets optimized away
-noinit volatile var started;
 
 linked display1, switch1, message1;
 
@@ -146,16 +144,9 @@ begin
     printflush(null);
     drawflush(null);
 
-    if started == null then
-        async(buildCore());
-        started = true;
-    end;
-
-    switch1.enabled = false;
-    do
+    while true do
         updateDisplay();
         updateMessage();
-    while !switch1.enabled;
-    started = null;
+    end;
 end;
 
