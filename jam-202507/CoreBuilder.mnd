@@ -12,7 +12,7 @@ noinit var processor;
 require "CoreController.mnd" remote processor;
 
 // Linked variables
-linked message1, processor1;
+linked message1, switch1, processor1;
 
 const DROP_MINING_RADIUS = 7;
 const REGULAR_RADIUS =  5;     // or build
@@ -77,9 +77,9 @@ const BATTERY1[]        = (@battery,                0.0, +4.0,   5, 20,  0,  0, 
 const BATTERY2[]        = (@battery,               -1.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
 const SMELTER[]         = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0,  0, null);
 const UNLOADER1[]       = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
+const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor1);
 const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
 const POWER_NODE[]      = (@power-node,            -2.0, -1.0,   2,  6,  0,  0,  0,  0,  0, null);
-const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor1);
 const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
 const AIR_FACTORY[]     = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
 
@@ -133,10 +133,12 @@ end;
 
 // Moves the unit to the given location, ensuring it is empty on arrival
 void moveToEmpty(x, y)
-    // If ore is held, try to drop it now, but if it doesn't happen due to cooldown,
-    // use the trip for cooldown
-    if @unit.@firstItem != null then itemDrop(@air, 1000); end;
-    moveTo(x, y);
+    status3("Moving...");
+    do
+        // If ore is held, try to drop it during transport to start cooldown earlier
+        if @unit.@firstItem != null then itemDrop(@air, 1000); end;
+        approach(x, y, REGULAR_RADIUS - 0.5);
+    while !within(x, y, REGULAR_RADIUS);
 
     // Now drop it for real
     while @unit.@firstItem != null do
@@ -236,7 +238,7 @@ inline void supplyBlock(block, ore)
 end;
 
 // Returns true when all targets are met
-void supplyBlocks()
+void supplyBase()
     var supplied = false;
 
     if unloader1 == null then
@@ -338,7 +340,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
         || core.@titanium < titaniumTarget
         || core.@metaglass < metaglassTarget
     do
-        supplyBlocks();
+        supplyBase();
     end;
 end;
 
@@ -382,7 +384,7 @@ inline def buildBlockFromCfg(ref cfg)
 end;
 
 inline def moveToNextLocation(ref distance, ref angle)
-    moveTo(@unit.@x + sin(angle) * distance, @unit.@y + cos(angle) * distance);
+    moveTo(coreX + sin(angle) * distance, coreY + cos(angle) * distance);
     distance += 4;
     angle += 45;
 end;
@@ -390,7 +392,7 @@ end;
 inline def locateOreAway(ore, out x, out y, in out distance, in out angle)
     while true do
         locateOre(ore, out x, out y);
-        if abs(x - coreX) >= 8 or abs(y - coreY) >= 8 then break; end;
+        if abs(x - coreX) >= 10 or abs(y - coreY) >= 10 then break; end;
 
         moveToNextLocation(ref distance, ref angle);
     end;
@@ -456,12 +458,24 @@ inline def buildTitaniumDrillCfg(ref cfg)
             ax = ax + dx / 2;
             ay = ay + dy / 2;
 
-            var result = buildBlockAt(@pneumatic-drill, ax, ay, null, 0, true);
-            if result != null then return result; end;
+//            println($"Ore found at $x, $y");
+//            println($"Best displacement $dx, $dy");
+//            println($"Trying to build at $ax, $ay");
+//            printflush(message1);
+//            do while !switch1.enabled;
+//            switch1.enabled = false;
 
-            // Try to patch the original spot to disable it
-            build(x, y, @conveyor, 0, null);
-            break;
+            if abs(x - coreX) >= 10 or abs(y - coreY) >= 10 then
+                var result = buildBlockAt(@pneumatic-drill, ax, ay, null, 0, true);
+                if result != null then return result; end;
+
+                // Try to patch the original spot to disable it
+                build(x, y, @conveyor, 0, null);
+            else
+                // Force mote to the next location and start over
+                attempts = 1000;
+                minimum = 3;
+            end;
         end;
 
         // No luck. Go elsewhere
@@ -499,7 +513,6 @@ void backgroundProcess()
 
     unloader1 = buildBlockFromCfg(ref UNLOADER1);
 
-    buildBlockFromCfg(ref POWER_NODE);
     processor = buildBlockFromCfg(ref PROCESSOR);
 
     processor.core = core;
@@ -508,6 +521,7 @@ void backgroundProcess()
     processor.smelter = smelter;
     processor.press = press;
 
+    buildBlockFromCfg(ref POWER_NODE);
     factory = buildBlockFromCfg(ref AIR_FACTORY);
     processor.factory = factory;
 
@@ -531,7 +545,7 @@ void backgroundProcess()
     //meetTarget("nothing", 0, 15, 0, 30, 0, 0);
 
     while true do
-        supplyBlocks();
+        supplyBase();
     end;
 
     stop();

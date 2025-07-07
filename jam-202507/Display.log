@@ -1,5 +1,5 @@
-   409 instructions before optimizations.
-    34 instructions eliminated by Temp Variables Elimination (2 iterations).
+   414 instructions before optimizations.
+    35 instructions eliminated by Temp Variables Elimination (2 iterations).
     12 instructions eliminated by Dead Code Elimination (5 iterations).
      3 instructions eliminated by Jump Normalization (2 passes, 5 iterations).
      9 instructions eliminated by Jump Optimization (5 iterations).
@@ -14,10 +14,10 @@
      5 instructions eliminated by Jump Straightening (5 iterations).
      1 instructions eliminated by Unreachable Code Elimination (2 iterations).
     10 instructions eliminated by Print Merging.
-   276 instructions after optimizations.
+   280 instructions after optimizations.
 
-Pass 1: speed optimization selection (cost limit 833):
-  * Unroll iteration loop at Display.mnd:75:5                    size  +169, benefit      725.0, efficiency      4.290 (+139 instructions)
+Pass 1: speed optimization selection (cost limit 829):
+  * Unroll iteration loop at Display.mnd:73:5                    size  +169, benefit      725.0, efficiency      4.290 (+139 instructions)
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-10 instructions):
  
@@ -56,22 +56,22 @@ Modifications by Initial phase, Dead Code Elimination, iteration 1 (-10 instruct
 -    * set *tmp79 null
    358 jump *label54 always
    359 label *label53
-   360 sensor *tmp102 @unit @totalItems
+   360 sensor *tmp102 @unit @firstItem
  
-   433 jump *label71 equal *tmp123 false
-   434 set :drawUnit.2:col 0
-   435 op sub :drawUnit:y :drawUnit:y 15
--    * set *tmp124 :drawUnit:y
-   436 jump *label72 always
-   437 label *label71
--    * set *tmp124 null
-   438 label *label72
-   439 label *label65
-   440 label *label64
+   438 jump *label71 equal *tmp126 false
+   439 set :drawUnit.2:col 0
+   440 op sub :drawUnit:y :drawUnit:y 15
+-    * set *tmp127 :drawUnit:y
+   441 jump *label72 always
+   442 label *label71
+-    * set *tmp127 null
+   443 label *label72
+   444 label *label65
+   445 label *label64
 -    * set *tmp79 null
-   441 label *label54
-   442 label *label47
-   443 drawflush display1
+   446 label *label54
+   447 label *label47
+   448 drawflush display1
 
 Modifications by Initial phase, Dead Code Elimination, iteration 2 (-2 instructions):
  
@@ -86,7 +86,7 @@ Modifications by Initial phase, Dead Code Elimination, iteration 2 (-2 instructi
    236 jump *label36 always
    237 label *label35
 
-Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-34 instructions):
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-35 instructions):
  
     29 draw print :drawPrint:x :drawPrint:y :drawPrint:alignment
     30 label *label11
@@ -275,48 +275,58 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-34 ins
    309 set :drawText.10:alignment :drawBold.4:alignment
    310 set :drawText.10:text :drawBold.4:text
  
-   342 set :drawItem.2:count *tmp12
-   343 op mul *tmp103 :drawItem.2:columns 176
-   344 op div *tmp104 *tmp103 2
--    * op sub *tmp105 210 *tmp104
--    * set :drawItem.2:barLength *tmp105
--    * op add *tmp106 48 :drawItem.2:barLength
--    * set :drawItem.2:textEnd *tmp106
-+  345 op sub :drawItem.2:barLength 210 *tmp104
-+  346 op add :drawItem.2:textEnd 48 :drawItem.2:barLength
-   347 op mul *tmp107 :drawItem.2:barLength :drawItem.2:current
-   348 op div *tmp108 *tmp107 :drawItem.2:target
--    * op min *tmp109 :drawItem.2:barLength *tmp108
--    * set :drawItem.2:length *tmp109
-+  349 op min :drawItem.2:length :drawItem.2:barLength *tmp108
-   350 op mul *tmp110 :drawUnit.2:col 176
-   351 op div *tmp111 *tmp110 2
--    * op add *tmp112 11 *tmp111
--    * set :drawItem.2:iconX *tmp112
-+  352 op add :drawItem.2:iconX 11 *tmp111
-   353 op mul *tmp113 :drawUnit.2:col 176
-   354 op div *tmp114 *tmp113 2
--    * op add *tmp115 22 *tmp114
--    * set :drawItem.2:barX *tmp115
-+  355 op add :drawItem.2:barX 22 *tmp114
-   356 op mul *tmp116 :drawUnit.2:col 176
-   357 op div *tmp117 *tmp116 2
--    * op add *tmp118 :drawItem.2:textEnd *tmp117
--    * set :drawItem.2:textX *tmp118
-+  358 op add :drawItem.2:textX :drawItem.2:textEnd *tmp117
-   359 draw col %[white]
-   360 op add *tmp119 :drawUnit:y 5
-   361 draw image :drawItem.2:iconX *tmp119 :drawItem.2:item 16 0
+   328 label *label55
+   329 jump *label54 always
+   330 label *label53
+-    * sensor *tmp102 @unit @firstItem
+-    * set :drawUnit:unitItem *tmp102
++  331 sensor :drawUnit:unitItem @unit @firstItem
+   332 sensor *tmp103 @unit @totalItems
+   333 read *tmp13 processor1 ".transportItem"
+   334 op equal *tmp104 :drawUnit:unitItem *tmp13
  
-   380 draw print :drawPrint.11:x :drawPrint.11:y :drawPrint.11:alignment
-   381 label *label68
-   382 label *label67
--    * op add *tmp122 :drawBold.5:x 1
--    * set :drawText.12:x *tmp122
-+  383 op add :drawText.12:x :drawBold.5:x 1
-   384 set :drawText.12:y :drawBold.5:y
-   385 set :drawText.12:alignment :drawBold.5:alignment
-   386 set :drawText.12:text :drawBold.5:text
+   346 set :drawItem.2:count *tmp12
+   347 op mul *tmp106 :drawItem.2:columns 176
+   348 op div *tmp107 *tmp106 2
+-    * op sub *tmp108 210 *tmp107
+-    * set :drawItem.2:barLength *tmp108
+-    * op add *tmp109 48 :drawItem.2:barLength
+-    * set :drawItem.2:textEnd *tmp109
++  349 op sub :drawItem.2:barLength 210 *tmp107
++  350 op add :drawItem.2:textEnd 48 :drawItem.2:barLength
+   351 op mul *tmp110 :drawItem.2:barLength :drawItem.2:current
+   352 op div *tmp111 *tmp110 :drawItem.2:target
+-    * op min *tmp112 :drawItem.2:barLength *tmp111
+-    * set :drawItem.2:length *tmp112
++  353 op min :drawItem.2:length :drawItem.2:barLength *tmp111
+   354 op mul *tmp113 :drawUnit.2:col 176
+   355 op div *tmp114 *tmp113 2
+-    * op add *tmp115 11 *tmp114
+-    * set :drawItem.2:iconX *tmp115
++  356 op add :drawItem.2:iconX 11 *tmp114
+   357 op mul *tmp116 :drawUnit.2:col 176
+   358 op div *tmp117 *tmp116 2
+-    * op add *tmp118 22 *tmp117
+-    * set :drawItem.2:barX *tmp118
++  359 op add :drawItem.2:barX 22 *tmp117
+   360 op mul *tmp119 :drawUnit.2:col 176
+   361 op div *tmp120 *tmp119 2
+-    * op add *tmp121 :drawItem.2:textEnd *tmp120
+-    * set :drawItem.2:textX *tmp121
++  362 op add :drawItem.2:textX :drawItem.2:textEnd *tmp120
+   363 draw col %[white]
+   364 op add *tmp122 :drawUnit:y 5
+   365 draw image :drawItem.2:iconX *tmp122 :drawItem.2:item 16 0
+ 
+   384 draw print :drawPrint.11:x :drawPrint.11:y :drawPrint.11:alignment
+   385 label *label68
+   386 label *label67
+-    * op add *tmp125 :drawBold.5:x 1
+-    * set :drawText.12:x *tmp125
++  387 op add :drawText.12:x :drawBold.5:x 1
+   388 set :drawText.12:y :drawBold.5:y
+   389 set :drawText.12:alignment :drawBold.5:alignment
+   390 set :drawText.12:text :drawBold.5:text
 
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
  
@@ -410,15 +420,15 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-9 inst
    314 op sub :drawUnit:y :drawUnit:y 15
    315 jump *label63 always
  
-   384 label *label69
-   385 label *label66
-   386 op add :drawUnit.2:col :drawUnit.2:col 1
--    * op greaterThanEq *tmp123 :drawUnit.2:col :drawItem.2:columns
--    * jump *label71 equal *tmp123 false
-+  387 jump *label71 lessThan :drawUnit.2:col :drawItem.2:columns
-   388 set :drawUnit.2:col 0
-   389 op sub :drawUnit:y :drawUnit:y 15
-   390 jump *label72 always
+   388 label *label69
+   389 label *label66
+   390 op add :drawUnit.2:col :drawUnit.2:col 1
+-    * op greaterThanEq *tmp126 :drawUnit.2:col :drawItem.2:columns
+-    * jump *label71 equal *tmp126 false
++  391 jump *label71 lessThan :drawUnit.2:col :drawItem.2:columns
+   392 set :drawUnit.2:col 0
+   393 op sub :drawUnit:y :drawUnit:y 15
+   394 jump *label72 always
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-5 instructions):
  
@@ -448,13 +458,13 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
    313 label *label63
    314 label *label56
  
-   383 jump *label71 lessThan :drawUnit.2:col :drawItem.2:columns
-   384 set :drawUnit.2:col 0
-   385 op sub :drawUnit:y :drawUnit:y 15
+   387 jump *label71 lessThan :drawUnit.2:col :drawItem.2:columns
+   388 set :drawUnit.2:col 0
+   389 op sub :drawUnit:y :drawUnit:y 15
 -    * jump *label72 always
-   386 label *label71
-   387 label *label72
-   388 label *label65
+   390 label *label71
+   391 label *label72
+   392 label *label65
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-2 instructions):
  
@@ -822,68 +832,68 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-2
    312 label *label63
    313 label *label56
  
-   320 set :drawUnit.2:items *tmp102
-   321 set :drawUnit.2:col 0
-   322 set :drawItem.2:columns 1
+   324 set :drawUnit.2:items *tmp105
+   325 set :drawUnit.2:col 0
+   326 set :drawItem.2:columns 1
 -    * set :drawItem.2:item :drawUnit.2:item
 -    * set :drawItem.2:current :drawUnit.2:items
-+  323 set :drawItem.2:item *tmp13
-+  324 set :drawItem.2:current *tmp102
-   325 read *tmp12 processor1 ".transportTarget"
-   326 set :drawItem.2:target *tmp12
-   327 read *tmp12 processor1 ".transportTarget"
-   328 set :drawItem.2:count *tmp12
--    * op mul *tmp103 :drawItem.2:columns 176
--    * op div *tmp104 *tmp103 2
--    * op sub :drawItem.2:barLength 210 *tmp104
++  327 set :drawItem.2:item *tmp13
++  328 set :drawItem.2:current *tmp105
+   329 read *tmp12 processor1 ".transportTarget"
+   330 set :drawItem.2:target *tmp12
+   331 read *tmp12 processor1 ".transportTarget"
+   332 set :drawItem.2:count *tmp12
+-    * op mul *tmp106 :drawItem.2:columns 176
+-    * op div *tmp107 *tmp106 2
+-    * op sub :drawItem.2:barLength 210 *tmp107
 -    * op add :drawItem.2:textEnd 48 :drawItem.2:barLength
--    * op mul *tmp107 :drawItem.2:barLength :drawItem.2:current
-+  329 op mul *tmp103 1 176
-+  330 op div *tmp104 176 2
-+  331 op sub :drawItem.2:barLength 210 88
-+  332 op add :drawItem.2:textEnd 48 122
-+  333 op mul *tmp107 122 :drawUnit.2:items
-   334 op div *tmp108 *tmp107 :drawItem.2:target
--    * op min :drawItem.2:length :drawItem.2:barLength *tmp108
--    * op mul *tmp110 :drawUnit.2:col 176
--    * op div *tmp111 *tmp110 2
--    * op add :drawItem.2:iconX 11 *tmp111
+-    * op mul *tmp110 :drawItem.2:barLength :drawItem.2:current
++  333 op mul *tmp106 1 176
++  334 op div *tmp107 176 2
++  335 op sub :drawItem.2:barLength 210 88
++  336 op add :drawItem.2:textEnd 48 122
++  337 op mul *tmp110 122 :drawUnit.2:items
+   338 op div *tmp111 *tmp110 :drawItem.2:target
+-    * op min :drawItem.2:length :drawItem.2:barLength *tmp111
 -    * op mul *tmp113 :drawUnit.2:col 176
 -    * op div *tmp114 *tmp113 2
--    * op add :drawItem.2:barX 22 *tmp114
+-    * op add :drawItem.2:iconX 11 *tmp114
 -    * op mul *tmp116 :drawUnit.2:col 176
 -    * op div *tmp117 *tmp116 2
--    * op add :drawItem.2:textX :drawItem.2:textEnd *tmp117
-+  335 op min :drawItem.2:length 122 *tmp108
-+  336 op mul *tmp110 0 176
-+  337 op div *tmp111 0 2
-+  338 op add :drawItem.2:iconX 11 0
-+  339 op mul *tmp113 0 176
-+  340 op div *tmp114 0 2
-+  341 op add :drawItem.2:barX 22 0
-+  342 op mul *tmp116 0 176
-+  343 op div *tmp117 0 2
-+  344 op add :drawItem.2:textX 170 0
-   345 draw col %[white]
--    * op add *tmp119 :drawUnit:y 5
--    * draw image :drawItem.2:iconX *tmp119 :drawItem.2:item 16 0
-+  346 op add *tmp119 29 5
-+  347 draw image 11 34 :drawUnit.2:item 16 0
-   348 draw color 0 128 0 255
+-    * op add :drawItem.2:barX 22 *tmp117
+-    * op mul *tmp119 :drawUnit.2:col 176
+-    * op div *tmp120 *tmp119 2
+-    * op add :drawItem.2:textX :drawItem.2:textEnd *tmp120
++  339 op min :drawItem.2:length 122 *tmp111
++  340 op mul *tmp113 0 176
++  341 op div *tmp114 0 2
++  342 op add :drawItem.2:iconX 11 0
++  343 op mul *tmp116 0 176
++  344 op div *tmp117 0 2
++  345 op add :drawItem.2:barX 22 0
++  346 op mul *tmp119 0 176
++  347 op div *tmp120 0 2
++  348 op add :drawItem.2:textX 170 0
+   349 draw col %[white]
+-    * op add *tmp122 :drawUnit:y 5
+-    * draw image :drawItem.2:iconX *tmp122 :drawItem.2:item 16 0
++  350 op add *tmp122 29 5
++  351 draw image 11 34 :drawUnit.2:item 16 0
+   352 draw color 0 128 0 255
 -    * draw rect :drawItem.2:barX :drawUnit:y :drawItem.2:length 10
-+  349 draw rect 22 29 :drawItem.2:length 10
-   350 draw color 0 255 0 255
++  353 draw rect 22 29 :drawItem.2:length 10
+   354 draw color 0 255 0 255
 -    * draw lineRect :drawItem.2:barX :drawUnit:y :drawItem.2:barLength 10
--    * op add *tmp120 :drawUnit:y 5
--    * op add *tmp121 *tmp120 2
+-    * op add *tmp123 :drawUnit:y 5
+-    * op add *tmp124 *tmp123 2
 -    * set :drawBold.5:x :drawItem.2:textX
--    * set :drawBold.5:y *tmp121
-+  351 draw lineRect 22 29 122 10
-+  352 op add *tmp120 29 5
-+  353 op add *tmp121 34 2
-+  354 set :drawBold.5:x 170
-+  355 set :drawBold.5:y 36
-   356 set :drawBold.5:alignment @right
+-    * set :drawBold.5:y *tmp124
++  355 draw lineRect 22 29 122 10
++  356 op add *tmp123 29 5
++  357 op add *tmp124 34 2
++  358 set :drawBold.5:x 170
++  359 set :drawBold.5:y 36
+   360 set :drawBold.5:alignment @right
 -    * set :drawBold.5:text :drawItem.2:count
 -    * set :drawText.11:x :drawBold.5:x
 -    * set :drawText.11:y :drawBold.5:y
@@ -894,48 +904,48 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-2
 -    * set :drawPrint.11:y :drawText.11:y
 -    * set :drawPrint.11:alignment :drawText.11:alignment
 -    * draw print :drawPrint.11:x :drawPrint.11:y :drawPrint.11:alignment
-+  357 set :drawBold.5:text *tmp12
-+  358 set :drawText.11:x :drawItem.2:textX
-+  359 set :drawText.11:y *tmp121
-+  360 set :drawText.11:alignment @right
-+  361 set :drawText.11:text :drawItem.2:count
-+  362 print :drawBold.5:text
-+  363 set :drawPrint.11:x :drawBold.5:x
-+  364 set :drawPrint.11:y :drawBold.5:y
-+  365 set :drawPrint.11:alignment :drawBold.5:alignment
-+  366 draw print :drawText.11:x :drawText.11:y :drawText.11:alignment
-   367 label *label68
-   368 label *label67
++  361 set :drawBold.5:text *tmp12
++  362 set :drawText.11:x :drawItem.2:textX
++  363 set :drawText.11:y *tmp124
++  364 set :drawText.11:alignment @right
++  365 set :drawText.11:text :drawItem.2:count
++  366 print :drawBold.5:text
++  367 set :drawPrint.11:x :drawBold.5:x
++  368 set :drawPrint.11:y :drawBold.5:y
++  369 set :drawPrint.11:alignment :drawBold.5:alignment
++  370 draw print :drawText.11:x :drawText.11:y :drawText.11:alignment
+   371 label *label68
+   372 label *label67
 -    * op add :drawText.12:x :drawBold.5:x 1
 -    * set :drawText.12:y :drawBold.5:y
 -    * set :drawText.12:alignment :drawBold.5:alignment
 -    * set :drawText.12:text :drawBold.5:text
 -    * print :drawText.12:text
-+  369 op add :drawText.12:x :drawItem.2:textX 1
-+  370 set :drawText.12:y *tmp121
-+  371 set :drawText.12:alignment @right
-+  372 set :drawText.12:text :drawItem.2:count
-+  373 print :drawBold.5:text
-   374 set :drawPrint.12:x :drawText.12:x
++  373 op add :drawText.12:x :drawItem.2:textX 1
++  374 set :drawText.12:y *tmp124
++  375 set :drawText.12:alignment @right
++  376 set :drawText.12:text :drawItem.2:count
++  377 print :drawBold.5:text
+   378 set :drawPrint.12:x :drawText.12:x
 -    * set :drawPrint.12:y :drawText.12:y
 -    * set :drawPrint.12:alignment :drawText.12:alignment
 -    * draw print :drawPrint.12:x :drawPrint.12:y :drawPrint.12:alignment
-+  375 set :drawPrint.12:y :drawBold.5:y
-+  376 set :drawPrint.12:alignment :drawBold.5:alignment
-+  377 draw print :drawText.12:x :drawText.12:y :drawText.12:alignment
-   378 label *label70
-   379 label *label69
-   380 label *label66
++  379 set :drawPrint.12:y :drawBold.5:y
++  380 set :drawPrint.12:alignment :drawBold.5:alignment
++  381 draw print :drawText.12:x :drawText.12:y :drawText.12:alignment
+   382 label *label70
+   383 label *label69
+   384 label *label66
 -    * op add :drawUnit.2:col :drawUnit.2:col 1
 -    * jump *label71 lessThan :drawUnit.2:col :drawItem.2:columns
 -    * set :drawUnit.2:col 0
 -    * op sub :drawUnit:y :drawUnit:y 15
-+  381 op add :drawUnit.2:col 0 1
-+  382 jump *label71 lessThan 1 1
-+  383 op sub :drawUnit:y 29 15
-   384 label *label71
-   385 label *label72
-   386 label *label65
++  385 op add :drawUnit.2:col 0 1
++  386 jump *label71 lessThan 1 1
++  387 op sub :drawUnit:y 29 15
+   388 label *label71
+   389 label *label72
+   390 label *label65
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-61 instructions):
  
@@ -1222,93 +1232,93 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-6
    271 label *label63
    272 label *label56
  
-   277 read *tmp13 processor1 ".transportItem"
-   278 set :drawUnit.2:item *tmp13
-   279 set :drawUnit.2:items *tmp102
+   281 read *tmp13 processor1 ".transportItem"
+   282 set :drawUnit.2:item *tmp13
+   283 set :drawUnit.2:items *tmp105
 -    * set :drawUnit.2:col 0
 -    * set :drawItem.2:columns 1
 -    * set :drawItem.2:item *tmp13
--    * set :drawItem.2:current *tmp102
-   280 read *tmp12 processor1 ".transportTarget"
-   281 set :drawItem.2:target *tmp12
-   282 read *tmp12 processor1 ".transportTarget"
-   283 set :drawItem.2:count *tmp12
--    * op mul *tmp103 1 176
--    * op div *tmp104 176 2
+-    * set :drawItem.2:current *tmp105
+   284 read *tmp12 processor1 ".transportTarget"
+   285 set :drawItem.2:target *tmp12
+   286 read *tmp12 processor1 ".transportTarget"
+   287 set :drawItem.2:count *tmp12
+-    * op mul *tmp106 1 176
+-    * op div *tmp107 176 2
 -    * op sub :drawItem.2:barLength 210 88
 -    * op add :drawItem.2:textEnd 48 122
--    * op mul *tmp107 122 :drawUnit.2:items
-+  284 op mul *tmp107 122 *tmp102
-   285 op div *tmp108 *tmp107 :drawItem.2:target
-   286 op min :drawItem.2:length 122 *tmp108
--    * op mul *tmp110 0 176
--    * op div *tmp111 0 2
--    * op add :drawItem.2:iconX 11 0
+-    * op mul *tmp110 122 :drawUnit.2:items
++  288 op mul *tmp110 122 *tmp105
+   289 op div *tmp111 *tmp110 :drawItem.2:target
+   290 op min :drawItem.2:length 122 *tmp111
 -    * op mul *tmp113 0 176
 -    * op div *tmp114 0 2
--    * op add :drawItem.2:barX 22 0
+-    * op add :drawItem.2:iconX 11 0
 -    * op mul *tmp116 0 176
 -    * op div *tmp117 0 2
-   287 op add :drawItem.2:textX 170 0
-   288 draw col %[white]
--    * op add *tmp119 29 5
+-    * op add :drawItem.2:barX 22 0
+-    * op mul *tmp119 0 176
+-    * op div *tmp120 0 2
+   291 op add :drawItem.2:textX 170 0
+   292 draw col %[white]
+-    * op add *tmp122 29 5
 -    * draw image 11 34 :drawUnit.2:item 16 0
-+  289 draw image 11 34 *tmp13 16 0
-   290 draw color 0 128 0 255
-   291 draw rect 22 29 :drawItem.2:length 10
-   292 draw color 0 255 0 255
-   293 draw lineRect 22 29 122 10
--    * op add *tmp120 29 5
-   294 op add *tmp121 34 2
-   295 set :drawBold.5:x 170
-   296 set :drawBold.5:y 36
-   297 set :drawBold.5:alignment @right
-   298 set :drawBold.5:text *tmp12
++  293 draw image 11 34 *tmp13 16 0
+   294 draw color 0 128 0 255
+   295 draw rect 22 29 :drawItem.2:length 10
+   296 draw color 0 255 0 255
+   297 draw lineRect 22 29 122 10
+-    * op add *tmp123 29 5
+   298 op add *tmp124 34 2
+   299 set :drawBold.5:x 170
+   300 set :drawBold.5:y 36
+   301 set :drawBold.5:alignment @right
+   302 set :drawBold.5:text *tmp12
 -    * set :drawText.11:x :drawItem.2:textX
--    * set :drawText.11:y *tmp121
-+  299 set :drawText.11:x 170
-+  300 set :drawText.11:y 36
-   301 set :drawText.11:alignment @right
+-    * set :drawText.11:y *tmp124
++  303 set :drawText.11:x 170
++  304 set :drawText.11:y 36
+   305 set :drawText.11:alignment @right
 -    * set :drawText.11:text :drawItem.2:count
 -    * print :drawBold.5:text
 -    * set :drawPrint.11:x :drawBold.5:x
 -    * set :drawPrint.11:y :drawBold.5:y
 -    * set :drawPrint.11:alignment :drawBold.5:alignment
 -    * draw print :drawText.11:x :drawText.11:y :drawText.11:alignment
-+  302 set :drawText.11:text *tmp12
-+  303 print *tmp12
-+  304 set :drawPrint.11:x 170
-+  305 set :drawPrint.11:y 36
-+  306 set :drawPrint.11:alignment @right
-+  307 draw print :drawItem.2:textX *tmp121 @right
-   308 label *label68
-   309 label *label67
++  306 set :drawText.11:text *tmp12
++  307 print *tmp12
++  308 set :drawPrint.11:x 170
++  309 set :drawPrint.11:y 36
++  310 set :drawPrint.11:alignment @right
++  311 draw print :drawItem.2:textX *tmp124 @right
+   312 label *label68
+   313 label *label67
 -    * op add :drawText.12:x :drawItem.2:textX 1
--    * set :drawText.12:y *tmp121
-+  310 op add :drawText.12:x 170 1
-+  311 set :drawText.12:y 36
-   312 set :drawText.12:alignment @right
+-    * set :drawText.12:y *tmp124
++  314 op add :drawText.12:x 170 1
++  315 set :drawText.12:y 36
+   316 set :drawText.12:alignment @right
 -    * set :drawText.12:text :drawItem.2:count
 -    * print :drawBold.5:text
 -    * set :drawPrint.12:x :drawText.12:x
 -    * set :drawPrint.12:y :drawBold.5:y
 -    * set :drawPrint.12:alignment :drawBold.5:alignment
 -    * draw print :drawText.12:x :drawText.12:y :drawText.12:alignment
-+  313 set :drawText.12:text *tmp12
-+  314 print *tmp12
-+  315 set :drawPrint.12:x 171
-+  316 set :drawPrint.12:y 36
-+  317 set :drawPrint.12:alignment @right
-+  318 draw print 171 *tmp121 @right
-   319 label *label70
-   320 label *label69
-   321 label *label66
++  317 set :drawText.12:text *tmp12
++  318 print *tmp12
++  319 set :drawPrint.12:x 171
++  320 set :drawPrint.12:y 36
++  321 set :drawPrint.12:alignment @right
++  322 draw print 171 *tmp124 @right
+   323 label *label70
+   324 label *label69
+   325 label *label66
 -    * op add :drawUnit.2:col 0 1
-   322 jump *label71 lessThan 1 1
+   326 jump *label71 lessThan 1 1
 -    * op sub :drawUnit:y 29 15
-   323 label *label71
-   324 label *label72
-   325 label *label65
+   327 label *label71
+   328 label *label72
+   329 label *label65
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-114 instructions):
  
@@ -1506,22 +1516,22 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-1
    174 label *label60
    175 label *label57
  
-   182 label *label53
-   183 sensor *tmp102 @unit @totalItems
-   184 read *tmp13 processor1 ".transportItem"
+   186 op equal *tmp104 :drawUnit:unitItem *tmp13
+   187 op mul *tmp105 *tmp103 *tmp104
+   188 read *tmp13 processor1 ".transportItem"
 -    * set :drawUnit.2:item *tmp13
--    * set :drawUnit.2:items *tmp102
-   185 read *tmp12 processor1 ".transportTarget"
-   186 set :drawItem.2:target *tmp12
-   187 read *tmp12 processor1 ".transportTarget"
+-    * set :drawUnit.2:items *tmp105
+   189 read *tmp12 processor1 ".transportTarget"
+   190 set :drawItem.2:target *tmp12
+   191 read *tmp12 processor1 ".transportTarget"
 -    * set :drawItem.2:count *tmp12
-   188 op mul *tmp107 122 *tmp102
-   189 op div *tmp108 *tmp107 :drawItem.2:target
-   190 op min :drawItem.2:length 122 *tmp108
+   192 op mul *tmp110 122 *tmp105
+   193 op div *tmp111 *tmp110 :drawItem.2:target
+   194 op min :drawItem.2:length 122 *tmp111
  
-   196 draw color 0 255 0 255
-   197 draw lineRect 22 29 122 10
-   198 op add *tmp121 34 2
+   200 draw color 0 255 0 255
+   201 draw lineRect 22 29 122 10
+   202 op add *tmp124 34 2
 -    * set :drawBold.5:x 170
 -    * set :drawBold.5:y 36
 -    * set :drawBold.5:alignment @right
@@ -1530,27 +1540,27 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-1
 -    * set :drawText.11:y 36
 -    * set :drawText.11:alignment @right
 -    * set :drawText.11:text *tmp12
-   199 print *tmp12
+   203 print *tmp12
 -    * set :drawPrint.11:x 170
 -    * set :drawPrint.11:y 36
 -    * set :drawPrint.11:alignment @right
--    * draw print :drawItem.2:textX *tmp121 @right
-+  200 draw print 170 36 @right
-   201 label *label68
-   202 label *label67
+-    * draw print :drawItem.2:textX *tmp124 @right
++  204 draw print 170 36 @right
+   205 label *label68
+   206 label *label67
 -    * op add :drawText.12:x 170 1
 -    * set :drawText.12:y 36
 -    * set :drawText.12:alignment @right
 -    * set :drawText.12:text *tmp12
-   203 print *tmp12
+   207 print *tmp12
 -    * set :drawPrint.12:x 171
 -    * set :drawPrint.12:y 36
 -    * set :drawPrint.12:alignment @right
--    * draw print 171 *tmp121 @right
-+  204 draw print 171 36 @right
-   205 label *label70
-   206 label *label69
-   207 label *label66
+-    * draw print 171 *tmp124 @right
++  208 draw print 171 36 @right
+   209 label *label70
+   210 label *label69
+   211 label *label66
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 4 (-4 instructions):
  
@@ -1569,20 +1579,20 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 4 (-4
    166 draw print 170 36 @right
    167 label *label59
  
-   186 op mul *tmp107 122 *tmp102
-   187 op div *tmp108 *tmp107 :drawItem.2:target
-   188 op min :drawItem.2:length 122 *tmp108
+   190 op mul *tmp110 122 *tmp105
+   191 op div *tmp111 *tmp110 :drawItem.2:target
+   192 op min :drawItem.2:length 122 *tmp111
 -    * op add :drawItem.2:textX 170 0
-   189 draw col %[white]
-   190 draw image 11 34 *tmp13 16 0
-   191 draw color 0 128 0 255
-   192 draw rect 22 29 :drawItem.2:length 10
-   193 draw color 0 255 0 255
-   194 draw lineRect 22 29 122 10
--    * op add *tmp121 34 2
-   195 print *tmp12
-   196 draw print 170 36 @right
-   197 label *label68
+   193 draw col %[white]
+   194 draw image 11 34 *tmp13 16 0
+   195 draw color 0 128 0 255
+   196 draw rect 22 29 :drawItem.2:length 10
+   197 draw color 0 255 0 255
+   198 draw lineRect 22 29 122 10
+-    * op add *tmp124 34 2
+   199 print *tmp12
+   200 draw print 170 36 @right
+   201 label *label68
 
 Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
  
@@ -1628,7 +1638,7 @@ Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1
     62 set :drawMaterials:item @copper
     63 read :drawMaterials:target processor1 ".copperTarget"
 
-Modifications by Unroll iteration loop at Display.mnd:75:5 (+153 instructions):
+Modifications by Unroll iteration loop at Display.mnd:73:5 (+153 instructions):
  
     59 set *tmp48 2
     60 jump *label25 always
@@ -2280,13 +2290,13 @@ Modifications by Iterated phase, Jump Normalization, pass 2, iteration 1 (-2 ins
    377 label *label63
    378 label *label56
  
-   402 label *label70
-   403 label *label69
-   404 label *label66
+   406 label *label70
+   407 label *label69
+   408 label *label66
 -    * jump *label71 lessThan 1 1
-   405 label *label71
-   406 label *label72
-   407 label *label65
+   409 label *label71
+   410 label *label72
+   411 label *label65
 
 Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-4 instructions):
  
@@ -2362,15 +2372,15 @@ Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-2
    353 set *tmp85 0
    354 op min :drawItem.1:length 122 *tmp85
  
-   375 label *label53
-   376 sensor *tmp102 @unit @totalItems
-   377 read *tmp13 processor1 ".transportItem"
+   379 op equal *tmp104 :drawUnit:unitItem *tmp13
+   380 op mul *tmp105 *tmp103 *tmp104
+   381 read *tmp13 processor1 ".transportItem"
 -    * read *tmp12 processor1 ".transportTarget"
 -    * set :drawItem.2:target *tmp12
-+  378 read :drawItem.2:target processor1 ".transportTarget"
-   379 read *tmp12 processor1 ".transportTarget"
-   380 op mul *tmp107 122 *tmp102
-   381 op div *tmp108 *tmp107 :drawItem.2:target
++  382 read :drawItem.2:target processor1 ".transportTarget"
+   383 read *tmp12 processor1 ".transportTarget"
+   384 op mul *tmp110 122 *tmp105
+   385 op div *tmp111 *tmp110 :drawItem.2:target
 
 Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2 (-3 instructions):
  
@@ -2679,15 +2689,15 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
 -    * label *label55
    271 jump *label54 always
    272 label *label53
-   273 sensor *tmp102 @unit @totalItems
+   273 sensor :drawUnit:unitItem @unit @firstItem
  
-   285 draw lineRect 22 29 122 10
-   286 print *tmp12
-   287 draw print 170 36 @right
+   289 draw lineRect 22 29 122 10
+   290 print *tmp12
+   291 draw print 170 36 @right
 -    * label *label68
 -    * label *label67
-   288 print *tmp12
-   289 draw print 171 36 @right
+   292 print *tmp12
+   293 draw print 171 36 @right
 -    * label *label70
 -    * label *label69
 -    * label *label66
@@ -2695,22 +2705,22 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
 -    * label *label72
 -    * label *label65
 -    * label *label64
-   290 label *label54
+   294 label *label54
 -    * label *label47
-   291 drawflush display1
+   295 drawflush display1
 -    * label *label7
-   292 print "[gold]Building "
-   293 read *tmp3 processor1 ".nextBlock"
-   294 print *tmp3
+   296 print "[gold]Building "
+   297 read *tmp3 processor1 ".nextBlock"
+   298 print *tmp3
  
-   312 print *tmp126
-   313 print "\n"
-   314 printflush message1
+   316 print *tmp129
+   317 print "\n"
+   318 printflush message1
 -    * label *label73
 -    * label *label5
-   315 jump *label4 always
+   319 jump *label4 always
 -    * label *label6
-   316 end
+   320 end
 
 Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-5 instructions):
  
@@ -2808,9 +2818,9 @@ Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
 
 Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-1 instructions):
  
-   303 print "\n"
-   304 printflush message1
-   305 jump *label4 always
+   307 print "\n"
+   308 printflush message1
+   309 jump *label4 always
 -    * end
 
 Modifications by Final phase, Print Merging, iteration 1 (-10 instructions):
@@ -2829,349 +2839,358 @@ Modifications by Final phase, Print Merging, iteration 1 (-10 instructions):
     33 print "Materials"
     34 draw print 22 101 @bottomLeft
  
-   278 draw print 171 36 @right
-   279 label *label54
-   280 drawflush display1
+   282 draw print 171 36 @right
+   283 label *label54
+   284 drawflush display1
 -    * print "[gold]Building "
-+  281 print "[gold]Building {0}\n==================================[]\n{0}\n{0}{0} ({0})\n{0}\n"
-   282 read *tmp3 processor1 ".nextBlock"
++  285 print "[gold]Building {0}\n==================================[]\n{0}\n{0}{0} ({0})\n{0}\n"
+   286 read *tmp3 processor1 ".nextBlock"
 -    * print *tmp3
 -    * print "\n"
 -    * print "==================================[]"
 -    * print "\n"
-+  283 format *tmp3
-   284 read *tmp125 processor1 ".status1"
--    * print *tmp125
++  287 format *tmp3
+   288 read *tmp128 processor1 ".status1"
+-    * print *tmp128
 -    * print "\n"
-+  285 format *tmp125
-   286 read *tmp15 processor1 ".status2"
++  289 format *tmp128
+   290 read *tmp15 processor1 ".status2"
 -    * print *tmp15
-+  287 format *tmp15
-   288 read *tmp16 processor1 ".item2"
++  291 format *tmp15
+   292 read *tmp16 processor1 ".item2"
 -    * print *tmp16
 -    * print " "
 -    * print "("
-+  289 format *tmp16
-   290 read *tmp17 processor1 ".block2"
++  293 format *tmp16
+   294 read *tmp17 processor1 ".block2"
 -    * print *tmp17
 -    * print ")"
 -    * print "\n"
-+  291 format *tmp17
-   292 read *tmp126 processor1 ".status3"
--    * print *tmp126
++  295 format *tmp17
+   296 read *tmp129 processor1 ".status3"
+-    * print *tmp129
 -    * print "\n"
-+  293 format *tmp126
-   294 printflush message1
-   295 jump *label4 always
++  297 format *tmp129
+   298 printflush message1
+   299 jump *label4 always
 
 Final code before resolving virtual instructions:
 
-        label *label0                                                Display.mnd: require "CoreBuilder.mnd" remote processor1;
-    0:  read *tmp38 processor1 "*signature"                          ...
-    1:  jump *label0 notEqual *tmp38 "0:v1"                          ...
-    2:  jump *label3 notEqual @unit null                             Display.mnd: while @unit == null do
+    0:  jump *label172 always 0 0                                    Display.mnd: require "CoreBuilder.mnd" remote processor1;
+    1:  draw triangle display1 message1 processor1 :drawHeader:m :dr ...
+    2:  draw triangle :drawItem:barLength :drawItem:barX :drawItem:i ...
+    3:  draw triangle :drawItem:textEnd :drawItem:textX :drawMateria ...
+    4:  draw triangle :drawText.6:x :drawUnit:unitItem 0 0 0 0       ...
+        label *label172                                              ...
+        label *label0                                                ...
+    5:  read *tmp38 processor1 "*signature"                          ...
+    6:  jump *label0 notEqual *tmp38 "0:v1"                          ...
+    7:  jump *label3 notEqual @unit null                             Display.mnd: while @unit == null do
         label *label74                                               ...
-    3:  ubind @poly                                                  Display.mnd: ubind(@poly);
-    4:  jump *label74 equal @unit null                               Display.mnd: while @unit == null do
+    8:  ubind @poly                                                  Display.mnd: ubind(@poly);
+    9:  jump *label74 equal @unit null                               Display.mnd: while @unit == null do
         label *label3                                                ...
-    5:  printflush null                                              Display.mnd: printflush(null);
-    6:  drawflush null                                               Display.mnd: drawflush(null);
+   10:  printflush null                                              Display.mnd: printflush(null);
+   11:  drawflush null                                               Display.mnd: drawflush(null);
         label *label4                                                Display.mnd: while true do
-    7:  draw reset 0 0 0 0 0 0                                       Display.mnd: reset();
-    8:  draw clear 0 0 32 0 0 0                                      Display.mnd: clear(0, 0, 32);
-    9:  draw col %[gold] 0 0 0 0 0                                   Display.mnd: col(%[gold]);
-   10:  print "Building"                                             Display.mnd: print(text);
-   11:  draw print 40 161 @bottom                                    Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   12:  print "Building"                                             Display.mnd: print(text);
-   13:  draw print 41 161 @bottom                                    Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   14:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-   15:  read *tmp3 processor1 ".nextBlock"                           Display.mnd: image(HEADER_X, HEADER_Y - 24, nextBlock, 32, 0);
-   16:  draw image 40 137 *tmp3 32 0 0                               ...
-   17:  op floor :drawHeader:t @second 0                             Display.mnd: var t = floor(@second);
-   18:  op idiv :drawHeader:m :drawHeader:t 60                       Display.mnd: var m = t \ 60;
-   19:  op mod :drawHeader:s :drawHeader:t 60                        Display.mnd: var s = t % 60;
-   20:  set *tmp45 ""                                                Display.mnd: print(m, ":", s < 10 ? "0" : "", s);
-   21:  jump *label15 greaterThanEq :drawHeader:s 10                 ...
-   22:  set *tmp45 "0"                                               ...
+   12:  draw reset 0 0 0 0 0 0                                       Display.mnd: reset();
+   13:  draw clear 0 0 32 0 0 0                                      Display.mnd: clear(0, 0, 32);
+   14:  draw col %[gold] 0 0 0 0 0                                   Display.mnd: col(%[gold]);
+   15:  print "Building"                                             Display.mnd: print(text);
+   16:  draw print 40 161 @bottom                                    Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   17:  print "Building"                                             Display.mnd: print(text);
+   18:  draw print 41 161 @bottom                                    Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   19:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+   20:  read *tmp3 processor1 ".nextBlock"                           Display.mnd: image(HEADER_X, HEADER_Y - 24, nextBlock, 32, 0);
+   21:  draw image 40 137 *tmp3 32 0 0                               ...
+   22:  op floor :drawHeader:t @second 0                             Display.mnd: var t = floor(@second);
+   23:  op idiv :drawHeader:m :drawHeader:t 60                       Display.mnd: var m = t \ 60;
+   24:  op mod :drawHeader:s :drawHeader:t 60                        Display.mnd: var s = t % 60;
+   25:  set *tmp45 ""                                                Display.mnd: print(m, ":", s < 10 ? "0" : "", s);
+   26:  jump *label15 greaterThanEq :drawHeader:s 10                 ...
+   27:  set *tmp45 "0"                                               ...
         label *label15                                               ...
-   23:  print :drawHeader:m                                          ...
-   24:  print ":{0}{0}"                                              ...
-   25:  format *tmp45                                                ...
-   26:  format :drawHeader:s                                         ...
-   27:  draw print 168 172 @topRight                                 Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   28:  print "Materials"                                            Display.mnd: print(text);
-   29:  draw print 22 101 @bottomLeft                                Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   30:  print "Materials"                                            Display.mnd: print(text);
-   31:  draw print 23 101 @bottomLeft                                Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   32:  set :drawMaterials:col 0                                     Display.mnd: var col = 0, y = 85;
-   33:  set :drawMaterials:y 85                                      ...
-   34:  read :drawMaterials:count processor1 ".totalTargets"         Display.mnd: var count = totalTargets;
-   35:  set *tmp48 1                                                 Display.mnd: var columns = count > 2 ? 2 : 1;
-   36:  jump *label25 lessThanEq :drawMaterials:count 2              ...
-   37:  set *tmp48 2                                                 ...
+   28:  print :drawHeader:m                                          ...
+   29:  print ":{0}{0}"                                              ...
+   30:  format *tmp45                                                ...
+   31:  format :drawHeader:s                                         ...
+   32:  draw print 168 172 @topRight                                 Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   33:  print "Materials"                                            Display.mnd: print(text);
+   34:  draw print 22 101 @bottomLeft                                Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   35:  print "Materials"                                            Display.mnd: print(text);
+   36:  draw print 23 101 @bottomLeft                                Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   37:  set :drawMaterials:col 0                                     Display.mnd: var col = 0, y = 85;
+   38:  set :drawMaterials:y 85                                      ...
+   39:  read :drawMaterials:count processor1 ".totalTargets"         Display.mnd: var count = totalTargets;
+   40:  set *tmp48 1                                                 Display.mnd: var columns = count > 2 ? 2 : 1;
+   41:  jump *label25 lessThanEq :drawMaterials:count 2              ...
+   42:  set *tmp48 2                                                 ...
         label *label25                                               ...
-   38:  read :drawMaterials:target processor1 ".copperTarget"        Display.mnd: for var item, target in
-   39:  jump *label86 lessThanEq :drawMaterials:target 0             Display.mnd: if target > 0 then
-   40:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
-   41:  sensor *tmp52 *tmp0 @copper                                  ...
-   42:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-   43:  op sub :drawItem:barLength 210 *tmp54                        ...
-   44:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
-   45:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
-   46:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
-   47:  op min :drawItem:length :drawItem:barLength *tmp58           ...
-   48:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-   49:  draw image 11 90 @copper 16 0 0                              Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-   50:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-   51:  draw rect 22 85 :drawItem:length 10 0 0                      Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-   52:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-   53:  draw lineRect 22 85 :drawItem:barLength 10 0 0               Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-   54:  print :drawMaterials:target                                  Display.mnd: print(text);
-   55:  draw print :drawItem:textEnd 92 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   56:  op add :drawText.6:x :drawItem:barLength 49                  Display.mnd: drawText(x + 1, y, alignment, text);
-   57:  print :drawMaterials:target                                  Display.mnd: print(text);
-   58:  draw print :drawText.6:x 92 @right                           Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   59:  set :drawMaterials:col 1                                     Display.mnd: if ++col >= columns then
-   60:  jump *label81 lessThan 1 *tmp48                              ...
-   61:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
-   62:  op sub :drawMaterials:y 85 15                                Display.mnd: y -= ROW_HEIGHT;
+   43:  read :drawMaterials:target processor1 ".copperTarget"        Display.mnd: for var item, target in
+   44:  jump *label86 lessThanEq :drawMaterials:target 0             Display.mnd: if target > 0 then
+   45:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+   46:  sensor *tmp52 *tmp0 @copper                                  ...
+   47:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
+   48:  op sub :drawItem:barLength 210 *tmp54                        ...
+   49:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
+   50:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
+   51:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
+   52:  op min :drawItem:length :drawItem:barLength *tmp58           ...
+   53:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+   54:  draw image 11 90 @copper 16 0 0                              Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+   55:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+   56:  draw rect 22 85 :drawItem:length 10 0 0                      Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+   57:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+   58:  draw lineRect 22 85 :drawItem:barLength 10 0 0               Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+   59:  print :drawMaterials:target                                  Display.mnd: print(text);
+   60:  draw print :drawItem:textEnd 92 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   61:  op add :drawText.6:x :drawItem:barLength 49                  Display.mnd: drawText(x + 1, y, alignment, text);
+   62:  print :drawMaterials:target                                  Display.mnd: print(text);
+   63:  draw print :drawText.6:x 92 @right                           Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   64:  set :drawMaterials:col 1                                     Display.mnd: if ++col >= columns then
+   65:  jump *label81 lessThan 1 *tmp48                              ...
+   66:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
+   67:  op sub :drawMaterials:y 85 15                                Display.mnd: y -= ROW_HEIGHT;
         label *label81                                               Display.mnd: if ++col >= columns then
-   63:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
-   64:  jump *label28 lessThanEq :drawMaterials:count 0              ...
+   68:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
+   69:  jump *label28 lessThanEq :drawMaterials:count 0              ...
         label *label86                                               Display.mnd: if target > 0 then
-   65:  read :drawMaterials:target processor1 ".leadTarget"          Display.mnd: for var item, target in
-   66:  jump *label102 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
-   67:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
-   68:  sensor *tmp52 *tmp0 @lead                                    ...
-   69:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-   70:  op sub :drawItem:barLength 210 *tmp54                        ...
-   71:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
-   72:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
-   73:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
-   74:  op min :drawItem:length :drawItem:barLength *tmp58           ...
-   75:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
-   76:  op add :drawItem:iconX 11 *tmp61                             ...
-   77:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
-   78:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
-   79:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-   80:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-   81:  draw image :drawItem:iconX *tmp69 @lead 16 0 0               ...
-   82:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-   83:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-   84:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-   85:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-   86:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
-   87:  print :drawMaterials:target                                  Display.mnd: print(text);
-   88:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   89:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
-   90:  print :drawMaterials:target                                  Display.mnd: print(text);
-   91:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-   92:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
-   93:  jump *label97 lessThan :drawMaterials:col *tmp48             ...
-   94:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
-   95:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
+   70:  read :drawMaterials:target processor1 ".leadTarget"          Display.mnd: for var item, target in
+   71:  jump *label102 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
+   72:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+   73:  sensor *tmp52 *tmp0 @lead                                    ...
+   74:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
+   75:  op sub :drawItem:barLength 210 *tmp54                        ...
+   76:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
+   77:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
+   78:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
+   79:  op min :drawItem:length :drawItem:barLength *tmp58           ...
+   80:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
+   81:  op add :drawItem:iconX 11 *tmp61                             ...
+   82:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
+   83:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
+   84:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+   85:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+   86:  draw image :drawItem:iconX *tmp69 @lead 16 0 0               ...
+   87:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+   88:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+   89:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+   90:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+   91:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
+   92:  print :drawMaterials:target                                  Display.mnd: print(text);
+   93:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   94:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
+   95:  print :drawMaterials:target                                  Display.mnd: print(text);
+   96:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+   97:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
+   98:  jump *label97 lessThan :drawMaterials:col *tmp48             ...
+   99:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
+  100:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
         label *label97                                               Display.mnd: if ++col >= columns then
-   96:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
-   97:  jump *label28 lessThanEq :drawMaterials:count 0              ...
+  101:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
+  102:  jump *label28 lessThanEq :drawMaterials:count 0              ...
         label *label102                                              Display.mnd: if target > 0 then
-   98:  read :drawMaterials:target processor1 ".graphiteTarget"      Display.mnd: for var item, target in
-   99:  jump *label118 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
-  100:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
-  101:  sensor *tmp52 *tmp0 @graphite                                ...
-  102:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-  103:  op sub :drawItem:barLength 210 *tmp54                        ...
-  104:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
-  105:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
-  106:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
-  107:  op min :drawItem:length :drawItem:barLength *tmp58           ...
-  108:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
-  109:  op add :drawItem:iconX 11 *tmp61                             ...
-  110:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
-  111:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
-  112:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  113:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-  114:  draw image :drawItem:iconX *tmp69 @graphite 16 0 0           ...
-  115:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-  116:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-  117:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-  118:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-  119:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
-  120:  print :drawMaterials:target                                  Display.mnd: print(text);
-  121:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  122:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
-  123:  print :drawMaterials:target                                  Display.mnd: print(text);
-  124:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  125:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
-  126:  jump *label113 lessThan :drawMaterials:col *tmp48            ...
-  127:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
-  128:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
+  103:  read :drawMaterials:target processor1 ".graphiteTarget"      Display.mnd: for var item, target in
+  104:  jump *label118 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
+  105:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+  106:  sensor *tmp52 *tmp0 @graphite                                ...
+  107:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
+  108:  op sub :drawItem:barLength 210 *tmp54                        ...
+  109:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
+  110:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
+  111:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
+  112:  op min :drawItem:length :drawItem:barLength *tmp58           ...
+  113:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
+  114:  op add :drawItem:iconX 11 *tmp61                             ...
+  115:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
+  116:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
+  117:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  118:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+  119:  draw image :drawItem:iconX *tmp69 @graphite 16 0 0           ...
+  120:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+  121:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+  122:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+  123:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+  124:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
+  125:  print :drawMaterials:target                                  Display.mnd: print(text);
+  126:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  127:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
+  128:  print :drawMaterials:target                                  Display.mnd: print(text);
+  129:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  130:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
+  131:  jump *label113 lessThan :drawMaterials:col *tmp48            ...
+  132:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
+  133:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
         label *label113                                              Display.mnd: if ++col >= columns then
-  129:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
-  130:  jump *label28 lessThanEq :drawMaterials:count 0              ...
+  134:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
+  135:  jump *label28 lessThanEq :drawMaterials:count 0              ...
         label *label118                                              Display.mnd: if target > 0 then
-  131:  read :drawMaterials:target processor1 ".siliconTarget"       Display.mnd: for var item, target in
-  132:  jump *label134 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
-  133:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
-  134:  sensor *tmp52 *tmp0 @silicon                                 ...
-  135:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-  136:  op sub :drawItem:barLength 210 *tmp54                        ...
-  137:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
-  138:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
-  139:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
-  140:  op min :drawItem:length :drawItem:barLength *tmp58           ...
-  141:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
-  142:  op add :drawItem:iconX 11 *tmp61                             ...
-  143:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
-  144:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
-  145:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  146:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-  147:  draw image :drawItem:iconX *tmp69 @silicon 16 0 0            ...
-  148:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-  149:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-  150:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-  151:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-  152:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
-  153:  print :drawMaterials:target                                  Display.mnd: print(text);
-  154:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  155:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
-  156:  print :drawMaterials:target                                  Display.mnd: print(text);
-  157:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  158:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
-  159:  jump *label129 lessThan :drawMaterials:col *tmp48            ...
-  160:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
-  161:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
+  136:  read :drawMaterials:target processor1 ".siliconTarget"       Display.mnd: for var item, target in
+  137:  jump *label134 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
+  138:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+  139:  sensor *tmp52 *tmp0 @silicon                                 ...
+  140:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
+  141:  op sub :drawItem:barLength 210 *tmp54                        ...
+  142:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
+  143:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
+  144:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
+  145:  op min :drawItem:length :drawItem:barLength *tmp58           ...
+  146:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
+  147:  op add :drawItem:iconX 11 *tmp61                             ...
+  148:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
+  149:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
+  150:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  151:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+  152:  draw image :drawItem:iconX *tmp69 @silicon 16 0 0            ...
+  153:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+  154:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+  155:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+  156:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+  157:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
+  158:  print :drawMaterials:target                                  Display.mnd: print(text);
+  159:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  160:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
+  161:  print :drawMaterials:target                                  Display.mnd: print(text);
+  162:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  163:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
+  164:  jump *label129 lessThan :drawMaterials:col *tmp48            ...
+  165:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
+  166:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
         label *label129                                              Display.mnd: if ++col >= columns then
-  162:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
-  163:  jump *label28 lessThanEq :drawMaterials:count 0              ...
+  167:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
+  168:  jump *label28 lessThanEq :drawMaterials:count 0              ...
         label *label134                                              Display.mnd: if target > 0 then
-  164:  read :drawMaterials:target processor1 ".titaniumTarget"      Display.mnd: for var item, target in
-  165:  jump *label150 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
-  166:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
-  167:  sensor *tmp52 *tmp0 @titanium                                ...
-  168:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-  169:  op sub :drawItem:barLength 210 *tmp54                        ...
-  170:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
-  171:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
-  172:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
-  173:  op min :drawItem:length :drawItem:barLength *tmp58           ...
-  174:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
-  175:  op add :drawItem:iconX 11 *tmp61                             ...
-  176:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
-  177:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
-  178:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  179:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-  180:  draw image :drawItem:iconX *tmp69 @titanium 16 0 0           ...
-  181:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-  182:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-  183:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-  184:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-  185:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
-  186:  print :drawMaterials:target                                  Display.mnd: print(text);
-  187:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  188:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
-  189:  print :drawMaterials:target                                  Display.mnd: print(text);
-  190:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  191:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
-  192:  jump *label145 lessThan :drawMaterials:col *tmp48            ...
-  193:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
-  194:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
+  169:  read :drawMaterials:target processor1 ".titaniumTarget"      Display.mnd: for var item, target in
+  170:  jump *label150 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
+  171:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+  172:  sensor *tmp52 *tmp0 @titanium                                ...
+  173:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
+  174:  op sub :drawItem:barLength 210 *tmp54                        ...
+  175:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
+  176:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
+  177:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
+  178:  op min :drawItem:length :drawItem:barLength *tmp58           ...
+  179:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
+  180:  op add :drawItem:iconX 11 *tmp61                             ...
+  181:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
+  182:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
+  183:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  184:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+  185:  draw image :drawItem:iconX *tmp69 @titanium 16 0 0           ...
+  186:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+  187:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+  188:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+  189:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+  190:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
+  191:  print :drawMaterials:target                                  Display.mnd: print(text);
+  192:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  193:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
+  194:  print :drawMaterials:target                                  Display.mnd: print(text);
+  195:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  196:  op add :drawMaterials:col :drawMaterials:col 1               Display.mnd: if ++col >= columns then
+  197:  jump *label145 lessThan :drawMaterials:col *tmp48            ...
+  198:  set :drawMaterials:col 0                                     Display.mnd: col = 0;
+  199:  op sub :drawMaterials:y :drawMaterials:y 15                  Display.mnd: y -= ROW_HEIGHT;
         label *label145                                              Display.mnd: if ++col >= columns then
-  195:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
-  196:  jump *label28 lessThanEq :drawMaterials:count 0              ...
+  200:  op sub :drawMaterials:count :drawMaterials:count 1           Display.mnd: if --count <= 0 then break; end;
+  201:  jump *label28 lessThanEq :drawMaterials:count 0              ...
         label *label150                                              Display.mnd: if target > 0 then
-  197:  read :drawMaterials:target processor1 ".metaglassTarget"     Display.mnd: for var item, target in
-  198:  jump *label166 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
-  199:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
-  200:  sensor *tmp52 *tmp0 @metaglass                               ...
-  201:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-  202:  op sub :drawItem:barLength 210 *tmp54                        ...
-  203:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
-  204:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
-  205:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
-  206:  op min :drawItem:length :drawItem:barLength *tmp58           ...
-  207:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
-  208:  op add :drawItem:iconX 11 *tmp61                             ...
-  209:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
-  210:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
-  211:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  212:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-  213:  draw image :drawItem:iconX *tmp69 @metaglass 16 0 0          ...
-  214:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-  215:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-  216:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-  217:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-  218:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
-  219:  print :drawMaterials:target                                  Display.mnd: print(text);
-  220:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  221:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
-  222:  print :drawMaterials:target                                  Display.mnd: print(text);
-  223:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  202:  read :drawMaterials:target processor1 ".metaglassTarget"     Display.mnd: for var item, target in
+  203:  jump *label166 lessThanEq :drawMaterials:target 0            Display.mnd: if target > 0 then
+  204:  read *tmp0 processor1 ".core"                                Display.mnd: drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+  205:  sensor *tmp52 *tmp0 @metaglass                               ...
+  206:  op mul *tmp54 *tmp48 88                                      Display.mnd: var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
+  207:  op sub :drawItem:barLength 210 *tmp54                        ...
+  208:  op add :drawItem:textEnd 48 :drawItem:barLength              Display.mnd: var textEnd = 170 - BAR_LENGTH + barLength;
+  209:  op mul *tmp57 :drawItem:barLength *tmp52                     Display.mnd: var length = min(barLength, barLength * current / target);
+  210:  op div *tmp58 *tmp57 :drawMaterials:target                   ...
+  211:  op min :drawItem:length :drawItem:barLength *tmp58           ...
+  212:  op mul *tmp61 :drawMaterials:col 88                          Display.mnd: var iconX = ICON_X + col * 176 / 2;
+  213:  op add :drawItem:iconX 11 *tmp61                             ...
+  214:  op add :drawItem:barX 22 *tmp61                              Display.mnd: var barX = BAR_X + col * 176 / 2;
+  215:  op add :drawItem:textX :drawItem:textEnd *tmp61              Display.mnd: var textX = textEnd + col * 176 / 2;
+  216:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  217:  op add *tmp69 :drawMaterials:y 5                             Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+  218:  draw image :drawItem:iconX *tmp69 @metaglass 16 0 0          ...
+  219:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+  220:  draw rect :drawItem:barX :drawMaterials:y :drawItem:length 1 Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+  221:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+  222:  draw lineRect :drawItem:barX :drawMaterials:y :drawItem:barL Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+  223:  op add *tmp71 :drawMaterials:y 7                             Display.mnd: drawBold(textX, y + ICON_Y + 2, @right, count);
+  224:  print :drawMaterials:target                                  Display.mnd: print(text);
+  225:  draw print :drawItem:textX *tmp71 @right                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  226:  op add :drawText.6:x :drawItem:textX 1                       Display.mnd: drawText(x + 1, y, alignment, text);
+  227:  print :drawMaterials:target                                  Display.mnd: print(text);
+  228:  draw print :drawText.6:x *tmp71 @right                       Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
         label *label166                                              Display.mnd: if target > 0 then
         label *label28                                               Display.mnd: for var item, target in
-  224:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  225:  print "Unit status"                                          Display.mnd: print(text);
-  226:  draw print 22 45 @bottomLeft                                 Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  227:  print "Unit status"                                          Display.mnd: print(text);
-  228:  draw print 23 45 @bottomLeft                                 Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  229:  read *tmp13 processor1 ".transportItem"                      Display.mnd: if transportItem == null then
-  230:  jump *label53 notEqual *tmp13 null                           ...
-  231:  read *tmp12 processor1 ".transportTarget"                    Display.mnd: drawItem(ref col, ref y, 1, item, items, transportTarget, transportTarget);
-  232:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  233:  draw image 11 34 @poly 16 0 0                                Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-  234:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-  235:  draw rect 22 29 0 10 0 0                                     Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-  236:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-  237:  draw lineRect 22 29 122 10 0 0                               Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-  238:  print *tmp12                                                 Display.mnd: print(text);
-  239:  draw print 170 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  240:  print *tmp12                                                 Display.mnd: print(text);
-  241:  draw print 171 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  242:  jump *label54 always 0 0                                     Display.mnd: if transportItem == null then
+  229:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  230:  print "Unit status"                                          Display.mnd: print(text);
+  231:  draw print 22 45 @bottomLeft                                 Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  232:  print "Unit status"                                          Display.mnd: print(text);
+  233:  draw print 23 45 @bottomLeft                                 Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  234:  read *tmp13 processor1 ".transportItem"                      Display.mnd: if transportItem == null then
+  235:  jump *label53 notEqual *tmp13 null                           ...
+  236:  read *tmp12 processor1 ".transportTarget"                    Display.mnd: drawItem(ref col, ref y, 1, item, items, transportTarget, transportTarget);
+  237:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  238:  draw image 11 34 @poly 16 0 0                                Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+  239:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+  240:  draw rect 22 29 0 10 0 0                                     Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+  241:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+  242:  draw lineRect 22 29 122 10 0 0                               Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+  243:  print *tmp12                                                 Display.mnd: print(text);
+  244:  draw print 170 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  245:  print *tmp12                                                 Display.mnd: print(text);
+  246:  draw print 171 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  247:  jump *label54 always 0 0                                     Display.mnd: if transportItem == null then
         label *label53                                               ...
-  243:  sensor *tmp102 @unit @totalItems                             Display.mnd: drawUnit(transportItem, @unit.@totalItems, ref y);
-  244:  read *tmp13 processor1 ".transportItem"                      ...
-  245:  read :drawItem.2:target processor1 ".transportTarget"        Display.mnd: drawItem(ref col, ref y, 1, item, items, transportTarget, transportTarget);
-  246:  read *tmp12 processor1 ".transportTarget"                    ...
-  247:  op mul *tmp107 122 *tmp102                                   Display.mnd: var length = min(barLength, barLength * current / target);
-  248:  op div *tmp108 *tmp107 :drawItem.2:target                    ...
-  249:  op min :drawItem.2:length 122 *tmp108                        ...
-  250:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
-  251:  draw image 11 34 *tmp13 16 0 0                               Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
-  252:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
-  253:  draw rect 22 29 :drawItem.2:length 10 0 0                    Display.mnd: rect(barX, y, length, BAR_HEIGHT);
-  254:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
-  255:  draw lineRect 22 29 122 10 0 0                               Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
-  256:  print *tmp12                                                 Display.mnd: print(text);
-  257:  draw print 170 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
-  258:  print *tmp12                                                 Display.mnd: print(text);
-  259:  draw print 171 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  248:  sensor :drawUnit:unitItem @unit @firstItem                   Display.mnd: var unitItem = @unit.@firstItem;
+  249:  sensor *tmp103 @unit @totalItems                             Display.mnd: drawUnit(transportItem, @unit.@totalItems * (unitItem == transportItem), ref y);
+  250:  read *tmp13 processor1 ".transportItem"                      ...
+  251:  op equal *tmp104 :drawUnit:unitItem *tmp13                   ...
+  252:  op mul *tmp105 *tmp103 *tmp104                               ...
+  253:  read *tmp13 processor1 ".transportItem"                      ...
+  254:  read :drawItem.2:target processor1 ".transportTarget"        Display.mnd: drawItem(ref col, ref y, 1, item, items, transportTarget, transportTarget);
+  255:  read *tmp12 processor1 ".transportTarget"                    ...
+  256:  op mul *tmp110 122 *tmp105                                   Display.mnd: var length = min(barLength, barLength * current / target);
+  257:  op div *tmp111 *tmp110 :drawItem.2:target                    ...
+  258:  op min :drawItem.2:length 122 *tmp111                        ...
+  259:  draw col %[white] 0 0 0 0 0                                  Display.mnd: col(%[white]);
+  260:  draw image 11 34 *tmp13 16 0 0                               Display.mnd: image(iconX, y + ICON_Y, item, 16, 0);
+  261:  draw color 0 128 0 255 0 0                                   Display.mnd: color(0,128,0,255);
+  262:  draw rect 22 29 :drawItem.2:length 10 0 0                    Display.mnd: rect(barX, y, length, BAR_HEIGHT);
+  263:  draw color 0 255 0 255 0 0                                   Display.mnd: color(0,255,0,255);
+  264:  draw lineRect 22 29 122 10 0 0                               Display.mnd: lineRect(barX, y, barLength, BAR_HEIGHT);
+  265:  print *tmp12                                                 Display.mnd: print(text);
+  266:  draw print 170 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
+  267:  print *tmp12                                                 Display.mnd: print(text);
+  268:  draw print 171 36 @right                                     Display.mnd: mlogText("draw", "print", in x, in y, in alignment);
         label *label54                                               Display.mnd: if transportItem == null then
-  260:  drawflush display1                                           Display.mnd: drawflush(display1);
-  261:  print "[gold]Building {0}\n================================= Display.mnd: println($"[gold]Building $nextBlock");
-  262:  read *tmp3 processor1 ".nextBlock"                           ...
-  263:  format *tmp3                                                 ...
-  264:  read *tmp125 processor1 ".status1"                           Display.mnd: println(status1);
-  265:  format *tmp125                                               ...
-  266:  read *tmp15 processor1 ".status2"                            Display.mnd: println($"$status2$item2 ($block2)");
-  267:  format *tmp15                                                ...
-  268:  read *tmp16 processor1 ".item2"                              ...
-  269:  format *tmp16                                                ...
-  270:  read *tmp17 processor1 ".block2"                             ...
-  271:  format *tmp17                                                ...
-  272:  read *tmp126 processor1 ".status3"                           Display.mnd: println(status3);
-  273:  format *tmp126                                               ...
-  274:  printflush message1                                          Display.mnd: printflush(message1);
-  275:  jump *label4 always 0 0                                      Display.mnd: while true do
+  269:  drawflush display1                                           Display.mnd: drawflush(display1);
+  270:  print "[gold]Building {0}\n================================= Display.mnd: println($"[gold]Building $nextBlock");
+  271:  read *tmp3 processor1 ".nextBlock"                           ...
+  272:  format *tmp3                                                 ...
+  273:  read *tmp128 processor1 ".status1"                           Display.mnd: println(status1);
+  274:  format *tmp128                                               ...
+  275:  read *tmp15 processor1 ".status2"                            Display.mnd: println($"$status2$item2 ($block2)");
+  276:  format *tmp15                                                ...
+  277:  read *tmp16 processor1 ".item2"                              ...
+  278:  format *tmp16                                                ...
+  279:  read *tmp17 processor1 ".block2"                             ...
+  280:  format *tmp17                                                ...
+  281:  read *tmp129 processor1 ".status3"                           Display.mnd: println(status3);
+  282:  format *tmp129                                               ...
+  283:  printflush message1                                          Display.mnd: printflush(message1);
+  284:  jump *label4 always 0 0                                      Display.mnd: while true do
 
-C:\Home\golem\jam-202507\Display.mnd:8:21 Volatile variable 'started' is unused.
 
-Performance: parsed in 464 ms, compiled in 364 ms, optimized in 441 ms, run in 16 ms.
+Performance: parsed in 475 ms, compiled in 362 ms, optimized in 438 ms, run in 17 ms.
 
 Compiled mlog code was sent to Mlog Watcher.
   Mlog Watcher: success.
 
-Program output (1 steps):
+Program output (2 steps):
 The program didn't generate any output.
-Execution exception at instruction 0: read *tmp38 processor1 "*signature":
+Execution exception at instruction 5: read *tmp38 processor1 "*signature":
 Variable 'processor1' is not an object.
 (Use the '#set err-not-an-object = false;' directive or the '--err-not-an-object false' command line option to ignore this exception.)
