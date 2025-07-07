@@ -6,13 +6,13 @@
 //#set unreachable-code-elimination = none;
 //#set optimization = none;
 
-module CoreBuilder;
-
-noinit var processor;
-require "CoreController.mnd" remote processor;
-
 // Linked variables
-linked message1, switch1, processor1;
+linked message1, switch1, processor1, processor2;
+
+noinit var processor, display;
+
+require "Display.mnd" remote display;
+require "CoreController.mnd" remote processor;
 
 const DROP_MINING_RADIUS = 7;
 const REGULAR_RADIUS =  5;     // or build
@@ -34,27 +34,22 @@ var
     kiln = null;
 
 // Targets to be met for the next build
-remote var
+noinit var
+    mainUnit,
     core, coreX, coreY,
-    nextBlock = "",
-    copperTarget = 0,
-    leadTarget = 0,
-    graphiteTarget = 0,
-    siliconTarget = 0,
-    titaniumTarget = 0,
-    metaglassTarget = 0,
-    totalTargets = 0,
-    powerTarget = 0,
-    transportTarget = 0,
-    transportItem = null,
-    status1 = "",
-    status2 = "", item2 = "", block2 = "",
-    status3 = "";
+    copperTarget,
+    leadTarget,
+    graphiteTarget,
+    siliconTarget,
+    titaniumTarget,
+    metaglassTarget,
+    powerTarget,
+    titaniumTrigger;
 
 var
-    updatedGraphiteTarget,
-    updatedSiliconTarget,
-    titaniumTrigger = 7;
+    monos = 0,
+    flares = 0,
+    polys = 0;
 
 // Blocks layout around the core and build requirements
 
@@ -77,7 +72,7 @@ const BATTERY1[]        = (@battery,                0.0, +4.0,   5, 20,  0,  0, 
 const BATTERY2[]        = (@battery,               -1.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
 const SMELTER[]         = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0,  0, null);
 const UNLOADER1[]       = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
-const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor1);
+const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor2);
 const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
 const POWER_NODE[]      = (@power-node,            -2.0, -1.0,   2,  6,  0,  0,  0,  0,  0, null);
 const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
@@ -96,17 +91,17 @@ const PNEU_DRILL[]      = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0, 
 // UTILITY FUNCTIONS
 
 inline void status1(text)
-    status1 = text;
+    display.status1 = text;
 end;
 
 inline void status2(text, item, block)
-    status2 = text;
-    item2 = item;
-    block2 = block;
+    display.status2  = text;
+    display.item2  = item;
+    display.block2 = block;
 end;
 
 inline void status3(text)
-    status3 = text;
+    display.status3 = text;
 end;
 
 inline void error(text...)
@@ -169,7 +164,8 @@ void depositItems(block, item, fromMining)
             itemDrop(@air, 1000);
         end;
     end;
-    transportTarget = 0;
+    display.transportTarget = 0;
+    display.transportItem = null;
 end;
 
 // Locates the ore, crashes when not successful
@@ -181,8 +177,9 @@ end;
 
 // Mines given amount of ore and deposits it to given block
 void mineOre(ore, amount, block)
-    transportTarget = amount;
-    transportItem = ore;
+    amount = min(amount, capacity);
+    display.transportTarget = amount;
+    display.transportItem = ore;
     var x, y;
     locateOre(ore, out x, out y);
 
@@ -206,14 +203,15 @@ end;
 
 // Mines to the core
 void mineOre(ore)
+    status2("Mining ", ore, "core");
     mineOre(ore, capacity, core);
 end;
 
 // SUPPLY OPERATIONS
 
 void fetchBlock(block, item)
-    transportTarget = block.@itemCapacity;
-    transportItem = item;
+    display.transportTarget = block.@itemCapacity;
+    display.transportItem = item;
     status2("Fetching ", item, block);
     moveToEmpty(block.@x, block.@y);
 
@@ -231,9 +229,10 @@ end;
 // Supplies the block with the given amount of ore
 inline void supplyBlock(block, ore)
     status2("Supplying ", ore, block);
-    var missing = block.@itemCapacity - block.sensor(ore);
+    var blockCapacity = block.@itemCapacity;
+    var missing = blockCapacity - block.sensor(ore);
     if missing > 0 then
-        mineOre(ore, missing, block);
+        mineOre(ore, blockCapacity, block);
     end;
 end;
 
@@ -242,96 +241,100 @@ void supplyBase()
     var supplied = false;
 
     if unloader1 == null then
-        if core.@graphite < updatedGraphiteTarget then
+        if core.@graphite < graphiteTarget then
             if press.@coal < 5 then
-                status1("Meeting the graphite target");
+                status1("Goal 1: Meeting the graphite target");
                 supplyBlock(press, @coal);
                 supplied = true;
             end;
-            end;
+        end;
 
-        if core.@silicon < updatedSiliconTarget then
+        if core.@silicon < siliconTarget then
             if smelter.@coal < 5 then
-                status1("Meeting the silicon target (coal)");
+                status1("Goal 2: Meeting the silicon target (coal)");
                 supplyBlock(smelter, @coal);
                 supplied = true;
             elsif smelter.@sand < 5 then
-                status1("Meeting the silicon target (sand)");
+                status1("Goal 3: Meeting the silicon target (sand)");
                 supplyBlock(smelter, @sand);
                 supplied = true;
             end;
         end;
 
         if battery.@totalPower < powerTarget then
-            status1("Supplying generator");
-            supplyBlock(generator, @coal);
-            supplied = true;
+            if generator.@coal < 2 then
+                status1("Goal 4: Supplying generator");
+                supplyBlock(generator, @coal);
+                supplied = true;
+            end;
        end;
-    elsif processor != null then
-        // As soon as we have a processor, coal is the topmost priority
-        if core.@coal < 10 then
-            status1("Supplying base");
-            mineOre(@coal);
-            return;
-        end;
     end;
 
     if titanium_drill.@titanium < titaniumTrigger then
-        if core.@silicon < siliconTarget then
-            status1("Meeting the silicon target");
-            var coal = core.@coal;
-            var sand = core.@sand;
-            var ore = coal < sand ? @coal : @sand;
-            status2("Mining ", ore, "core");
-            mineOre(ore);
-        elsif core.@copper < copperTarget then
-            status1("Meeting the copper target");
-            status2("Mining ", @copper, "core");
-            mineOre(@copper);
-        elsif core.@lead < leadTarget then
-            status1("Meeting the lead target");
-            status2("Mining ", @lead, "core");
-            mineOre(@lead);
-        elsif core.@metaglass < metaglassTarget then
-            status1("Meeting the metaglass target");
-            status2("Mining ", @sand, "core");
-            mineOre(@sand);
-        elsif !supplied then
-            status1("Supplying base");
-            var coal = core.@coal;
-            var sand = core.@sand;
-            var ore = coal <= sand ? @coal : @sand;
-            status2("Mining ", ore, "core");
-            mineOre(ore);
+        if !supplied then
+            if battery.@totalPower < unloader1 * powerTarget then
+                status1("Goal 5: Supplying generator (5)");
+                mineOre(@coal);
+            elsif core.@silicon < siliconTarget then
+                status1("Goal 6: Meeting the silicon target");
+                var coal = core.@coal;
+                var sand = core.@sand;
+                var ore = coal < sand ? @coal : @sand;
+                mineOre(ore);
+            elsif core.@copper < copperTarget then
+                status1("Goal 7: Meeting the copper target");
+                mineOre(@copper);
+            elsif core.@lead < leadTarget then
+                status1("Goal 8: Meeting the lead target");
+                mineOre(@lead);
+            elsif core.@metaglass < metaglassTarget then
+                status1("Goal 9: Meeting the metaglass target");
+                mineOre(@sand);
+            else
+                status1("Goal 10: Supplying base");
+                var coal = core.@coal;
+                var sand = core.@sand;
+                var ore = coal <= sand ? @coal : @sand;
+                mineOre(ore);
+            end;
         end;
     else
-        status1("Fetching titanium");
+        status1("Goal 11: Fetching titanium");
         fetchBlock(titanium_drill, @titanium);
     end;
 end;
 
-void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
-    nextBlock = block;
+
+void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, factoryLead, factorySilicon)
+    // Update display
+    var totalLead = max(lead, factoryLead);
+    var totalSilicon = max(silicon, factorySilicon);
+    var count = 0;
+    for var t in copper, totalLead, graphite, totalSilicon, titanium, metaglass do count += sign(t); end;
+    display.totalTargets = count;
+    display.nextBlock = block;
+    display.copperTarget = copper;
+    display.leadTarget = totalLead;
+    display.graphiteTarget = graphite;
+    display.siliconTarget = totalSilicon;
+    display.titaniumTarget = titanium;
+    display.metaglassTarget = metaglass;
+    display.monos = monos;
+    display.polys = polys;
+    display.flares = flares;
+
     copperTarget = copper;
-    leadTarget = lead;
+    leadTarget = lead + factory * 10;
     graphiteTarget = graphite;
-    siliconTarget = silicon;
+    siliconTarget = silicon + factory * 10;
     titaniumTarget = titanium;
     metaglassTarget = metaglass;
 
-    var count = 0;
-    for var t in copper, lead, graphite, silicon, titanium, metaglass do count += sign(t); end;
-    totalTargets = count;
+    processor.pressTarget = graphiteTarget + 20;
+    processor.smelterTarget = siliconTarget + 20;
+    processor.kilnTarget = metaglassTarget + 20;
 
-    if processor == null then
-        updatedGraphiteTarget = max(10, graphiteTarget);
-        updatedSiliconTarget = max(10, siliconTarget);
-        else
-        processor.pressTarget = graphiteTarget + 30;
-        processor.smelterTarget = siliconTarget + 30;
-        processor.kilnTarget = metaglassTarget + 30;
-    end;
-    titaniumTrigger = core.@titanium < titaniumTarget + 10 ? 7 : 100;
+    titaniumTrigger = core.@titanium < titaniumTarget ? 7 : 100;
 
     while core.@copper < copperTarget
         || core.@lead < leadTarget
@@ -339,6 +342,8 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
         || core.@silicon < siliconTarget
         || core.@titanium < titaniumTarget
         || core.@metaglass < metaglassTarget
+        || factory.@lead < factoryLead
+        || factory.@silicon < factorySilicon
     do
         supplyBase();
     end;
@@ -370,7 +375,7 @@ def buildBlockAt(block, x, y, rotation, config, skipError)
 end;
 
 def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, rotation, config)
-    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass);
+    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, 0, 0);
     return buildBlockAt(block, x, y, rotation, config, false);
 end;
 
@@ -418,7 +423,8 @@ inline def buildTitaniumDrillCfg(ref cfg)
             cfg[CFG_GRAPHITE],
             cfg[CFG_SILICON],
             cfg[CFG_TITANIUM],
-            cfg[CFG_METAGLASS]);
+            cfg[CFG_METAGLASS],
+            0, 0);
 
         var x, y;
         locateOreAway(@titanium, out x, out y, in out distance, in out angle);
@@ -491,22 +497,74 @@ def buildTitaniumDrill()
     buildTitaniumDrillCfg(ref PNEU_DRILL);
 end;
 
+// Building units
+
+noinline def buildUnit(type, lead, silicon, in out count)
+    meetTarget(type, 0, 0, 0, 0, 0, 0, lead, silicon);
+
+    processor.unitToProduce = type;
+    do
+        supplyBase();
+    while processor.unitToProduce != null;
+
+    do
+        ubind(type);
+    while @unit.@flag != null;
+
+    flag(++count);
+
+    moveTo(coreX + 10 * count, coreY);
+
+    var result = @unit;
+    ubind(mainUnit);
+    return result;
+end;
+
+def buildMono()
+    buildUnit(@mono, 15, 30, in out monos);
+end;
+
+def buildFlare()
+    buildUnit(@flare, 0, 15, in out flares);
+end;
+
 // MAIN
 
-void backgroundProcess()
+void findUnits(type, out count)
+    count = 0;
+    var firstUnit = ubind(type);
+    if firstUnit != null then
+        do
+            flag(++count);
+            ubind(type);
+        while @unit != firstUnit;
+    end;
+end;
+
+begin
     do
         ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
+    mainUnit = @unit;
+
+    // Error - unrecognized remote processor
+    //verifySignature(display);
+    display = processor1;
+
+    // Bind and flag units
+    findUnits(@mono, out monos);
+    findUnits(@flare, out flares);
+    findUnits(@poly, out polys);
 
     // Basic blocks: copper and lead
     press = buildBlockFromCfg(ref PRESS);
     battery = buildBlockFromCfg(ref BATTERY1);
+    buildBlockFromCfg(ref BATTERY2);
     generator = buildBlockFromCfg(ref GENERATOR);
 
     powerTarget = 400;
 
-    buildBlockFromCfg(ref BATTERY2);
     smelter = buildBlockFromCfg(ref SMELTER);
 
     titanium_drill = buildTitaniumDrill();
@@ -527,10 +585,10 @@ void backgroundProcess()
 
     unloader2 = buildBlockFromCfg(ref UNLOADER2);
     processor.unloader2 = unloader2;
-
     buildBlockFromCfg(ref OVERFLOW_GATE);
 
-    processor.unitToProduce = @mono;
+    buildFlare();
+    buildMono();
 
     buildBlockFromCfg(ref UNLOADER3);
     buildBlockFromCfg(ref KILN);
@@ -542,14 +600,10 @@ void backgroundProcess()
     processor.generator2 = generator2;
     buildBlockFromCfg(ref SORTER);
 
-    //meetTarget("nothing", 0, 15, 0, 30, 0, 0);
-
     while true do
         supplyBase();
     end;
 
     stop();
     error("Done");
-
-    print(nextBlock, totalTargets, transportTarget, transportItem, status1, status2, status3, item2, block2);
 end;

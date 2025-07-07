@@ -3,9 +3,29 @@
 //#set function-inlining = none;
 #set sort-variables;
 
-require "CoreBuilder.mnd" remote processor1;
+module Display;
 
 linked display1, switch1, message1;
+
+var core = null;
+
+noinit remote var
+    nextBlock,
+    copperTarget,
+    leadTarget,
+    graphiteTarget,
+    siliconTarget,
+    titaniumTarget,
+    metaglassTarget,
+    totalTargets,
+    transportTarget,
+    transportItem,
+    status1,
+    status2, item2, block2,
+    status3,
+    monos,
+    flares,
+    polys;
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
@@ -30,6 +50,7 @@ void updateDisplay()
     drawHeader();
     drawMaterials();
     drawUnit();
+    drawUnits();
     drawflush(display1);
 end;
 
@@ -87,7 +108,7 @@ end;
 
 inline void drawUnit()
     col(%[white]);
-    drawBold(BAR_X, HEADER3_Y - 10, @bottomLeft, "Unit status");
+    drawBold(BAR_X, HEADER3_Y - 10, @bottomLeft, "Main unit");
     var y = HEADER3_Y - 26;
 
     if transportItem == null then
@@ -128,6 +149,23 @@ inline void drawItem(ref col, ref y, columns, item, current, target, count)
     end;
 end;
 
+inline void drawUnits()
+    var x = 4 + 6;
+    col(%[white]);
+    drawUnitCount(@flare, flares, ref x);
+    drawUnitCount(@mono, monos, ref x);
+    drawUnitCount(@poly, polys, ref x);
+end;
+
+inline void drawUnitCount(type, count, ref x)
+    if count > 0 then
+        image(x, 2 + 6, type, 12, 0);
+        print("x");
+        drawText(x + 7, 2 + 8, @left, count);
+        x += 30;
+    end;
+end;
+
 void updateMessage()
     println($"[gold]Building $nextBlock");
     println("==================================[]");
@@ -137,10 +175,11 @@ void updateMessage()
     printflush(message1);
 end;
 
-begin
-    while @unit == null do
+void backgroundProcess()
+    do
         ubind(@poly);
-    end;
+        core = ulocate(:building, :core, false);
+    while core == null;
 
     printflush(null);
     drawflush(null);

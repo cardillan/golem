@@ -21,7 +21,7 @@ remote noinit var
     unitToProduce;
 
 // TODO error when backgroundProcess() contains local variables
-var lastProgress = -1;
+var lastProgress = 0, factoryProgress = 0;
 
 void backgroundProcess()
     while true do
@@ -32,12 +32,13 @@ void backgroundProcess()
         generator2.enabled = battery.@totalPower < 3500;
 
         if factory == null then continue; end;
+        factoryProgress = factory.@progress;
 
         if unitToProduce == null then
             factory.enabled = false;
             factory.config = @mono;
-            lastProgress = -1;
-        elsif lastProgress > factory.@progress + 0.1 then
+            lastProgress = 0;
+        elsif lastProgress > factoryProgress + 0.1 then
             unitToProduce = null;
             factory.enabled = false;
             factory.config = @mono;
@@ -48,7 +49,7 @@ void backgroundProcess()
             lastProgress = 0;
         else
             factory.enabled = true;
-            lastProgress = factory.@progress;
+            lastProgress = factoryProgress;
         end;
 
         if generator2 != null then
