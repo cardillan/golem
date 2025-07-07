@@ -6,6 +6,7 @@ module CoreController;
 
 remote noinit var
     core,
+    display,
     press,
     smelter,
     kiln,
@@ -18,12 +19,30 @@ remote noinit var
     pressTarget,
     smelterTarget,
     kilnTarget,
-    unitToProduce;
+    unitToProduce,
+
+    buildUnits,
+    monos,
+    flares,
+    polys;
+
+remote display ".monos" var displayMonos;
+remote display ".flares" var displayFlares;
 
 // TODO error when backgroundProcess() contains local variables
 var lastProgress = 0, factoryProgress = 0;
 
-void backgroundProcess()
+void unitFinished()
+    if unitToProduce == @flare then
+        displayFlares = ++flares;
+    else
+        displayMonos = ++monos;
+    end;
+
+    unitToProduce = monos < 8 ? @mono : flares < 8 ? @flare : null;
+end;
+
+void main()
     while true do
         press.enabled = core.@graphite < pressTarget;
         smelter.enabled = core.@silicon < smelterTarget;
@@ -32,6 +51,7 @@ void backgroundProcess()
         generator2.enabled = battery.@totalPower < 3500;
 
         if factory == null then continue; end;
+
         factoryProgress = factory.@progress;
 
         if unitToProduce == null then
@@ -39,9 +59,7 @@ void backgroundProcess()
             factory.config = @mono;
             lastProgress = 0;
         elsif lastProgress > factoryProgress + 0.1 then
-            unitToProduce = null;
-            factory.enabled = false;
-            factory.config = @mono;
+            unitFinished();
             lastProgress = 0;
         elsif factory.config != unitToProduce then
             factory.enabled = true;
@@ -59,10 +77,15 @@ void backgroundProcess()
             end;
         end;
 
-        if factory.@silicon < 30 then
+        var siliconLimit = factory.config == @mono ? 60 : 30;
+        if factory.@silicon < siliconLimit and core.@silicon > 0 then
             unloader2.config = @silicon;
         else
             unloader2.config = @lead;
         end;
     end;
+end;
+
+void backgroundProcess()
+    main();
 end;

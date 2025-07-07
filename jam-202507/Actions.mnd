@@ -1,0 +1,131 @@
+module Actions;
+
+const DROP_MINING_RADIUS = 7;
+const REGULAR_RADIUS =  5;     // or build
+
+// BASIC OPERATIONS
+// ALL THESE WAIT FOR COMPLETION
+
+volatile var ERROR = "";
+
+inline void debug(text)
+    print(text);
+    printflush(message1);
+end;
+
+inline void error(error, parameters...)
+    ERROR = error;
+    stopProcessor();
+end;
+
+// Moves the unit to a given distance from the location
+void moveTo(x, y, radius)
+    status3("Moving...");
+    while !within(x, y, radius) do
+        approach(x, y, radius - 0.5);
+    end;
+end;
+
+// Moves the unit to a mining distance from the location
+void moveTo(x, y)
+    moveTo(x, y, REGULAR_RADIUS);
+end;
+
+// Moves the unit to the given location, ensuring it is empty on arrival
+void moveToEmpty(x, y)
+    status3("Moving...");
+    do
+        // If ore is held, try to drop it during transport to start cooldown earlier
+        if @unit.@firstItem != null then itemDrop(@air, 1000); end;
+        approach(x, y, REGULAR_RADIUS - 0.5);
+    while !within(x, y, REGULAR_RADIUS);
+
+    // Now drop it for real
+    while @unit.@firstItem != null do
+        itemDrop(@air, 1000);
+    end;
+end;
+
+// Moves the unit to the a given distance from a block
+void moveToBlock(block, radius)
+    moveTo(block.@x, block.@y, radius);
+end;
+
+// Drops all items to block (does nothing when empty)
+// - moves to a drop distance from the block
+// - makes sure everything is dropped or the block is full
+void depositItems(block, item, fromMining)
+    status3("Depositing...");
+    if @unit.@firstItem == item then
+        moveToBlock(block, fromMining && block == core ? DROP_MINING_RADIUS : REGULAR_RADIUS);
+        var cap = block.@itemCapacity;
+        do
+            itemDrop(block, capacity);
+            if block.sensor(item) >= cap then break; end;
+        while @unit.@firstItem != null;
+    else
+        // Wrong item(!)
+        while @unit.@firstItem != null do
+            itemDrop(@air, 1000);
+        end;
+    end;
+    transportStatus(0, null);
+end;
+
+// Locates the ore, crashes when not successful
+void locateOre(ore, out x, out y)
+    if !ulocate(:ore, ore, out x, out y) then
+        error("Cannot locate ore");
+    end;
+end;
+
+// Mines given amount of ore and deposits it to given block
+void mineOre(ore, amount, block)
+    amount = min(amount, capacity);
+    transportStatus(amount, ore);
+    var x, y;
+    locateOre(ore, out x, out y);
+
+    moveToEmpty(x, y);
+
+    status3("Mining...");
+    var stop = @second + 10;
+    do
+        // Okay, not sure how it can happen, but it does sometimes
+        var item = @unit.@firstItem;
+        if item != null && item != ore then break; end;
+
+        mine(x, y);
+        //if targetMet() then break; end;
+        if @second > stop then break; end;
+    while @unit.@totalItems < amount;
+
+    // We need to stop mining. stop() somehow interferes with building.
+    unbind();
+
+    // And drop it
+    depositItems(block, ore, true);
+end;
+
+// Mines to the core
+void mineOre(ore)
+    status2("Mining ", ore, "core");
+    mineOre(ore, capacity, core);
+end;
+
+void fetchBlock(block, item)
+    transportStatus(block.@itemCapacity, item);
+    status2("Fetching ", item, block);
+    moveToEmpty(block.@x, block.@y);
+
+    do
+        itemTake(block, item, capacity);
+        var unitItem = @unit.@firstItem;
+        if unitItem != null and unitItem != item then
+            itemDrop(@air, 1000);
+        end;
+     while @unit.sensor(item) < capacity and block.sensor(item);
+
+    depositItems(core, item, false);
+end;
+

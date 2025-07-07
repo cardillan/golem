@@ -7,15 +7,14 @@
 //#set optimization = none;
 
 // Linked variables
-linked message1, switch1, processor1, processor2;
+linked message1, switch1, processor1, processor2, processor3;
 
-noinit var processor, display;
+noinit var display, controller, flareController;
 
+require "Actions.mnd";
 require "Display.mnd" remote display;
-require "CoreController.mnd" remote processor;
-
-const DROP_MINING_RADIUS = 7;
-const REGULAR_RADIUS =  5;     // or build
+require "CoreController.mnd" remote controller;
+require "FlareController.mnd" remote flareController;
 
 // At this point, we're only using a poly
 const capacity = 30;
@@ -37,16 +36,19 @@ var
 noinit var
     mainUnit,
     core, coreX, coreY,
-    copperTarget,
-    leadTarget,
-    graphiteTarget,
-    siliconTarget,
-    titaniumTarget,
-    metaglassTarget,
+    targetCopper,
+    targetLead,
+    targetGraphite,
+    targetSilicon,
+    targetTitanium,
+    targetMetaglass,
+    targetLeadFactory,
+    targetSiliconFactory,
     powerTarget,
     titaniumTrigger;
 
 var
+    phase = 0,
     monos = 0,
     flares = 0,
     polys = 0;
@@ -104,127 +106,12 @@ inline void status3(text)
     display.status3 = text;
 end;
 
-inline void error(text...)
-    print("[salmon]", text);
-    printflush(message1);
-    stopProcessor();
-end;
-
-// BASIC OPERATIONS
-// ALL THESE WAIT FOR COMPLETION
-
-// Moves the unit to a given distance from the location
-void moveTo(x, y, radius)
-    status3("Moving...");
-    while !within(x, y, radius) do
-        approach(x, y, radius - 0.5);
-    end;
-end;
-
-// Moves the unit to a mining distance from the location
-void moveTo(x, y)
-    moveTo(x, y, REGULAR_RADIUS);
-end;
-
-// Moves the unit to the given location, ensuring it is empty on arrival
-void moveToEmpty(x, y)
-    status3("Moving...");
-    do
-        // If ore is held, try to drop it during transport to start cooldown earlier
-        if @unit.@firstItem != null then itemDrop(@air, 1000); end;
-        approach(x, y, REGULAR_RADIUS - 0.5);
-    while !within(x, y, REGULAR_RADIUS);
-
-    // Now drop it for real
-    while @unit.@firstItem != null do
-        itemDrop(@air, 1000);
-    end;
-end;
-
-// Moves the unit to the a given distance from a block
-void moveToBlock(block, radius)
-    moveTo(block.@x, block.@y, radius);
-end;
-
-// Drops all items to block (does nothing when empty)
-// - moves to a drop distance from the block
-// - makes sure everything is dropped or the block is full
-void depositItems(block, item, fromMining)
-    status3("Depositing...");
-    if @unit.@firstItem == item then
-        moveToBlock(block, fromMining && block == core ? DROP_MINING_RADIUS : REGULAR_RADIUS);
-        var cap = block.@itemCapacity;
-        do
-            itemDrop(block, capacity);
-            if block.sensor(item) >= cap then break; end;
-        while @unit.@firstItem != null;
-    else
-        // Wrong item(!)
-        while @unit.@firstItem != null do
-            itemDrop(@air, 1000);
-        end;
-    end;
-    display.transportTarget = 0;
-    display.transportItem = null;
-end;
-
-// Locates the ore, crashes when not successful
-void locateOre(ore, out x, out y)
-    if !ulocate(:ore, ore, out x, out y) then
-        error("Cannot locate ", ore);
-    end;
-end;
-
-// Mines given amount of ore and deposits it to given block
-void mineOre(ore, amount, block)
-    amount = min(amount, capacity);
-    display.transportTarget = amount;
-    display.transportItem = ore;
-    var x, y;
-    locateOre(ore, out x, out y);
-
-    moveToEmpty(x, y);
-
-    status3("Mining...");
-    do
-        // Okay, not sure how it can happen, but it does sometimes
-        var item = @unit.@firstItem;
-        if item != null && item != ore then break; end;
-
-        mine(x, y);
-    while @unit.@totalItems < amount;
-
-    // We need to stop mining. stop() somehow interferes with building.
-    unbind();
-
-    // And drop it
-    depositItems(block, ore, true);
-end;
-
-// Mines to the core
-void mineOre(ore)
-    status2("Mining ", ore, "core");
-    mineOre(ore, capacity, core);
+inline void transportStatus(target, item)
+    display.transportTarget = target;
+    display.transportItem = item;
 end;
 
 // SUPPLY OPERATIONS
-
-void fetchBlock(block, item)
-    display.transportTarget = block.@itemCapacity;
-    display.transportItem = item;
-    status2("Fetching ", item, block);
-    moveToEmpty(block.@x, block.@y);
-
-    do
-        itemTake(block, item, capacity);
-        var unitItem = @unit.@firstItem;
-        if unitItem != null and unitItem != item then
-            itemDrop(@air, 1000);
-        end;
-     while @unit.sensor(item) < capacity and block.sensor(item);
-
-    depositItems(core, item, false);
-end;
 
 // Supplies the block with the given amount of ore
 inline void supplyBlock(block, ore)
@@ -236,12 +123,11 @@ inline void supplyBlock(block, ore)
     end;
 end;
 
-// Returns true when all targets are met
-void supplyBase()
+void supplyBase0()
     var supplied = false;
 
     if unloader1 == null then
-        if core.@graphite < graphiteTarget then
+        if core.@graphite < targetGraphite then
             if press.@coal < 5 then
                 status1("Goal 1: Meeting the graphite target");
                 supplyBlock(press, @coal);
@@ -249,7 +135,7 @@ void supplyBase()
             end;
         end;
 
-        if core.@silicon < siliconTarget then
+        if core.@silicon < targetSilicon then
             if smelter.@coal < 5 then
                 status1("Goal 2: Meeting the silicon target (coal)");
                 supplyBlock(smelter, @coal);
@@ -275,19 +161,19 @@ void supplyBase()
             if battery.@totalPower < unloader1 * powerTarget then
                 status1("Goal 5: Supplying generator (5)");
                 mineOre(@coal);
-            elsif core.@silicon < siliconTarget then
+            elsif core.@silicon < targetSilicon then
                 status1("Goal 6: Meeting the silicon target");
                 var coal = core.@coal;
                 var sand = core.@sand;
                 var ore = coal < sand ? @coal : @sand;
                 mineOre(ore);
-            elsif core.@copper < copperTarget then
+            elsif core.@copper < targetCopper then
                 status1("Goal 7: Meeting the copper target");
                 mineOre(@copper);
-            elsif core.@lead < leadTarget then
+            elsif core.@lead < targetLead then
                 status1("Goal 8: Meeting the lead target");
                 mineOre(@lead);
-            elsif core.@metaglass < metaglassTarget then
+            elsif core.@metaglass < targetMetaglass then
                 status1("Goal 9: Meeting the metaglass target");
                 mineOre(@sand);
             else
@@ -304,47 +190,86 @@ void supplyBase()
     end;
 end;
 
+void supplyBase1()
+    if core.@sand < core.@coal then
+        if core.@sand < core.@lead then
+            status1("Phase 1: mining sand");
+            mineOre(@sand);
+        else
+            status1("Phase 1: mining lead");
+            mineOre(@lead);
+        end;
+    else
+        if core.@coal < core.@lead then
+            status1("Phase 1: mining coal");
+            mineOre(@coal);
+        else
+            status1("Phase 1: mining lead");
+            mineOre(@lead);
+        end;
+    end;
+end;
 
-void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, factoryLead, factorySilicon)
+void supplyBase()
+    case phase
+        when 0 then supplyBase0();
+        when 1 then supplyBase1();
+    end;
+end;
+
+noinit var leadSiliconBlock;
+
+def targetMet()
+    if core.@copper >= targetCopper then
+        if leadSiliconBlock.@lead >= targetLead then
+            if core.@graphite >= targetGraphite then
+                if leadSiliconBlock.@silicon >= targetSilicon then
+                    if core.@titanium >= targetTitanium then
+                        if core.@metaglass >= targetMetaglass then
+                            return true;
+                        end;
+                    end;
+                end;
+            end;
+        end;
+    end;
+    return false;
+end;
+
+void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, leadFactory, siliconFactory)
     // Update display
-    var totalLead = max(lead, factoryLead);
-    var totalSilicon = max(silicon, factorySilicon);
     var count = 0;
-    for var t in copper, totalLead, graphite, totalSilicon, titanium, metaglass do count += sign(t); end;
+    for var t in copper, lead, graphite, silicon, titanium, metaglass, leadFactory, siliconFactory do count += sign(t); end;
     display.totalTargets = count;
     display.nextBlock = block;
-    display.copperTarget = copper;
-    display.leadTarget = totalLead;
-    display.graphiteTarget = graphite;
-    display.siliconTarget = totalSilicon;
-    display.titaniumTarget = titanium;
-    display.metaglassTarget = metaglass;
+    display.targetCopper = copper;
+    display.targetLead = lead;
+    display.targetGraphite = graphite;
+    display.targetSilicon = silicon;
+    display.targetTitanium = titanium;
+    display.targetMetaglass = metaglass;
+    display.targetLeadFactory = leadFactory;
+    display.targetSiliconFactory = siliconFactory;
     display.monos = monos;
     display.polys = polys;
     display.flares = flares;
 
-    copperTarget = copper;
-    leadTarget = lead + factory * 10;
-    graphiteTarget = graphite;
-    siliconTarget = silicon + factory * 10;
-    titaniumTarget = titanium;
-    metaglassTarget = metaglass;
+    targetCopper = copper;
+    targetLead = max(lead, leadFactory);
+    targetGraphite = graphite;
+    targetSilicon = max(silicon, siliconFactory);
+    targetTitanium = titanium;
+    targetMetaglass = metaglass;
 
-    processor.pressTarget = graphiteTarget + 20;
-    processor.smelterTarget = siliconTarget + 20;
-    processor.kilnTarget = metaglassTarget + 20;
+    controller.pressTarget = targetGraphite + 20;
+    controller.smelterTarget = targetSilicon + 20;
+    controller.kilnTarget = targetMetaglass + 20;
 
-    titaniumTrigger = core.@titanium < titaniumTarget ? 7 : 100;
+    titaniumTrigger = core.@titanium < targetTitanium ? min(7, targetTitanium - core.@titanium) : 100;
 
-    while core.@copper < copperTarget
-        || core.@lead < leadTarget
-        || core.@graphite < graphiteTarget
-        || core.@silicon < siliconTarget
-        || core.@titanium < titaniumTarget
-        || core.@metaglass < metaglassTarget
-        || factory.@lead < factoryLead
-        || factory.@silicon < factorySilicon
-    do
+    leadSiliconBlock = siliconFactory > 0 ? factory : core;
+
+    while !targetMet() do
         supplyBase();
     end;
 end;
@@ -486,6 +411,9 @@ inline def buildTitaniumDrillCfg(ref cfg)
 
         // No luck. Go elsewhere
         if ++attempts > 5 then
+            // Try to patch the original spot to disable it
+            build(x, y, @conveyor, 0, null);
+
             moveToNextLocation(ref distance, ref angle);
             attempts = 0;
             minimum = max(minimum - 1, 1);
@@ -497,37 +425,6 @@ def buildTitaniumDrill()
     buildTitaniumDrillCfg(ref PNEU_DRILL);
 end;
 
-// Building units
-
-noinline def buildUnit(type, lead, silicon, in out count)
-    meetTarget(type, 0, 0, 0, 0, 0, 0, lead, silicon);
-
-    processor.unitToProduce = type;
-    do
-        supplyBase();
-    while processor.unitToProduce != null;
-
-    do
-        ubind(type);
-    while @unit.@flag != null;
-
-    flag(++count);
-
-    moveTo(coreX + 10 * count, coreY);
-
-    var result = @unit;
-    ubind(mainUnit);
-    return result;
-end;
-
-def buildMono()
-    buildUnit(@mono, 15, 30, in out monos);
-end;
-
-def buildFlare()
-    buildUnit(@flare, 0, 15, in out flares);
-end;
-
 // MAIN
 
 void findUnits(type, out count)
@@ -535,7 +432,7 @@ void findUnits(type, out count)
     var firstUnit = ubind(type);
     if firstUnit != null then
         do
-            flag(++count);
+            count++;
             ubind(type);
         while @unit != firstUnit;
     end;
@@ -551,6 +448,7 @@ begin
     // Error - unrecognized remote processor
     //verifySignature(display);
     display = processor1;
+    flareController = processor3;
 
     // Bind and flag units
     findUnits(@mono, out monos);
@@ -569,35 +467,45 @@ begin
 
     titanium_drill = buildTitaniumDrill();
 
+    flareController.core = core;
+    flareController.drill = titanium_drill;
+
     unloader1 = buildBlockFromCfg(ref UNLOADER1);
 
-    processor = buildBlockFromCfg(ref PROCESSOR);
+    controller = buildBlockFromCfg(ref PROCESSOR);
 
-    processor.core = core;
-    processor.battery = battery;
-    processor.generator = generator;
-    processor.smelter = smelter;
-    processor.press = press;
+    controller.display = display;
+    controller.core = core;
+    controller.battery = battery;
+    controller.generator = generator;
+    controller.smelter = smelter;
+    controller.press = press;
+    controller.monos = monos;
+    controller.flares = flares;
+    controller.polys = polys;
 
     buildBlockFromCfg(ref POWER_NODE);
     factory = buildBlockFromCfg(ref AIR_FACTORY);
-    processor.factory = factory;
+    controller.factory = factory;
+    display.factory = factory;
 
     unloader2 = buildBlockFromCfg(ref UNLOADER2);
-    processor.unloader2 = unloader2;
+    controller.unloader2 = unloader2;
     buildBlockFromCfg(ref OVERFLOW_GATE);
 
-    buildFlare();
-    buildMono();
+    // We're getting into the "build the damn units" mode
+    controller.unitToProduce = @flare;
+    phase++;
+    display.unitBuilding = true;
 
     buildBlockFromCfg(ref UNLOADER3);
-    buildBlockFromCfg(ref KILN);
-    processor.kiln = kiln;
+    kiln = buildBlockFromCfg(ref KILN);
+    controller.kiln = kiln;
 
     buildBlockFromCfg(ref JUNCTION);
     buildBlockFromCfg(ref WATER_EXT);
     generator2 = buildBlockFromCfg(ref STEAM_GEN);
-    processor.generator2 = generator2;
+    controller.generator2 = generator2;
     buildBlockFromCfg(ref SORTER);
 
     while true do

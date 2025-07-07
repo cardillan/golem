@@ -1,53 +1,76 @@
-set .lastProgress -1
+jump 4 always 0 0
+draw triangle .battery .core .display .factory .factoryProgress .flares
+draw triangle .generator .generator2 .kiln .kilnTarget .lastProgress .monos
+draw triangle .press .pressTarget .smelter .smelterTarget .unitToProduce .unloader2
+set .lastProgress 0
 set *signature "0:v1"
-set *tmp0 .press
-sensor *tmp2 .core @graphite
-op lessThan *tmp3 *tmp2 .pressTarget
-control enabled *tmp0 *tmp3 0 0 0
-set *tmp4 .smelter
-sensor *tmp6 .core @silicon
-op lessThan *tmp7 *tmp6 .smelterTarget
-control enabled *tmp4 *tmp7 0 0 0
-set *tmp8 .kiln
-sensor *tmp10 .core @metaglass
-op lessThan *tmp11 *tmp10 .kilnTarget
-control enabled *tmp8 *tmp11 0 0 0
-set *tmp12 .generator
-sensor *tmp14 .battery @totalPower
-op lessThan *tmp15 *tmp14 3800
-control enabled *tmp12 *tmp15 0 0 0
-jump 2 equal .factory null
-jump 24 notEqual .unitToProduce null
-control enabled .factory false 0 0 0
-control config .factory @mono 0 0 0
-set .lastProgress -1
-jump 40 always 0 0
-sensor *tmp24 .factory @progress
-op add *tmp25 *tmp24 0.1
-jump 32 lessThanEq .lastProgress *tmp25
-set .unitToProduce null
+set *tmp2 .press
+sensor *tmp4 .core @graphite
+op lessThan *tmp5 *tmp4 .pressTarget
+control enabled *tmp2 *tmp5 0 0 0
+set *tmp6 .smelter
+sensor *tmp8 .core @silicon
+op lessThan *tmp9 *tmp8 .smelterTarget
+control enabled *tmp6 *tmp9 0 0 0
+set *tmp10 .kiln
+sensor *tmp12 .core @metaglass
+op lessThan *tmp13 *tmp12 .kilnTarget
+control enabled *tmp10 *tmp13 0 0 0
+set *tmp14 .generator
+sensor *tmp16 .battery @totalPower
+op lessThan *tmp17 *tmp16 1000
+control enabled *tmp14 *tmp17 0 0 0
+set *tmp18 .generator2
+sensor *tmp20 .battery @totalPower
+op lessThan *tmp21 *tmp20 3500
+control enabled *tmp18 *tmp21 0 0 0
+jump 6 equal .factory null
+sensor .factoryProgress .factory @progress
+jump 33 notEqual .unitToProduce null
 control enabled .factory false 0 0 0
 control config .factory @mono 0 0 0
 set .lastProgress 0
-jump 40 always 0 0
-sensor *tmp33 .factory @config
-jump 38 equal *tmp33 .unitToProduce
+jump 58 always 0 0
+op add *tmp31 .factoryProgress 0.1
+jump 50 lessThanEq .lastProgress *tmp31
+jump 40 notEqual .unitToProduce @flare
+op add *tmp36 .flares 1
+set .flares *tmp36
+write *tmp36 .display ".flares"
+jump 43 always 0 0
+op add *tmp37 .monos 1
+set .monos *tmp37
+write *tmp37 .display ".monos"
+set .unitToProduce @mono
+jump 48 lessThan .monos 8
+set .unitToProduce null
+jump 48 greaterThanEq .flares 8
+set .unitToProduce @flare
+set .lastProgress 0
+jump 58 always 0 0
+sensor *tmp43 .factory @config
+jump 56 equal *tmp43 .unitToProduce
 control enabled .factory true 0 0 0
 control config .factory .unitToProduce 0 0 0
 set .lastProgress 0
-jump 40 always 0 0
+jump 58 always 0 0
 control enabled .factory true 0 0 0
-sensor .lastProgress .factory @progress
-jump 45 equal .generator2 null
-sensor *tmp46 .generator2 @coal
-jump 45 greaterThanEq *tmp46 3
+set .lastProgress .factoryProgress
+jump 63 equal .generator2 null
+sensor *tmp55 .generator2 @coal
+jump 63 greaterThanEq *tmp55 3
 control config .unloader2 @coal 0 0 0
-jump 2 always 0 0
-sensor *tmp51 .factory @silicon
-jump 49 greaterThanEq *tmp51 30
+jump 6 always 0 0
+set *tmp63 30
+sensor *tmp61 .factory @config
+jump 67 notEqual *tmp61 @mono
+set *tmp63 60
+sensor *tmp64 .factory @silicon
+jump 71 greaterThanEq *tmp64 *tmp63
 control config .unloader2 @silicon 0 0 0
-jump 2 always 0 0
+jump 6 always 0 0
 control config .unloader2 @lead 0 0 0
-jump 2 always 0 0
+jump 6 always 0 0
+draw triangle .buildUnits .polys 0 0 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

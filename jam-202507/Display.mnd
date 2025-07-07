@@ -11,12 +11,14 @@ var core = null;
 
 noinit remote var
     nextBlock,
-    copperTarget,
-    leadTarget,
-    graphiteTarget,
-    siliconTarget,
-    titaniumTarget,
-    metaglassTarget,
+    targetCopper,
+    targetLead,
+    targetGraphite,
+    targetSilicon,
+    targetTitanium,
+    targetMetaglass,
+    targetLeadFactory,
+    targetSiliconFactory,
     totalTargets,
     transportTarget,
     transportItem,
@@ -25,7 +27,9 @@ noinit remote var
     status3,
     monos,
     flares,
-    polys;
+    polys,
+    factory,
+    unitBuilding;
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
@@ -48,7 +52,11 @@ void updateDisplay()
     clear(0, 0, 32);
 
     drawHeader();
-    drawMaterials();
+    if unitBuilding then
+        drawUnitBuilding();
+    else
+        drawMaterials();
+    end;
     drawUnit();
     drawUnits();
     drawflush(display1);
@@ -84,6 +92,15 @@ inline void drawHeader()
     drawText(168, 172, @topRight, "");
 end;
 
+inline void drawUnitBuilding()
+    drawBold(BAR_X, HEADER_Y - 60, @bottomLeft, "Air factory");
+
+    var col = 0, y = 85;
+    var columns = 1;
+
+    drawItem(ref col, ref y, columns, factory.@config, factory.@progress, 1.0, "");
+end;
+
 inline void drawMaterials()
     drawBold(BAR_X, HEADER_Y - 60, @bottomLeft, "Materials");
 
@@ -91,16 +108,18 @@ inline void drawMaterials()
     var count = totalTargets;
     var columns = count > 2 ? 2 : 1;
 
-    for var item, target in
-        @copper,    copperTarget,
-        @lead,      leadTarget,
-        @graphite,  graphiteTarget,
-        @silicon,   siliconTarget,
-        @titanium,  titaniumTarget,
-        @metaglass, metaglassTarget
+    for var block, item, target in
+        core,    @copper,    targetCopper,
+        core,    @lead,      targetLead,
+        core,    @graphite,  targetGraphite,
+        core,    @silicon,   targetSilicon,
+        core,    @titanium,  targetTitanium,
+        core,    @metaglass, targetMetaglass,
+        factory, @lead,      targetLeadFactory,
+        factory, @silicon,   targetSiliconFactory
     do
         if target > 0 then
-            drawItem(ref col, ref y, columns, item, core.sensor(item), target, target);
+            drawItem(ref col, ref y, columns, item, block.sensor(item), target, target);
             if --count <= 0 then break; end;
         end;
     end;

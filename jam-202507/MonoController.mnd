@@ -1,0 +1,91 @@
+#set target = 8;
+#set syntax = strict;
+//#set function-inlining = none;
+// TODO Error when uncommented
+//#set sort-variables;
+
+// At this point, we're only using a poly
+const RADIUS = 7;
+const capacity = 20;
+
+noinit var core, coreX, coreY;
+
+const mining = 1;
+const returning = 2;
+
+var min = 0, minOre = null;
+
+begin
+    do
+        ubind(@mono);
+    while @unit == null;
+
+    do
+        core = ulocate(:building, :core, false, out coreX, out coreY);
+    while core == null;
+
+    while true do
+        ubind(@mono);
+
+        var lead = core.@lead;
+        var sand = core.@sand;
+        var copper = core.@copper;
+        min = min(lead, sand, copper);
+        minOre = min == sand ? @sand : min == lead ? @lead : @copper;
+
+        var flag = @unit.@flag;
+        if flag == 0 then
+            findOreToMine(minOre);
+        elsif flag == 1 then
+            returnItems();
+        else
+            mine(flag);
+        end;
+    end;
+end;
+
+void findOreToMine(ore)
+    if @unit.@firstItem != null then
+        itemDrop(@air, capacity);
+        if @unit.@firstItem != null then return; end;
+    end;
+
+    var x, y;
+    ulocate(:ore, ore, out x, out y);
+    approach(x, y, RADIUS);
+    mine(x, y);
+    flag((x * 1000 + y) * 32 + ore.@id * 2);
+end;
+
+void mine(flag)
+    flag \= 2;
+    var ore = lookup(:item, flag % 16);
+    flag \= 16;
+    var y = flag % 1000;
+    var x = flag \ 1000;
+
+    if core.sensor(ore) > min + 500 then
+        flag(0);
+    end;
+
+    if @unit.@firstItem != ore then
+        itemDrop(@air, capacity);
+    end;
+
+    approach(x, y, RADIUS);
+    mine(x, y);
+
+    if @unit.@totalItems >= capacity then
+        approach(coreX, coreY, RADIUS);
+        flag(1);
+    end;
+end;
+
+void returnItems()
+    approach(coreX, coreY, RADIUS);
+    itemDrop(core, capacity);
+
+    if @unit.@firstItem == null then
+        flag(0);
+    end;
+end;
