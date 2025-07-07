@@ -1,7 +1,6 @@
 module Actions;
 
-const DROP_MINING_RADIUS = 7;
-const REGULAR_RADIUS =  5;     // or build
+const RADIUS =  6;     // or build
 
 // BASIC OPERATIONS
 // ALL THESE WAIT FOR COMPLETION
@@ -28,7 +27,7 @@ end;
 
 // Moves the unit to a mining distance from the location
 void moveTo(x, y)
-    moveTo(x, y, REGULAR_RADIUS);
+    moveTo(x, y, RADIUS);
 end;
 
 // Moves the unit to the given location, ensuring it is empty on arrival
@@ -37,8 +36,8 @@ void moveToEmpty(x, y)
     do
         // If ore is held, try to drop it during transport to start cooldown earlier
         if @unit.@firstItem != null then itemDrop(@air, 1000); end;
-        approach(x, y, REGULAR_RADIUS - 0.5);
-    while !within(x, y, REGULAR_RADIUS);
+        approach(x, y, RADIUS - 0.5);
+    while !within(x, y, RADIUS);
 
     // Now drop it for real
     while @unit.@firstItem != null do
@@ -54,15 +53,14 @@ end;
 // Drops all items to block (does nothing when empty)
 // - moves to a drop distance from the block
 // - makes sure everything is dropped or the block is full
-void depositItems(block, item, fromMining)
+void depositItems(block, item)
     status3("Depositing...");
     if @unit.@firstItem == item then
-        moveToBlock(block, fromMining && block == core ? DROP_MINING_RADIUS : REGULAR_RADIUS);
+        moveToBlock(block, RADIUS);
         var cap = block.@itemCapacity;
         do
             itemDrop(block, capacity);
-            if block.sensor(item) >= cap then break; end;
-        while @unit.@firstItem != null;
+        while @unit.@firstItem * cap > block.sensor(item);
     else
         // Wrong item(!)
         while @unit.@firstItem != null do
@@ -104,7 +102,7 @@ void mineOre(ore, amount, block)
     unbind();
 
     // And drop it
-    depositItems(block, ore, true);
+    depositItems(block, ore);
 end;
 
 // Mines to the core
@@ -126,6 +124,6 @@ void fetchBlock(block, item)
         end;
      while @unit.sensor(item) < capacity and block.sensor(item);
 
-    depositItems(core, item, false);
+    depositItems(core, item);
 end;
 

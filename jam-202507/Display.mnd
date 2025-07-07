@@ -17,8 +17,6 @@ noinit remote var
     targetSilicon,
     targetTitanium,
     targetMetaglass,
-    targetLeadFactory,
-    targetSiliconFactory,
     totalTargets,
     transportTarget,
     transportItem,
@@ -29,7 +27,7 @@ noinit remote var
     flares,
     polys,
     factory,
-    unitBuilding;
+    titaniumDrill;
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
@@ -37,26 +35,26 @@ inline void drawPrint(x, y, alignment)
     mlogText("draw", "print", in x, in y, in alignment);
 end;
 
-inline void drawBold(x, y, alignment, text)
+inline void drawBold(x, y, alignment, text...)
     drawText(x, y, alignment, text);
     drawText(x + 1, y, alignment, text);
 end;
 
-inline void drawText(x, y, alignment, text)
+inline void drawText(x, y, alignment, text...)
     print(text);
     drawPrint(x, y, alignment);
 end;
+
+var drawFactory, materialCount;
 
 void updateDisplay()
     reset();
     clear(0, 0, 32);
 
+    drawFactory = factory.@enabled;
+
     drawHeader();
-    if unitBuilding then
-        drawUnitBuilding();
-    else
-        drawMaterials();
-    end;
+    drawMaterials();
     drawUnit();
     drawUnits();
     drawflush(display1);
@@ -74,76 +72,104 @@ const BAR_LENGTH = 122;
 const BAR_LENGTH2 = 34;
 
 const HEADER_X = 176 / 4 - 4;
-const HEADER_Y = 176 - 15;
-const HEADER2_Y = HEADER_Y - 60;
-const HEADER3_Y = 85 - 2 * ROW_HEIGHT;
+const HEADER1_Y = 176 - 15;
+const HEADER2_Y = HEADER1_Y - 56;
+const HEADER3_Y = HEADER2_Y - 4 * ROW_HEIGHT - 5;
+const HEADER4_Y = HEADER2_Y - 5 * ROW_HEIGHT - 5;
 
 inline void drawHeader()
     col(%[gold]);
-    drawBold(HEADER_X, HEADER_Y, @bottom, "Building");
+    drawBold(HEADER_X, HEADER1_Y, @bottom, "Building");
 
     col(%[white]);
-    image(HEADER_X, HEADER_Y - 24, nextBlock, 32, 0);
+    image(HEADER_X, HEADER1_Y - 24, nextBlock == null ? factory.@config : nextBlock, 32, 0);
 
     var t = floor(@second);
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "", s);
-    drawText(168, 172, @topRight, "");
-end;
+    drawText(170, 172, @topRight, "");
 
-inline void drawUnitBuilding()
-    drawBold(BAR_X, HEADER_Y - 60, @bottomLeft, "Air factory");
-
-    var col = 0, y = 85;
-    var columns = 1;
-
-    drawItem(ref col, ref y, columns, factory.@config, factory.@progress, 1.0, "");
+    var count = titaniumDrill.@titanium;
+    if count then
+        drawText(170, 155, @topRight, "x", count);
+        image(150 - 7 * (count \ 10), 146, @titanium, 12, 0);
+    end;
 end;
 
 inline void drawMaterials()
-    drawBold(BAR_X, HEADER_Y - 60, @bottomLeft, "Materials");
+    var count, targetFactoryLead, targetFactorySilicon;
+    var col = 0, y = HEADER2_Y - ROW_HEIGHT;
 
-    var col = 0, y = 85;
-    var count = totalTargets;
-    var columns = count > 2 ? 2 : 1;
+    if drawFactory then
+        var unit = factory.@config;
+        var unitCount;
+        if unit == @mono then
+            targetFactoryLead = 15;
+            targetFactorySilicon = 30;
+            materialCount = 2;
+            unitCount = monos + 1;
+        else
+            targetFactoryLead = 0;
+            targetFactorySilicon = 15;
+            materialCount = 1;
+            unitCount = flares + 1;
+        end;
 
-    for var block, item, target in
-        core,    @copper,    targetCopper,
-        core,    @lead,      targetLead,
-        core,    @graphite,  targetGraphite,
-        core,    @silicon,   targetSilicon,
-        core,    @titanium,  targetTitanium,
-        core,    @metaglass, targetMetaglass,
-        factory, @lead,      targetLeadFactory,
-        factory, @silicon,   targetSiliconFactory
-    do
-        if target > 0 then
-            drawItem(ref col, ref y, columns, item, block.sensor(item), target, target);
-            if --count <= 0 then break; end;
+        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Air Factory");
+        if factory.@progress > 0 then
+            drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, unit, factory.@progress, 1.0, unitCount, "/8");
+        else
+            for var item, target in
+                @lead,    targetFactoryLead,
+                @silicon, targetFactorySilicon
+            do
+                if target > 0 then
+                    drawItem(in out col, in out y, 1, item, factory.sensor(item), target, target);
+                end;
+            end;
+        end;
+    else
+        count = materialCount = totalTargets;
+        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Materials");
+        var columns = 1; //drawFactory * count > 2 ? 2 : 1;
+
+        if count then
+            for var item, target in
+                @copper,    targetCopper,
+                @lead,      targetLead,
+                @graphite,  targetGraphite,
+                @silicon,   targetSilicon,
+                @titanium,  targetTitanium,
+                @metaglass, targetMetaglass
+            do
+                if target > 0 then
+                    drawItem(in out col, in out y, columns, item, core.sensor(item), target, target);
+                    if --count <= 0 then break; end;
+                end;
+            end;
         end;
     end;
 end;
 
 inline void drawUnit()
     col(%[white]);
-    drawBold(BAR_X, HEADER3_Y - 10, @bottomLeft, "Main unit");
-    var y = HEADER3_Y - 26;
+    var y = materialCount < 4 ? HEADER3_Y : HEADER4_Y;
+    drawBold(BAR_X, y, @bottomLeft, "Builder");
 
     if transportItem == null then
-        drawUnit(@poly, 0, ref y);
+        drawUnit(@poly, 0, in y - ROW_HEIGHT);
     else
         var unitItem = @unit.@firstItem;
-        drawUnit(transportItem, @unit.@totalItems * (unitItem == transportItem), ref y);
+        drawUnit(transportItem, @unit.@totalItems * (unitItem == transportItem), in y - ROW_HEIGHT);
     end;
 end;
 
-inline void drawUnit(item, items, ref y)
-    var col = 0;
-     drawItem(ref col, ref y, 1, item, items, transportTarget, transportTarget);
+inline void drawUnit(item, items, in out y)
+     drawItem(in 0, in out y, 1, item, items, transportTarget, transportTarget);
 end;
 
-inline void drawItem(ref col, ref y, columns, item, current, target, count)
+inline void drawItem(in out col, in out y, columns, item, current, target, text...)
     var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
     var textEnd = 170 - BAR_LENGTH + barLength;
     var length = min(barLength, barLength * current / target);
@@ -160,7 +186,7 @@ inline void drawItem(ref col, ref y, columns, item, current, target, count)
 
     color(0,255,0,255);
     lineRect(barX, y, barLength, BAR_HEIGHT);
-    drawBold(textX, y + ICON_Y + 2, @right, count);
+    drawBold(textX, y + ICON_Y + 2, @right, text);
 
     if ++col >= columns then
         col = 0;
@@ -169,19 +195,18 @@ inline void drawItem(ref col, ref y, columns, item, current, target, count)
 end;
 
 inline void drawUnits()
-    var x = 4 + 6;
+    var x = 170;
     col(%[white]);
-    drawUnitCount(@flare, flares, ref x);
-    drawUnitCount(@mono, monos, ref x);
     drawUnitCount(@poly, polys, ref x);
+    drawUnitCount(@mono, monos, ref x);
+    drawUnitCount(@flare, flares, ref x);
 end;
 
 inline void drawUnitCount(type, count, ref x)
     if count > 0 then
-        image(x, 2 + 6, type, 12, 0);
-        print("x");
-        drawText(x + 7, 2 + 8, @left, count);
-        x += 30;
+        image(x - 20, HEADER1_Y - 34, type, 12, 0);
+        drawText(x, HEADER1_Y - 32, @right, "x", count);
+        x -= 30;
     end;
 end;
 

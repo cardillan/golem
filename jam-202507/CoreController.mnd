@@ -47,27 +47,31 @@ void main()
         press.enabled = core.@graphite < pressTarget;
         smelter.enabled = core.@silicon < smelterTarget;
         kiln.enabled = core.@metaglass < kilnTarget;
-        generator.enabled = battery.@totalPower < 1000;
-        generator2.enabled = battery.@totalPower < 3500;
+        generator.enabled = battery.@totalPower < 3500;
+        generator2.enabled = battery.@totalPower < 3800;
 
         if factory == null then continue; end;
 
-        factoryProgress = factory.@progress;
+        if buildUnits then
+            factoryProgress = factory.@progress;
 
-        if unitToProduce == null then
-            factory.enabled = false;
-            factory.config = @mono;
-            lastProgress = 0;
-        elsif lastProgress > factoryProgress + 0.1 then
-            unitFinished();
-            lastProgress = 0;
-        elsif factory.config != unitToProduce then
-            factory.enabled = true;
-            factory.config = unitToProduce;
-            lastProgress = 0;
+            if unitToProduce == null then
+                factory.enabled = false;
+                factory.config = @mono;
+                lastProgress = 0;
+            elsif lastProgress > factoryProgress + 0.1 then
+                unitFinished();
+                lastProgress = 0;
+            elsif factory.config != unitToProduce then
+                factory.enabled = true;
+                factory.config = unitToProduce;
+                lastProgress = 0;
+            else
+                factory.enabled = true;
+                lastProgress = factoryProgress;
+            end;
         else
-            factory.enabled = true;
-            lastProgress = factoryProgress;
+            factory.enabled = false;
         end;
 
         if generator2 != null then

@@ -25,7 +25,7 @@ var
     generator = null,
     battery = null,
     smelter = null,
-    titanium_drill = null,
+    titaniumDrill = null,
     unloader1 = null,
     unloader2 = null,
     factory = null,
@@ -34,7 +34,6 @@ var
 
 // Targets to be met for the next build
 noinit var
-    mainUnit,
     core, coreX, coreY,
     targetCopper,
     targetLead,
@@ -44,14 +43,9 @@ noinit var
     targetMetaglass,
     targetLeadFactory,
     targetSiliconFactory,
-    powerTarget,
-    titaniumTrigger;
+    powerTarget;
 
-var
-    phase = 0,
-    monos = 0,
-    flares = 0,
-    polys = 0;
+var phase = 0;
 
 // Blocks layout around the core and build requirements
 
@@ -69,14 +63,15 @@ const CFG_CONFIG      = CFG_ROTATION + 1;
 
 //                         Block type                 X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
 const PRESS[]           = (@graphite-press,        -1.5, +2.5,  75, 30,  0,  0,  0,  0,  0, null);
-const GENERATOR[]       = (@combustion-generator,   0.0, +3.0,  25, 15,  0,  0,  0,  0,  0, null);
 const BATTERY1[]        = (@battery,                0.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
 const BATTERY2[]        = (@battery,               -1.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
+const GENERATOR[]       = (@combustion-generator,   0.0, +3.0,  25, 15,  0,  0,  0,  0,  0, null);
 const SMELTER[]         = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0,  0, null);
+const PNEUMATIC_DRILL[] = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0,  0,  0,  0, null);
 const UNLOADER1[]       = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
 const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor2);
-const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
 const POWER_NODE[]      = (@power-node,            -2.0, -1.0,   2,  6,  0,  0,  0,  0,  0, null);
+const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
 const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
 const AIR_FACTORY[]     = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
 
@@ -88,7 +83,6 @@ const STEAM_GEN[]       = (@steam-generator,       -3.5, +2.5,  35, 40, 25, 30, 
 const SORTER[]          = (@sorter,                -4.0,  1.0,   2,  2,  0,  0,  0,  0,  0, @coal);
 
 // Non-core based blocks
-const PNEU_DRILL[]      = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0,  0,  0,  0, null);
 
 // UTILITY FUNCTIONS
 
@@ -129,7 +123,7 @@ void supplyBase0()
     if unloader1 == null then
         if core.@graphite < targetGraphite then
             if press.@coal < 5 then
-                status1("Goal 1: Meeting the graphite target");
+                status1("Goal 1: graphite requirement");
                 supplyBlock(press, @coal);
                 supplied = true;
             end;
@@ -137,11 +131,11 @@ void supplyBase0()
 
         if core.@silicon < targetSilicon then
             if smelter.@coal < 5 then
-                status1("Goal 2: Meeting the silicon target (coal)");
+                status1("Goal 2: coal for silicon requirement");
                 supplyBlock(smelter, @coal);
                 supplied = true;
             elsif smelter.@sand < 5 then
-                status1("Goal 3: Meeting the silicon target (sand)");
+                status1("Goal 3: sand for silicon requirement");
                 supplyBlock(smelter, @sand);
                 supplied = true;
             end;
@@ -149,35 +143,36 @@ void supplyBase0()
 
         if battery.@totalPower < powerTarget then
             if generator.@coal < 2 then
-                status1("Goal 4: Supplying generator");
+                status1("Goal 4: supplying generator");
                 supplyBlock(generator, @coal);
                 supplied = true;
             end;
        end;
     end;
 
-    if titanium_drill.@titanium < titaniumTrigger then
+    var titaniumTrigger = core.@titanium < targetTitanium ? min(7, targetTitanium - core.@titanium) : 100;
+    if titaniumDrill.@titanium < titaniumTrigger then
         if !supplied then
             if battery.@totalPower < unloader1 * powerTarget then
-                status1("Goal 5: Supplying generator (5)");
+                status1("Goal 5: supplying generator");
                 mineOre(@coal);
             elsif core.@silicon < targetSilicon then
-                status1("Goal 6: Meeting the silicon target");
+                status1("Goal 6: silicon requirement");
                 var coal = core.@coal;
                 var sand = core.@sand;
                 var ore = coal < sand ? @coal : @sand;
                 mineOre(ore);
             elsif core.@copper < targetCopper then
-                status1("Goal 7: Meeting the copper target");
+                status1("Goal 7: copper requirement");
                 mineOre(@copper);
             elsif core.@lead < targetLead then
-                status1("Goal 8: Meeting the lead target");
+                status1("Goal 8: lead requirement");
                 mineOre(@lead);
             elsif core.@metaglass < targetMetaglass then
-                status1("Goal 9: Meeting the metaglass target");
+                status1("Goal 9: metaglass requirement");
                 mineOre(@sand);
             else
-                status1("Goal 10: Supplying base");
+                status1("Goal 10: supplying base");
                 var coal = core.@coal;
                 var sand = core.@sand;
                 var ore = coal <= sand ? @coal : @sand;
@@ -186,7 +181,7 @@ void supplyBase0()
         end;
     else
         status1("Goal 11: Fetching titanium");
-        fetchBlock(titanium_drill, @titanium);
+        fetchBlock(titaniumDrill, @titanium);
     end;
 end;
 
@@ -248,11 +243,6 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, lea
     display.targetSilicon = silicon;
     display.targetTitanium = titanium;
     display.targetMetaglass = metaglass;
-    display.targetLeadFactory = leadFactory;
-    display.targetSiliconFactory = siliconFactory;
-    display.monos = monos;
-    display.polys = polys;
-    display.flares = flares;
 
     targetCopper = copper;
     targetLead = max(lead, leadFactory);
@@ -264,8 +254,6 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, lea
     controller.pressTarget = targetGraphite + 20;
     controller.smelterTarget = targetSilicon + 20;
     controller.kilnTarget = targetMetaglass + 20;
-
-    titaniumTrigger = core.@titanium < targetTitanium ? min(7, targetTitanium - core.@titanium) : 100;
 
     leadSiliconBlock = siliconFactory > 0 ? factory : core;
 
@@ -422,12 +410,12 @@ inline def buildTitaniumDrillCfg(ref cfg)
 end;
 
 def buildTitaniumDrill()
-    buildTitaniumDrillCfg(ref PNEU_DRILL);
+    buildTitaniumDrillCfg(ref PNEUMATIC_DRILL);
 end;
 
 // MAIN
 
-void findUnits(type, out count)
+def findUnits(type, out count)
     count = 0;
     var firstUnit = ubind(type);
     if firstUnit != null then
@@ -436,6 +424,13 @@ void findUnits(type, out count)
             ubind(type);
         while @unit != firstUnit;
     end;
+
+    count;
+end;
+
+void displayUnitBuilds()
+    display.totalTargets = 0;
+    display.nextBlock = null;
 end;
 
 begin
@@ -443,7 +438,6 @@ begin
         ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
-    mainUnit = @unit;
 
     // Error - unrecognized remote processor
     //verifySignature(display);
@@ -451,9 +445,9 @@ begin
     flareController = processor3;
 
     // Bind and flag units
-    findUnits(@mono, out monos);
-    findUnits(@flare, out flares);
-    findUnits(@poly, out polys);
+    var monos = findUnits(@mono, out display.monos);
+    var flares = findUnits(@flare, out display.flares);
+    var polys = findUnits(@poly, out display.polys);
 
     // Basic blocks: copper and lead
     press = buildBlockFromCfg(ref PRESS);
@@ -461,17 +455,16 @@ begin
     buildBlockFromCfg(ref BATTERY2);
     generator = buildBlockFromCfg(ref GENERATOR);
 
-    powerTarget = 400;
+    powerTarget = 800;
 
     smelter = buildBlockFromCfg(ref SMELTER);
-
-    titanium_drill = buildTitaniumDrill();
+    titaniumDrill = buildTitaniumDrill();
+    display.titaniumDrill = titaniumDrill;
 
     flareController.core = core;
-    flareController.drill = titanium_drill;
+    flareController.drill = titaniumDrill;
 
     unloader1 = buildBlockFromCfg(ref UNLOADER1);
-
     controller = buildBlockFromCfg(ref PROCESSOR);
 
     controller.display = display;
@@ -485,19 +478,29 @@ begin
     controller.polys = polys;
 
     buildBlockFromCfg(ref POWER_NODE);
+    unloader2 = buildBlockFromCfg(ref UNLOADER2);
+    controller.unloader2 = unloader2;
+    buildBlockFromCfg(ref OVERFLOW_GATE);
     factory = buildBlockFromCfg(ref AIR_FACTORY);
     controller.factory = factory;
     display.factory = factory;
 
-    unloader2 = buildBlockFromCfg(ref UNLOADER2);
-    controller.unloader2 = unloader2;
-    buildBlockFromCfg(ref OVERFLOW_GATE);
-
     // We're getting into the "build the damn units" mode
+    displayUnitBuilds();
     controller.unitToProduce = @flare;
+    controller.buildUnits = true;
     phase++;
-    display.unitBuilding = true;
 
+    controller.pressTarget = 85;
+    controller.smelterTarget = 60;
+    controller.kilnTarget = 30;
+
+    do
+        supplyBase1();
+        if battery.@totalPower < 500 then break; end;
+    while controller.monos < 3;
+
+    controller.buildUnits = false;
     buildBlockFromCfg(ref UNLOADER3);
     kiln = buildBlockFromCfg(ref KILN);
     controller.kiln = kiln;
@@ -508,6 +511,9 @@ begin
     controller.generator2 = generator2;
     buildBlockFromCfg(ref SORTER);
 
+    controller.buildUnits = true;
+
+    displayUnitBuilds();
     while true do
         supplyBase();
     end;
