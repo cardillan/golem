@@ -7,7 +7,7 @@
 //#set optimization = none;
 
 // Linked variables
-linked message1, switch1, processor1, processor2, processor3;
+linked message1, bank1, processor1, processor2, processor3;
 
 noinit var display, controller, flareController;
 
@@ -46,6 +46,8 @@ noinit var
     powerTarget;
 
 var phase = 0;
+
+external bank1[511] logPosition = 511;
 
 // Blocks layout around the core and build requirements
 
@@ -264,6 +266,14 @@ end;
 
 // BUILDING OPERATIONS
 
+void log(encodedId)
+    bank1[--logPosition] = encodedId + floor(@second) * 1000;
+end;
+
+void logBlock(block)
+    log(block.@id);
+end;
+
 def buildBlockAt(block, x, y, rotation, config, skipError)
     moveTo(x, y);
 
@@ -283,6 +293,8 @@ def buildBlockAt(block, x, y, rotation, config, skipError)
         building = getBlock(x, y, out type);
         if building == null then break; end;
     while type != block;
+
+    logBlock(block);
 
     return building;
 end;
@@ -469,6 +481,7 @@ begin
 
     controller.display = display;
     controller.core = core;
+    controller.bank = bank1;
     controller.battery = battery;
     controller.generator = generator;
     controller.smelter = smelter;

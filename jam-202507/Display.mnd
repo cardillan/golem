@@ -5,9 +5,12 @@
 
 module Display;
 
-linked display1, switch1, message1;
+linked display1, switch1, message1, bank1;
 
-var core = null;
+var
+    core = null,
+    page = 0,
+    numPages = 2;
 
 noinit remote var
     nextBlock,
@@ -219,7 +222,56 @@ void updateMessage()
     printflush(message1);
 end;
 
-void backgroundProcess()
+var lastTime;
+
+inline void displayRecord(ref x, ref y, record)
+    var id = record % 1000;
+    var icon = id > @blockCount ? lookup(:unit, id - @blockCount) : lookup(:block, id);
+
+    image(x, y, icon, 14, 0);
+
+    var t;
+    if true then
+        t = record \ 1000;
+    else
+        var r = record \ 1000;
+        t = r - lastTime;
+        lastTime = r;
+    end;
+
+//    if t < 15 then return; end;
+//    t = floor(r * (1 - rand(0.1)));
+
+    var m = t \ 60;
+    var s = t % 60;
+    print(m, ":", s < 10 ? "0" : "");
+    drawText(x + 56 - 12, y + 2, @right, s);
+
+    y -= 15;
+    if y < 10 then
+        x += 58;
+        y = 176 - 4 - 8;
+    end;
+end;
+
+void displayLog()
+    var x = 3 + 8;
+    var y = 176 - 5 - 8;
+    reset();
+    clear(0, 0, 32);
+
+    lastTime = 0;
+    var position = bank1.@memoryCapacity - 1;
+    while true do
+        var record = bank1[--position];
+        if !record then break; end;
+        displayRecord(ref x, ref y, record);
+    end;
+
+    drawflush(display1);
+end;
+
+void main()
     do
         ubind(@poly);
         core = ulocate(:building, :core, false);
@@ -228,9 +280,28 @@ void backgroundProcess()
     printflush(null);
     drawflush(null);
 
+    var nextSwitch = @second + 3;
+
     while true do
-        updateDisplay();
+        if page == 0 then
+            updateDisplay();
+        else
+            displayLog();
+        end;
+
         updateMessage();
+
+        if switch1.enabled then
+            if @second > nextSwitch then
+                page = (page + 1) % numPages;
+                nextSwitch = @second + 3;
+            end;
+        else
+            nextSwitch = @second - 1;
+        end;
     end;
 end;
 
+void backgroundProcess()
+    main();
+end;

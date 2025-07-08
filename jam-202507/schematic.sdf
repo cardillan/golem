@@ -1,6 +1,20 @@
 schematic
-    name = "Skye's Jam by Cardillan"
+    name = "Cardillan's entry for Skye's Jam"
     tag = "Cardillan"
+
+// First column, top-down
+display-switch1:
+    @switch              at ( 0,  5) disabled
+    @memory-cell         at ( 1,  5)
+
+builder-processor3:
+    @micro-processor     at ( 0,  4) processor mindcode = file "FlareController.mnd" end
+    @micro-processor     at ( 1,  4) processor mindcode = file "MonoController.mnd" end
+    @micro-processor     at ( 0,  3)
+    @micro-processor     at ( 1,  3)
+
+display-bank1, builder-bank1:
+    @memory-bank         at ( 0,  1)
 
 builder-processor2:
     @micro-processor     at ( 0,  0) processor
@@ -8,25 +22,25 @@ builder-processor2:
     end
 display-message1:
     @message             at ( 1,  0) text ""
-    @memory-bank         at ( 0,  1)
-    @memory-bank         at ( 0,  3)
-builder-processor3:
-    @micro-processor     at ( 0,  5) processor
-        mindcode = file "FlareController.mnd"
-    end
-    @micro-processor     at ( 1,  5) processor
-        mindcode = file "MonoController.mnd"
-    end
-    @logic-processor     at ( 2,  0)
-    @logic-processor     at ( 2,  2) processor
-        links builder-* end
-        mindcode = file "CoreBuilder.mnd"
-    end
+
+// Second column, top-down
 builder-processor1:
+    // The display processor
     @logic-processor     at ( 2,  4) processor
         links display-* end
         mindcode = file "Display.mnd"
     end
+
+    // The builder processor
+    @logic-processor     at ( 2,  2) processor
+        links builder-* end
+        mindcode = file "CoreBuilder.mnd"
+    end
+
+    // Reserved for ore locator
+    @logic-processor     at ( 2,  0)
+
+// Display
 display-display1:
     @large-logic-display at ( 4,  0)
 end
