@@ -631,86 +631,90 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
 
 Final code before resolving virtual instructions:
 
+    0:  jump *label32 always 0 0
+    1:  draw triangle .core .coreX .coreY :copper :flag :lead
+    2:  draw triangle :sand :findOreToMine:x :findOreToMine:y :mine:flag :mine:ore :mine:x
+    3:  draw triangle :mine:y 0 0 0 0 0
+        label *label32
         label *label0                                                do
-    0:  ubind @mono                                                  ubind(@mono);
-    1:  jump *label0 equal @unit null                                do
-        label *label3                                                do
-    2:  ulocate building core false @copper .coreX .coreY 0 .core    core = ulocate(:building, :core, false, out coreX, out coreY);
-    3:  jump *label3 equal .core null                                do
-        label *label6                                                while true do
     4:  ubind @mono                                                  ubind(@mono);
-    5:  sensor :lead .core @lead                                     var lead = core.@lead;
-    6:  sensor :sand .core @sand                                     var sand = core.@sand;
-    7:  sensor :copper .core @copper                                 var copper = core.@copper;
-    8:  op min *tmp7 :lead :sand                                     min = min(lead, sand, copper);
-    9:  op min *tmp7 *tmp7 :copper                                   ...
-   10:  set *tmp9 @sand                                              minOre = min == sand ? @sand : min == lead ? @lead : @copper;
-   11:  jump *label10 equal *tmp7 :sand                              ...
-   12:  set *tmp9 @copper                                            ...
-   13:  jump *label12 notEqual *tmp7 :lead                           ...
-   14:  set *tmp9 @lead                                              ...
+    5:  jump *label0 equal @unit null                                do
+        label *label3                                                do
+    6:  ulocate building core false @copper .coreX .coreY 0 .core    core = ulocate(:building, :core, false, out coreX, out coreY);
+    7:  jump *label3 equal .core null                                do
+        label *label6                                                while true do
+    8:  ubind @mono                                                  ubind(@mono);
+    9:  sensor :lead .core @lead                                     var lead = core.@lead;
+   10:  sensor :sand .core @sand                                     var sand = core.@sand;
+   11:  sensor :copper .core @copper                                 var copper = core.@copper;
+   12:  op min *tmp7 :lead :sand                                     min = min(lead, sand, copper);
+   13:  op min *tmp7 *tmp7 :copper                                   ...
+   14:  set *tmp9 @sand                                              minOre = min == sand ? @sand : min == lead ? @lead : @copper;
+   15:  jump *label10 equal *tmp7 :sand                              ...
+   16:  set *tmp9 @copper                                            ...
+   17:  jump *label12 notEqual *tmp7 :lead                           ...
+   18:  set *tmp9 @lead                                              ...
         label *label12                                               ...
         label *label10                                               ...
-   15:  sensor :flag @unit @flag                                     var flag = @unit.@flag;
-   16:  jump *label13 notEqual :flag 0                               if flag == 0 then
-   17:  sensor *tmp15 @unit @firstItem                               if @unit.@firstItem != null then
-   18:  jump *label16 equal *tmp15 null                              ...
-   19:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
-   20:  sensor *tmp18 @unit @firstItem                               if @unit.@firstItem != null then return; end;
-   21:  jump *label6 notEqual *tmp18 null                            ...
+   19:  sensor :flag @unit @flag                                     var flag = @unit.@flag;
+   20:  jump *label13 notEqual :flag 0                               if flag == 0 then
+   21:  sensor *tmp15 @unit @firstItem                               if @unit.@firstItem != null then
+   22:  jump *label16 equal *tmp15 null                              ...
+   23:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
+   24:  sensor *tmp18 @unit @firstItem                               if @unit.@firstItem != null then return; end;
+   25:  jump *label6 notEqual *tmp18 null                            ...
         label *label16                                               if @unit.@firstItem != null then
-   22:  ulocate ore core true *tmp9 :findOreToMine:x :findOreToMine: ulocate(:ore, ore, out x, out y);
-   23:  ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0    approach(x, y, RADIUS);
-   24:  ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0        mine(x, y);
-   25:  op mul *tmp23 :findOreToMine:x 1000                          flag((x * 1000 + y) * 32 + ore.@id * 2);
-   26:  op add *tmp24 *tmp23 :findOreToMine:y                        ...
-   27:  op mul *tmp25 *tmp24 32                                      ...
-   28:  sensor *tmp26 *tmp9 @id                                      ...
-   29:  op mul *tmp27 *tmp26 2                                       ...
-   30:  op add *tmp28 *tmp25 *tmp27                                  ...
-   31:  ucontrol flag *tmp28 0 0 0 0                                 ...
-   32:  jump *label6 always 0 0                                      if flag == 0 then
+   26:  ulocate ore core true *tmp9 :findOreToMine:x :findOreToMine: ulocate(:ore, ore, out x, out y);
+   27:  ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0    approach(x, y, RADIUS);
+   28:  ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0        mine(x, y);
+   29:  op mul *tmp23 :findOreToMine:x 1000                          flag((x * 1000 + y) * 32 + ore.@id * 2);
+   30:  op add *tmp24 *tmp23 :findOreToMine:y                        ...
+   31:  op mul *tmp25 *tmp24 32                                      ...
+   32:  sensor *tmp26 *tmp9 @id                                      ...
+   33:  op mul *tmp27 *tmp26 2                                       ...
+   34:  op add *tmp28 *tmp25 *tmp27                                  ...
+   35:  ucontrol flag *tmp28 0 0 0 0                                 ...
+   36:  jump *label6 always 0 0                                      if flag == 0 then
         label *label13                                               ...
-   33:  jump *label20 notEqual :flag 1                               elsif flag == 1 then
-   34:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
-   35:  ucontrol itemDrop .core 20 0 0 0                             itemDrop(core, capacity);
-   36:  sensor *tmp31 @unit @firstItem                               if @unit.@firstItem == null then
-   37:  jump *label6 notEqual *tmp31 null                            ...
-   38:  ucontrol flag 0 0 0 0 0                                      flag(0);
-   39:  jump *label6 always 0 0                                      elsif flag == 1 then
+   37:  jump *label20 notEqual :flag 1                               elsif flag == 1 then
+   38:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
+   39:  ucontrol itemDrop .core 20 0 0 0                             itemDrop(core, capacity);
+   40:  sensor *tmp31 @unit @firstItem                               if @unit.@firstItem == null then
+   41:  jump *label6 notEqual *tmp31 null                            ...
+   42:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   43:  jump *label6 always 0 0                                      elsif flag == 1 then
         label *label20                                               ...
-   40:  op idiv :mine:flag :flag 2                                   flag \= 2;
-   41:  op mod *tmp34 :mine:flag 16                                  var ore = lookup(:item, flag % 16);
-   42:  lookup item :mine:ore *tmp34                                 ...
-   43:  op idiv :mine:flag :mine:flag 16                             flag \= 16;
-   44:  op mod :mine:y :mine:flag 1000                               var y = flag % 1000;
-   45:  op idiv :mine:x :mine:flag 1000                              var x = flag \ 1000;
-   46:  sensor *tmp38 .core :mine:ore                                if core.sensor(ore) > min + 500 then
-   47:  op add *tmp39 *tmp7 500                                      ...
-   48:  jump *label26 lessThanEq *tmp38 *tmp39                       ...
-   49:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   44:  op idiv :mine:flag :flag 2                                   flag \= 2;
+   45:  op mod *tmp34 :mine:flag 16                                  var ore = lookup(:item, flag % 16);
+   46:  lookup item :mine:ore *tmp34                                 ...
+   47:  op idiv :mine:flag :mine:flag 16                             flag \= 16;
+   48:  op mod :mine:y :mine:flag 1000                               var y = flag % 1000;
+   49:  op idiv :mine:x :mine:flag 1000                              var x = flag \ 1000;
+   50:  sensor *tmp38 .core :mine:ore                                if core.sensor(ore) > min + 500 then
+   51:  op add *tmp39 *tmp7 500                                      ...
+   52:  jump *label26 lessThanEq *tmp38 *tmp39                       ...
+   53:  ucontrol flag 0 0 0 0 0                                      flag(0);
         label *label26                                               if core.sensor(ore) > min + 500 then
-   50:  sensor *tmp42 @unit @firstItem                               if @unit.@firstItem != ore then
-   51:  jump *label28 equal *tmp42 :mine:ore                         ...
-   52:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
+   54:  sensor *tmp42 @unit @firstItem                               if @unit.@firstItem != ore then
+   55:  jump *label28 equal *tmp42 :mine:ore                         ...
+   56:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
         label *label28                                               if @unit.@firstItem != ore then
-   53:  ucontrol approach :mine:x :mine:y 7 0 0                      approach(x, y, RADIUS);
-   54:  ucontrol mine :mine:x :mine:y 0 0 0                          mine(x, y);
-   55:  sensor *tmp45 @unit @totalItems                              if @unit.@totalItems >= capacity then
-   56:  jump *label6 lessThan *tmp45 20                              ...
-   57:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
-   58:  ucontrol flag 1 0 0 0 0                                      flag(1);
-   59:  jump *label6 always 0 0                                      while true do
+   57:  ucontrol approach :mine:x :mine:y 7 0 0                      approach(x, y, RADIUS);
+   58:  ucontrol mine :mine:x :mine:y 0 0 0                          mine(x, y);
+   59:  sensor *tmp45 @unit @totalItems                              if @unit.@totalItems >= capacity then
+   60:  jump *label6 lessThan *tmp45 20                              ...
+   61:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
+   62:  ucontrol flag 1 0 0 0 0                                      flag(1);
+   63:  jump *label6 always 0 0                                      while true do
 
 
-Performance: parsed in 185 ms, compiled in 271 ms, optimized in 198 ms, run in 2 ms.
+Performance: parsed in 180 ms, compiled in 267 ms, optimized in 199 ms, run in 2 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
 
-Compiled mlog code was sent to Mlog Watcher.
-  Mlog Watcher: no processor selected.
-  (The target processor must be selected in Mindustry to receive the code.)
-
-Program output (1 steps):
+Program output (2 steps):
 The program didn't generate any output.
-Execution exception at instruction 0: ubind @mono:
+Execution exception at instruction 4: ubind @mono:
 Instruction not supported by Mindcode emulator.
 (Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

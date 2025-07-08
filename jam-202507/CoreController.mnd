@@ -30,11 +30,7 @@ remote noinit var
 remote display ".monos" var displayMonos;
 remote display ".flares" var displayFlares;
 
-// TODO error when backgroundProcess() contains local variables
-var lastProgress = 0, factoryProgress = 0;
-
-// TODO external bank[511] var logPosition; doesn't work
-external bank[511 .. 511] var logPosition;
+external bank[511] var logPosition;
 
 void log(encodedId)
     bank[--logPosition] = encodedId + floor(@second) * 1000;
@@ -55,7 +51,9 @@ void unitFinished()
     unitToProduce = monos < 8 ? @mono : flares < 8 ? @flare : null;
 end;
 
-void main()
+void backgroundProcess()
+    var lastProgress = 0, factoryProgress = 0;
+
     while true do
         press.enabled = core.@graphite < pressTarget;
         smelter.enabled = core.@silicon < smelterTarget;
@@ -101,8 +99,4 @@ void main()
             unloader2.config = @lead;
         end;
     end;
-end;
-
-void backgroundProcess()
-    main();
 end;

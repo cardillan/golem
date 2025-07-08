@@ -79,11 +79,11 @@ Modifications by Initial phase, Dead Code Elimination, iteration 2 (-4 instructi
  
     39 set *tmp31 .factory
     40 control config *tmp31 @mono
-    41 set .lastProgress 0
--    * set *tmp28 .lastProgress
+    41 set :backgroundProcess:lastProgress 0
+-    * set *tmp28 :backgroundProcess:lastProgress
     42 jump *label11 always
     43 label *label10
-    44 op add *tmp33 .factoryProgress 0.1
+    44 op add *tmp33 :backgroundProcess:factoryProgress 0.1
  
    109 label *label24
    110 set *tmp35 *tmp55
@@ -108,14 +108,14 @@ Modifications by Initial phase, Dead Code Elimination, iteration 3 (-2 instructi
  
     86 set .unitToProduce *tmp49
     87 label *label14
-    88 set .lastProgress 0
--    * set *tmp35 .lastProgress
+    88 set :backgroundProcess:lastProgress 0
+-    * set *tmp35 :backgroundProcess:lastProgress
     89 jump *label13 always
     90 label *label12
     91 set *tmp52 .factory
  
-   106 set .lastProgress .factoryProgress
-   107 set *tmp55 .lastProgress
+   106 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
+   107 set *tmp55 :backgroundProcess:lastProgress
    108 label *label24
 -    * set *tmp35 *tmp55
    109 label *label13
@@ -126,14 +126,14 @@ Modifications by Initial phase, Dead Code Elimination, iteration 4 (-2 instructi
  
     98 set *tmp60 .unitToProduce
     99 control config *tmp58 *tmp60
-   100 set .lastProgress 0
--    * set *tmp55 .lastProgress
+   100 set :backgroundProcess:lastProgress 0
+-    * set *tmp55 :backgroundProcess:lastProgress
    101 jump *label24 always
    102 label *label23
    103 set *tmp61 .factory
    104 control enabled *tmp61 true
-   105 set .lastProgress .factoryProgress
--    * set *tmp55 .lastProgress
+   105 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
+-    * set *tmp55 :backgroundProcess:lastProgress
    106 label *label24
    107 label *label13
    108 label *label11
@@ -144,8 +144,8 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-13 ins
     31 label *label7
     32 jump *label8 equal .buildUnits false
 -    * sensor *tmp26 .factory @progress
--    * set .factoryProgress *tmp26
-+   33 sensor .factoryProgress .factory @progress
+-    * set :backgroundProcess:factoryProgress *tmp26
++   33 sensor :backgroundProcess:factoryProgress .factory @progress
     34 op equal *tmp27 .unitToProduce null
     35 jump *label10 equal *tmp27 false
 -    * set *tmp29 .factory
@@ -154,7 +154,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-13 ins
 -    * control config *tmp31 @mono
 +   36 control enabled .factory false
 +   37 control config .factory @mono
-    38 set .lastProgress 0
+    38 set :backgroundProcess:lastProgress 0
     39 jump *label11 always
     40 label *label10
  
@@ -168,7 +168,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-13 ins
     48 op sub *tmp38 *tmp2 1
     49 write *tmp38 .bank 511
  
-    84 set .lastProgress 0
+    84 set :backgroundProcess:lastProgress 0
     85 jump *label13 always
     86 label *label12
 -    * set *tmp52 .factory
@@ -183,13 +183,13 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-13 ins
 -    * set *tmp60 .unitToProduce
 -    * control config *tmp58 *tmp60
 +   92 control config *tmp58 .unitToProduce
-    93 set .lastProgress 0
+    93 set :backgroundProcess:lastProgress 0
     94 jump *label24 always
     95 label *label23
 -    * set *tmp61 .factory
 -    * control enabled *tmp61 true
 +   96 control enabled .factory true
-    97 set .lastProgress .factoryProgress
+    97 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
     98 label *label24
     99 label *label13
    100 label *label11
@@ -244,14 +244,14 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 2 (-1 inst
 -    * set *tmp58 .factory
 -    * control config *tmp58 .unitToProduce
 +   91 control config .factory .unitToProduce
-    92 set .lastProgress 0
+    92 set :backgroundProcess:lastProgress 0
     93 jump *label24 always
     94 label *label23
 
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
  
-     2 set *signature "0:v1"
-     3 label *label0
+     2 set :backgroundProcess:lastProgress 0
+     3 set :backgroundProcess:factoryProgress 0
      4 label *label3
 -    * jump *label5 equal true false
      5 set *tmp3 .press
@@ -271,19 +271,19 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-10 ins
     28 label *label6
     29 label *label7
     30 jump *label8 equal .buildUnits false
-    31 sensor .factoryProgress .factory @progress
+    31 sensor :backgroundProcess:factoryProgress .factory @progress
 -    * op equal *tmp27 .unitToProduce null
 -    * jump *label10 equal *tmp27 false
 +   32 jump *label10 notEqual .unitToProduce null
     33 control enabled .factory false
     34 control config .factory @mono
-    35 set .lastProgress 0
+    35 set :backgroundProcess:lastProgress 0
     36 jump *label11 always
     37 label *label10
-    38 op add *tmp33 .factoryProgress 0.1
--    * op greaterThan *tmp34 .lastProgress *tmp33
+    38 op add *tmp33 :backgroundProcess:factoryProgress 0.1
+-    * op greaterThan *tmp34 :backgroundProcess:lastProgress *tmp33
 -    * jump *label12 equal *tmp34 false
-+   39 jump *label12 lessThanEq .lastProgress *tmp33
++   39 jump *label12 lessThanEq :backgroundProcess:lastProgress *tmp33
     40 set :logUnit:unit .unitToProduce
     41 sensor *tmp36 :logUnit:unit @id
     42 op add :log:encodedId @blockCount *tmp36
@@ -322,7 +322,7 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-10 ins
 +   81 jump *label23 equal *tmp53 .unitToProduce
     82 control enabled .factory true
     83 control config .factory .unitToProduce
-    84 set .lastProgress 0
+    84 set :backgroundProcess:lastProgress 0
  
     93 label *label8
     94 control enabled .factory false
@@ -370,11 +370,13 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
    104 sensor *tmp73 .factory @config
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1 instructions):
-     0 set .lastProgress 0
--    * set .factoryProgress 0
-     1 set *signature "0:v1"
-     2 label *label0
+     0 set *signature "0:v1"
+     1 label *label1
+     2 set :backgroundProcess:lastProgress 0
+-    * set :backgroundProcess:factoryProgress 0
      3 label *label3
+     4 set *tmp3 .press
+     5 sensor *tmp5 .core @graphite
  
     45 op floor *tmp41 @second
     46 op mul *tmp42 *tmp41 1000
@@ -386,9 +388,9 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1
     51 jump *label17 notEqual .unitToProduce @flare
  
    109 label *label30
-   110 set :main:siliconLimit *tmp75
+   110 set :backgroundProcess:siliconLimit *tmp75
    111 sensor *tmp76 .factory @silicon
--    * op lessThan *tmp77 *tmp76 :main:siliconLimit
+-    * op lessThan *tmp77 *tmp76 :backgroundProcess:siliconLimit
 +  112 op lessThan *tmp77 *tmp76 *tmp75
    113 sensor *tmp78 .core @silicon
    114 op greaterThan *tmp79 *tmp78 0
@@ -407,7 +409,7 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-2
    106 label *label29
    107 set *tmp75 30
    108 label *label30
--    * set :main:siliconLimit *tmp75
+-    * set :backgroundProcess:siliconLimit *tmp75
    109 sensor *tmp76 .factory @silicon
    110 op lessThan *tmp77 *tmp76 *tmp75
    111 sensor *tmp78 .core @silicon
@@ -436,7 +438,7 @@ Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1
     68 label *label20
 -    * set .unitToProduce *tmp49
     69 label *label14
-    70 set .lastProgress 0
+    70 set :backgroundProcess:lastProgress 0
     71 jump *label13 always
  
     95 label *label28
@@ -479,7 +481,7 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
     26 label *label6
 -    * label *label7
     27 jump *label8 equal .buildUnits false
-    28 sensor .factoryProgress .factory @progress
+    28 sensor :backgroundProcess:factoryProgress .factory @progress
     29 jump *label10 notEqual .unitToProduce null
  
     44 op mul *tmp42 *tmp41 1000
@@ -501,7 +503,7 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
     62 label *label22
     63 label *label20
 -    * label *label14
-    64 set .lastProgress 0
+    64 set :backgroundProcess:lastProgress 0
     65 jump *label13 always
     66 label *label12
  
@@ -520,9 +522,8 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
    107 jump *label3 always
 -    * label *label5
 -    * label *label2
--    * label *label1
    108 wait 1e12
-   109 jump *label0 always
+   109 jump *label1 always
    110 end
 
 Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instructions):
@@ -535,7 +536,7 @@ Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instru
 +   24 jump *label4 equal .factory null
     25 label *label6
     26 jump *label8 equal .buildUnits false
-    27 sensor .factoryProgress .factory @progress
+    27 sensor :backgroundProcess:factoryProgress .factory @progress
 
 Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
  
@@ -544,7 +545,7 @@ Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
     24 jump *label4 equal .factory null
 -    * label *label6
     25 jump *label8 equal .buildUnits false
-    26 sensor .factoryProgress .factory @progress
+    26 sensor :backgroundProcess:factoryProgress .factory @progress
     27 jump *label10 notEqual .unitToProduce null
 
 Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
@@ -555,20 +556,20 @@ Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
 -    * jump *label4 equal .factory null
 +   24 jump *label3 equal .factory null
     25 jump *label8 equal .buildUnits false
-    26 sensor .factoryProgress .factory @progress
+    26 sensor :backgroundProcess:factoryProgress .factory @progress
     27 jump *label10 notEqual .unitToProduce null
     28 control enabled .factory false
     29 control config .factory @mono
-    30 set .lastProgress 0
+    30 set :backgroundProcess:lastProgress 0
 -    * jump *label11 always
 +   31 jump *label9 always
     32 label *label10
-    33 op add *tmp33 .factoryProgress 0.1
-    34 jump *label12 lessThanEq .lastProgress *tmp33
+    33 op add *tmp33 :backgroundProcess:factoryProgress 0.1
+    34 jump *label12 lessThanEq :backgroundProcess:lastProgress *tmp33
  
     60 label *label22
     61 label *label20
-    62 set .lastProgress 0
+    62 set :backgroundProcess:lastProgress 0
 -    * jump *label13 always
 +   63 jump *label9 always
     64 label *label12
@@ -576,12 +577,12 @@ Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
     66 jump *label23 equal *tmp53 .unitToProduce
     67 control enabled .factory true
     68 control config .factory .unitToProduce
-    69 set .lastProgress 0
+    69 set :backgroundProcess:lastProgress 0
 -    * jump *label24 always
 +   70 jump *label9 always
     71 label *label23
     72 control enabled .factory true
-    73 set .lastProgress .factoryProgress
+    73 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
  
     82 sensor *tmp67 .generator2 @coal
     83 jump *label27 greaterThanEq *tmp67 3
@@ -605,7 +606,7 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
  
     71 label *label23
     72 control enabled .factory true
-    73 set .lastProgress .factoryProgress
+    73 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
 -    * label *label24
 -    * label *label13
 -    * label *label11
@@ -620,27 +621,26 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
 -    * label *label4
    100 jump *label3 always
 -    * wait 1e12
--    * jump *label0 always
+-    * jump *label1 always
 -    * end
 
 Modifications by Jumps phase, Dead Code Elimination, pass 4, iteration 1:
-     0 set .lastProgress 0
-     1 set *signature "0:v1"
--    * label *label0
+     0 set *signature "0:v1"
+-    * label *label1
+     1 set :backgroundProcess:lastProgress 0
      2 label *label3
      3 set *tmp3 .press
-     4 sensor *tmp5 .core @graphite
 
 Final code before resolving virtual instructions:
 
-    0:  jump *label33 always 0 0                                     var lastProgress = 0, factoryProgress = 0;
+    0:  jump *label33 always 0 0                                     #set target = 8;
     1:  draw triangle .bank .battery .buildUnits .core .display .fac ...
-    2:  draw triangle .factoryProgress .flares .generator .generator ...
-    3:  draw triangle .lastProgress .monos .press .pressTarget .smel ...
-    4:  draw triangle .unitToProduce .unloader2 :log:encodedId :logU ...
+    2:  draw triangle .flares .generator .generator2 .kiln .kilnTarg ...
+    3:  draw triangle .press .pressTarget .smelter .smelterTarget .u ...
+    4:  draw triangle :backgroundProcess:factoryProgress :background ...
         label *label33                                               ...
-    5:  set .lastProgress 0                                          ...
-    6:  set *signature "0:v1"                                        #set target = 8;
+    5:  set *signature "0:v1"                                        ...
+    6:  set :backgroundProcess:lastProgress 0                        var lastProgress = 0, factoryProgress = 0;
         label *label3                                                while true do
     7:  set *tmp3 .press                                             press.enabled = core.@graphite < pressTarget;
     8:  sensor *tmp5 .core @graphite                                 ...
@@ -664,15 +664,15 @@ Final code before resolving virtual instructions:
    26:  control enabled *tmp19 *tmp22 0 0 0                          ...
    27:  jump *label3 equal .factory null                             if factory == null then continue; end;
    28:  jump *label8 equal .buildUnits false                         if buildUnits then
-   29:  sensor .factoryProgress .factory @progress                   factoryProgress = factory.@progress;
+   29:  sensor :backgroundProcess:factoryProgress .factory @progress factoryProgress = factory.@progress;
    30:  jump *label10 notEqual .unitToProduce null                   if unitToProduce == null then
    31:  control enabled .factory false 0 0 0                         factory.enabled = false;
    32:  control config .factory @mono 0 0 0                          factory.config = @mono;
-   33:  set .lastProgress 0                                          lastProgress = 0;
+   33:  set :backgroundProcess:lastProgress 0                        lastProgress = 0;
    34:  jump *label9 always 0 0                                      if unitToProduce == null then
         label *label10                                               ...
-   35:  op add *tmp33 .factoryProgress 0.1                           elsif lastProgress > factoryProgress + 0.1 then
-   36:  jump *label12 lessThanEq .lastProgress *tmp33                ...
+   35:  op add *tmp33 :backgroundProcess:factoryProgress 0.1         elsif lastProgress > factoryProgress + 0.1 then
+   36:  jump *label12 lessThanEq :backgroundProcess:lastProgress *tm ...
    37:  set :logUnit:unit .unitToProduce                             logUnit(unitToProduce);
    38:  sensor *tmp36 :logUnit:unit @id                              log(@blockCount + unit.@id);
    39:  op add :log:encodedId @blockCount *tmp36                     ...
@@ -700,18 +700,18 @@ Final code before resolving virtual instructions:
    59:  set .unitToProduce @flare                                    ...
         label *label22                                               ...
         label *label20                                               ...
-   60:  set .lastProgress 0                                          lastProgress = 0;
+   60:  set :backgroundProcess:lastProgress 0                        lastProgress = 0;
    61:  jump *label9 always 0 0                                      elsif lastProgress > factoryProgress + 0.1 then
         label *label12                                               ...
    62:  sensor *tmp53 .factory @config                               elsif factory.config != unitToProduce then
    63:  jump *label23 equal *tmp53 .unitToProduce                    ...
    64:  control enabled .factory true 0 0 0                          factory.enabled = true;
    65:  control config .factory .unitToProduce 0 0 0                 factory.config = unitToProduce;
-   66:  set .lastProgress 0                                          lastProgress = 0;
+   66:  set :backgroundProcess:lastProgress 0                        lastProgress = 0;
    67:  jump *label9 always 0 0                                      elsif factory.config != unitToProduce then
         label *label23                                               ...
    68:  control enabled .factory true 0 0 0                          factory.enabled = true;
-   69:  set .lastProgress .factoryProgress                           lastProgress = factoryProgress;
+   69:  set :backgroundProcess:lastProgress :backgroundProcess:facto lastProgress = factoryProgress;
    70:  jump *label9 always 0 0                                      if buildUnits then
         label *label8                                                ...
    71:  control enabled .factory false 0 0 0                         factory.enabled = false;
@@ -741,11 +741,10 @@ Final code before resolving virtual instructions:
    90:  jump *label3 always 0 0                                      while true do
 
 
-Performance: parsed in 181 ms, compiled in 220 ms, optimized in 241 ms, run in 2 ms.
-
-Compiled mlog code was sent to Mlog Watcher.
-  Mlog Watcher: no processor selected.
-  (The target processor must be selected in Mindustry to receive the code.)
+Performance: parsed in 195 ms, compiled in 259 ms, optimized in 232 ms, run in 3 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
 
 Program output (5 steps):
 The program didn't generate any output.

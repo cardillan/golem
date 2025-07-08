@@ -1,10 +1,10 @@
 jump 5 always 0 0
 draw triangle .bank .battery .buildUnits .core .display .factory
-draw triangle .factoryProgress .flares .generator .generator2 .kiln .kilnTarget
-draw triangle .lastProgress .monos .press .pressTarget .smelter .smelterTarget
-draw triangle .unitToProduce .unloader2 :log:encodedId :logUnit:unit 0 0
-set .lastProgress 0
+draw triangle .flares .generator .generator2 .kiln .kilnTarget .monos
+draw triangle .press .pressTarget .smelter .smelterTarget .unitToProduce .unloader2
+draw triangle :backgroundProcess:factoryProgress :backgroundProcess:lastProgress :log:encodedId :logUnit:unit 0 0
 set *signature "0:v1"
+set :backgroundProcess:lastProgress 0
 set *tmp3 .press
 sensor *tmp5 .core @graphite
 op lessThan *tmp6 *tmp5 .pressTarget
@@ -27,14 +27,14 @@ op lessThan *tmp22 *tmp21 3800
 control enabled *tmp19 *tmp22 0 0 0
 jump 7 equal .factory null
 jump 71 equal .buildUnits false
-sensor .factoryProgress .factory @progress
+sensor :backgroundProcess:factoryProgress .factory @progress
 jump 35 notEqual .unitToProduce null
 control enabled .factory false 0 0 0
 control config .factory @mono 0 0 0
-set .lastProgress 0
+set :backgroundProcess:lastProgress 0
 jump 72 always 0 0
-op add *tmp33 .factoryProgress 0.1
-jump 62 lessThanEq .lastProgress *tmp33
+op add *tmp33 :backgroundProcess:factoryProgress 0.1
+jump 62 lessThanEq :backgroundProcess:lastProgress *tmp33
 set :logUnit:unit .unitToProduce
 sensor *tmp36 :logUnit:unit @id
 op add :log:encodedId @blockCount *tmp36
@@ -58,16 +58,16 @@ jump 60 lessThan .monos 8
 set .unitToProduce null
 jump 60 greaterThanEq .flares 8
 set .unitToProduce @flare
-set .lastProgress 0
+set :backgroundProcess:lastProgress 0
 jump 72 always 0 0
 sensor *tmp53 .factory @config
 jump 68 equal *tmp53 .unitToProduce
 control enabled .factory true 0 0 0
 control config .factory .unitToProduce 0 0 0
-set .lastProgress 0
+set :backgroundProcess:lastProgress 0
 jump 72 always 0 0
 control enabled .factory true 0 0 0
-set .lastProgress .factoryProgress
+set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
 jump 72 always 0 0
 control enabled .factory false 0 0 0
 jump 77 equal .generator2 null

@@ -73,6 +73,7 @@ const PNEUMATIC_DRILL[] = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0, 
 const UNLOADER1[]       = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
 const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor2);
 const POWER_NODE[]      = (@power-node,            -2.0, -1.0,   2,  6,  0,  0,  0,  0,  0, null);
+const BATTERY_LARGE[]   = (@battery-large,         +4.0, +3.0,   0, 50,  0, 30, 20,  0,  0, null);
 const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
 const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
 const AIR_FACTORY[]     = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
@@ -524,9 +525,19 @@ begin
     controller.generator2 = generator2;
     buildBlockFromCfg(ref SORTER);
 
-    controller.buildUnits = true;
+    controller.pressTarget = 100;
+    controller.smelterTarget = 1000;
+    controller.kilnTarget = 100;
 
+    controller.buildUnits = true;
     displayUnitBuilds();
+
+    do
+        supplyBase1();
+    while controller.flares + controller.monos < 16;
+
+    buildBlockFromCfg(ref BATTERY_LARGE);
+
     while true do
         supplyBase();
     end;
