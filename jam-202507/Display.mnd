@@ -5,12 +5,12 @@
 
 module Display;
 
-linked display1, switch1, message1, bank1;
+linked display1, switch1, message1, bank1, processor1;
 
 var
     core = null,
     page = 0,
-    numPages = 2;
+    numPages = 3;
 
 noinit remote var
     nextBlock,
@@ -48,13 +48,11 @@ inline void drawText(x, y, alignment, text...)
     drawPrint(x, y, alignment);
 end;
 
-var drawFactory, materialCount;
+var materialCount;
 
 void updateDisplay()
     reset();
     clear(0, 0, 32);
-
-    drawFactory = factory.@enabled;
 
     drawHeader();
     drawMaterials();
@@ -104,7 +102,7 @@ inline void drawMaterials()
     var count, targetFactoryLead, targetFactorySilicon;
     var col = 0, y = HEADER2_Y - ROW_HEIGHT;
 
-    if drawFactory then
+    if nextBlock == null then
         var unit = factory.@config;
         var unitCount;
         if unit == @mono then
@@ -135,7 +133,7 @@ inline void drawMaterials()
     else
         count = materialCount = totalTargets;
         drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Materials");
-        var columns = 1; //drawFactory * count > 2 ? 2 : 1;
+        var columns = 1;
 
         if count then
             for var item, target in
@@ -271,6 +269,52 @@ void displayLog()
     drawflush(display1);
 end;
 
+//external bank1[0 ... 4] var minX, minY, maxX, maxY;
+
+remote processor1 var px, py;
+var frame = 0;
+
+void displayOreMap()
+    reset();
+    clear(0, 0, 32);
+
+    col(%[white]);
+    drawText(4, 172, @topLeft, ++frame);
+
+    var mapw = @mapw, maph = @maph;
+    scale(176 / mapw, 176 / maph);
+    var width = ceil(3 * mapw / 176);
+    var height = ceil(3 * mapw / 176);
+    //stroke(max(width, height));
+
+    var minX = bank1[0];
+    var minY = bank1[1];
+    var maxX = bank1[2];
+    var maxY = bank1[3];
+
+    lineRect(minX, minY, maxX - minX, maxY - minY);
+
+    col(%[red]);
+    var index = 4;
+    while index < 256 do
+        var pos = bank1[index];
+        if pos == 0 then break; end;
+        var x = pos % @mapw;
+        var y = pos \ @mapw;
+        rect(x, y, width, height);
+        index++;
+    end;
+
+    col(%[gold]);
+    rect(px, py, width, height);
+
+    reset();
+    col(%[white]);
+    drawText(175, 172, @topRight, index);
+
+    drawflush(display1);
+end;
+
 void main()
     do
         ubind(@poly);
@@ -283,10 +327,10 @@ void main()
     var nextSwitch = @second + 3;
 
     while true do
-        if page == 0 then
-            updateDisplay();
-        else
-            displayLog();
+        case page
+            when 0 then updateDisplay();
+            when 1 then displayLog();
+            when 2 then displayOreMap();
         end;
 
         updateMessage();

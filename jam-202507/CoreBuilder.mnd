@@ -7,7 +7,7 @@
 //#set optimization = none;
 
 // Linked variables
-linked message1, bank1, processor1, processor2, processor3;
+linked message1, bank1, processor1, processor2, processor3, processor4;
 
 noinit var display, controller, flareController;
 
@@ -15,6 +15,7 @@ require "Actions.mnd";
 require "Display.mnd" remote display;
 require "CoreController.mnd" remote controller;
 require "FlareController.mnd" remote flareController;
+require "OreLocator.mnd" remote processor4;
 
 // At this point, we're only using a poly
 const capacity = 30;
@@ -46,6 +47,11 @@ noinit var
     powerTarget;
 
 var phase = 0;
+
+var
+    graphiteSurplus = 20,
+    siliconSurplus = 20,
+    metaglassSurplus = 20;
 
 external bank1[511] logPosition = 511;
 
@@ -219,9 +225,9 @@ noinit var leadSiliconBlock;
 
 def targetMet()
     if core.@copper >= targetCopper then
-        if leadSiliconBlock.@lead >= targetLead then
+        if core.@lead >= targetLead then
             if core.@graphite >= targetGraphite then
-                if leadSiliconBlock.@silicon >= targetSilicon then
+                if core.@silicon >= targetSilicon then
                     if core.@titanium >= targetTitanium then
                         if core.@metaglass >= targetMetaglass then
                             return true;
@@ -234,10 +240,10 @@ def targetMet()
     return false;
 end;
 
-void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, leadFactory, siliconFactory)
+void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     // Update display
     var count = 0;
-    for var t in copper, lead, graphite, silicon, titanium, metaglass, leadFactory, siliconFactory do count += sign(t); end;
+    for var t in copper, lead, graphite, silicon, titanium, metaglass do count += sign(t); end;
     display.totalTargets = count;
     display.nextBlock = block;
     display.targetCopper = copper;
@@ -248,17 +254,17 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, lea
     display.targetMetaglass = metaglass;
 
     targetCopper = copper;
-    targetLead = max(lead, leadFactory);
+    targetLead = lead;
     targetGraphite = graphite;
-    targetSilicon = max(silicon, siliconFactory);
+    targetSilicon = silicon;
     targetTitanium = titanium;
     targetMetaglass = metaglass;
 
-    controller.pressTarget = targetGraphite + 20;
-    controller.smelterTarget = targetSilicon + 20;
-    controller.kilnTarget = targetMetaglass + 20;
-
-    leadSiliconBlock = siliconFactory > 0 ? factory : core;
+    controller.pressTarget = graphite + graphiteSurplus;
+    controller.smelterTarget = silicon + siliconSurplus;
+    controller.kilnTarget = metaglass + metaglassSurplus;
+    controller.leadReserve = lead + sign(lead) * 20;
+    controller.siliconReserve = silicon + sign(silicon) * 20;
 
     while !targetMet() do
         supplyBase();
@@ -292,7 +298,7 @@ def buildBlockAt(block, x, y, rotation, config, skipError)
     wait(0.25);
     do
         building = getBlock(x, y, out type);
-        if building == null then break; end;
+        if building == null then return null; end;
     while type != block;
 
     logBlock(block);
@@ -301,7 +307,7 @@ def buildBlockAt(block, x, y, rotation, config, skipError)
 end;
 
 def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, rotation, config)
-    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, 0, 0);
+    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass);
     return buildBlockAt(block, x, y, rotation, config, false);
 end;
 
@@ -314,116 +320,24 @@ inline def buildBlockFromCfg(ref cfg)
     end;
 end;
 
-inline def moveToNextLocation(ref distance, ref angle)
-    moveTo(coreX + sin(angle) * distance, coreY + cos(angle) * distance);
-    distance += 4;
-    angle += 45;
+inline def buildTitaniumDrill(ref cfg)
+    meetTarget(
+        cfg[CFG_BLOCK_TYPE],
+        cfg[CFG_COPPER],
+        cfg[CFG_LEAD],
+        cfg[CFG_GRAPHITE],
+        cfg[CFG_SILICON],
+        cfg[CFG_TITANIUM],
+        cfg[CFG_METAGLASS]);
+
+    var dx, dy;
+    var result = findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, false, 4, out dx, out dy);
+    if !result then error("Cannot locate spot for titanium drill"); end;
+
+    return buildBlockAt(@pneumatic-drill, dx, dy, null, 0, false);
 end;
 
-inline def locateOreAway(ore, out x, out y, in out distance, in out angle)
-    while true do
-        locateOre(ore, out x, out y);
-        if abs(x - coreX) >= 10 or abs(y - coreY) >= 10 then break; end;
-
-        moveToNextLocation(ref distance, ref angle);
-    end;
-end;
-
-inline def checkOre(x, y, ore, in out count)
-    var floor;
-    getBlock(x, y, , out floor);
-    if floor == ore then count++; end;
-end;
-
-inline def buildTitaniumDrillCfg(ref cfg)
-    var distance = 32;
-    var angle = 0;
-    var attempts = 0;
-    var minimum = 3;
-
-    while true do
-        meetTarget(
-            cfg[CFG_BLOCK_TYPE],
-            cfg[CFG_COPPER],
-            cfg[CFG_LEAD],
-            cfg[CFG_GRAPHITE],
-            cfg[CFG_SILICON],
-            cfg[CFG_TITANIUM],
-            cfg[CFG_METAGLASS],
-            0, 0);
-
-        var x, y;
-        locateOreAway(@titanium, out x, out y, in out distance, in out angle);
-        moveTo(x, y);
-
-        // Try to find the best match
-        var ax = x, ay = y;
-        var best = 0, dx = 0, dy = 0;
-
-    SearchLoop:
-        for var searches in 0 ... 5 do
-            ax += dx;
-            ay += dy;
-            best = 0;
-
-            for var xx in 1, 1, -1, -1; var yy in 1, -1, 1, -1 do
-                var count = 0;
-                checkOre(ax, ay, @ore-titanium, in out count);
-                checkOre(ax + xx, ay, @ore-titanium, in out count);
-                checkOre(ax, ay + yy, @ore-titanium, in out count);
-                checkOre(ax + xx, ay + yy, @ore-titanium, in out count);
-
-                if count > best then
-                    dx = xx;
-                    dy = yy;
-                    best = count;
-                    if count >= 4 then break SearchLoop; end;
-                end;
-            end;
-//            println("Search ", searches + 1);
-//            println($"ax: $ax, ay: $ay");
-//            println($"dx: $dy, dy: $dy");
-//            printflush(message1);
-        end;
-
-        if best > minimum then
-            ax = ax + dx / 2;
-            ay = ay + dy / 2;
-
-//            println($"Ore found at $x, $y");
-//            println($"Best displacement $dx, $dy");
-//            println($"Trying to build at $ax, $ay");
-//            printflush(message1);
-//            do while !switch1.enabled;
-//            switch1.enabled = false;
-
-            if abs(x - coreX) >= 10 or abs(y - coreY) >= 10 then
-                var result = buildBlockAt(@pneumatic-drill, ax, ay, null, 0, true);
-                if result != null then return result; end;
-
-                // Try to patch the original spot to disable it
-                build(x, y, @conveyor, 0, null);
-            else
-                // Force mote to the next location and start over
-                attempts = 1000;
-                minimum = 3;
-            end;
-        end;
-
-        // No luck. Go elsewhere
-        if ++attempts > 5 then
-            // Try to patch the original spot to disable it
-            build(x, y, @conveyor, 0, null);
-
-            moveToNextLocation(ref distance, ref angle);
-            attempts = 0;
-            minimum = max(minimum - 1, 1);
-        end;
-    end;
-end;
-
-def buildTitaniumDrill()
-    buildTitaniumDrillCfg(ref PNEUMATIC_DRILL);
+void  buildThoriumDrill()
 end;
 
 // MAIN
@@ -441,9 +355,12 @@ def findUnits(type, out count)
     count;
 end;
 
-void displayUnitBuilds()
+void buildUnits(unit)
     display.totalTargets = 0;
     display.nextBlock = null;
+    controller.leadReserve = 0;
+    controller.siliconReserve = 0;
+    controller.unitToProduce = unit;
 end;
 
 begin
@@ -471,7 +388,7 @@ begin
     powerTarget = 800;
 
     smelter = buildBlockFromCfg(ref SMELTER);
-    titaniumDrill = buildTitaniumDrill();
+    titaniumDrill = buildTitaniumDrill(ref PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
 
     flareController.core = core;
@@ -494,27 +411,32 @@ begin
     buildBlockFromCfg(ref POWER_NODE);
     unloader2 = buildBlockFromCfg(ref UNLOADER2);
     controller.unloader2 = unloader2;
+
     buildBlockFromCfg(ref OVERFLOW_GATE);
     factory = buildBlockFromCfg(ref AIR_FACTORY);
     controller.factory = factory;
     display.factory = factory;
 
     // We're getting into the "build the damn units" mode
-    displayUnitBuilds();
-    controller.unitToProduce = @flare;
-    controller.buildUnits = true;
+    controller.flareTarget = 2;
+    buildUnits(@flare);
     phase++;
 
     controller.pressTarget = 85;
-    controller.smelterTarget = 60;
+    controller.smelterTarget = 150;
     controller.kilnTarget = 30;
 
+    var thoriumDrill = true;
     do
+        if thoriumDrill and controller.flares > 1 then
+            thoriumDrill = false;
+            buildThoriumDrill();
+        end;
+
         supplyBase1();
-        if battery.@totalPower < 500 then break; end;
+        if battery.@totalPower < 300 then break; end;
     while controller.monos < 3;
 
-    controller.buildUnits = false;
     buildBlockFromCfg(ref UNLOADER3);
     kiln = buildBlockFromCfg(ref KILN);
     controller.kiln = kiln;
@@ -523,20 +445,19 @@ begin
     buildBlockFromCfg(ref WATER_EXT);
     generator2 = buildBlockFromCfg(ref STEAM_GEN);
     controller.generator2 = generator2;
+    buildBlockFromCfg(ref BATTERY_LARGE);
+
+    graphiteSurplus = 100;
+    siliconSurplus = 1000;
+    metaglassSurplus = 100;
     buildBlockFromCfg(ref SORTER);
 
-    controller.pressTarget = 100;
-    controller.smelterTarget = 1000;
-    controller.kilnTarget = 100;
-
-    controller.buildUnits = true;
-    displayUnitBuilds();
-
+    display.totalTargets = 0;
+    display.nextBlock = null;
     do
         supplyBase1();
     while controller.flares + controller.monos < 16;
 
-    buildBlockFromCfg(ref BATTERY_LARGE);
 
     while true do
         supplyBase();

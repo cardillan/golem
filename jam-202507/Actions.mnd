@@ -38,7 +38,9 @@ void moveToEmpty(x, y)
         if @unit.@firstItem != null then itemDrop(@air, 1000); end;
         approach(x, y, RADIUS - 0.5);
     while !within(x, y, RADIUS);
+end;
 
+inline void dropAll()
     // Now drop it for real
     while @unit.@firstItem != null do
         itemDrop(@air, 1000);
@@ -85,6 +87,7 @@ void mineOre(ore, amount, block)
     locateOre(ore, out x, out y);
 
     moveToEmpty(x, y);
+    if @unit.@firstItem != ore then dropAll(); end;
 
     status3("Mining...");
     var stop = @second + 10;
@@ -115,6 +118,7 @@ void fetchBlock(block, item)
     transportStatus(block.@itemCapacity, item);
     status2("Fetching ", item, block);
     moveToEmpty(block.@x, block.@y);
+    dropAll();
 
     do
         itemTake(block, item, capacity);

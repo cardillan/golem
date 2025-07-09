@@ -1,0 +1,590 @@
+jump 17 always 0 0
+jump 20 always 0 0
+draw triangle bank1 message1 .locations .start :computeRowValues:x1 :computeRowValues:x2
+draw triangle :computeRowValues:x3 :computeRowValues:x4 :debugPrint:i :debugPrint:index :debugPrint:size :debugPrint:x
+draw triangle :debugPrint:y :findBestPosition:best :findBestPosition:row1 :findBestPosition:row1.1 :findBestPosition:row2.1 :findBestPosition:row2
+draw triangle :findBestPosition:row3 :findBestPosition:row3.1 :findBestPosition:row4 :findBestPosition:y1 :findBestPosition:y2 :findBestPosition:y3
+draw triangle :findBestPosition:y4 :findDrillLocation:angle :findDrillLocation:best :findDrillLocation:bestX :findDrillLocation:bestY :findDrillLocation:capacity
+draw triangle :findDrillLocation:count :findDrillLocation:diffX :findDrillLocation:diffY :findDrillLocation:dx :findDrillLocation:dy :findDrillLocation:item
+draw triangle :findDrillLocation:large :findDrillLocation:last :findDrillLocation:limit :findDrillLocation:ore :findDrillLocation:oreX :findDrillLocation:oreY
+draw triangle :findDrillLocation:unit :findDrillLocation:x :findDrillLocation:y :locateOreAway:a :locateOreAway:angle :locateOreAway:distance
+draw triangle :locateOreAway:lx :locateOreAway:ly :locateOreAway:x :locateOreAway:y :round:x :round.2:x
+draw triangle :round.1:x :spotValue:ore :spotValue:result :spotValue:x :spotValue:y :updateRowPositions3.1:col1
+draw triangle :updateRowPositions3.2:col1 :updateRowPositions3:col1 :updateRowPositions3.1:col2 :updateRowPositions3.2:col2 :updateRowPositions3:col2 :updateRowPositions3.1:col3
+draw triangle :updateRowPositions3.2:col3 :updateRowPositions3:col3 :updateRowPositions4.3:col1 :updateRowPositions4:col1 :updateRowPositions4.2:col1 :updateRowPositions4.1:col1
+draw triangle :updateRowPositions4.3:col2 :updateRowPositions4:col2 :updateRowPositions4.2:col2 :updateRowPositions4.1:col2 :updateRowPositions4.3:col3 :updateRowPositions4:col3
+draw triangle :updateRowPositions4.2:col3 :updateRowPositions4.1:col3 :updateRowPositions4.3:col4 :updateRowPositions4:col4 :updateRowPositions4.2:col4 :updateRowPositions4.1:col4
+draw triangle :visited:i :visited:index :visited:lx :visited:ly 0 0
+set *signature "56ce045a33d85ce5:v1"
+wait 1e12
+jump 18 always 0 0
+set .locations 0
+op sub *tmp26 @mapw :findDrillLocation:x
+op sub *tmp27 @maph :findDrillLocation:y
+op max *tmp28 :findDrillLocation:x :findDrillLocation:y
+op max *tmp28 *tmp28 *tmp26
+op max *tmp28 *tmp28 *tmp27
+ubind :findDrillLocation:unit
+set :findDrillLocation:bestX :findDrillLocation:x
+set :findDrillLocation:bestY :findDrillLocation:y
+set :findDrillLocation:angle 0
+set :findDrillLocation:count -1
+set :findDrillLocation:oreX 0
+set :findDrillLocation:oreY 0
+set :findDrillLocation:best 0
+set :locateOreAway:x :findDrillLocation:oreX
+set :locateOreAway:y :findDrillLocation:oreY
+op mul :locateOreAway:distance 5.092958037216182 :findDrillLocation:angle
+op max :locateOreAway:angle :findDrillLocation:angle @pi
+op sub *tmp37 @mapw 5
+op sub *tmp44 @maph 5
+jump 97 greaterThanEq :locateOreAway:distance *tmp28
+op div :locateOreAway:a :locateOreAway:angle @degToRad
+op sin *tmp34 :locateOreAway:a 0
+op mul *tmp35 *tmp34 :locateOreAway:distance
+op add *tmp36 :findDrillLocation:x *tmp35
+op max *tmp39 *tmp36 5
+op min *tmp38 *tmp39 *tmp37
+set :locateOreAway:lx *tmp38
+op cos *tmp41 :locateOreAway:a 0
+op mul *tmp42 *tmp41 :locateOreAway:distance
+op add *tmp43 :findDrillLocation:y *tmp42
+op max *tmp46 *tmp43 5
+op min *tmp45 *tmp46 *tmp44
+set :locateOreAway:ly *tmp45
+ucontrol within *tmp38 *tmp45 5 *tmp0 0
+jump 59 notEqual *tmp0 false
+ucontrol approach *tmp38 *tmp45 4.5 0 0
+ucontrol within *tmp38 *tmp45 5 *tmp0 0
+jump 56 equal *tmp0 false
+op div *tmp48 5.092958037216182 :locateOreAway:distance
+op add :locateOreAway:angle :locateOreAway:angle *tmp48
+op mul :locateOreAway:distance 5.092958037216182 :locateOreAway:angle
+ulocate ore core true :findDrillLocation:item :locateOreAway:x :locateOreAway:y *tmp50 0
+jump 65 notEqual *tmp50 false
+stop
+op sub *tmp54 :locateOreAway:x :findDrillLocation:x
+op abs *tmp55 *tmp54 0
+op sub *tmp56 :locateOreAway:y :findDrillLocation:y
+op abs *tmp57 *tmp56 0
+op min *tmp58 *tmp55 *tmp57
+jump 96 lessThan *tmp58 7
+op sub *tmp61 :locateOreAway:x :locateOreAway:lx
+op sub *tmp62 :locateOreAway:y :locateOreAway:ly
+op len *tmp63 *tmp61 *tmp62
+jump 96 greaterThanEq *tmp63 32
+set :visited:index 1
+set :visited:i 0
+jump 90 greaterThanEq 0 .locations
+read :visited:lx bank1 :visited:index
+op add *tmp70 :visited:index 1
+read :visited:ly bank1 *tmp70
+op sub *tmp73 :locateOreAway:x :visited:lx
+op sub *tmp74 :locateOreAway:y :visited:ly
+op len *tmp75 *tmp73 *tmp74
+jump 87 greaterThanEq *tmp75 7
+set *tmp66 true
+jump 91 always 0 0
+op add :visited:index :visited:index 3
+op add :visited:i :visited:i 1
+jump 78 lessThan :visited:i .locations
+set *tmp66 false
+jump 96 notEqual *tmp66 false
+op div *tmp80 1 :locateOreAway:angle
+op add :locateOreAway:angle :locateOreAway:angle *tmp80
+set *tmp29 true
+jump 98 always 0 0
+jump 41 lessThan :locateOreAway:distance *tmp28
+set *tmp29 false
+set :findDrillLocation:oreX :locateOreAway:x
+set :findDrillLocation:oreY :locateOreAway:y
+set :findDrillLocation:angle :locateOreAway:angle
+jump 107 notEqual *tmp29 false
+set :findDrillLocation:capacity 0
+set :findDrillLocation:dy :findDrillLocation:capacity
+set :findDrillLocation:dx :findDrillLocation:dy
+set :findDrillLocation*retval false
+jump 586 always 0 0
+ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp0 0
+jump 112 notEqual *tmp0 false
+ucontrol approach :locateOreAway:x :locateOreAway:y 5.5 0 0
+ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp0 0
+jump 109 equal *tmp0 false
+set :findDrillLocation:last 0
+op sub *tmp87 :findDrillLocation:oreY 2
+op sub :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp87
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x1 :spotValue:result
+op sub :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp87
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x2 :spotValue:result
+set :spotValue:x :findDrillLocation:oreX
+set :spotValue:y *tmp87
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x3 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp87
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x4 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp87
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+jump 162 equal :findDrillLocation:large false
+op add *tmp14 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp15 *tmp14 :computeRowValues:x3
+op add *tmp16 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp17 *tmp16 :computeRowValues:x4
+op add *tmp18 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp19 *tmp18 :spotValue:result
+packcolor :findBestPosition:y1 *tmp15 *tmp17 *tmp19 0
+jump 167 always 0 0
+op add *tmp21 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp22 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp23 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp24 :computeRowValues:x4 :spotValue:result
+packcolor :findBestPosition:y1 *tmp21 *tmp22 *tmp23 *tmp24
+op sub *tmp89 :findDrillLocation:oreY 1
+op sub :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp89
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x1 :spotValue:result
+op sub :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp89
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x2 :spotValue:result
+set :spotValue:x :findDrillLocation:oreX
+set :spotValue:y *tmp89
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x3 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp89
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x4 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp89
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+jump 216 equal :findDrillLocation:large false
+op add *tmp14 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp15 *tmp14 :computeRowValues:x3
+op add *tmp16 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp17 *tmp16 :computeRowValues:x4
+op add *tmp18 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp19 *tmp18 :spotValue:result
+packcolor :findBestPosition:y2 *tmp15 *tmp17 *tmp19 0
+jump 221 always 0 0
+op add *tmp21 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp22 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp23 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp24 :computeRowValues:x4 :spotValue:result
+packcolor :findBestPosition:y2 *tmp21 *tmp22 *tmp23 *tmp24
+op sub :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y :findDrillLocation:oreY
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x1 :spotValue:result
+op sub :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y :findDrillLocation:oreY
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x2 :spotValue:result
+set :spotValue:x :findDrillLocation:oreX
+set :spotValue:y :findDrillLocation:oreY
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x3 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y :findDrillLocation:oreY
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x4 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y :findDrillLocation:oreY
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+jump 269 equal :findDrillLocation:large false
+op add *tmp14 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp15 *tmp14 :computeRowValues:x3
+op add *tmp16 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp17 *tmp16 :computeRowValues:x4
+op add *tmp18 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp19 *tmp18 :spotValue:result
+packcolor :findBestPosition:y3 *tmp15 *tmp17 *tmp19 0
+jump 274 always 0 0
+op add *tmp21 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp22 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp23 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp24 :computeRowValues:x4 :spotValue:result
+packcolor :findBestPosition:y3 *tmp21 *tmp22 *tmp23 *tmp24
+op add *tmp93 :findDrillLocation:oreY 1
+op sub :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp93
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x1 :spotValue:result
+op sub :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp93
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x2 :spotValue:result
+set :spotValue:x :findDrillLocation:oreX
+set :spotValue:y *tmp93
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x3 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp93
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x4 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp93
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+jump 323 equal :findDrillLocation:large false
+op add *tmp14 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp15 *tmp14 :computeRowValues:x3
+op add *tmp16 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp17 *tmp16 :computeRowValues:x4
+op add *tmp18 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp19 *tmp18 :spotValue:result
+packcolor :findBestPosition:y4 *tmp15 *tmp17 *tmp19 0
+jump 328 always 0 0
+op add *tmp21 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp22 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp23 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp24 :computeRowValues:x4 :spotValue:result
+packcolor :findBestPosition:y4 *tmp21 *tmp22 *tmp23 *tmp24
+op add *tmp95 :findDrillLocation:oreY 2
+op sub :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp95
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x1 :spotValue:result
+op sub :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp95
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x2 :spotValue:result
+set :spotValue:x :findDrillLocation:oreX
+set :spotValue:y *tmp95
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x3 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 1
+set :spotValue:y *tmp95
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+set :computeRowValues:x4 :spotValue:result
+op add :spotValue:x :findDrillLocation:oreX 2
+set :spotValue:y *tmp95
+set :spotValue:ore :findDrillLocation:ore
+ucontrol getBlock :spotValue:x :spotValue:y type building floor
+select value equal floor :spotValue:ore 0.00392156862745098 0
+select type equal type @boulder @air type
+select :spotValue:result equal type @air value 0.06274509803921569
+jump 377 equal :findDrillLocation:large false
+op add *tmp14 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp15 *tmp14 :computeRowValues:x3
+op add *tmp16 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp17 *tmp16 :computeRowValues:x4
+op add *tmp18 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp19 *tmp18 :spotValue:result
+packcolor :computeRowValues*retval *tmp15 *tmp17 *tmp19 0
+jump 382 always 0 0
+op add *tmp21 :computeRowValues:x1 :computeRowValues:x2
+op add *tmp22 :computeRowValues:x2 :computeRowValues:x3
+op add *tmp23 :computeRowValues:x3 :computeRowValues:x4
+op add *tmp24 :computeRowValues:x4 :spotValue:result
+packcolor :computeRowValues*retval *tmp21 *tmp22 *tmp23 *tmp24
+set :findBestPosition:best 0
+set :findDrillLocation:diffX 0
+set :findDrillLocation:diffY 0
+jump 441 equal :findDrillLocation:large false
+op add *tmp98 :findBestPosition:y1 :findBestPosition:y2
+op add :findBestPosition:row1 *tmp98 :findBestPosition:y3
+op add *tmp100 :findBestPosition:y2 :findBestPosition:y3
+op add :findBestPosition:row2 *tmp100 :findBestPosition:y4
+op add *tmp102 :findBestPosition:y3 :findBestPosition:y4
+op add :findBestPosition:row3 *tmp102 :computeRowValues*retval
+unpackcolor :updateRowPositions3:col1 :updateRowPositions3:col2 :updateRowPositions3:col3 0 :findBestPosition:row1
+jump 398 greaterThanEq :updateRowPositions3:col1 0.0392156862745098
+jump 398 lessThanEq :updateRowPositions3:col1 0
+set :findDrillLocation:diffX -1
+set :findDrillLocation:diffY -1
+set :findBestPosition:best :updateRowPositions3:col1
+jump 403 greaterThanEq :updateRowPositions3:col2 0.0392156862745098
+jump 403 lessThanEq :updateRowPositions3:col2 :findBestPosition:best
+set :findDrillLocation:diffX 0
+set :findDrillLocation:diffY -1
+set :findBestPosition:best :updateRowPositions3:col2
+jump 408 greaterThanEq :updateRowPositions3:col3 0.0392156862745098
+jump 408 lessThanEq :updateRowPositions3:col3 :findBestPosition:best
+set :findDrillLocation:diffX 1
+set :findDrillLocation:diffY -1
+set :findBestPosition:best :updateRowPositions3:col3
+unpackcolor :updateRowPositions3.1:col1 :updateRowPositions3.1:col2 :updateRowPositions3.1:col3 0 :findBestPosition:row2
+jump 414 greaterThanEq :updateRowPositions3.1:col1 0.0392156862745098
+jump 414 lessThanEq :updateRowPositions3.1:col1 :findBestPosition:best
+set :findDrillLocation:diffX -1
+set :findDrillLocation:diffY 0
+set :findBestPosition:best :updateRowPositions3.1:col1
+jump 419 greaterThanEq :updateRowPositions3.1:col2 0.0392156862745098
+jump 419 lessThanEq :updateRowPositions3.1:col2 :findBestPosition:best
+set :findDrillLocation:diffX 0
+set :findDrillLocation:diffY 0
+set :findBestPosition:best :updateRowPositions3.1:col2
+jump 424 greaterThanEq :updateRowPositions3.1:col3 0.0392156862745098
+jump 424 lessThanEq :updateRowPositions3.1:col3 :findBestPosition:best
+set :findDrillLocation:diffX 1
+set :findDrillLocation:diffY 0
+set :findBestPosition:best :updateRowPositions3.1:col3
+unpackcolor :updateRowPositions3.2:col1 :updateRowPositions3.2:col2 :updateRowPositions3.2:col3 0 :findBestPosition:row3
+jump 430 greaterThanEq :updateRowPositions3.2:col1 0.0392156862745098
+jump 430 lessThanEq :updateRowPositions3.2:col1 :findBestPosition:best
+set :findDrillLocation:diffX -1
+set :findDrillLocation:diffY 1
+set :findBestPosition:best :updateRowPositions3.2:col1
+jump 435 greaterThanEq :updateRowPositions3.2:col2 0.0392156862745098
+jump 435 lessThanEq :updateRowPositions3.2:col2 :findBestPosition:best
+set :findDrillLocation:diffX 0
+set :findDrillLocation:diffY 1
+set :findBestPosition:best :updateRowPositions3.2:col2
+jump 529 greaterThanEq :updateRowPositions3.2:col3 0.0392156862745098
+jump 529 lessThanEq :updateRowPositions3.2:col3 :findBestPosition:best
+set :findDrillLocation:diffX 1
+set :findDrillLocation:diffY 1
+set :findBestPosition:best :updateRowPositions3.2:col3
+jump 529 always 0 0
+op add :findBestPosition:row1.1 :findBestPosition:y1 :findBestPosition:y2
+op add :findBestPosition:row2.1 :findBestPosition:y2 :findBestPosition:y3
+op add :findBestPosition:row3.1 :findBestPosition:y3 :findBestPosition:y4
+op add :findBestPosition:row4 :findBestPosition:y4 :computeRowValues*retval
+unpackcolor :updateRowPositions4:col1 :updateRowPositions4:col2 :updateRowPositions4:col3 :updateRowPositions4:col4 :findBestPosition:row1.1
+jump 451 greaterThanEq :updateRowPositions4:col1 0.0392156862745098
+jump 451 lessThanEq :updateRowPositions4:col1 0
+set :findDrillLocation:diffX -1.5
+set :findDrillLocation:diffY -1.5
+set :findBestPosition:best :updateRowPositions4:col1
+jump 456 greaterThanEq :updateRowPositions4:col2 0.0392156862745098
+jump 456 lessThanEq :updateRowPositions4:col2 :findBestPosition:best
+set :findDrillLocation:diffX -0.5
+set :findDrillLocation:diffY -1.5
+set :findBestPosition:best :updateRowPositions4:col2
+jump 461 greaterThanEq :updateRowPositions4:col3 0.0392156862745098
+jump 461 lessThanEq :updateRowPositions4:col3 :findBestPosition:best
+set :findDrillLocation:diffX 0.5
+set :findDrillLocation:diffY -1.5
+set :findBestPosition:best :updateRowPositions4:col3
+jump 466 greaterThanEq :updateRowPositions4:col4 0.0392156862745098
+jump 466 lessThanEq :updateRowPositions4:col4 :findBestPosition:best
+set :findDrillLocation:diffX 1.5
+set :findDrillLocation:diffY -1.5
+set :findBestPosition:best :updateRowPositions4:col4
+unpackcolor :updateRowPositions4.1:col1 :updateRowPositions4.1:col2 :updateRowPositions4.1:col3 :updateRowPositions4.1:col4 :findBestPosition:row2.1
+jump 472 greaterThanEq :updateRowPositions4.1:col1 0.0392156862745098
+jump 472 lessThanEq :updateRowPositions4.1:col1 :findBestPosition:best
+set :findDrillLocation:diffX -1.5
+set :findDrillLocation:diffY -0.5
+set :findBestPosition:best :updateRowPositions4.1:col1
+jump 477 greaterThanEq :updateRowPositions4.1:col2 0.0392156862745098
+jump 477 lessThanEq :updateRowPositions4.1:col2 :findBestPosition:best
+set :findDrillLocation:diffX -0.5
+set :findDrillLocation:diffY -0.5
+set :findBestPosition:best :updateRowPositions4.1:col2
+jump 482 greaterThanEq :updateRowPositions4.1:col3 0.0392156862745098
+jump 482 lessThanEq :updateRowPositions4.1:col3 :findBestPosition:best
+set :findDrillLocation:diffX 0.5
+set :findDrillLocation:diffY -0.5
+set :findBestPosition:best :updateRowPositions4.1:col3
+jump 487 greaterThanEq :updateRowPositions4.1:col4 0.0392156862745098
+jump 487 lessThanEq :updateRowPositions4.1:col4 :findBestPosition:best
+set :findDrillLocation:diffX 1.5
+set :findDrillLocation:diffY -0.5
+set :findBestPosition:best :updateRowPositions4.1:col4
+unpackcolor :updateRowPositions4.2:col1 :updateRowPositions4.2:col2 :updateRowPositions4.2:col3 :updateRowPositions4.2:col4 :findBestPosition:row3.1
+jump 493 greaterThanEq :updateRowPositions4.2:col1 0.0392156862745098
+jump 493 lessThanEq :updateRowPositions4.2:col1 :findBestPosition:best
+set :findDrillLocation:diffX -1.5
+set :findDrillLocation:diffY 0.5
+set :findBestPosition:best :updateRowPositions4.2:col1
+jump 498 greaterThanEq :updateRowPositions4.2:col2 0.0392156862745098
+jump 498 lessThanEq :updateRowPositions4.2:col2 :findBestPosition:best
+set :findDrillLocation:diffX -0.5
+set :findDrillLocation:diffY 0.5
+set :findBestPosition:best :updateRowPositions4.2:col2
+jump 503 greaterThanEq :updateRowPositions4.2:col3 0.0392156862745098
+jump 503 lessThanEq :updateRowPositions4.2:col3 :findBestPosition:best
+set :findDrillLocation:diffX 0.5
+set :findDrillLocation:diffY 0.5
+set :findBestPosition:best :updateRowPositions4.2:col3
+jump 508 greaterThanEq :updateRowPositions4.2:col4 0.0392156862745098
+jump 508 lessThanEq :updateRowPositions4.2:col4 :findBestPosition:best
+set :findDrillLocation:diffX 1.5
+set :findDrillLocation:diffY 0.5
+set :findBestPosition:best :updateRowPositions4.2:col4
+unpackcolor :updateRowPositions4.3:col1 :updateRowPositions4.3:col2 :updateRowPositions4.3:col3 :updateRowPositions4.3:col4 :findBestPosition:row4
+jump 514 greaterThanEq :updateRowPositions4.3:col1 0.0392156862745098
+jump 514 lessThanEq :updateRowPositions4.3:col1 :findBestPosition:best
+set :findDrillLocation:diffX -1.5
+set :findDrillLocation:diffY 1.5
+set :findBestPosition:best :updateRowPositions4.3:col1
+jump 519 greaterThanEq :updateRowPositions4.3:col2 0.0392156862745098
+jump 519 lessThanEq :updateRowPositions4.3:col2 :findBestPosition:best
+set :findDrillLocation:diffX -0.5
+set :findDrillLocation:diffY 1.5
+set :findBestPosition:best :updateRowPositions4.3:col2
+jump 524 greaterThanEq :updateRowPositions4.3:col3 0.0392156862745098
+jump 524 lessThanEq :updateRowPositions4.3:col3 :findBestPosition:best
+set :findDrillLocation:diffX 0.5
+set :findDrillLocation:diffY 1.5
+set :findBestPosition:best :updateRowPositions4.3:col3
+jump 529 greaterThanEq :updateRowPositions4.3:col4 0.0392156862745098
+jump 529 lessThanEq :updateRowPositions4.3:col4 :findBestPosition:best
+set :findDrillLocation:diffX 1.5
+set :findDrillLocation:diffY 1.5
+set :findBestPosition:best :updateRowPositions4.3:col4
+op mul *tmp86 :findBestPosition:best 255
+jump 536 lessThanEq *tmp86 :findDrillLocation:limit
+op add :findDrillLocation:dx :findDrillLocation:x :findDrillLocation:diffX
+op add :findDrillLocation:dy :findDrillLocation:y :findDrillLocation:diffY
+set :findDrillLocation:capacity *tmp86
+set :findDrillLocation*retval true
+jump 586 always 0 0
+jump 540 lessThanEq *tmp86 :findDrillLocation:best
+op add :findDrillLocation:bestX :findDrillLocation:oreX :findDrillLocation:diffX
+op add :findDrillLocation:bestY :findDrillLocation:oreY :findDrillLocation:diffY
+set :findDrillLocation:best *tmp86
+jump 556 lessThanEq *tmp86 :findDrillLocation:last
+set :findDrillLocation:last *tmp86
+op mul :round:x :findDrillLocation:diffX 1.1
+op add *tmp224 :round:x 0.5
+op floor *tmp223 *tmp224 0
+op add :findDrillLocation:oreX :findDrillLocation:oreX *tmp223
+op mul :round.1:x :findDrillLocation:diffY 1.1
+op add *tmp228 :round.1:x 0.5
+op floor *tmp227 *tmp228 0
+op add :findDrillLocation:oreY :findDrillLocation:oreY *tmp227
+op sub *tmp230 :findDrillLocation:oreX :findDrillLocation:x
+op abs *tmp231 *tmp230 0
+op sub *tmp232 :findDrillLocation:oreY :findDrillLocation:y
+op abs *tmp233 *tmp232 0
+op min *tmp234 *tmp231 *tmp233
+jump 113 greaterThanEq *tmp234 7
+op add :findDrillLocation:count :findDrillLocation:count 1
+write :findDrillLocation:best bank1 :findDrillLocation:count
+op add :findDrillLocation:count :findDrillLocation:count 1
+write :findDrillLocation:bestX bank1 :findDrillLocation:count
+op add :findDrillLocation:count :findDrillLocation:count 1
+write :findDrillLocation:bestY bank1 :findDrillLocation:count
+op add .locations .locations 1
+op sub :round.2:x @second .start
+op add *tmp246 :round.2:x 0.5
+op floor *tmp245 *tmp246 0
+print "Time: {0} s\n"
+format *tmp245
+set :debugPrint:index -1
+set :debugPrint:i 0
+jump 583 greaterThanEq 0 .locations
+op add :debugPrint:index :debugPrint:index 1
+read :debugPrint:size bank1 :debugPrint:index
+op add :debugPrint:index :debugPrint:index 1
+read :debugPrint:x bank1 :debugPrint:index
+op add :debugPrint:index :debugPrint:index 1
+read :debugPrint:y bank1 :debugPrint:index
+print :debugPrint:x
+print ", {0}: {0}\n"
+format :debugPrint:y
+format :debugPrint:size
+op add :debugPrint:i :debugPrint:i 1
+jump 571 lessThan :debugPrint:i .locations
+print ""
+printflush message1
+jump 33 always 0 0
+set :findDrillLocation*finished true
+jump 18 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

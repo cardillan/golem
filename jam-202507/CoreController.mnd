@@ -4,7 +4,7 @@
 
 module CoreController;
 
-remote noinit var
+noinit remote var
     core,
     display,
     bank,
@@ -16,16 +16,22 @@ remote noinit var
     factory,
     unloader2,
     generator2,
-
-    pressTarget,
-    smelterTarget,
-    kilnTarget,
     unitToProduce,
 
-    buildUnits,
+    // Lead and/or silicone will only be sent to the Air Factory
+    // if they are above these limits
+    leadReserve,
+    siliconReserve,
+
     monos,
     flares,
     polys;
+
+remote var
+    pressTarget = 20,
+    smelterTarget = 20,
+    kilnTarget = 20,
+    flareTarget = 1;
 
 remote display ".monos" var displayMonos;
 remote display ".flares" var displayFlares;
@@ -48,55 +54,65 @@ void unitFinished()
         displayMonos = ++monos;
     end;
 
-    unitToProduce = monos < 8 ? @mono : flares < 8 ? @flare : null;
+    unitToProduce = flares < flareTarget ? @flare : monos < 8 ? @mono : flares < 8 ? @flare : null;
+end;
+
+inline def updateIfSmaller(ref value, in a, in b, in newValue)
+    mlogSafe("select", out value, "lessThan", in a, in b, in newValue, in value);
+end;
+
+inline def fuzzyUpdate(ref state, in value, in limitLow, in limitHigh)
+    updateIfSmaller(ref state, value, limitLow, false);
+    updateIfSmaller(ref state, limitHigh, value, true);
 end;
 
 void backgroundProcess()
     var lastProgress = 0, factoryProgress = 0;
+    var enableFactory = true;
 
     while true do
+        var coreSilicon = core.@silicon;
+        smelter.enabled = coreSilicon < smelterTarget;
         press.enabled = core.@graphite < pressTarget;
-        smelter.enabled = core.@silicon < smelterTarget;
         kiln.enabled = core.@metaglass < kilnTarget;
-        generator.enabled = battery.@totalPower < 3500;
-        generator2.enabled = battery.@totalPower < 3800;
 
-        if factory == null then continue; end;
+        var power = battery.@totalPower;
+        generator.enabled = power < 3500;
+        generator2.enabled = power < 3800;
 
-        if buildUnits then
-            factoryProgress = factory.@progress;
+        fuzzyUpdate(ref enableFactory, power, 200, 500);
 
-            if unitToProduce == null then
-                factory.enabled = false;
-                factory.config = @mono;
-                lastProgress = 0;
-            elsif lastProgress > factoryProgress + 0.1 then
-                unitFinished();
-                lastProgress = 0;
-            elsif factory.config != unitToProduce then
-                factory.enabled = true;
-                factory.config = unitToProduce;
-                lastProgress = 0;
-            else
-                factory.enabled = true;
-                lastProgress = factoryProgress;
-            end;
-        else
+        factoryProgress = factory.@progress;
+
+        if unitToProduce == null then
             factory.enabled = false;
+            factory.config = @mono;
+            lastProgress = 0;
+        elsif lastProgress > factoryProgress + 0.1 then
+            factory.enabled = enableFactory;
+            unitFinished();
+            lastProgress = 0;
+        elsif factory.config != unitToProduce then
+            factory.enabled = enableFactory;
+            factory.config = unitToProduce;
+            lastProgress = 0;
+        else
+            factory.enabled = enableFactory;
+            lastProgress = factoryProgress;
         end;
 
-        if generator2 != null then
-            if generator2.@coal < 3 then
-                unloader2.config = @coal;
-                continue;
-            end;
+        if generator2.@coal < generator2 then
+            unloader2.config = @coal;
+            continue;
         end;
 
-        var siliconLimit = factory.config == @mono ? 60 : 30;
-        if factory.@silicon < siliconLimit and core.@silicon > 0 then
+        var leadLimit = (unitToProduce == @mono) * 30;
+        if factory.@lead < leadLimit and core.@lead > leadReserve then
+            unloader2.config = @lead;
+        elsif coreSilicon > siliconReserve then
             unloader2.config = @silicon;
         else
-            unloader2.config = @lead;
+            unloader2.config = @coal;
         end;
     end;
 end;

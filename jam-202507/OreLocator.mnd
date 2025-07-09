@@ -1,0 +1,327 @@
+#set target = 8;
+#set syntax = strict;
+#set sort-variables;
+
+//#set symbolic-labels = true;
+
+//#set optimization = none;
+
+module OreLocator;
+
+require math;
+
+const RADIUS =  6;     // or build
+
+linked bank1, message1;
+
+var coreX, coreY, distanceLimit;
+var locations;
+var start;
+
+// Moves the unit to a given distance from the location
+void moveTo(x, y, radius)
+    while !within(x, y, radius) do
+        approach(x, y, radius - 0.5);
+    end;
+end;
+
+// Moves the unit to a mining distance from the location
+void moveTo(x, y)
+    moveTo(x, y, RADIUS);
+end;
+
+const ORE = 1 / 255;
+const WALL = 16 / 255;
+const LIMIT = 10 / 255;
+
+def spotValue(x, y, ore)
+    var result;
+    // Written in pure mlog for speed.
+    // Will be rewritten to Mindcode when native support for select gets implemented.
+    mlog(in x, in y, in ore, out result) {
+        ucontrol getBlock x y type building floor
+        select value equal floor ore $ORE 0
+        select type equal type @boulder @air type
+        select result equal type @air value $WALL
+    }
+    result;
+end;
+
+def computeRowValues(x, y, ore, large)
+    var x1 = spotValue(x - 2, y, ore);
+    var x2 = spotValue(x - 1, y, ore);
+    var x3 = spotValue(x + 0, y, ore);
+    var x4 = spotValue(x + 1, y, ore);
+    var x5 = spotValue(x + 2, y, ore);
+
+    //println($"Spot values for row $y: $, $, $, $, $", x1 * 255, x2 * 255, x3 * 255, x4 * 255, x5 * 255);
+
+    if large then
+        // 3x3 drill
+        return packcolor(
+            x1 + x2 + x3,   // drill at x - 1
+            x2 + x3 + x4,   // drill at x
+            x3 + x4 + x5,   // drill at x + 1
+            0);
+    else
+        // 2x2 drill
+        return packcolor(
+            x1 + x2,        // drill at x - 1.5
+            x2 + x3,        // drill at x - 0.5
+            x3 + x4,        // drill at x + 0.5
+            x4 + x5         // drill at x + 1.5
+        );
+    end;
+end;
+
+inline void updatePosition(dx, dy, value, ref bestX, ref bestY, ref best)
+    //print($"${value * 255} at $dx, $dy ($bestX, $bestY)");
+    if value < LIMIT then
+        if value > best then
+            bestX = dx;
+            bestY = dy;
+            best = value;
+            //print(" ***");
+        end;
+    end;
+
+    //println();
+end;
+
+inline void updateRowPositions3(dy, row, ref bestX, ref bestY, ref best)
+    var col1, col2, col3;
+    unpackcolor(out col1, out col2, out col3, , row);
+    updatePosition(-1, dy, col1, ref bestX, ref bestY, ref best);
+    updatePosition( 0, dy, col2, ref bestX, ref bestY, ref best);
+    updatePosition( 1, dy, col3, ref bestX, ref bestY, ref best);
+    //println($"updateRowPositions3: $bestX, $bestY: ${best * 255}");
+end;
+
+inline void updateRowPositions4(dy, row, ref bestX, ref bestY, ref best)
+    var col1, col2, col3, col4;
+    unpackcolor(out col1, out col2, out col3, out col4, row);
+    updatePosition(-1.5, dy, col1, ref bestX, ref bestY, ref best);
+    updatePosition(-0.5, dy, col2, ref bestX, ref bestY, ref best);
+    updatePosition( 0.5, dy, col3, ref bestX, ref bestY, ref best);
+    updatePosition( 1.5, dy, col4, ref bestX, ref bestY, ref best);
+end;
+
+inline def findBestPosition(x, y, ore, large, ref bestX, ref bestY)
+    var y1 = computeRowValues(x, y - 2, ore, large);
+    var y2 = computeRowValues(x, y - 1, ore, large);
+    var y3 = computeRowValues(x, y + 0, ore, large);
+    var y4 = computeRowValues(x, y + 1, ore, large);
+    var y5 = computeRowValues(x, y + 2, ore, large);
+
+    var best = 0;
+    bestX = 0;
+    bestY = 0;
+
+    if large then
+        var row1 = y1 + y2 + y3;    // drill at y - 1
+        var row2 = y2 + y3 + y4;    // drill at y
+        var row3 = y3 + y4 + y5;    // drill at y + 1
+
+        updateRowPositions3(-1, row1, ref bestX, ref bestY, ref best);
+        updateRowPositions3( 0, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions3( 1, row3, ref bestX, ref bestY, ref best);
+        //println($"findBestPosition: $bestX, $bestY: ${best * 255}");
+    else
+        var row1 = y1 + y2;         // drill at y - 1.5
+        var row2 = y2 + y3;         // drill at y - 0.5
+        var row3 = y3 + y4;         // drill at y + 0.5
+        var row4 = y4 + y5;         // drill at y + 1.5
+
+        updateRowPositions4(-1.5, row1, ref bestX, ref bestY, ref best);
+        updateRowPositions4(-0.5, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions4( 0.5, row3, ref bestX, ref bestY, ref best);
+        updateRowPositions4( 1.5, row4, ref bestX, ref bestY, ref best);
+    end;
+
+    //debugStop("Computed");
+
+    return best * 255;
+end;
+
+def visited(in x, in y)
+    //println($"Testing $x, $y:");
+    var lx, ly, index = 1;
+    for var i in 0 ... locations do
+        lx = bank1[index];
+        ly = bank1[index + 1];
+
+        //println($"Loc $i, ind $index: $lx, $ly");
+
+        if len(x - lx, y - ly) < 7 then
+            //println("visited");
+            return true;
+        end;
+        index += 3;
+    end;
+
+    //println("Not visited");
+    return false;
+end;
+
+inline def limit(value, low, high)
+    min(max(value, low), high);
+end;
+
+// The width of the spiral per rotation
+// Also the distance between two stops on the spiral
+const SPIRAL_WIDTH = 32 / (2 * @pi);
+
+def locateOreAway(ore, in out x, in out y, in out angle)
+    var distance = SPIRAL_WIDTH * angle;
+    angle = max(angle, @pi);
+    while distance < distanceLimit do
+        var a = angle / @degToRad;
+        var lx = limit(coreX + sin(a) * distance, 5, @mapw - 5);
+        var ly = limit(coreY + cos(a) * distance, 5, @maph - 5);
+        moveTo(lx, ly, 5);
+
+        // Compute the next position on the spiral
+        angle += SPIRAL_WIDTH / distance;
+        distance = SPIRAL_WIDTH * angle;
+
+        if !ulocate(:ore, ore, out x, out y) then
+            //print("Cannot locate ore");
+            stopProcessor();
+        end;
+
+        //debugStop($"Located ore at $, $", x, y);
+
+        if min(abs(x - coreX), abs(y - coreY)) >= 7 then
+            if len(x - lx, y - ly) < 32 then
+                if !visited(x, y) then
+                    // The spot we'Ve found is probably in the direction of our travel.
+                    // Advance one more step on the spiral
+                    angle += SPIRAL_WIDTH / distance;
+                    distance = SPIRAL_WIDTH * angle;
+                    return true;
+                 end;
+            end;
+        end;
+    end;
+
+    // Search exhausted
+    return false;
+end;
+
+// Tries to find the best location for given ore, using the given unit.
+// x, y: core coordinates
+// unit: unit to use (must not be stolen)
+// item: item type to search (e.g., @titanium)
+// ore: ore type to search (e.g., @ore-titanium)
+// large: true fox 3x3 drill, false for 2x2 drill
+// limit: if the number of tiles under the drill is equal to this, don't search for better
+//        Setting limit to 10 means we'll try it all over the map
+// Returns true if something was found
+remote def findDrillLocation(x, y, unit, item, ore, large, limit, out dx, out dy, out capacity)
+    locations = 0;
+    coreX = x;
+    coreY = y;
+    distanceLimit = max(coreX, coreY, @mapw - coreX, @maph - coreY);
+    ubind(unit);
+
+    var best = 0, bestX = x, bestY = y;
+    var angle = 0;
+    var count = -1;
+    var oreX = 0, oreY = 0;
+
+    while true do
+        best = 0;
+
+        if !locateOreAway(item, in out oreX, in out oreY, in out angle) then
+            dx = dy = capacity = 0;
+            return false;
+        end;
+        moveTo(oreX, oreY);
+        //debugStop($"Found at $, $", oreX, oreY);
+
+        var last = 0;
+        while true do
+            var diffX, diffY;
+            var score = findBestPosition(oreX, oreY, ore, large, ref diffX, ref diffY);
+            //println($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY");
+            //debugStop("Whoa");
+            if score > limit then
+                dx = oreX + diffX;
+                dy = oreY + diffY;
+                capacity = score;
+                return true;
+            end;
+
+            if score > best then
+                bestX = oreX + diffX;
+                bestY = oreY + diffY;
+                best = score;
+                //println($"Stored best: $best, $bestX, $bestY");
+            end;
+
+            // Did it improve the score since last time?
+            // This should also prevent oscillation
+            if score <= last then break; end;
+
+            // Center the grid on the new position and try again
+            // Repeat for as long as we're finding a better position
+            last = score;
+            oreX += round(diffX * 1.1);    // Rounds halves to higher absolute values
+            oreY += round(diffY * 1.1);
+
+            // We got too close to the core
+            if min(abs(oreX - coreX), abs(oreY - coreY)) < 7 then break; end;
+        end;
+
+        //println($"Storing best to memory: $best, $bestX, $bestY");
+
+        // Encode the point
+        bank1[++count] = best;
+        bank1[++count] = bestX;
+        bank1[++count] = bestY;
+        locations++;
+
+        debugPrint("");
+    end;
+
+    capacity = best;
+    dx = bestX;
+    dy = bestY;
+end;
+
+inline void debugPrint(text)
+    println("Time: ", round(@second - start), " s");
+    var index = -1;
+    for var i in 0 ... locations do
+        var size = bank1[++index];
+        var x = bank1[++index];
+        var y = bank1[++index];
+        println($"$x, $y: $size");
+    end;
+    print(text);
+    printflush(message1);
+end;
+
+inline void debugStop(format, params...)
+    print(format, params);
+    printflush(message1);
+    stopProcessor();
+end;
+
+//begin
+//    printflush(message1);
+//    printflush(message1);
+//    var core, x, y;
+//    do
+//        ubind(@poly);
+//        core = ulocate(:building, :core, false, out x, out y);
+//    while core == null;
+//
+//    moveTo(x, y, 1);
+//
+//    start = @second;
+//    findDrillLocation(x, y, @unit, @titanium, @ore-titanium, false, 10);
+//
+//    debugPrint("Finished.");
+//    stopProcessor();
+//end;
