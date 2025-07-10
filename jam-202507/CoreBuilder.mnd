@@ -46,13 +46,10 @@ noinit var
     targetSilicon,
     targetTitanium,
     targetMetaglass,
-    targetLeadFactory,
-    targetSiliconFactory,
     powerTarget;
 
-var phase = 0;
-
 var
+    leadSurplus = 0,
     graphiteSurplus = 20,
     siliconSurplus = 20,
     metaglassSurplus = 20;
@@ -181,7 +178,7 @@ void supplyBase0()
             elsif core.@copper < targetCopper then
                 status1("Goal 7: copper requirement");
                 mineOre(@copper);
-            elsif core.@lead < targetLead then
+            elsif core.@lead < targetLead + 20 then
                 status1("Goal 8: lead requirement");
                 mineOre(@lead);
             elsif core.@metaglass < targetMetaglass then
@@ -231,8 +228,6 @@ void supplyBase()
     end;
 end;
 
-noinit var leadSiliconBlock;
-
 def targetMet()
     if core.@copper >= targetCopper then
         if core.@lead >= targetLead then
@@ -264,7 +259,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     display.targetMetaglass = metaglass;
 
     targetCopper = copper;
-    targetLead = lead;
+    targetLead = lead + 20;
     targetGraphite = graphite;
     targetSilicon = silicon;
     targetTitanium = titanium;
@@ -340,6 +335,10 @@ inline void meetTarget(ref cfg)
         cfg[CFG_SILICON],
         cfg[CFG_TITANIUM],
         cfg[CFG_METAGLASS]);
+end;
+
+inline void clearTarget()
+    meetTarget(0, 0, 0, 0, 0, 0, 0);
 end;
 
 inline def buildTitaniumDrill(ref cfg)
@@ -464,8 +463,9 @@ begin
     // We're getting into the "build the damn units" mode
     controller.flareTarget = 2;
     buildUnits(@flare);
-    phase++;
 
+    clearTarget();
+    siliconSurplus = leadSurplus = 20;
     controller.pressTarget = 85;
     controller.smelterTarget = 150;
     controller.kilnTarget = 30;
