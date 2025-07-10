@@ -9,13 +9,14 @@
 // Linked variables
 linked message1, bank1, processor1, processor2, processor3, processor4;
 
-noinit var display, controller, flareController;
+noinit var display, controller, flareController, oreLocator;
 
+require units;
 require "Actions.mnd";
 require "Display.mnd" remote display;
 require "CoreController.mnd" remote controller;
 require "FlareController.mnd" remote flareController;
-require "OreLocator.mnd" remote processor4;
+require "OreLocator.mnd" remote oreLocator;
 
 // At this point, we're only using a poly
 const capacity = 30;
@@ -31,11 +32,14 @@ var
     unloader2 = null,
     factory = null,
     generator2 = null,
-    kiln = null;
+    kiln = null,
+    thoriumDrill = null,
+    thoriumGenerator = null;
 
 // Targets to be met for the next build
 noinit var
     core, coreX, coreY,
+    builder,
     targetCopper,
     targetLead,
     targetGraphite,
@@ -83,6 +87,9 @@ const BATTERY_LARGE[]   = (@battery-large,         +4.0, +3.0,   0, 50,  0, 30, 
 const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
 const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
 const AIR_FACTORY[]     = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
+
+const LASER_DRILL[]     = (@laser-drill,            0.0,  0.0,  35,  0, 30, 30, 20,  0,  0, null);
+const SOLAR_PANEL[]     = (@solar-panel,            0.0,  0.0,   0, 10,  0,  8,  0,  0,  0, null);
 
 const UNLOADER3[]       = (@unloader,              +2.0,  0.0,   0,  0,  0, 30, 25,  0,  0, null);
 const KILN[]            = (@kiln,                  +3.5, +0.5,  60, 30, 30,  0,  0,  0,  0, null);
@@ -195,29 +202,31 @@ void supplyBase0()
 end;
 
 void supplyBase1()
-    if core.@sand < core.@coal then
-        if core.@sand < core.@lead then
-            status1("Phase 1: mining sand");
-            mineOre(@sand);
-        else
-            status1("Phase 1: mining lead");
-            mineOre(@lead);
-        end;
-    else
-        if core.@coal < core.@lead then
-            status1("Phase 1: mining coal");
-            mineOre(@coal);
-        else
-            status1("Phase 1: mining lead");
-            mineOre(@lead);
-        end;
-    end;
+    mineOre(@coal);
+//    if core.@sand < core.@coal then
+//        if core.@sand < core.@lead then
+//            status1("Phase 1: mining sand");
+//            mineOre(@sand);
+//        else
+//            status1("Phase 1: mining lead");
+//            mineOre(@lead);
+//        end;
+//    else
+//        if core.@coal < core.@lead then
+//            status1("Phase 1: mining coal");
+//            mineOre(@coal);
+//        else
+//            status1("Phase 1: mining lead");
+//            mineOre(@lead);
+//        end;
+//    end;
 end;
 
 void supplyBase()
-    case phase
-        when 0 then supplyBase0();
-        when 1 then supplyBase1();
+    if controller.monos > 3 then
+        supplyBase1();
+    else
+        supplyBase0();
     end;
 end;
 
@@ -274,7 +283,7 @@ end;
 // BUILDING OPERATIONS
 
 void log(encodedId)
-    bank1[--logPosition] = encodedId + floor(@second) * 1000;
+    bank1[--logPosition] = encodedId + floor(second()) * 1000;
 end;
 
 void logBlock(block)
@@ -320,7 +329,8 @@ inline def buildBlockFromCfg(ref cfg)
     end;
 end;
 
-inline def buildTitaniumDrill(ref cfg)
+
+inline void meetTarget(ref cfg)
     meetTarget(
         cfg[CFG_BLOCK_TYPE],
         cfg[CFG_COPPER],
@@ -329,15 +339,44 @@ inline def buildTitaniumDrill(ref cfg)
         cfg[CFG_SILICON],
         cfg[CFG_TITANIUM],
         cfg[CFG_METAGLASS]);
+end;
 
+inline def buildTitaniumDrill(ref cfg)
+    meetTarget(ref cfg);
+
+    display.nextBlock = @titanium;
     var dx, dy;
-    var result = findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, false, 4, out dx, out dy);
+    var result = oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, false, 4, out dx, out dy);
     if !result then error("Cannot locate spot for titanium drill"); end;
+    display.nextBlock = @pneumatic-drill;
 
     return buildBlockAt(@pneumatic-drill, dx, dy, null, 0, false);
 end;
 
-void  buildThoriumDrill()
+void buildThoriumDrill()
+    meetTarget(ref LASER_DRILL);
+
+    var result = await(layoutThoriumDrill);
+    if !result then error("Cannot locate spot for thorium drill"); end;
+    thoriumDrill = buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, false);
+
+    if oreLocator.water1X < 0 then return; end;
+    meetTarget(ref WATER_EXT);
+    buildBlockAt(@water-extractor, oreLocator.water1X, oreLocator.water1Y, null, 0, false);
+
+    if oreLocator.water2X < 0 then return; end;
+
+    meetTarget(ref WATER_EXT);
+    buildBlockAt(@water-extractor, oreLocator.water2X, oreLocator.water2Y, null, 0, false);
+
+    meetTarget(ref WATER_EXT);
+    thoriumGenerator = buildBlockAt(@steam-generator, oreLocator.generatorX, oreLocator.generatorY, null, 0, false);
+
+    meetTarget(ref POWER_NODE);
+    buildBlockAt(@power-node, oreLocator.nodeX, oreLocator.nodeY, null, 0, false);
+
+    meetTarget(ref SOLAR_PANEL);
+    buildBlockAt(@solar-panel, oreLocator.panelX, oreLocator.panelY, null, 0, false);
 end;
 
 // MAIN
@@ -365,7 +404,7 @@ end;
 
 begin
     do
-        ubind(@poly);
+        builder = ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
 
@@ -373,6 +412,7 @@ begin
     //verifySignature(display);
     display = processor1;
     flareController = processor3;
+    oreLocator = processor4;
 
     // Bind and flag units
     var monos = findUnits(@mono, out display.monos);
@@ -390,9 +430,6 @@ begin
     smelter = buildBlockFromCfg(ref SMELTER);
     titaniumDrill = buildTitaniumDrill(ref PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
-
-    flareController.core = core;
-    flareController.drill = titaniumDrill;
 
     unloader1 = buildBlockFromCfg(ref UNLOADER1);
     controller = buildBlockFromCfg(ref PROCESSOR);
@@ -426,16 +463,21 @@ begin
     controller.smelterTarget = 150;
     controller.kilnTarget = 30;
 
-    var thoriumDrill = true;
+    var searchThorium = true;
     do
-        if thoriumDrill and controller.flares > 1 then
-            thoriumDrill = false;
-            buildThoriumDrill();
+        if searchThorium and controller.flares > 0 then
+            searchThorium = false;
+            findFreeUnit(@flare, 0);
+            async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));
+            ubind(builder);
+            flareController.start(core, titaniumDrill);
         end;
 
         supplyBase1();
         if battery.@totalPower < 300 then break; end;
     while controller.monos < 3;
+
+    flareController.start(core, titaniumDrill);
 
     buildBlockFromCfg(ref UNLOADER3);
     kiln = buildBlockFromCfg(ref KILN);
@@ -445,19 +487,34 @@ begin
     buildBlockFromCfg(ref WATER_EXT);
     generator2 = buildBlockFromCfg(ref STEAM_GEN);
     controller.generator2 = generator2;
-    buildBlockFromCfg(ref BATTERY_LARGE);
+    //buildBlockFromCfg(ref BATTERY_LARGE);
 
-    graphiteSurplus = 100;
+    graphiteSurplus = 200;
     siliconSurplus = 1000;
-    metaglassSurplus = 100;
+    metaglassSurplus = 200;
+
+    if searchThorium then
+        while controller.flares < 1 do
+            supplyBase();
+        end;
+
+        searchThorium = false;
+        findFreeUnit(@flare, 0);
+        async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));
+        ubind(builder);
+        do
+            supplyBase();
+        while !finished(layoutThoriumDrill);
+    end;
+
+    buildThoriumDrill();
     buildBlockFromCfg(ref SORTER);
 
     display.totalTargets = 0;
     display.nextBlock = null;
     do
-        supplyBase1();
+        supplyBase();
     while controller.flares + controller.monos < 16;
-
 
     while true do
         supplyBase();

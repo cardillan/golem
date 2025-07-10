@@ -5,7 +5,11 @@
 
 module Display;
 
+require "common.mnd";
+
 linked display1, switch1, message1, bank1, processor1;
+
+remote processor1 var angle, maxAngle, bestSpot;
 
 var
     core = null,
@@ -80,12 +84,12 @@ const HEADER4_Y = HEADER2_Y - 5 * ROW_HEIGHT - 5;
 
 inline void drawHeader()
     col(%[gold]);
-    drawBold(HEADER_X, HEADER1_Y, @bottom, "Building");
+    drawBold(HEADER_X, HEADER1_Y, @bottom, nextBlock == @titanium ? "Searching" : "Building");
 
     col(%[white]);
     image(HEADER_X, HEADER1_Y - 24, nextBlock == null ? factory.@config : nextBlock, 32, 0);
 
-    var t = floor(@second);
+    var t = floor(second());
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "", s);
@@ -130,6 +134,10 @@ inline void drawMaterials()
                 end;
             end;
         end;
+    elsif nextBlock == @titanium then
+        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Locating ore...");
+        var m = maxAngle, a = angle;
+        drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @titanium, a * a, m * m, "x", bestSpot);
     else
         count = materialCount = totalTargets;
         drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Materials");

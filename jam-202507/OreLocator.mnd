@@ -12,21 +12,37 @@ require math;
 
 const RADIUS =  6;     // or build
 
-linked bank1, message1;
+linked bank1, message1, switch1;
 
-var coreX, coreY, distanceLimit;
+// For each attenuationRate multiple of the distance between the unit position on the spiral and the core, the
+// requested amount of ore tiles under the drill gets decreased by one (i.e. the farther the unit has to go
+// to find the spot, the worse spot gets accepted)
+remote var attenuationRate = 50;
+
+noinit remote var angle, maxAngle, bestSpot;
+
+// Drill positions
+noinit remote var
+    drillX, drillY,
+    water1X, water1Y,
+    water2X, water2Y,
+    generatorX, generatorY,
+    nodeX, nodeY,
+    panelX, panelY;
+
+var coreX, coreY;
 var locations;
 var start;
 
 // Moves the unit to a given distance from the location
-void moveTo(x, y, radius)
+inline void moveTo(x, y, radius)
     while !within(x, y, radius) do
         approach(x, y, radius - 0.5);
     end;
 end;
 
 // Moves the unit to a mining distance from the location
-void moveTo(x, y)
+inline void moveTo(x, y)
     moveTo(x, y, RADIUS);
 end;
 
@@ -34,7 +50,7 @@ const ORE = 1 / 255;
 const WALL = 16 / 255;
 const LIMIT = 10 / 255;
 
-def spotValue(x, y, ore)
+inline def spotValue(x, y, ore)
     var result;
     // Written in pure mlog for speed.
     // Will be rewritten to Mindcode when native support for select gets implemented.
@@ -54,7 +70,7 @@ def computeRowValues(x, y, ore, large)
     var x4 = spotValue(x + 1, y, ore);
     var x5 = spotValue(x + 2, y, ore);
 
-    //println($"Spot values for row $y: $, $, $, $, $", x1 * 255, x2 * 255, x3 * 255, x4 * 255, x5 * 255);
+    debugPrint($"Spot values for row $: $, $, $, $, $", y, x1 * 255, x2 * 255, x3 * 255, x4 * 255, x5 * 255);
 
     if large then
         // 3x3 drill
@@ -75,7 +91,7 @@ def computeRowValues(x, y, ore, large)
 end;
 
 inline void updatePosition(dx, dy, value, ref bestX, ref bestY, ref best)
-    //print($"${value * 255} at $dx, $dy ($bestX, $bestY)");
+    print($"${value * 255} at $dx, $dy ($bestX, $bestY)");
     if value < LIMIT then
         if value > best then
             bestX = dx;
@@ -85,7 +101,7 @@ inline void updatePosition(dx, dy, value, ref bestX, ref bestY, ref best)
         end;
     end;
 
-    //println();
+    println();
 end;
 
 inline void updateRowPositions3(dy, row, ref bestX, ref bestY, ref best)
@@ -94,7 +110,7 @@ inline void updateRowPositions3(dy, row, ref bestX, ref bestY, ref best)
     updatePosition(-1, dy, col1, ref bestX, ref bestY, ref best);
     updatePosition( 0, dy, col2, ref bestX, ref bestY, ref best);
     updatePosition( 1, dy, col3, ref bestX, ref bestY, ref best);
-    //println($"updateRowPositions3: $bestX, $bestY: ${best * 255}");
+    println($"updateRowPositions3: $bestX, $bestY: ${best * 255}");
 end;
 
 inline void updateRowPositions4(dy, row, ref bestX, ref bestY, ref best)
@@ -125,7 +141,7 @@ inline def findBestPosition(x, y, ore, large, ref bestX, ref bestY)
         updateRowPositions3(-1, row1, ref bestX, ref bestY, ref best);
         updateRowPositions3( 0, row2, ref bestX, ref bestY, ref best);
         updateRowPositions3( 1, row3, ref bestX, ref bestY, ref best);
-        //println($"findBestPosition: $bestX, $bestY: ${best * 255}");
+        println($"findBestPosition: $bestX, $bestY: ${best * 255}");
     else
         var row1 = y1 + y2;         // drill at y - 1.5
         var row2 = y2 + y3;         // drill at y - 0.5
@@ -138,12 +154,12 @@ inline def findBestPosition(x, y, ore, large, ref bestX, ref bestY)
         updateRowPositions4( 1.5, row4, ref bestX, ref bestY, ref best);
     end;
 
-    //debugStop("Computed");
+    debugPause();
 
     return best * 255;
 end;
 
-def visited(in x, in y)
+inline def visited(in x, in y)
     //println($"Testing $x, $y:");
     var lx, ly, index = 1;
     for var i in 0 ... locations do
@@ -169,11 +185,13 @@ end;
 
 // The width of the spiral per rotation
 // Also the distance between two stops on the spiral
-const SPIRAL_WIDTH = 32 / (2 * @pi);
+const SPIRAL_WIDTH = 24 / (2 * @pi);
 
-def locateOreAway(ore, in out x, in out y, in out angle)
+inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
     var distance = SPIRAL_WIDTH * angle;
     angle = max(angle, @pi);
+
+    //var maxUnitDist = 32;
     while distance < distanceLimit do
         var a = angle / @degToRad;
         var lx = limit(coreX + sin(a) * distance, 5, @mapw - 5);
@@ -185,21 +203,30 @@ def locateOreAway(ore, in out x, in out y, in out angle)
         distance = SPIRAL_WIDTH * angle;
 
         if !ulocate(:ore, ore, out x, out y) then
-            //print("Cannot locate ore");
-            stopProcessor();
+            return false;
         end;
 
-        //debugStop($"Located ore at $, $", x, y);
+        var coreDist = max(abs(x - coreX), abs(y - coreY));
+        var unitDist = len(x - lx, y - ly);
 
-        if min(abs(x - coreX), abs(y - coreY)) >= 7 then
-            if len(x - lx, y - ly) < 32 then
+//        println($"Distance: ${round(distance)}");
+//        println($"Ore: $x, $y; core: $coreX, $coreY");
+//        println($"Core dist: $coreDist");
+//        println($"Unit dist: ${round(unitDist)}");
+//        println($"Max unit dist: $maxUnitDist");
+//        debugPrintSpot("");
+
+        if coreDist >= 7 then
+            if unitDist < distance then
+                //maxUnitDist = 32;
                 if !visited(x, y) then
-                    // The spot we'Ve found is probably in the direction of our travel.
-                    // Advance one more step on the spiral
-                    angle += SPIRAL_WIDTH / distance;
-                    distance = SPIRAL_WIDTH * angle;
+                    // The spot we've found is probably in the direction of our travel.
+                    // Advance two more steps on the spiral
+                    angle += 2 * SPIRAL_WIDTH / distance;
                     return true;
                  end;
+             else
+                //maxUnitDist++;
             end;
         end;
     end;
@@ -217,24 +244,30 @@ end;
 // limit: if the number of tiles under the drill is equal to this, don't search for better
 //        Setting limit to 10 means we'll try it all over the map
 // Returns true if something was found
-remote def findDrillLocation(x, y, unit, item, ore, large, limit, out dx, out dy, out capacity)
+noinline def findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx, out dy, out capacity)
     locations = 0;
     coreX = x;
     coreY = y;
-    distanceLimit = max(coreX, coreY, @mapw - coreX, @maph - coreY);
+    var distanceLimit = max(coreX, coreY, @mapw - coreX, @maph - coreY);
     ubind(unit);
 
-    var best = 0, bestX = x, bestY = y;
-    var angle = 0;
+    angle = 0;
+    maxAngle = distanceLimit / SPIRAL_WIDTH;
+
     var count = -1;
     var oreX = 0, oreY = 0;
+    bestSpot = dx = dy = capacity = 0;
 
     while true do
-        best = 0;
+        var best = 0, bestX = x, bestY = y;
 
-        if !locateOreAway(item, in out oreX, in out oreY, in out angle) then
-            dx = dy = capacity = 0;
-            return false;
+        // Recompute maximum distance
+        var maxDistance = (limit - capacity) * attenuationRate;
+        distanceLimit = min(distanceLimit, maxDistance);
+        maxAngle = distanceLimit / SPIRAL_WIDTH;
+
+        if !locateOreAway(item, in out oreX, in out oreY, in distanceLimit) then
+            return capacity > 0;
         end;
         moveTo(oreX, oreY);
         //debugStop($"Found at $, $", oreX, oreY);
@@ -243,13 +276,19 @@ remote def findDrillLocation(x, y, unit, item, ore, large, limit, out dx, out dy
         while true do
             var diffX, diffY;
             var score = findBestPosition(oreX, oreY, ore, large, ref diffX, ref diffY);
-            //println($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY");
-            //debugStop("Whoa");
-            if score > limit then
+            println($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY");
+            debugPause();
+
+            // Global best
+            if score > capacity then
                 dx = oreX + diffX;
                 dy = oreY + diffY;
                 capacity = score;
-                return true;
+                bestSpot = score;
+                if capacity >= limit then
+                    unbind();
+                    return true;
+                end;
             end;
 
             if score > best then
@@ -281,15 +320,11 @@ remote def findDrillLocation(x, y, unit, item, ore, large, limit, out dx, out dy
         bank1[++count] = bestY;
         locations++;
 
-        debugPrint("");
+        debugPrintSpot("");
     end;
-
-    capacity = best;
-    dx = bestX;
-    dy = bestY;
 end;
 
-inline void debugPrint(text)
+inline void debugPrintSpot(text)
     println("Time: ", round(@second - start), " s");
     var index = -1;
     for var i in 0 ... locations do
@@ -302,13 +337,311 @@ inline void debugPrint(text)
     printflush(message1);
 end;
 
-inline void debugStop(format, params...)
-    print(format, params);
-    printflush(message1);
-    stopProcessor();
+remote def findDrillLocation(x, y, unit, item, ore, large, limit, out dx, out dy, out capacity)
+    findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx, out dy, out capacity);
 end;
 
+def isBlocked(x, y)
+    var result;
+    // Written in pure mlog for speed.
+    // Will be rewritten to Mindcode when native support for select gets implemented.
+    mlog(in x, in y, out result) {
+        ucontrol getBlock x y type building floor
+        select type equal type @boulder @air type
+        select result equal type @air 0 1
+    }
+    result;
+end;
+
+// Creates a 7x7 terrain mask centered around x and y
+noinline def createTerrainMask(x, y)
+    moveTo(x, y);
+    var result = 0;
+    for var r in -3 .. 3 descending do
+        for var c in -3 .. 3 descending do
+            result = (result << 1) | isBlocked(x + c, y + r);
+        end;
+    end;
+
+    return result;
+end;
+
+// Shifts the mask in the given direction
+// Makes sure parts of the mask shifted away are properly cleared
+def shiftMask(mask, shiftX, shiftY)
+    // If shifted all the way, the mask becomes empty
+    if abs(shiftX) > 6 or abs(shiftY) > 6 then return 0; end;
+
+    var shift = shiftX + 7 * shiftY;
+    if shift > 0 then
+        // We might run into precision issues. Need to clear the top part first
+        var clearMask = ((1 << 49) - 1) >> shift;
+        mask = (mask & clearMask) << shift;
+    else
+        mask >>= -shift;
+    end;
+
+    // Need to clear columns?
+    if shiftX != 0 then
+        var keep = 0b1111111 >> (7 - abs(shiftX));          // The bits we need to keep
+        if shiftX > 0 then keep <<= 7 - abs(shiftX); end;   // Shift to the proper side
+        keep |= keep << 7;
+        keep |= keep << 14;
+        keep |= keep << 21;
+        mask &= keep;
+    end;
+
+    return mask;
+end;
+
+// Could be implemented as a loop, but this is easier on the optimizer
+inline def createFixedMatrix(row0, row1, row2, row3, row4, row5, row6)
+    row0 << 7 * 0 |
+    row1 << 7 * 1 |
+    row2 << 7 * 2 |
+    row3 << 7 * 3 |
+    row4 << 7 * 4 |
+    row5 << 7 * 5 |
+    row6 << 7 * 6;
+end;
+
+inline def createFixedMatrix(row0, row1, row2, row3)
+    row0 << 7 * 0 |
+    row1 << 7 * 1 |
+    row2 << 7 * 2 |
+    row3 << 7 * 3;
+end;
+
+inline def createFixedMatrix(row0, row1)
+    row0 << 7 * 0 |
+    row1 << 7 * 1;
+end;
+
+// r and c will contain the lower-left corner of the placement mask
+// returns the shift applied, or -1 if it doesn't fit
+noinline def findPossiblePlacement(terrainMask, placementMask, width, height, out x, out y)
+    // May get unrolled, but the loops are large
+    for y in -3 .. 3 do
+        var mask = placementMask << 7 * (y + 3);
+        for x in -3 .. 3 do
+//            println($"Position $x $y");
+//            printMask("Shifted mask", mask);
+//            debugPause();
+
+            if (terrainMask & mask) == 0 then return 3 * 8 + y * 7 + x; end;
+
+            // We're testing before x gets incremented, thus 6 instead of 7
+            if x > 3 - width then break; end;
+            mask <<= 1;
+        end;
+        // We're testing before y gets incremented, thus 6 instead of 7
+        if y > 3 - height then break; end;
+    end;
+
+    return -1;
+end;
+
+def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, generatorVertical)
+    var c, r;
+
+    var shift = findPossiblePlacement(terrainMask, generatorHorizontal, 4, 2, out c, out r);
+
+    if shift >= 0 then
+        water2X = centerX + 0.5 + c;
+        water2Y = centerY + 0.5 + r;
+        generatorX = centerX + 2.5 + c;
+        generatorY = centerY + 0.5 + r;
+
+//        printMask("terrainMask:", terrainMask);
+
+        terrainMask |= (generatorHorizontal << shift);
+
+//        printMask("generatorShifted:", generatorHorizontal << shift);
+//        println($"Shift: $shift, r: $r, c: $c");
+//        println($"centerX: $centerX, centerY: $centerY");
+//        println($"water1X: $water1X, water1Y: $water1Y");
+//        println($"water2X: $water2X, water2Y: $water2Y");
+//        println($"generatorX: $generatorX, generatorY: $generatorY");
+//        debugPause();
+    else
+        shift = findPossiblePlacement(terrainMask, generatorVertical, 2, 4, out c, out r);
+        if shift < 0 then return false; end;
+        water2X = centerX + 0.5 + c;
+        water2Y = centerY + 0.5 + r;
+        generatorX = centerX + 0.5 + c;
+        generatorY = centerY + 2.5 + r;
+
+//        printMask("terrainMask:", terrainMask);
+
+        terrainMask |= (generatorVertical << shift);
+
+//        printMask("generatorShifted:", generatorVertical << shift);
+//        println($"Shift: $shift, r: $r, c: $c");
+//        println($"centerX: $centerX, centerY: $centerY");
+//        println($"water1X: $water1X, water1Y: $water1Y");
+//        println($"water2X: $water2X, water2Y: $water2Y");
+//        println($"generatorX: $generatorX, generatorY: $generatorY");
+//        debugPause();
+    end;
+
+    // If it succeeded, we assume we can squeeze in the power node and the solar panel as well
+    // TODO: maybe re-center the position around the middle of the generator combo to get more space
+    //       But maybe not? If it fails, we'll try other areas around the drill
+    // It's a 1x1 block, so it's mask is `1`
+    shift = findPossiblePlacement(terrainMask, 1, 1, 1, out c, out r);
+    if shift < 0 then return false; end;
+    nodeX = centerX + c;
+    nodeY = centerY + r;
+    terrainMask |= (1 << shift);
+
+    shift = findPossiblePlacement(terrainMask, 1, 1, 1, out c, out r);
+    if shift < 0 then return false; end;
+    panelX = centerX + c;
+    panelY = centerY + r;
+
+    return true;
+end;
+
+noinline def layoutThoriumDrillAtLocation()
+    water1X = water1Y = water2X = water2Y = generatorX = generatorY = panelX = panelY = -1;
+
+    // Create a 7x7 matrix around drill center, patch in the drill itself (it's not yet built)
+    var plainTerrainMask = createTerrainMask(drillX, drillY);
+
+    var terrainMask = plainTerrainMask | createFixedMatrix(
+            0b0000000,
+            0b0000000,
+            0b0011100,
+            0b0011100,
+            0b0011100,
+            0b0000000,
+            0b0000000);
+
+    // Block corners - we want the water extractor to touch the side of the drill
+    // The drill is included in the mask for clarity
+    var cornersMask = terrainMask | createFixedMatrix(
+            0b1000001,
+            0b0000000,
+            0b0011100,
+            0b0011100,
+            0b0011100,
+            0b0000000,
+            0b1000001);
+
+    // The extractor mask
+    var extractorMask = createFixedMatrix(0b11, 0b11);
+
+//    printMask("terrainMask:", terrainMask);
+//    printMask("cornersMask:", cornersMask);
+//    printMask("extractorMask:", extractorMask);
+//    debugStop("");
+
+    var r, c;
+    var shift = findPossiblePlacement(cornersMask, extractorMask, 2, 2, out c, out r);
+
+    // When the water extractor can't be built, we'll do without.
+    if shift >= 0 then
+        // Obtain water extractor position
+        water1X = drillX + 0.5 + c;
+        water1Y = drillY + 0.5 + r;
+
+        // Shift the mask in place (may need it later)
+        extractorMask <<= shift;
+
+        // Add it to the terrain mask
+        terrainMask |= extractorMask;
+    end;
+
+
+//    printMask("extractor:", extractorMask);
+//    printMask("new terrain mask:", terrainMask);
+//    println($"Shift: $shift, r: $r, c: $c");
+//    println($"water1X: $water1X, water1Y: $water1Y");
+//    debugStop("");
+
+    // Try to patch in the water extractor/generator combo.
+    // Both orientations
+    var generatorHorizontal = createFixedMatrix(0b1111, 0b1111);
+    var generatorVertical = createFixedMatrix(0b11, 0b11, 0b11, 0b11);
+
+    if tryPlaceGenerator(drillX, drillY, terrainMask, generatorHorizontal, generatorVertical) then return true; end;
+
+    // Try four more areas, each shifted by 3 in both directions
+    for var sx in 3, 3, -3, -3; var sy in 3, -3, 3, -3 do
+        // Create the new terrain mask
+        // Shift the terrain mask in the opposite direction!
+        var newX = drillX + sx;
+        var newY = drillY + sy;
+
+        var newTerrainMask = createTerrainMask(newX, newY);
+
+        var shiftedMask = shiftMask(terrainMask, -sx, -sy);
+        var combinedMask = newTerrainMask | shiftedMask;
+
+//        printMask("shiftedMask:", shiftedMask);
+//        printMask("newTerrainMask:", newTerrainMask);
+//        printMask("combinedMask:", combinedMask);
+//        println($"Shifted by -$sx, -$sy");
+//        println($"Old center: $drillX, $drillY");
+//        println($"New center: ${drillX + sx}, ${drillY + sy}");
+//        debugPause();
+
+        if tryPlaceGenerator(drillX + sx, drillY + sy, combinedMask, generatorHorizontal, generatorVertical) then return true; end;
+    end;
+
+    // We can't place the accessories, but we can place the drill
+    return true;
+end;
+
+remote def layoutThoriumDrill(x, y, unit, limit)
+    if !findDrillLocationLocal(x, y, unit, @thorium, @ore-thorium, true, limit, out drillX, out drillY) then
+        return false;
+    end;
+
+    layoutThoriumDrillAtLocation();
+end;
+
+
+// DEBUG
+
+//var debug = false;
+//
+//void printMask(text, mask)
+//    if debug then
+//        println(text);
+//        for var r in 0 ... 7 descending do
+//            for var c in 0 ... 7 do
+//                print((mask & (1 << (7 * r + c))) ? "x" : "o");
+//            end;
+//            println();
+//        end;
+//    end;
+//end;
+//
+//inline void debugPrint(format, params...)
+//    if debug then
+//        println(format, params);
+//    end;
+//end;
+//
+//inline void debugStop(format, params...)
+//    if debug then
+//        print(format, params);
+//        debugPause();
+//        end();
+//    end;
+//end;
+//
+//inline void debugPause()
+//    if debug then
+//        printflush(message1);
+//        switch1.enabled = true;
+//        do while switch1.enabled;
+//    end;
+//end;
+//
 //begin
+//    debug = true;
 //    printflush(message1);
 //    printflush(message1);
 //    var core, x, y;
@@ -320,8 +653,30 @@ end;
 //    moveTo(x, y, 1);
 //
 //    start = @second;
-//    findDrillLocation(x, y, @unit, @titanium, @ore-titanium, false, 10);
+//    if true then
+//        var dx, dy, capacity;
+//        findDrillLocationLocal(x, y, @unit, @thorium, @ore-thorium, true, 7, out dx, out dy, out capacity);
+//        println($"Found $capacity at $dx, $dy.");
+//    else
+//        drillX = 129;
+//        drillY = 96;
+//        layoutThoriumDrillAtLocation();
 //
-//    debugPrint("Finished.");
-//    stopProcessor();
+//        buildAt(drillX, drillY, @laser-drill);
+//        buildAt(water1X, water1Y, @water-extractor);
+//        buildAt(water2X, water2Y, @water-extractor);
+//        buildAt(generatorX, generatorY, @steam-generator);
+//        buildAt(nodeX, nodeY, @power-node);
+//        buildAt(panelX, panelY, @solar-panel);
+//    end;
+//
+//    debugStop("Finished.");
+//end;
+//
+//inline void buildAt(x, y, block)
+//    if x >= 0 then
+//        moveTo(x, y);
+//        build(x, y, block, 0, null);
+//        wait(0.1);
+//    end;
 //end;

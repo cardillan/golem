@@ -1,62 +1,74 @@
-jump 3 always 0 0
-draw triangle .ERROR .core .drill :depositItems:block :depositItems:cap :fetchBlock:block
-draw triangle :fetchBlock:unitItem 0 0 0 0 0
+jump 5 always 0 0
+jump 70 always 0 0
+jump 66 always 0 0
+draw triangle .ERROR .core .drill :depositItems:cap :fetchBlock:unitItem :start:aCore
+draw triangle :start:aDrill 0 0 0 0 0
 set .ERROR ""
-set *signature "0:v1"
+set *signature "8266fae8e050cb59:v1"
+jump 64 equal .core null
 ubind @flare
-op equal *tmp0 @unit null
-sensor *tmp1 @unit @controller
-op notEqual *tmp2 *tmp1 null
-op or *tmp3 *tmp0 *tmp2
-jump 5 notEqual *tmp3 false
-set :fetchBlock:block .drill
-sensor *tmp5 :fetchBlock:block @x
-sensor *tmp6 :fetchBlock:block @y
-sensor *tmp7 @unit @firstItem
-jump 17 equal *tmp7 null
-ucontrol itemDrop @air 1000 0 0 0
-ucontrol approach *tmp5 *tmp6 5.5 0 0
-ucontrol within *tmp5 *tmp6 6 *tmp10 0
-jump 14 equal *tmp10 false
+sensor *tmp2 @unit @controller
+jump 13 equal *tmp2 @this
+sensor *tmp5 @unit @controlled
+jump 8 notEqual *tmp5 0
+sensor *tmp7 @unit @controller
+jump 8 notEqual *tmp7 @this
+sensor *tmp10 .drill @x
+sensor *tmp11 .drill @y
 sensor *tmp12 @unit @firstItem
-jump 25 equal *tmp12 null
+jump 20 equal *tmp12 null
 ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp12 @unit @firstItem
-jump 22 notEqual *tmp12 null
-ucontrol itemTake :fetchBlock:block @titanium 10 0 0
+ucontrol approach *tmp10 *tmp11 5.5 0 0
+ucontrol within *tmp10 *tmp11 6 *tmp15 0
+jump 17 equal *tmp15 false
+sensor *tmp17 @unit @firstItem
+jump 28 equal *tmp17 null
+ucontrol itemDrop @air 1000 0 0 0
+sensor *tmp17 @unit @firstItem
+jump 25 notEqual *tmp17 null
+ucontrol itemTake .drill @titanium 10 0 0
 sensor :fetchBlock:unitItem @unit @firstItem
-op notEqual *tmp15 :fetchBlock:unitItem null
-op notEqual *tmp16 :fetchBlock:unitItem @titanium
-op land *tmp17 *tmp15 *tmp16
-jump 32 equal *tmp17 false
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp19 @unit @titanium
-op lessThan *tmp20 *tmp19 10
-sensor *tmp21 :fetchBlock:block @titanium
+op notEqual *tmp20 :fetchBlock:unitItem null
+op notEqual *tmp21 :fetchBlock:unitItem @titanium
 op land *tmp22 *tmp20 *tmp21
-jump 25 notEqual *tmp22 false
-set :depositItems:block .core
-sensor *tmp23 @unit @firstItem
-jump 54 notEqual *tmp23 @titanium
-sensor *tmp26 :depositItems:block @x
-sensor *tmp27 :depositItems:block @y
-ucontrol within *tmp26 *tmp27 6 *tmp28 0
-jump 47 notEqual *tmp28 false
-ucontrol approach *tmp26 *tmp27 5.5 0 0
-ucontrol within *tmp26 *tmp27 6 *tmp28 0
-jump 44 equal *tmp28 false
-sensor :depositItems:cap :depositItems:block @itemCapacity
-ucontrol itemDrop :depositItems:block 10 0 0 0
-sensor *tmp32 @unit @firstItem
-op mul *tmp33 *tmp32 :depositItems:cap
-sensor *tmp34 :depositItems:block @titanium
-jump 48 greaterThan *tmp33 *tmp34
-jump 11 always 0 0
-sensor *tmp36 @unit @firstItem
-jump 11 equal *tmp36 null
+jump 35 equal *tmp22 false
 ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp36 @unit @firstItem
-jump 56 notEqual *tmp36 null
-jump 11 always 0 0
+sensor *tmp24 @unit @titanium
+op lessThan *tmp25 *tmp24 10
+sensor *tmp26 .drill @titanium
+op land *tmp27 *tmp25 *tmp26
+jump 28 notEqual *tmp27 false
+sensor *tmp28 @unit @firstItem
+jump 56 notEqual *tmp28 @titanium
+sensor *tmp31 .core @x
+sensor *tmp32 .core @y
+ucontrol within *tmp31 *tmp32 6 *tmp33 0
+jump 49 notEqual *tmp33 false
+ucontrol approach *tmp31 *tmp32 5.5 0 0
+ucontrol within *tmp31 *tmp32 6 *tmp33 0
+jump 46 equal *tmp33 false
+sensor :depositItems:cap .core @itemCapacity
+ucontrol itemDrop .core 10 0 0 0
+sensor *tmp37 @unit @firstItem
+op mul *tmp38 *tmp37 :depositItems:cap
+sensor *tmp39 .core @titanium
+jump 50 greaterThan *tmp38 *tmp39
+jump 61 always 0 0
+sensor *tmp41 @unit @firstItem
+jump 61 equal *tmp41 null
+ucontrol itemDrop @air 1000 0 0 0
+sensor *tmp41 @unit @firstItem
+jump 58 notEqual *tmp41 null
+sensor *tmp7 @unit @controller
+jump 15 equal *tmp7 @this
+jump 8 always 0 0
+wait 1e12
+jump 7 always 0 0
+set .core :start:aCore
+set .drill :start:aDrill
+set :start*finished true
+jump 7 always 0 0
+set :addDrill*finished true
+jump 7 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

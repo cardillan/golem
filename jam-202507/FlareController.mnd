@@ -5,6 +5,9 @@
 
 module FlareController;
 
+require units;
+
+// This is a probably misguided attempt to share code
 require "Actions.mnd";
 
 linked message1;
@@ -12,9 +15,39 @@ linked message1;
 // At this point, we're only using a flare
 const capacity = 10;
 
-noinit remote var
+noinit var
     core,
     drill;
+
+remote void start(aCore, aDrill)
+    core = aCore;
+    drill = aDrill;
+
+    // Give the other processors chance to control the flares.
+    // The rest will happen in backgroundProcess
+    wait(1);
+end;
+
+remote void addDrill(drill)
+    // Todo
+end;
+
+void backgroundProcess()
+    if core == null then return; end;
+
+    while true do
+        do
+            ubind(@flare);
+            if @unit.@controller == @this then break; end;
+        while @unit.@controlled != 0;
+
+        do
+            fetchBlock(drill, @titanium);
+        while @unit.@controller == @this;
+    end;
+end;
+
+
 
 inline void status1(text)
 end;
@@ -32,12 +65,3 @@ inline void targetMet()
     false;
 end;
 
-void backgroundProcess()
-    do
-        ubind(@flare);
-    while @unit == null or @unit.@controller != null;
-
-    while true do
-        fetchBlock(drill, @titanium);
-    end;
-end;
