@@ -1,74 +1,699 @@
-jump 5 always 0 0
-jump 70 always 0 0
-jump 66 always 0 0
-draw triangle .ERROR .core .drill :depositItems:cap :fetchBlock:unitItem :start:aCore
-draw triangle :start:aDrill 0 0 0 0 0
-set .ERROR ""
-set *signature "8266fae8e050cb59:v1"
-jump 64 equal .core null
+jump 17 always 0 0
+jump 689 always 0 0
+jump 584 always 0 0
+jump 576 always 0 0
+draw triangle message1 .core .coreX .coreY .drills .outgoing
+draw triangle .servicedDrills .thoriumDrill .thoriumDrillX .thoriumDrillY .thoriumGenerator .thoriumGeneratorX
+draw triangle .thoriumGeneratorY .titaniumDrills*0 .titaniumDrills*1 .titaniumDrills*10 .titaniumDrills*11 .titaniumDrills*12
+draw triangle .titaniumDrills*13 .titaniumDrills*14 .titaniumDrills*15 .titaniumDrills*16 .titaniumDrills*17 .titaniumDrills*18
+draw triangle .titaniumDrills*19 .titaniumDrills*2 .titaniumDrills*20 .titaniumDrills*21 .titaniumDrills*22 .titaniumDrills*23
+draw triangle .titaniumDrills*24 .titaniumDrills*25 .titaniumDrills*26 .titaniumDrills*27 .titaniumDrills*28 .titaniumDrills*29
+draw triangle .titaniumDrills*3 .titaniumDrills*30 .titaniumDrills*31 .titaniumDrills*32 .titaniumDrills*33 .titaniumDrills*34
+draw triangle .titaniumDrills*35 .titaniumDrills*36 .titaniumDrills*37 .titaniumDrills*38 .titaniumDrills*39 .titaniumDrills*4
+draw triangle .titaniumDrills*40 .titaniumDrills*41 .titaniumDrills*42 .titaniumDrills*43 .titaniumDrills*44 .titaniumDrills*45
+draw triangle .titaniumDrills*46 .titaniumDrills*47 .titaniumDrills*48 .titaniumDrills*49 .titaniumDrills*5 .titaniumDrills*6
+draw triangle .titaniumDrills*7 .titaniumDrills*8 .titaniumDrills*9 :addThoriumDrill:drill :addThoriumDrill:generator :addTitaniumDrill:drill
+draw triangle :backgroundProcess:firstUnit :backgroundProcess:flag :backgroundProcess:serviced :backgroundProcess:thoriumFlare :handleThoriumFlare:item :handleTitaniumFlare:allDrills
+draw triangle :handleTitaniumFlare:drill :handleTitaniumFlare:drill.1 :handleTitaniumFlare:index :handleTitaniumFlare:item :start:aCore :start:drill
+set .drills 0
+set .outgoing true
+set .servicedDrills 0
+set *signature "5c2f0f03eecc869a:v1"
+jump 574 equal .core null
+set :backgroundProcess:thoriumFlare null
+set :backgroundProcess:firstUnit null
+set :backgroundProcess:serviced 0
 ubind @flare
-sensor *tmp2 @unit @controller
-jump 13 equal *tmp2 @this
-sensor *tmp5 @unit @controlled
-jump 8 notEqual *tmp5 0
-sensor *tmp7 @unit @controller
-jump 8 notEqual *tmp7 @this
-sensor *tmp10 .drill @x
-sensor *tmp11 .drill @y
-sensor *tmp12 @unit @firstItem
-jump 20 equal *tmp12 null
-ucontrol itemDrop @air 1000 0 0 0
-ucontrol approach *tmp10 *tmp11 5.5 0 0
-ucontrol within *tmp10 *tmp11 6 *tmp15 0
-jump 17 equal *tmp15 false
-sensor *tmp17 @unit @firstItem
-jump 28 equal *tmp17 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp17 @unit @firstItem
-jump 25 notEqual *tmp17 null
-ucontrol itemTake .drill @titanium 10 0 0
-sensor :fetchBlock:unitItem @unit @firstItem
-op notEqual *tmp20 :fetchBlock:unitItem null
-op notEqual *tmp21 :fetchBlock:unitItem @titanium
-op land *tmp22 *tmp20 *tmp21
-jump 35 equal *tmp22 false
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp24 @unit @titanium
-op lessThan *tmp25 *tmp24 10
-sensor *tmp26 .drill @titanium
-op land *tmp27 *tmp25 *tmp26
-jump 28 notEqual *tmp27 false
-sensor *tmp28 @unit @firstItem
-jump 56 notEqual *tmp28 @titanium
-sensor *tmp31 .core @x
-sensor *tmp32 .core @y
-ucontrol within *tmp31 *tmp32 6 *tmp33 0
-jump 49 notEqual *tmp33 false
-ucontrol approach *tmp31 *tmp32 5.5 0 0
-ucontrol within *tmp31 *tmp32 6 *tmp33 0
-jump 46 equal *tmp33 false
-sensor :depositItems:cap .core @itemCapacity
+op equal *tmp2 :backgroundProcess:firstUnit null
+sensor *tmp3 :backgroundProcess:firstUnit @dead
+op or *tmp5 *tmp2 *tmp3
+jump 31 equal *tmp5 false
+set :backgroundProcess:firstUnit @unit
+jump 34 notEqual @unit :backgroundProcess:firstUnit
+set .servicedDrills :backgroundProcess:serviced
+set :backgroundProcess:serviced 0
+sensor *tmp10 @unit @controller
+jump 38 equal *tmp10 @this
+sensor *tmp13 @unit @controlled
+jump 25 notEqual *tmp13 0
+sensor *tmp15 :backgroundProcess:thoriumFlare @controller
+jump 41 equal *tmp15 @this
+set :backgroundProcess:thoriumFlare @unit
+jump 63 notEqual @unit :backgroundProcess:thoriumFlare
+sensor :handleThoriumFlare:item @unit @firstItem
+jump 48 notEqual :handleThoriumFlare:item @coal
+set .outgoing true
+ucontrol approach .thoriumGeneratorX .thoriumGeneratorY 4 0 0
+ucontrol itemDrop .thoriumGenerator 10 0 0 0
+jump 25 always 0 0
+jump 53 notEqual :handleThoriumFlare:item @thorium
+set .outgoing false
+ucontrol approach .coreX .coreY 4 0 0
 ucontrol itemDrop .core 10 0 0 0
-sensor *tmp37 @unit @firstItem
-op mul *tmp38 *tmp37 :depositItems:cap
-sensor *tmp39 .core @titanium
-jump 50 greaterThan *tmp38 *tmp39
-jump 61 always 0 0
-sensor *tmp41 @unit @firstItem
-jump 61 equal *tmp41 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp41 @unit @firstItem
-jump 58 notEqual *tmp41 null
-sensor *tmp7 @unit @controller
-jump 15 equal *tmp7 @this
-jump 8 always 0 0
+jump 25 always 0 0
+jump 56 equal :handleThoriumFlare:item null
+ucontrol itemDrop @air 10 0 0 0
+jump 25 always 0 0
+jump 60 equal .outgoing false
+ucontrol approach .thoriumDrillX .thoriumDrillY 4 0 0
+ucontrol itemTake .thoriumDrill @thorium 10 0 0
+jump 25 always 0 0
+ucontrol approach .coreX .coreY 4 0 0
+ucontrol itemTake .core @coal 10 0 0
+jump 25 always 0 0
+sensor :backgroundProcess:flag @unit @flag
+print "Found flare with a flag {0}\n"
+format :backgroundProcess:flag
+op greaterThan *tmp30 :backgroundProcess:flag 1
+op lessThanEq *tmp31 :backgroundProcess:flag .drills
+op land *tmp32 *tmp30 *tmp31
+jump 78 equal *tmp32 false
+op sub *tmp34 :backgroundProcess:flag 1
+op shl *tmp35 1 *tmp34
+op and *tmp36 :backgroundProcess:serviced *tmp35
+jump 76 equal *tmp36 false
+ucontrol flag 0 0 0 0 0
+jump 79 always 0 0
+op or :backgroundProcess:serviced :backgroundProcess:serviced *tmp35
+jump 79 always 0 0
+ucontrol flag 0 0 0 0 0
+sensor *tmp40 @unit @flag
+op sub :handleTitaniumFlare:index *tmp40 1
+op lessThan *tmp42 :handleTitaniumFlare:index 0
+op greaterThanEq *tmp43 :handleTitaniumFlare:index .drills
+op or *tmp44 *tmp42 *tmp43
+jump 450 equal *tmp44 false
+print "Looking for a drill for the flare\nservicedDrills: {0}\ndrills: {0}\nallDrills: {0}\n"
+op shl *tmp46 1 .drills
+op sub :handleTitaniumFlare:allDrills *tmp46 1
+format .servicedDrills
+format .drills
+format :handleTitaniumFlare:allDrills
+op sub *tmp48 :handleTitaniumFlare:allDrills 1
+jump 572 equal .servicedDrills *tmp48
+set :handleTitaniumFlare:index 0
+set :handleTitaniumFlare:drill .titaniumDrills*0
+jump 572 greaterThan 0 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 100 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 1
+jump 444 equal *tmp58 0
+set :handleTitaniumFlare:index 1
+set :handleTitaniumFlare:drill .titaniumDrills*1
+jump 572 greaterThan 1 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 107 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 2
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 1 1
+set :handleTitaniumFlare:drill .titaniumDrills*2
+jump 572 greaterThan 2 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 114 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 4
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 2 1
+set :handleTitaniumFlare:drill .titaniumDrills*3
+jump 572 greaterThan 3 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 121 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 8
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 3 1
+set :handleTitaniumFlare:drill .titaniumDrills*4
+jump 572 greaterThan 4 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 128 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 16
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 4 1
+set :handleTitaniumFlare:drill .titaniumDrills*5
+jump 572 greaterThan 5 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 135 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 32
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 5 1
+set :handleTitaniumFlare:drill .titaniumDrills*6
+jump 572 greaterThan 6 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 142 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 64
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 6 1
+set :handleTitaniumFlare:drill .titaniumDrills*7
+jump 572 greaterThan 7 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 149 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 128
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 7 1
+set :handleTitaniumFlare:drill .titaniumDrills*8
+jump 572 greaterThan 8 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 156 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 256
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 8 1
+set :handleTitaniumFlare:drill .titaniumDrills*9
+jump 572 greaterThan 9 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 163 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 512
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 9 1
+set :handleTitaniumFlare:drill .titaniumDrills*10
+jump 572 greaterThan 10 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 170 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 1024
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 10 1
+set :handleTitaniumFlare:drill .titaniumDrills*11
+jump 572 greaterThan 11 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 177 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 2048
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 11 1
+set :handleTitaniumFlare:drill .titaniumDrills*12
+jump 572 greaterThan 12 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 184 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 4096
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 12 1
+set :handleTitaniumFlare:drill .titaniumDrills*13
+jump 572 greaterThan 13 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 191 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 8192
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 13 1
+set :handleTitaniumFlare:drill .titaniumDrills*14
+jump 572 greaterThan 14 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 198 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 16384
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 14 1
+set :handleTitaniumFlare:drill .titaniumDrills*15
+jump 572 greaterThan 15 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 205 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 32768
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 15 1
+set :handleTitaniumFlare:drill .titaniumDrills*16
+jump 572 greaterThan 16 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 212 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 65536
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 16 1
+set :handleTitaniumFlare:drill .titaniumDrills*17
+jump 572 greaterThan 17 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 219 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 131072
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 17 1
+set :handleTitaniumFlare:drill .titaniumDrills*18
+jump 572 greaterThan 18 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 226 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 262144
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 18 1
+set :handleTitaniumFlare:drill .titaniumDrills*19
+jump 572 greaterThan 19 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 233 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 524288
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 19 1
+set :handleTitaniumFlare:drill .titaniumDrills*20
+jump 572 greaterThan 20 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 240 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 1048576
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 20 1
+set :handleTitaniumFlare:drill .titaniumDrills*21
+jump 572 greaterThan 21 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 247 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 2097152
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 21 1
+set :handleTitaniumFlare:drill .titaniumDrills*22
+jump 572 greaterThan 22 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 254 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 4194304
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 22 1
+set :handleTitaniumFlare:drill .titaniumDrills*23
+jump 572 greaterThan 23 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 261 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 8388608
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 23 1
+set :handleTitaniumFlare:drill .titaniumDrills*24
+jump 572 greaterThan 24 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 268 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 16777216
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 24 1
+set :handleTitaniumFlare:drill .titaniumDrills*25
+jump 572 greaterThan 25 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 275 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 33554432
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 25 1
+set :handleTitaniumFlare:drill .titaniumDrills*26
+jump 572 greaterThan 26 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 282 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 67108864
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 26 1
+set :handleTitaniumFlare:drill .titaniumDrills*27
+jump 572 greaterThan 27 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 289 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 134217728
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 27 1
+set :handleTitaniumFlare:drill .titaniumDrills*28
+jump 572 greaterThan 28 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 296 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 268435456
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 28 1
+set :handleTitaniumFlare:drill .titaniumDrills*29
+jump 572 greaterThan 29 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 303 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 536870912
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 29 1
+set :handleTitaniumFlare:drill .titaniumDrills*30
+jump 572 greaterThan 30 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 310 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 1073741824
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 30 1
+set :handleTitaniumFlare:drill .titaniumDrills*31
+jump 572 greaterThan 31 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 317 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 2147483648
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 31 1
+set :handleTitaniumFlare:drill .titaniumDrills*32
+jump 572 greaterThan 32 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 324 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 4294967296
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 32 1
+set :handleTitaniumFlare:drill .titaniumDrills*33
+jump 572 greaterThan 33 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 331 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 8589934592
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 33 1
+set :handleTitaniumFlare:drill .titaniumDrills*34
+jump 572 greaterThan 34 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 338 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 17179869184
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 34 1
+set :handleTitaniumFlare:drill .titaniumDrills*35
+jump 572 greaterThan 35 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 345 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 34359738368
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 35 1
+set :handleTitaniumFlare:drill .titaniumDrills*36
+jump 572 greaterThan 36 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 352 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 68719476736
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 36 1
+set :handleTitaniumFlare:drill .titaniumDrills*37
+jump 572 greaterThan 37 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 359 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 137438953472
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 37 1
+set :handleTitaniumFlare:drill .titaniumDrills*38
+jump 572 greaterThan 38 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 366 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 274877906944
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 38 1
+set :handleTitaniumFlare:drill .titaniumDrills*39
+jump 572 greaterThan 39 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 373 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 549755813888
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 39 1
+set :handleTitaniumFlare:drill .titaniumDrills*40
+jump 572 greaterThan 40 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 380 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 1099511627776
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 40 1
+set :handleTitaniumFlare:drill .titaniumDrills*41
+jump 572 greaterThan 41 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 387 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 2199023255552
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 41 1
+set :handleTitaniumFlare:drill .titaniumDrills*42
+jump 572 greaterThan 42 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 394 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 4398046511104
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 42 1
+set :handleTitaniumFlare:drill .titaniumDrills*43
+jump 572 greaterThan 43 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 401 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 8796093022208
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 43 1
+set :handleTitaniumFlare:drill .titaniumDrills*44
+jump 572 greaterThan 44 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 408 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 17592186044416
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 44 1
+set :handleTitaniumFlare:drill .titaniumDrills*45
+jump 572 greaterThan 45 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 415 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 35184372088832
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 45 1
+set :handleTitaniumFlare:drill .titaniumDrills*46
+jump 572 greaterThan 46 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 422 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 70368744177664
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 46 1
+set :handleTitaniumFlare:drill .titaniumDrills*47
+jump 572 greaterThan 47 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 429 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 140737488355328
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 47 1
+set :handleTitaniumFlare:drill .titaniumDrills*48
+jump 572 greaterThan 48 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 436 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 281474976710656
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 48 1
+set :handleTitaniumFlare:drill .titaniumDrills*49
+jump 572 greaterThan 49 .drills
+sensor *tmp54 :handleTitaniumFlare:drill @totalItems
+jump 443 lessThanEq *tmp54 5
+op and *tmp58 .servicedDrills 562949953421312
+jump 444 equal *tmp58 0
+op add :handleTitaniumFlare:index 49 1
+print "Found drill {0}\n"
+format :handleTitaniumFlare:index
+op shl *tmp62 1 :handleTitaniumFlare:index
+op or .servicedDrills .servicedDrills *tmp62
+op add *tmp63 :handleTitaniumFlare:index 1
+ucontrol flag *tmp63 0 0 0 0
+op mul *tmp86 :handleTitaniumFlare:index 2
+op add @counter *tmp86 452
+set :handleTitaniumFlare:drill.1 .titaniumDrills*0
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*1
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*2
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*3
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*4
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*5
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*6
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*7
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*8
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*9
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*10
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*11
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*12
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*13
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*14
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*15
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*16
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*17
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*18
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*19
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*20
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*21
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*22
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*23
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*24
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*25
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*26
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*27
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*28
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*29
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*30
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*31
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*32
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*33
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*34
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*35
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*36
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*37
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*38
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*39
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*40
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*41
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*42
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*43
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*44
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*45
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*46
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*47
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*48
+jump 551 always 0 0
+set :handleTitaniumFlare:drill.1 .titaniumDrills*49
+sensor :handleTitaniumFlare:item @unit @firstItem
+sensor *tmp67 :handleTitaniumFlare:drill.1 @x
+sensor *tmp68 :handleTitaniumFlare:drill.1 @y
+print "Drill: {0} at {0}, {0}\n"
+format :handleTitaniumFlare:drill.1
+format *tmp67
+format *tmp68
+jump 563 notEqual :handleTitaniumFlare:item @titanium
+print "Dropping titanium\n"
+ucontrol approach .coreX .coreY 4 0 0
+ucontrol itemDrop .core 10 0 0 0
+jump 572 always 0 0
+jump 570 notEqual :handleTitaniumFlare:item null
+print "Fetching titanium\n"
+sensor *tmp73 :handleTitaniumFlare:drill.1 @x
+sensor *tmp74 :handleTitaniumFlare:drill.1 @y
+ucontrol approach *tmp73 *tmp74 4 0 0
+ucontrol itemTake :handleTitaniumFlare:drill.1 @titanium 10 0 0
+jump 572 always 0 0
+print "Wrong item\n"
+ucontrol itemDrop @air 10 0 0 0
+printflush message1
+jump 25 always 0 0
 wait 1e12
-jump 7 always 0 0
+jump 21 always 0 0
 set .core :start:aCore
-set .drill :start:aDrill
+sensor .coreX .core @x
+sensor .coreY .core @y
+set .titaniumDrills*0 :start:drill
+set .drills 1
+wait 1
 set :start*finished true
-jump 7 always 0 0
-set :addDrill*finished true
-jump 7 always 0 0
+jump 21 always 0 0
+jump 687 greaterThanEq .drills 49
+op mul *tmp87 .drills 2
+op add @counter *tmp87 587
+set .titaniumDrills*0 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*1 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*2 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*3 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*4 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*5 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*6 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*7 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*8 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*9 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*10 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*11 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*12 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*13 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*14 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*15 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*16 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*17 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*18 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*19 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*20 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*21 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*22 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*23 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*24 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*25 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*26 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*27 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*28 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*29 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*30 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*31 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*32 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*33 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*34 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*35 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*36 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*37 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*38 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*39 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*40 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*41 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*42 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*43 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*44 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*45 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*46 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*47 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*48 :addTitaniumDrill:drill
+jump 686 always 0 0
+set .titaniumDrills*49 :addTitaniumDrill:drill
+op add .drills .drills 1
+set :addTitaniumDrill*finished true
+jump 21 always 0 0
+set .thoriumDrill :addThoriumDrill:drill
+sensor .thoriumDrillX :addThoriumDrill:drill @x
+sensor .thoriumDrillY :addThoriumDrill:drill @y
+set .thoriumGenerator :addThoriumDrill:generator
+sensor .thoriumGeneratorX :addThoriumDrill:generator @x
+sensor .thoriumGeneratorY :addThoriumDrill:generator @y
+set :addThoriumDrill*finished true
+jump 21 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

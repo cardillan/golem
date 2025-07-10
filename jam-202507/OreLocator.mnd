@@ -21,14 +21,15 @@ remote var attenuationRate = 50;
 
 noinit remote var angle, maxAngle, bestSpot;
 
-// Drill positions
+// Drill infrastructure positions
 noinit remote var
     drillX, drillY,
     water1X, water1Y,
     water2X, water2Y,
     generatorX, generatorY,
     nodeX, nodeY,
-    panelX, panelY;
+    panelX, panelY,
+    batteryX, batteryY;
 
 var coreX, coreY;
 var locations;
@@ -70,7 +71,7 @@ def computeRowValues(x, y, ore, large)
     var x4 = spotValue(x + 1, y, ore);
     var x5 = spotValue(x + 2, y, ore);
 
-    debugPrint($"Spot values for row $: $, $, $, $, $", y, x1 * 255, x2 * 255, x3 * 255, x4 * 255, x5 * 255);
+    //debugPrint($"Spot values for row $: $, $, $, $, $", y, x1 * 255, x2 * 255, x3 * 255, x4 * 255, x5 * 255);
 
     if large then
         // 3x3 drill
@@ -91,7 +92,7 @@ def computeRowValues(x, y, ore, large)
 end;
 
 inline void updatePosition(dx, dy, value, ref bestX, ref bestY, ref best)
-    print($"${value * 255} at $dx, $dy ($bestX, $bestY)");
+    //print($"${value * 255} at $dx, $dy ($bestX, $bestY)");
     if value < LIMIT then
         if value > best then
             bestX = dx;
@@ -101,7 +102,7 @@ inline void updatePosition(dx, dy, value, ref bestX, ref bestY, ref best)
         end;
     end;
 
-    println();
+    //println();
 end;
 
 inline void updateRowPositions3(dy, row, ref bestX, ref bestY, ref best)
@@ -110,7 +111,7 @@ inline void updateRowPositions3(dy, row, ref bestX, ref bestY, ref best)
     updatePosition(-1, dy, col1, ref bestX, ref bestY, ref best);
     updatePosition( 0, dy, col2, ref bestX, ref bestY, ref best);
     updatePosition( 1, dy, col3, ref bestX, ref bestY, ref best);
-    println($"updateRowPositions3: $bestX, $bestY: ${best * 255}");
+    //println($"updateRowPositions3: $bestX, $bestY: ${best * 255}");
 end;
 
 inline void updateRowPositions4(dy, row, ref bestX, ref bestY, ref best)
@@ -141,7 +142,7 @@ inline def findBestPosition(x, y, ore, large, ref bestX, ref bestY)
         updateRowPositions3(-1, row1, ref bestX, ref bestY, ref best);
         updateRowPositions3( 0, row2, ref bestX, ref bestY, ref best);
         updateRowPositions3( 1, row3, ref bestX, ref bestY, ref best);
-        println($"findBestPosition: $bestX, $bestY: ${best * 255}");
+        //println($"findBestPosition: $bestX, $bestY: ${best * 255}");
     else
         var row1 = y1 + y2;         // drill at y - 1.5
         var row2 = y2 + y3;         // drill at y - 0.5
@@ -154,7 +155,7 @@ inline def findBestPosition(x, y, ore, large, ref bestX, ref bestY)
         updateRowPositions4( 1.5, row4, ref bestX, ref bestY, ref best);
     end;
 
-    debugPause();
+    //debugPause();
 
     return best * 255;
 end;
@@ -276,8 +277,8 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx,
         while true do
             var diffX, diffY;
             var score = findBestPosition(oreX, oreY, ore, large, ref diffX, ref diffY);
-            println($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY");
-            debugPause();
+            //println($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY");
+            //debugPause();
 
             // Global best
             if score > capacity then
@@ -320,7 +321,7 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx,
         bank1[++count] = bestY;
         locations++;
 
-        debugPrintSpot("");
+        //debugPrintSpot("");
     end;
 end;
 
@@ -498,6 +499,13 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
     if shift < 0 then return false; end;
     panelX = centerX + c;
     panelY = centerY + r;
+    terrainMask |= (1 << shift);
+
+    shift = findPossiblePlacement(terrainMask, 1, 1, 1, out c, out r);
+    if shift < 0 then return false; end;
+    batteryX = centerX + c;
+    batteryY = centerY + r;
+    terrainMask |= (1 << shift);
 
     return true;
 end;

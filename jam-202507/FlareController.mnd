@@ -7,61 +7,128 @@ module FlareController;
 
 require units;
 
-// This is a probably misguided attempt to share code
-require "Actions.mnd";
-
 linked message1;
 
 // At this point, we're only using a flare
-const capacity = 10;
+const CAPACITY = 10;
+const RADIUS = 4;
 
-noinit var
-    core,
-    drill;
+const TITANIUM_TRIGGER = 5;
 
-remote void start(aCore, aDrill)
+noinit volatile var
+    core, coreX, coreY,
+    thoriumDrill, thoriumDrillX, thoriumDrillY,
+    thoriumGenerator, thoriumGeneratorX, thoriumGeneratorY;
+
+volatile var titaniumDrills[50];
+volatile var drills = 0;
+
+remote void start(aCore, drill)
     core = aCore;
-    drill = aDrill;
+    coreX = core.@x;
+    coreY = core.@y;
+    titaniumDrills[0] = drill;
+    drills = 1;
 
     // Give the other processors chance to control the flares.
-    // The rest will happen in backgroundProcess
     wait(1);
+
+    // The rest will happen in backgroundProcess
 end;
 
-remote void addDrill(drill)
-    // Todo
+remote void addTitaniumDrill(drill)
+    if drills < length(titaniumDrills) - 1 then
+        titaniumDrills[drills] = drill;
+        drills++;
+    end;
+end;
+
+remote void addThoriumDrill(drill, generator)
+    thoriumDrill = drill;
+    thoriumDrillX = drill.@x;
+    thoriumDrillY = drill.@y;
+    thoriumGenerator = generator;
+    thoriumGeneratorX = generator.@x;
+    thoriumGeneratorY = generator.@y;
+end;
+
+volatile var outgoing = true;
+
+void handleThoriumFlare()
+    var item = @unit.@firstItem;
+    if item == @coal then
+        outgoing = true;
+        approach(thoriumGeneratorX, thoriumGeneratorY, RADIUS);
+        itemDrop(thoriumGenerator, CAPACITY);
+    elsif item == @thorium then
+        outgoing = false;
+        approach(coreX, coreY, RADIUS);
+        itemDrop(core, CAPACITY);
+    elsif item != null then
+        itemDrop(@air, CAPACITY);
+    elsif outgoing and thoriumDrill.@totalItems > 0 then
+        // Take thorium
+        approach(thoriumDrillX, thoriumDrillY, RADIUS);
+        itemTake(thoriumDrill, @thorium, CAPACITY);
+    else
+        // was incoming, take coal
+        approach(coreX, coreY, RADIUS);
+        itemTake(core, @coal, CAPACITY / 2);
+    end;
+end;
+
+volatile var servicedDrills = 0;
+volatile var trace = 0;
+
+void handleTitaniumFlare()
+    var drill = titaniumDrills[0];
+    var item = @unit.@firstItem;
+
+    if item == @titanium then
+        approach(coreX, coreY, RADIUS);
+        itemDrop(core, CAPACITY);
+    elsif item == null then
+        // Take titanium
+        approach(drill.@x, drill.@y, RADIUS);
+        itemTake(drill, @titanium, CAPACITY);
+    else
+        itemDrop(@air, CAPACITY);
+    end;
 end;
 
 void backgroundProcess()
     if core == null then return; end;
 
+    var thoriumFlare = null;
+    var titaniumFlare = null;
+    var firstUnit = null;
+    var serviced = 0;
+
     while true do
         do
             ubind(@flare);
+            if firstUnit == null || firstUnit.@dead then
+                firstUnit = @unit;
+            end;
+
+            if @unit == firstUnit then
+                servicedDrills = serviced;
+                serviced = 0;
+            end;
+
             if @unit.@controller == @this then break; end;
         while @unit.@controlled != 0;
 
-        do
-            fetchBlock(drill, @titanium);
-        while @unit.@controller == @this;
+        if thoriumDrill != null && thoriumFlare.@controller != @this then
+            thoriumFlare = @unit;
+        elsif titaniumFlare.@controller != @this then
+            titaniumFlare = @unit;
+        end;
+
+        if @unit == thoriumFlare then
+            handleThoriumFlare();
+        elsif @unit == titaniumFlare then
+            handleTitaniumFlare();
+        end;
     end;
 end;
-
-
-
-inline void status1(text)
-end;
-
-inline void status2(text, item, block)
-end;
-
-inline void status3(text)
-end;
-
-inline void transportStatus(target, item)
-end;
-
-inline void targetMet()
-    false;
-end;
-
