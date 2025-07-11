@@ -76,6 +76,11 @@ void mine(flag)
     var y = flag % 1000;
     var x = flag \ 1000;
 
+    var floorOre =
+        ore == @copper ? @ore-copper :
+        ore == @lead ? @ore-lead :
+        @sand-floor;
+
     if ore != minOre then
         // We aren't mining the most needed ore
         if core.sensor(ore) > min then
@@ -99,15 +104,20 @@ void mine(flag)
 
         print($" at $x, $y");
         approach(x, y, RADIUS);
-        var block = getBlock(x, y);
-        if block == null then
+        var block = getBlock(x, y, , out floor);
+        if floor != floorOre then
+            if floor == null then
+                println(": too far");
+            else
+                flag(1);
+                println(": no ore!");
+            end;
+        elsif block == null then
             mine(x, y);
-        elsif floor != null then
+        else
             // The spot got built over!
             flag(1);
-            println(": ore disappeared!");
-        else
-            println(": too far away");
+            println(": blocked!");
         end;
     end;
 

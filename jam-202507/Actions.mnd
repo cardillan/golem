@@ -1,7 +1,5 @@
 module Actions;
 
-require "common.mnd";
-
 const RADIUS =  6;     // or build
 
 // UTILITY FUNCTIONS
@@ -41,7 +39,7 @@ inline void error(error, parameters...)
 end;
 
 // Moves the unit to a given distance from the location
-void moveTo(x, y, radius)
+inline void moveTo(x, y, radius)
     status3("Moving...");
     while !within(x, y, radius) do
         approach(x, y, radius - 0.5);
@@ -49,12 +47,12 @@ void moveTo(x, y, radius)
 end;
 
 // Moves the unit to a mining distance from the location
-void moveTo(x, y)
+inline void moveTo(x, y)
     moveTo(x, y, RADIUS);
 end;
 
 // Moves the unit to the given location, ensuring it is empty on arrival
-void moveToEmpty(x, y)
+inline void moveToEmpty(x, y)
     status3("Moving...");
     do
         // If ore is held, try to drop it during transport to start cooldown earlier
@@ -71,7 +69,7 @@ inline void dropAll()
 end;
 
 // Moves the unit to the a given distance from a block
-void moveToBlock(block, radius)
+inline void moveToBlock(block, radius)
     moveTo(block.@x, block.@y, radius);
 end;
 
@@ -96,7 +94,7 @@ void depositItems(block, item)
 end;
 
 // Locates the ore, crashes when not successful
-void locateOre(ore, out x, out y)
+inline void locateOre(ore, out x, out y)
     if !ulocate(:ore, ore, out x, out y) then
         error("Cannot locate ore");
     end;
@@ -137,7 +135,7 @@ void mineOre(ore)
     mineOre(ore, capacity, core);
 end;
 
-void fetchBlock(block, item)
+inline void fetchBlock(block, item)
     transportStatus(block.@itemCapacity, item);
     status2("Fetching ", item, block);
     moveToEmpty(block.@x, block.@y);
@@ -152,5 +150,15 @@ void fetchBlock(block, item)
      while @unit.sensor(item) < capacity and block.sensor(item);
 
     depositItems(core, item);
+end;
+
+// Supplies the block with the given amount of ore
+inline void supplyBlock(block, ore)
+    status2("Supplying ", ore, block);
+    var blockCapacity = block.@itemCapacity;
+    var missing = blockCapacity - block.sensor(ore);
+    if missing > 0 then
+        mineOre(ore, blockCapacity, block);
+    end;
 end;
 

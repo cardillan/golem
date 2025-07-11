@@ -1,12 +1,7 @@
 #set target = 8;
-#set targeting = target;
 #set syntax = strict;
-#set function-inlining = none;
 #set sort-variables;
-//#set goal = size;
-//#set loop-hoisting = none;
-//#set unreachable-code-elimination = none;
-//#set optimization = none;
+//#set function-inlining = none;
 
 // Linked variables
 linked message1, bank1, processor1, processor2, processor3, processor4, processor5;
@@ -58,75 +53,57 @@ var
 
 external bank1[511] logPosition = 511;
 
-def packType()
+// See BlockConfiguration.mnd
+const PRESS = "#'+nA#####";
+const BATTERY1 = "k*/(7#####";
+const BATTERY2 = "k+/(7#####";
+const GENERATOR = "m*.<2#####";
+const SMELTER = "%+-A<#####";
+const INVERTED_SORT1 = "T+,%%#####";
+const PNEUMATIC_DRILL = "w**5#-####";
+const UNLOADER1 = "*,###A<##";
+const INVERTED_SORT2 = "T),%%#####";
+const OVERFLOW_GATE1 = "W*-'%#####";
+const PROCESSOR = "®-.}U#U###";
+const POWER_NODE = "g)'%)#####";
+const UNLOADER2 = "(*###A<##";
+const AIR_FACTORY = "'(_i####&";
+const UNLOADER3 = ",)###A<##";
+const INVERTED_SORT3 = "T,*%%#####";
+const KILN = "',+_AA####";
+const WATER_EXT = "z%-AAA##A#";
+const OVERFLOW_GATE2 = "W'*'%#####";
+const OVERFLOW_GATE3 = "W&*'%#####";
+const STEAM_GEN = "o%+FK<A###";
+const MULTIPRESS = "$(.#U<##";
+const WATER_EXT2 = "z%/AAA##A#";
+const PAYLOAD_ROUTER = " '%-#2####";
+const UNLOADER4 = "*(###A<##";
+const UNDERFLOW_GATE = "X*''%#####";
+const ADDITIVE_REC = "*%ë#}###";
+const OVERFLOW_GATE4 = "W&*'%#####";
+const LASER_DRILL = "x**F#AA7##";
+const SOLAR_PANEL = "r**#-#+###";
+const BATTERY_LARGE = "l.-#U#A7##";
+
+void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out rotation)
+    var index = 0;
+    type = lookup(:block, char(cfg, index++) - 35);
+    x = char(cfg, index++) - 35 - 7;
+    y = char(cfg, index++) - 35 - 7;
+    cu = char(cfg, index++) - 35;
+    pb = char(cfg, index++) - 35;
+    gr = char(cfg, index++) - 35;
+    si = char(cfg, index++) - 35;
+    ti = char(cfg, index++) - 35;
+    mg = char(cfg, index++) - 35;
+    rotation = char(cfg, index++) - 35;
+    //println($"Type: $type, x: $x, y: $y, $cu, $pb, $gr, $si, $ti, $mg, $rotation");
 end;
-
-// Blocks layout around the core and build requirements
-
-const CFG_BLOCK_TYPE  = 0;
-const CFG_X           = CFG_BLOCK_TYPE + 1;
-const CFG_Y           = CFG_X + 1;
-const CFG_COPPER      = CFG_Y + 1;
-const CFG_LEAD        = CFG_COPPER + 1;
-const CFG_GRAPHITE    = CFG_LEAD + 1;
-const CFG_SILICON     = CFG_GRAPHITE + 1;
-const CFG_TITANIUM    = CFG_SILICON + 1;
-const CFG_METAGLASS   = CFG_TITANIUM + 1;
-const CFG_ROTATION    = CFG_METAGLASS + 1;
-const CFG_CONFIG      = CFG_ROTATION + 1;
-
-//                         Block type                      X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
-const PRESS[]           = (@graphite-press,             -2.5, +1.5, 75, 30,  0,  0,  0,  0,  0, null);
-const BATTERY1[]        = (@battery,                     0.0, +5.0,  5, 20,  0,  0,  0,  0,  0, null);
-const BATTERY2[]        = (@battery,                    +1.0, +5.0,  5, 20,  0,  0,  0,  0,  0, null);
-const GENERATOR[]       = (@combustion-generator,        0.0, +4.0, 25, 15,  0,  0,  0,  0,  0, null);
-const SMELTER[]         = (@silicon-smelter,            +1.5, +3.5, 30, 25,  0,  0,  0,  0,  0, null);
-const INVERTED_SORT1[]  = (@inverted-sorter,            +1.0, +2.0,  2,  2,  0,  0,  0,  0,  0, null);
-const PNEUMATIC_DRILL[] = (@pneumatic-drill,             0.0,  0.0, 18,  0, 10,  0,  0,  0,  0, null);
-const UNLOADER1[]       = (@unloader,                    0.0, +2.0,  0,  0,  0, 30, 25,  0,  0, null);
-const INVERTED_SORT2[]  = (@inverted-sorter,            -1.0, +2.0,  2,  2,  0,  0,  0,  0,  0, null);
-const OVERFLOW_GATE1[]  = (@overflow-gate,               0.0, +3.0,  4,  2,  0,  0,  0,  0,  0, null);
-const PROCESSOR[]       = (@micro-processor,            +3.0, +4.0, 90, 50,  0, 50,  0,  0,  0, processor2);
-const POWER_NODE[]      = (@power-node,                 -1.0, -3.0,  2,  6,  0,  0,  0,  0,  0, null);
-const UNLOADER2[]       = (@unloader,                   -2.0,  0.0,  0,  0,  0, 30, 25,  0,  0, null);
-const AIR_FACTORY[]     = (@air-factory,                -3.0, -2.0, 60, 70,  0,  0,  0,  0,  3, @mono);
-
-const UNLOADER3[]       = (@unloader,                   +2.0, -1.0,  0,  0,  0, 30, 25,  0,  0, null);
-const INVERTED_SORT3[]  = (@inverted-sorter,            +2.0,  0.0,  2,  2,  0,  0,  0,  0,  0, null);
-const KILN[]            = (@kiln,                       +2.5, +1.5, 60, 30, 30,  0,  0,  0,  0, null);
-const WATER_EXT[]       = (@water-extractor,            -4.5, +3.5, 30, 30, 30,  0,  0, 30,  0, null);
-const OVERFLOW_GATE2[]  = (@overflow-gate,              -3.0,  0.0,  4,  2,  0,  0,  0,  0,  0, null);
-const OVERFLOW_GATE3[]  = (@overflow-gate,              -4.0,  0.0,  4,  2,  0,  0,  0,  0,  0, null);
-const STEAM_GEN[]       = (@steam-generator,            -4.5, +1.5, 35, 40, 25, 30,  0,  0,  0, null);
-
-const MULTIPRESS[]      = (@multi-press,                -2.0, +4.0,   0,100, 50, 25,100,  0,  0, null);
-const WATER_EXT2[]      = (@water-extractor,            -4.5, +5.5, 30, 30, 30,  0,  0, 30,  0, null);
-
-const PAYLOAD_ROUTER[]  = (@payload-router,             -3.0, -5.0,  10,  0, 15,  0,  0,  0,  0, null);
-const UNLOADER4[]       = (@unloader,                    0.0, -2.0,   0,  0,  0, 30, 25,  0,  0, null);
-const UNDERFLOW_GATE[]  = (@underflow-gate,              0.0, -3.0,   4,  2,  0,  0,  0,  0,  0, null);
-const ADDITIVE_REC[]    = (@additive-reconstructor,      0.0, -5.0, 200,120,  0, 90,  0,  0,  0, null);
-
-const OVERFLOW_GATE4[]  = (@overflow-gate,              -4.0,  0.0,   4,  2,  0,  0,  0,  0,  0, null);
-
-const LASER_DRILL[]     = (@laser-drill,                 0.0,  0.0,  35,  0, 30, 30, 20,  0,  0, null);
-const SOLAR_PANEL[]     = (@solar-panel,                 0.0,  0.0,   0, 10,  0,  8,  0,  0,  0, null);
-
-//const BATTERY_LARGE[]   = (@battery-large,              +4.0, +3.0,   0, 50,  0, 30, 20,  0,  0, null);
 
 // SUPPLY OPERATIONS
 
-// Supplies the block with the given amount of ore
-inline void supplyBlock(block, ore)
-    status2("Supplying ", ore, block);
-    var blockCapacity = block.@itemCapacity;
-    var missing = blockCapacity - block.sensor(ore);
-    if missing > 0 then
-        mineOre(ore, blockCapacity, block);
-    end;
-end;
-
-void supplyBase0()
+inline void supplyBase0()
     var supplied = false;
 
     if unloader1 == null then
@@ -194,26 +171,9 @@ void supplyBase0()
     end;
 end;
 
-void supplyBase1()
+inline void supplyBase1()
     status1("Phase 1: supplying base");
     mineOre(@coal);
-//    if core.@sand < core.@coal then
-//        if core.@sand < core.@lead then
-//            status1("Phase 1: mining sand");
-//            mineOre(@sand);
-//        else
-//            status1("Phase 1: mining lead");
-//            mineOre(@lead);
-//        end;
-//    else
-//        if core.@coal < core.@lead then
-//            status1("Phase 1: mining coal");
-//            mineOre(@coal);
-//        else
-//            status1("Phase 1: mining lead");
-//            mineOre(@lead);
-//        end;
-//    end;
 end;
 
 void supplyBase()
@@ -231,21 +191,15 @@ void supplyBase()
     end;
 end;
 
-def targetMet()
-    if core.@copper >= targetCopper then
-        if core.@lead >= targetLead then
-            if core.@graphite >= targetGraphite then
-                if core.@silicon >= targetSilicon then
-                    if core.@titanium >= targetTitanium then
-                        if core.@metaglass >= targetMetaglass then
-                            return true;
-                        end;
-                    end;
-                end;
-            end;
-        end;
-    end;
-    return false;
+inline def targetMet()
+    // This is horrible, but Mindcode doesn'T do short-circuit evaluation yet.
+    if core.@copper < targetCopper then return false; end;
+    if core.@lead < targetLead then return false; end;
+    if core.@graphite < targetGraphite then return false; end;
+    if core.@silicon < targetSilicon then return false; end;
+    if core.@titanium < targetTitanium then return false; end;
+    if core.@metaglass < targetMetaglass then return false; end;
+    return true;
 end;
 
 void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
@@ -281,11 +235,11 @@ end;
 
 // BUILDING OPERATIONS
 
-void log(encodedId)
-    bank1[--logPosition] = encodedId + floor(second()) * 1000;
+inline void log(encodedId)
+    bank1[--logPosition] = encodedId + floor(@second * 1000) * 1000;
 end;
 
-void logBlock(block)
+inline void logBlock(block)
     log(block.@id);
 end;
 
@@ -320,32 +274,30 @@ def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass
 end;
 
 // Builds a block
-inline def buildBlockFromCfg(ref cfg)
-    for var block, offsetX, offsetY, copper, lead, graphite, silicon, titanium, metaglass, rotation, config in cfg do
-        var x = coreX + offsetX;
-        var y = coreY + offsetY;
-        return buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, rotation, config);
-    end;
+def buildBlockFromCfg(cfg)
+    var type, x, y, cu, pb, gr, si, ti, mg, rotation;
+    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out rotation);
+    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, rotation, null);
 end;
 
-
-inline void meetTarget(ref cfg)
-    meetTarget(
-        cfg[CFG_BLOCK_TYPE],
-        cfg[CFG_COPPER],
-        cfg[CFG_LEAD],
-        cfg[CFG_GRAPHITE],
-        cfg[CFG_SILICON],
-        cfg[CFG_TITANIUM],
-        cfg[CFG_METAGLASS]);
+def buildBlockFromCfg(cfg, config)
+    var type, x, y, cu, pb, gr, si, ti, mg, rotation;
+    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out rotation);
+    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, rotation, config);
 end;
 
-inline def buildTitaniumDrill(ref cfg)
-    meetTarget(ref cfg);
+void meetTarget(cfg)
+    var type, cu, pb, gr, si, ti, mg;
+    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg);
+    meetTarget(type, cu, pb, gr, si, ti, mg);
+end;
+
+def buildTitaniumDrill(cfg)
+    meetTarget(cfg);
 
     display.nextBlock = @titanium;
     var dx, dy;
-    var result = oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, false, 4, out dx, out dy);
+    var result = oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, 2, 4, out dx, out dy);
     if !result then error("Cannot locate spot for titanium drill"); end;
     display.nextBlock = @pneumatic-drill;
 
@@ -353,31 +305,31 @@ inline def buildTitaniumDrill(ref cfg)
 end;
 
 void buildThoriumDrill()
-    meetTarget(ref LASER_DRILL);
+    meetTarget(LASER_DRILL);
 
     var result = await(layoutThoriumDrill);
     if !result then error("Cannot locate spot for thorium drill"); end;
     var thoriumDrill = buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, false);
 
     if oreLocator.water1X < 0 then return; end;
-    meetTarget(ref WATER_EXT);
+    meetTarget(WATER_EXT);
     buildBlockAt(@water-extractor, oreLocator.water1X, oreLocator.water1Y, null, 0, false);
 
     if oreLocator.water2X < 0 then return; end;
 
-    meetTarget(ref WATER_EXT);
+    meetTarget(WATER_EXT);
     buildBlockAt(@water-extractor, oreLocator.water2X, oreLocator.water2Y, null, 0, false);
 
-    meetTarget(ref WATER_EXT);
+    meetTarget(WATER_EXT);
     var thoriumGenerator = buildBlockAt(@steam-generator, oreLocator.generatorX, oreLocator.generatorY, null, 0, false);
 
-    meetTarget(ref POWER_NODE);
+    meetTarget(POWER_NODE);
     buildBlockAt(@power-node, oreLocator.nodeX, oreLocator.nodeY, null, 0, false);
 
-    meetTarget(ref SOLAR_PANEL);
+    meetTarget(SOLAR_PANEL);
     buildBlockAt(@solar-panel, oreLocator.panelX, oreLocator.panelY, null, 0, false);
 
-    meetTarget(ref BATTERY1);
+    meetTarget(BATTERY1);
     buildBlockAt(@battery, oreLocator.batteryX, oreLocator.batteryY, null, 0, false);
 
     display.thoriumDrill = thoriumDrill;
@@ -428,24 +380,25 @@ begin
 
     // PHASE 0: BASIC BLOCKS
 
-    press = buildBlockFromCfg(ref PRESS);
-    battery = buildBlockFromCfg(ref BATTERY1);
-    buildBlockFromCfg(ref BATTERY2);
-    generator = buildBlockFromCfg(ref GENERATOR);
+    press = buildBlockFromCfg(PRESS);
+    battery = buildBlockFromCfg(BATTERY1);
+    buildBlockFromCfg(BATTERY2);
+    generator = buildBlockFromCfg(GENERATOR);
 
     powerTarget = 400;
 
-    smelter = buildBlockFromCfg(ref SMELTER);
-    buildBlockFromCfg(ref INVERTED_SORT1);
-    titaniumDrill = buildTitaniumDrill(ref PNEUMATIC_DRILL);
+    smelter = buildBlockFromCfg(SMELTER);
+    buildBlockFromCfg(INVERTED_SORT1);
+    titaniumDrill = buildTitaniumDrill(PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
-    unloader1 = buildBlockFromCfg(ref UNLOADER1);
-    buildBlockFromCfg(ref INVERTED_SORT2);
-    buildBlockFromCfg(ref OVERFLOW_GATE1);
+    unloader1 = buildBlockFromCfg(UNLOADER1);
+    buildBlockFromCfg(INVERTED_SORT2);
+    buildBlockFromCfg(OVERFLOW_GATE1);
+    graphiteSurplus = 100;
 
     // Build and initialize base controller
 
-    controller = buildBlockFromCfg(ref PROCESSOR);
+    controller = buildBlockFromCfg(PROCESSOR, processor2);
     controller.display = display;
     controller.core = core;
     controller.bank = bank1;
@@ -457,10 +410,10 @@ begin
     controller.flares = flares;
     controller.polys = polys;
 
-    buildBlockFromCfg(ref POWER_NODE);
-    controller.unloader2 = buildBlockFromCfg(ref UNLOADER2);
+    buildBlockFromCfg(POWER_NODE);
+    controller.unloader2 = buildBlockFromCfg(UNLOADER2);
 
-    var factory = buildBlockFromCfg(ref AIR_FACTORY);
+    var factory = buildBlockFromCfg(AIR_FACTORY);
     controller.factory = factory;
     display.factory = factory;
 
@@ -484,32 +437,31 @@ begin
     while controller.monos < 3;
 
     // Build stock
-    graphiteSurplus = 60;
-    siliconSurplus = 100;
+    siliconSurplus = 65;
 
     // Kiln - needed for metaglass
-    buildBlockFromCfg(ref UNLOADER3);
-    buildBlockFromCfg(ref INVERTED_SORT3);
-    kiln = buildBlockFromCfg(ref KILN);
+    buildBlockFromCfg(UNLOADER3);
+    buildBlockFromCfg(INVERTED_SORT3);
+    kiln = buildBlockFromCfg(KILN);
     controller.kiln = kiln;
 
     // Steam generator
-    buildBlockFromCfg(ref WATER_EXT);
-    buildBlockFromCfg(ref OVERFLOW_GATE2);
-    buildBlockFromCfg(ref OVERFLOW_GATE3);
-    controller.generator2 = buildBlockFromCfg(ref STEAM_GEN);
+    buildBlockFromCfg(WATER_EXT);
+    buildBlockFromCfg(OVERFLOW_GATE2);
+    buildBlockFromCfg(OVERFLOW_GATE3);
+    controller.generator2 = buildBlockFromCfg(STEAM_GEN);
 
-    controller.multipress = buildBlockFromCfg(ref MULTIPRESS);
-    buildBlockFromCfg(ref WATER_EXT2);
+    controller.multipress = buildBlockFromCfg(MULTIPRESS);
+    //buildBlockFromCfg(WATER_EXT2);
 
-    //buildBlockFromCfg(ref BATTERY_LARGE);
+    //buildBlockFromCfg(BATTERY_LARGE);
     graphiteSurplus = 200;
 
     // POLYS
-    controller.payloadRouter = buildBlockFromCfg(ref PAYLOAD_ROUTER);
-    buildBlockFromCfg(ref UNLOADER4);
-    buildBlockFromCfg(ref UNDERFLOW_GATE);
-    var reconstructor = buildBlockFromCfg(ref ADDITIVE_REC);
+    controller.payloadRouter = buildBlockFromCfg(PAYLOAD_ROUTER);
+    buildBlockFromCfg(UNLOADER4);
+    buildBlockFromCfg(UNDERFLOW_GATE);
+    var reconstructor = buildBlockFromCfg(ADDITIVE_REC);
     controller.reconstructor = reconstructor;
     display.reconstructor = reconstructor;
 
@@ -532,7 +484,7 @@ begin
 
     ubind(@flare);
     display.nextBlock = @ore-titanium;
-    oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, false, 1e9);
+    oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, 4, 1e9);
     ubind(builder);
 
     do
@@ -548,8 +500,7 @@ begin
         supplyBase();
     while !finished(layoutThoriumDrill);
 
-    //buildThoriumDrill();
-    //buildBlockFromCfg(ref SORTER);
+    buildThoriumDrill();
 
     display.totalTargets = 0;
     display.nextBlock = null;

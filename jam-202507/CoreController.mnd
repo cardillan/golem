@@ -4,8 +4,6 @@
 
 module CoreController;
 
-require "common.mnd";
-
 noinit remote var
     core,
     display,
@@ -51,7 +49,7 @@ remote display var
 external bank[511] var logPosition;
 
 void log(encodedId)
-    bank[--logPosition] = encodedId + floor(second()) * 1000;
+    bank[--logPosition] = encodedId + floor(@second * 1000) * 1000;
 end;
 
 void logUnit(unit)
@@ -86,9 +84,10 @@ void backgroundProcess()
 
     while true do
         var coreSilicon = core.@silicon;
+        var coreGraphite = core.@graphite;
         smelter.enabled = coreSilicon < smelterTarget;
-        press.enabled = core.@graphite < pressTarget;
-        multipress.enabled = core.@graphite < pressTarget;
+        press.enabled = !multipress and coreGraphite < pressTarget;
+        multipress.enabled = coreGraphite < pressTarget;
         kiln.enabled = core.@metaglass < kilnTarget;
 
         var power = battery.@totalPower;

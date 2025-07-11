@@ -3,9 +3,9 @@
 //#set function-inlining = none;
 #set sort-variables;
 
-module Display;
+param TIME_COMPRESS = 8;
 
-require "common.mnd";
+module Display;
 
 linked display1, switch1, message1, bank1, processor1;
 
@@ -15,6 +15,7 @@ remote processor1 var mapProgress, mapTotal, mapAction, mapSpots;
 
 var
     core = null,
+    coreX = 0, coreY = 0,
     page = 0,
     numPages = 3;
 
@@ -102,7 +103,7 @@ inline void drawHeader()
         image(HEADER_X, HEADER1_Y - 24, @hydrogen, 32, 360 - (@tick / 2) % 360);
     end;
 
-    var t = floor(second());
+    var t = floor(@second * TIME_COMPRESS);
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "", s);
@@ -265,28 +266,9 @@ end;
 
 var lastTime;
 
-inline void displayRecord(ref x, ref y, record)
-    var id = record % 1000;
-    var icon = id > @blockCount ? lookup(:unit, id - @blockCount) : lookup(:block, id);
-
-    image(x, y, icon, 14, 0);
-
-    var t;
-    if true then
-        t = record \ 1000;
-    else
-        var r = record \ 1000;
-        t = r - lastTime;
-        lastTime = r;
-    end;
-
-//    if t < 15 then return; end;
-//    t = floor(r * (1 - rand(0.1)));
-
-    var m = t \ 60;
-    var s = t % 60;
-    print(m, ":", s < 10 ? "0" : "");
-    drawText(x + 56 - 12, y + 2, @right, s);
+inline void displayRecordAt(ref x, ref y, image, text)
+    image(x, y, image, 14, 0);
+    drawText(x + 56 - 12, y + 2, @right, text);
 
     y -= 15;
     if y < 10 then
@@ -295,14 +277,32 @@ inline void displayRecord(ref x, ref y, record)
     end;
 end;
 
-void displayLog()
+
+inline void displayRecord(ref x, ref y, record)
+    var id = record % 1000;
+    var icon = id > @blockCount ? lookup(:unit, id - @blockCount) : lookup(:block, id);
+    var t = floor(TIME_COMPRESS * record / 1000000);
+    var m = t \ 60;
+    var s = t % 60;
+    print(m, ":", s < 10 ? "0" : "");
+    displayRecordAt(ref x, ref y, icon, s);
+end;
+
+inline void displayRecord2(ref x, ref y, record)
+    displayRecordAt(ref x, ref y,  @core-shard, "0:00");
+end;
+
+void displayLog(page)
     var x = 3 + 8;
     var y = 176 - 5 - 8;
     reset();
     clear(0, 0, 32);
 
     lastTime = 0;
-    var position = bank1.@memoryCapacity - 1;
+    var logPosition = bank1[511];
+    var records = (511 - logPosition);
+    numPages = 3 + (records - 1) \ 33;
+    var position = 511 - 33 * (page - 1);
     while true do
         var record = bank1[--position];
         if !record then break; end;
@@ -314,7 +314,8 @@ end;
 
 //external bank1[0 ... 4] var minX, minY, maxX, maxY;
 
-remote processor1 var px, py;
+remote processor1 var locations;
+var mapw = @mapw, maph = @maph;
 var frame = 0;
 
 void displayOreMap()
@@ -324,32 +325,24 @@ void displayOreMap()
     col(%[white]);
     drawText(4, 172, @topLeft, ++frame);
 
-    var mapw = @mapw, maph = @maph;
     scale(176 / mapw, 176 / maph);
-    var width = ceil(3 * mapw / 176);
-    var height = ceil(3 * mapw / 176);
+    var imgSize = ceil(mapw / 176);
     //stroke(max(width, height));
 
-    var minX = bank1[0];
-    var minY = bank1[1];
-    var maxX = bank1[2];
-    var maxY = bank1[3];
+    image(coreX, coreY, @core-shard, 7 * imgSize, 0);
 
-    lineRect(minX, minY, maxX - minX, maxY - minY);
-
-    col(%[red]);
-    var index = 4;
-    while index < 256 do
-        var pos = bank1[index];
-        if pos == 0 then break; end;
-        var x = pos % @mapw;
-        var y = pos \ @mapw;
-        rect(x, y, width, height);
-        index++;
+    var index = -1, count = locations;
+    for var i in 0 ... count do
+        var id = bank1[++index];
+        var img = id > 0 ? lookup(:item, id) : lookup(:block, -id);
+        var size = 4 + sqrt(bank1[++index]);
+        var x = bank1[++index];
+        var y = bank1[++index];
+        image(x, y, img, size * imgSize, 0);
     end;
 
-    col(%[gold]);
-    rect(px, py, width, height);
+    image(titaniumDrill.@x, titaniumDrill.@y, @pneumatic-drill, 4 * imgSize, 0);
+    image(thoriumDrill.@x, thoriumDrill.@y, @laser-drill, 5 * imgSize, 0);
 
     reset();
     col(%[white]);
@@ -363,6 +356,8 @@ void main()
         ubind(@poly);
         core = ulocate(:building, :core, false);
     while core == null;
+    coreX = core.@x;
+    coreY = core.@y;
 
     printflush(null);
     drawflush(null);
@@ -370,21 +365,19 @@ void main()
     var nextSwitch = @second + 3;
 
     while true do
-        case page
-            when 0 then updateDisplay();
-            when 1 then displayLog();
-            when 2 then displayOreMap();
+        if page == 0 then
+            updateDisplay();
+        elsif page == numPages - 1 then
+            displayOreMap();
+        else
+            displayLog(page);
         end;
 
         updateMessage();
 
         if switch1.enabled then
-            if @second > nextSwitch then
-                page = (page + 1) % numPages;
-                nextSwitch = @second + 3;
-            end;
-        else
-            nextSwitch = @second - 1;
+            switch1.enabled = false;
+            page = (page + 1) % numPages;
         end;
     end;
 end;

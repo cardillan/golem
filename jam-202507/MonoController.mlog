@@ -1,16 +1,17 @@
-jump 4 always 0 0
+jump 5 always 0 0
 draw triangle message1 .core .coreX .coreY .min .minOre
 draw triangle :copper :firstItem :flag :lead :sand :findOreToMine:x
-draw triangle :findOreToMine:y :mine:flag :mine:floor :mine:ore :mine:x :mine:y
+draw triangle :findOreToMine:y :mine:block :mine:flag :mine:floor :mine:ore :mine:x
+draw triangle :mine:y 0 0 0 0 0
 set .min 0
 set .minOre null
 ubind @mono
-jump 6 equal @unit null
+jump 7 equal @unit null
 set :firstItem @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 9 equal .core null
+jump 10 equal .core null
 ubind @mono
-jump 30 notEqual @unit :firstItem
+jump 31 notEqual @unit :firstItem
 printflush message1
 sensor :lead .core @lead
 sensor :sand .core @sand
@@ -18,25 +19,25 @@ sensor :copper .core @copper
 op min *tmp9 :lead :sand
 op min *tmp9 *tmp9 :copper
 set *tmp11 @sand
-jump 24 equal *tmp9 :sand
+jump 25 equal *tmp9 :sand
 set *tmp11 @copper
-jump 24 notEqual *tmp9 :lead
+jump 25 notEqual *tmp9 :lead
 set *tmp11 @lead
 set .minOre *tmp11
 print "minOre:{0}\n"
 format *tmp11
 op add .min *tmp9 100
-jump 30 greaterThanEq *tmp9 10
+jump 31 greaterThanEq *tmp9 10
 set .min -100
 sensor :flag @unit @flag
 print "Unit flag: {0}\n"
 format :flag
-jump 54 notEqual :flag 0
+jump 55 notEqual :flag 0
 sensor *tmp19 @unit @firstItem
-jump 39 equal *tmp19 null
+jump 40 equal *tmp19 null
 ucontrol itemDrop @air 20 0 0 0
 sensor *tmp22 @unit @firstItem
-jump 11 notEqual *tmp22 null
+jump 12 notEqual *tmp22 null
 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y 0 0
 ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0
 ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
@@ -51,17 +52,17 @@ print "Found {0} at {0}, {0}\n"
 format .minOre
 format :findOreToMine:x
 format :findOreToMine:y
-jump 11 always 0 0
-jump 64 notEqual :flag 1
+jump 12 always 0 0
+jump 65 notEqual :flag 1
 print "Returning ore"
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol itemDrop .core 20 0 0 0
 sensor *tmp35 @unit @firstItem
-jump 62 notEqual *tmp35 null
+jump 63 notEqual *tmp35 null
 print " (finished)\n"
 ucontrol flag 0 0 0 0 0
 print "\n"
-jump 11 always 0 0
+jump 12 always 0 0
 print "Mining"
 op idiv :mine:flag :flag 2
 op mod *tmp38 :mine:flag 16
@@ -69,41 +70,45 @@ lookup item :mine:ore *tmp38
 op idiv :mine:flag :mine:flag 16
 op mod :mine:y :mine:flag 1000
 op idiv :mine:x :mine:flag 1000
-jump 77 equal :mine:ore .minOre
-sensor *tmp44 .core :mine:ore
-jump 77 lessThanEq *tmp44 .min
+set *tmp43 @ore-copper
+jump 77 equal :mine:ore @copper
+set *tmp43 @sand-floor
+jump 77 notEqual :mine:ore @lead
+set *tmp43 @ore-lead
+jump 83 equal :mine:ore .minOre
+sensor *tmp48 .core :mine:ore
+jump 83 lessThanEq *tmp48 .min
 print ", switching to a more needed ore"
 ucontrol flag 1 0 0 0 0
-jump 11 always 0 0
-sensor *tmp47 @unit @firstItem
-jump 81 equal *tmp47 :mine:ore
+jump 12 always 0 0
+sensor *tmp51 @unit @firstItem
+jump 87 equal *tmp51 :mine:ore
 print " (dropping)"
 ucontrol itemDrop @air 20 0 0 0
-sensor *tmp50 @unit @totalItems
-jump 87 lessThan *tmp50 20
+sensor *tmp54 @unit @totalItems
+jump 93 lessThan *tmp54 20
 print ", full"
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol flag 1 0 0 0 0
-jump 105 always 0 0
-set *tmp54 @ore-lead
-jump 92 equal :mine:ore @lead
-set *tmp54 @sand
-jump 92 notEqual :mine:ore @copper
-set *tmp54 @ore-copper
+jump 110 always 0 0
 print " at {0}, "
 format :mine:x
 print :mine:y
 ucontrol approach :mine:x :mine:y 7 0 0
-ucontrol getBlock :mine:x :mine:x 0 0 :mine:floor
-jump 100 notEqual :mine:floor *tmp54
-ucontrol mine :mine:x :mine:y 0 0 0
-jump 105 always 0 0
-jump 104 equal :mine:floor null
+ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
+jump 102 equal :mine:floor *tmp43
 ucontrol flag 1 0 0 0 0
 print ": ore disappeared!\n"
-jump 105 always 0 0
+jump 110 always 0 0
+jump 105 notEqual :mine:floor null
 print ": too far away\n"
+jump 110 always 0 0
+jump 108 notEqual :mine:block null
+ucontrol mine :mine:x :mine:y 0 0 0
+jump 110 always 0 0
+ucontrol flag 1 0 0 0 0
+print ": block has been built!\n"
 print "\n"
-jump 11 always 0 0
+jump 12 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 
