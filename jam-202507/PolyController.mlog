@@ -1,0 +1,94 @@
+jump 5 always 0 0
+jump 86 always 0 0
+draw triangle message1 .builder .coalX .coalY .core .coreX
+draw triangle .coreY .distance :backgroundProcess:flag :findOreToMine:dist :findOreToMine:floor :findOreToMine:x
+draw triangle :findOreToMine:y :start:aBuilder :start:aCore 0 0 0
+set .coalX 0
+set .coalY 0
+set .distance 1000000000
+set *signature "ee6acc9f28f0b123:v1"
+jump 84 equal .core null
+ubind @poly
+op equal *tmp2 @unit null
+op equal *tmp3 @unit .builder
+op or *tmp4 *tmp2 *tmp3
+jump 10 notEqual *tmp4 false
+ubind @poly
+jump 20 notEqual @unit .builder
+print "Found builder unit.\n"
+printflush message1
+jump 15 always 0 0
+sensor :backgroundProcess:flag @unit @flag
+print "Unit flag: {0}\n"
+format :backgroundProcess:flag
+jump 58 notEqual :backgroundProcess:flag 0
+sensor *tmp10 @unit @firstItem
+jump 31 equal *tmp10 null
+ucontrol itemDrop @air 30 0 0 0
+sensor *tmp13 @unit @firstItem
+jump 31 equal *tmp13 null
+print "Holding wrong item.\n"
+jump 15 always 0 0
+ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
+op sub *tmp18 :findOreToMine:x .coreX
+op sub *tmp19 :findOreToMine:y .coreY
+op len :findOreToMine:dist *tmp18 *tmp19
+jump 39 greaterThanEq :findOreToMine:dist .distance
+set .coalX :findOreToMine:x
+set .coalY :findOreToMine:y
+set .distance :findOreToMine:dist
+ucontrol approach .coalX .coalY 6 0 0
+ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
+jump 48 notEqual :findOreToMine:floor @ore-coal
+ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
+print "Found coal at {0}, {0}\n"
+format .coalX
+format .coalY
+ucontrol flag 2 0 0 0 0
+jump 15 always 0 0
+jump 54 equal :findOreToMine:floor null
+set .distance 1000000000
+print "Coal at {0}, {0} disappeared\n"
+format .coalX
+format .coalY
+jump 15 always 0 0
+print "Not close enough to {0}, {0}\n"
+format .coalX
+format .coalY
+jump 15 always 0 0
+jump 67 notEqual :backgroundProcess:flag 1
+print "Returning\n"
+ucontrol approach .coreX .coreY 6 0 0
+ucontrol itemDrop .core 30 0 0 0
+sensor *tmp31 @unit @firstItem
+jump 15 notEqual *tmp31 null
+print "    Finished\n"
+ucontrol flag 0 0 0 0 0
+jump 15 always 0 0
+print "Mining"
+sensor *tmp34 @unit @firstItem
+jump 72 equal *tmp34 @coal
+print " (dropping)"
+ucontrol itemDrop @air 30 0 0 0
+print " at {0}, "
+format .coalX
+print .coalY
+ucontrol approach .coalX .coalY 6 0 0
+ucontrol mine .coalX .coalY 0 0 0
+sensor *tmp37 @unit @totalItems
+jump 82 lessThan *tmp37 30
+print ", full"
+ucontrol approach .coreX .coreY 6 0 0
+ucontrol flag 1 0 0 0 0
+print "\n"
+jump 15 always 0 0
+wait 1e12
+jump 9 always 0 0
+set .builder :start:aBuilder
+set .core :start:aCore
+sensor .coreX .core @x
+sensor .coreY .core @y
+set :start*finished true
+jump 9 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

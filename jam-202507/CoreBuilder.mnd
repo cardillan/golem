@@ -7,16 +7,17 @@
 //#set optimization = none;
 
 // Linked variables
-linked message1, bank1, processor1, processor2, processor3, processor4;
+linked message1, bank1, processor1, processor2, processor3, processor4, processor5;
 
-noinit var display, controller, flareController, oreLocator;
+noinit var display, controller, flareController, oreLocator, polyController;
 
 require units;
 require "Actions.mnd";
 require "Display.mnd" remote display;
+require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote controller;
 require "FlareController.mnd" remote flareController;
-require "OreLocator.mnd" remote oreLocator;
+require "PolyController.mnd" remote polyController;
 
 // At this point, we're only using a poly
 const capacity = 30;
@@ -31,10 +32,11 @@ var
     unloader1 = null,
     kiln = null;
 
-// Targets to be met for the next build
 noinit var
     core, coreX, coreY,
     builder,
+
+    // Targets to be met for the next build
     targetCopper,
     targetLead,
     targetGraphite,
@@ -89,7 +91,7 @@ const INVERTED_SORTER[] = (@inverted-sorter,            +3.0, +0.0,  2,  2,  0, 
 const WATER_EXT[]       = (@water-extractor,            -3.5, +3.5, 30, 30, 30,  0,  0, 30,  0, null);
 const STEAM_GEN[]       = (@steam-generator,            -3.5, +1.5, 35, 40, 25, 30,  0,  0,  0, null);
 
-const PAYLOAD_CONV[]    = (@payload-conveyor,           -3.0, -5.0, 10,  0, 10,  0,  0,  0,  0, null);
+const PAYLOAD_ROUTER[]  = (@payload-router,             -3.0, -5.0, 10,  0, 15,  0,  0,  0,  0, null);
 const UNLOADER4[]       = (@unloader,                    0.0, -2.0,  0,  0,  0, 30, 25,  0,  0, null);
 const UNDERFLOW_GATE[]  = (@underflow-gate,              0.0, -3.0,  4,  2,  0,  0,  0,  0,  0, null);
 const ADDITIVE_REC[]    = (@additive-reconstructor,      0.0, -5.0,200,120,  0, 90,  0,  0,  0, null);
@@ -100,29 +102,6 @@ const LASER_DRILL[]     = (@laser-drill,                 0.0,  0.0, 35,  0, 30, 
 const SOLAR_PANEL[]     = (@solar-panel,                 0.0,  0.0,  0, 10,  0,  8,  0,  0,  0, null);
 
 //const BATTERY_LARGE[]   = (@battery-large,              +4.0, +3.0,  0, 50,  0, 30, 20,  0,  0, null);
-
-// Non-core based blocks
-
-// UTILITY FUNCTIONS
-
-inline void status1(text)
-    display.status1 = text;
-end;
-
-inline void status2(text, item, block)
-    display.status2  = text;
-    display.item2  = item;
-    display.block2 = block;
-end;
-
-inline void status3(text)
-    display.status3 = text;
-end;
-
-inline void transportStatus(target, item)
-    display.transportTarget = target;
-    display.transportItem = item;
-end;
 
 // SUPPLY OPERATIONS
 
@@ -428,6 +407,8 @@ begin
     display = processor1;
     flareController = processor3;
     oreLocator = processor4;
+    polyController = processor5;
+    polyController.startPolyController(core, @unit);
 
     // Bind and flag units
     var flares = findUnits(@flare, out display.displayFlares);
@@ -506,9 +487,10 @@ begin
     controller.generator2 = buildBlockFromCfg(ref STEAM_GEN);
 
     //buildBlockFromCfg(ref BATTERY_LARGE);
+    graphiteSurplus = 200;
 
     // POLYS
-    buildBlockFromCfg(ref PAYLOAD_CONV);
+    controller.payloadRouter = buildBlockFromCfg(ref PAYLOAD_ROUTER);
     buildBlockFromCfg(ref UNLOADER4);
     buildBlockFromCfg(ref UNDERFLOW_GATE);
     var reconstructor = buildBlockFromCfg(ref ADDITIVE_REC);
@@ -518,16 +500,17 @@ begin
     buildUnits();
 
     // Even more stock
-    graphiteSurplus = 200;
     siliconSurplus = 1000;
     metaglassSurplus = 200;
 
-    controller.polyTarget = 4;
-    while controller.polys < 4 do
+    controller.polyTarget = 3;
+    while controller.polys < 3 do
         supplyBase();
     end;
 
-    while controller.flares < 1 do
+    controller.flareTarget = 8;
+    controller.polyTarget = 6;
+    while controller.flares < 8 do
         supplyBase();
     end;
 

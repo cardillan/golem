@@ -1,0 +1,121 @@
+#set target = 8;
+#set syntax = strict;
+//#set function-inlining = none;
+#set sort-variables;
+
+module PolyController;
+
+require units;
+
+linked message1;
+
+// At this point, we're only using a flare
+const CAPACITY = 30;
+const RADIUS = 6;
+
+noinit volatile var
+    builder, core, coreX, coreY;
+
+remote void startPolyController(aCore, aBuilder)
+    builder = aBuilder;
+    core = aCore;
+    coreX = core.@x;
+    coreY = core.@y;
+
+    // The rest will happen in backgroundProcess
+end;
+
+void backgroundProcess()
+    if core == null then return; end;
+
+    while true do
+        ubind(@poly);
+        if @unit == builder then
+            println("Found builder unit.");
+            printflush(message1);
+        else
+            var flag = @unit.@flag;
+            println("Unit flag: ", flag);
+            if flag == 0 then
+                findOreToMine();
+            elsif flag == 1 then
+                returnItems();
+            else
+                mine();
+            end;
+        end;
+    end;
+end;
+
+var
+    coalX = 0,
+    coalY = 0,
+    distance = 1e9;
+
+void findOreToMine()
+    // Shouldn't happen here, but...
+    if @unit.@firstItem != null then
+        itemDrop(@air, CAPACITY);
+        if @unit.@firstItem != null then
+            println($"Holding wrong item.");
+            return;
+        end;
+    end;
+
+    // Try to find a better ore
+    var x, y;
+    ulocate(:ore, @coal, out x, out y);
+    var dist = len(x - coreX, y - coreY);
+    if dist < distance then
+        coalX = x;
+        coalY = y;
+        distance = dist;
+    end;
+
+    approach(coalX, coalY, RADIUS);
+    var floor = null;
+    getBlock(coalX, coalY, , out floor);
+    if floor == @ore-coal then
+        mine(x, y);
+        println($"Found coal at $coalX, $coalY");
+        flag(2);
+    elsif floor != null
+        // The ore we remembered disappeared - got built over?
+        then distance = 1e9;
+        println($"Coal at $coalX, $coalY disappeared");
+    else
+        println($"Not close enough to $coalX, $coalY");
+    end;
+end;
+
+void mine()
+    print("Mining");
+
+    if @unit.@firstItem != @coal then
+        print(" (dropping)");
+        itemDrop(@air, CAPACITY);
+    end;
+
+    print($" at $coalX, $coalY");
+    approach(coalX, coalY, RADIUS);
+    mine(coalX, coalY);
+
+    if @unit.@totalItems >= CAPACITY then
+        print(", full");
+        approach(coreX, coreY, RADIUS);
+        flag(1);
+    end;
+
+    println();
+end;
+
+void returnItems()
+    println("Returning");
+    approach(coreX, coreY, RADIUS);
+    itemDrop(core, CAPACITY);
+
+    if @unit.@firstItem == null then
+        println("    Finished");
+        flag(0);
+    end;
+end;
