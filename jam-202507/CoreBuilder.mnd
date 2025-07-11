@@ -1,7 +1,9 @@
 #set target = 8;
+#set targeting = target;
 #set syntax = strict;
 #set function-inlining = none;
 #set sort-variables;
+//#set goal = size;
 //#set loop-hoisting = none;
 //#set unreachable-code-elimination = none;
 //#set optimization = none;
@@ -56,6 +58,9 @@ var
 
 external bank1[511] logPosition = 511;
 
+def packType()
+end;
+
 // Blocks layout around the core and build requirements
 
 const CFG_BLOCK_TYPE  = 0;
@@ -71,37 +76,43 @@ const CFG_ROTATION    = CFG_METAGLASS + 1;
 const CFG_CONFIG      = CFG_ROTATION + 1;
 
 //                         Block type                      X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
-const PRESS[]           = (@graphite-press,             -1.5, +2.5, 75, 30,  0,  0,  0,  0,  0, null);
-const BATTERY1[]        = (@battery,                     0.0, +4.0,  5, 20,  0,  0,  0,  0,  0, null);
-const BATTERY2[]        = (@battery,                    -1.0, +4.0,  5, 20,  0,  0,  0,  0,  0, null);
-const GENERATOR[]       = (@combustion-generator,        0.0, +3.0, 25, 15,  0,  0,  0,  0,  0, null);
-const SMELTER[]         = (@silicon-smelter,            +1.5, +2.5, 30, 25,  0,  0,  0,  0,  0, null);
+const PRESS[]           = (@graphite-press,             -2.5, +1.5, 75, 30,  0,  0,  0,  0,  0, null);
+const BATTERY1[]        = (@battery,                     0.0, +5.0,  5, 20,  0,  0,  0,  0,  0, null);
+const BATTERY2[]        = (@battery,                    +1.0, +5.0,  5, 20,  0,  0,  0,  0,  0, null);
+const GENERATOR[]       = (@combustion-generator,        0.0, +4.0, 25, 15,  0,  0,  0,  0,  0, null);
+const SMELTER[]         = (@silicon-smelter,            +1.5, +3.5, 30, 25,  0,  0,  0,  0,  0, null);
+const INVERTED_SORT1[]  = (@inverted-sorter,            +1.0, +2.0,  2,  2,  0,  0,  0,  0,  0, null);
 const PNEUMATIC_DRILL[] = (@pneumatic-drill,             0.0,  0.0, 18,  0, 10,  0,  0,  0,  0, null);
 const UNLOADER1[]       = (@unloader,                    0.0, +2.0,  0,  0,  0, 30, 25,  0,  0, null);
-const PROCESSOR[]       = (@micro-processor,            +1.0, +4.0, 90, 50,  0, 50,  0,  0,  0, processor2);
-const POWER_NODE[]      = (@power-node,                 -2.0, +1.0,  2,  6,  0,  0,  0,  0,  0, null);
+const INVERTED_SORT2[]  = (@inverted-sorter,            -1.0, +2.0,  2,  2,  0,  0,  0,  0,  0, null);
+const OVERFLOW_GATE1[]  = (@overflow-gate,               0.0, +3.0,  4,  2,  0,  0,  0,  0,  0, null);
+const PROCESSOR[]       = (@micro-processor,            +3.0, +4.0, 90, 50,  0, 50,  0,  0,  0, processor2);
+const POWER_NODE[]      = (@power-node,                 -1.0, -3.0,  2,  6,  0,  0,  0,  0,  0, null);
 const UNLOADER2[]       = (@unloader,                   -2.0,  0.0,  0,  0,  0, 30, 25,  0,  0, null);
-const OVERFLOW_GATE[]   = (@overflow-gate,              -3.0,  0.0,  4,  2,  0,  0,  0,  0,  0, null);
 const AIR_FACTORY[]     = (@air-factory,                -3.0, -2.0, 60, 70,  0,  0,  0,  0,  3, @mono);
 
-const UNLOADER3[]       = (@unloader,                   +2.0, +1.0,  0,  0,  0, 30, 25,  0,  0, null);
-const KILN[]            = (@kiln,                       +3.5, +1.5, 60, 30, 30,  0,  0,  0,  0, null);
-const JUNCTION[]        = (@junction,                   +2.0, +0.0,  3,  0,  0,  0,  0,  0,  0, null);
-const INVERTED_SORTER[] = (@inverted-sorter,            +3.0, +0.0,  2,  2,  0,  0,  0,  0,  0, @metaglass);
-const WATER_EXT[]       = (@water-extractor,            -3.5, +3.5, 30, 30, 30,  0,  0, 30,  0, null);
-const STEAM_GEN[]       = (@steam-generator,            -3.5, +1.5, 35, 40, 25, 30,  0,  0,  0, null);
+const UNLOADER3[]       = (@unloader,                   +2.0, -1.0,  0,  0,  0, 30, 25,  0,  0, null);
+const INVERTED_SORT3[]  = (@inverted-sorter,            +2.0,  0.0,  2,  2,  0,  0,  0,  0,  0, null);
+const KILN[]            = (@kiln,                       +2.5, +1.5, 60, 30, 30,  0,  0,  0,  0, null);
+const WATER_EXT[]       = (@water-extractor,            -4.5, +3.5, 30, 30, 30,  0,  0, 30,  0, null);
+const OVERFLOW_GATE2[]  = (@overflow-gate,              -3.0,  0.0,  4,  2,  0,  0,  0,  0,  0, null);
+const OVERFLOW_GATE3[]  = (@overflow-gate,              -4.0,  0.0,  4,  2,  0,  0,  0,  0,  0, null);
+const STEAM_GEN[]       = (@steam-generator,            -4.5, +1.5, 35, 40, 25, 30,  0,  0,  0, null);
 
-const PAYLOAD_ROUTER[]  = (@payload-router,             -3.0, -5.0, 10,  0, 15,  0,  0,  0,  0, null);
-const UNLOADER4[]       = (@unloader,                    0.0, -2.0,  0,  0,  0, 30, 25,  0,  0, null);
-const UNDERFLOW_GATE[]  = (@underflow-gate,              0.0, -3.0,  4,  2,  0,  0,  0,  0,  0, null);
-const ADDITIVE_REC[]    = (@additive-reconstructor,      0.0, -5.0,200,120,  0, 90,  0,  0,  0, null);
+const MULTIPRESS[]      = (@multi-press,                -2.0, +4.0,   0,100, 50, 25,100,  0,  0, null);
+const WATER_EXT2[]      = (@water-extractor,            -4.5, +5.5, 30, 30, 30,  0,  0, 30,  0, null);
 
-const SORTER[]          = (@sorter,                     -4.0,  0.0,  2,  2,  0,  0,  0,  0,  0, @coal);
+const PAYLOAD_ROUTER[]  = (@payload-router,             -3.0, -5.0,  10,  0, 15,  0,  0,  0,  0, null);
+const UNLOADER4[]       = (@unloader,                    0.0, -2.0,   0,  0,  0, 30, 25,  0,  0, null);
+const UNDERFLOW_GATE[]  = (@underflow-gate,              0.0, -3.0,   4,  2,  0,  0,  0,  0,  0, null);
+const ADDITIVE_REC[]    = (@additive-reconstructor,      0.0, -5.0, 200,120,  0, 90,  0,  0,  0, null);
 
-const LASER_DRILL[]     = (@laser-drill,                 0.0,  0.0, 35,  0, 30, 30, 20,  0,  0, null);
-const SOLAR_PANEL[]     = (@solar-panel,                 0.0,  0.0,  0, 10,  0,  8,  0,  0,  0, null);
+const OVERFLOW_GATE4[]  = (@overflow-gate,              -4.0,  0.0,   4,  2,  0,  0,  0,  0,  0, null);
 
-//const BATTERY_LARGE[]   = (@battery-large,              +4.0, +3.0,  0, 50,  0, 30, 20,  0,  0, null);
+const LASER_DRILL[]     = (@laser-drill,                 0.0,  0.0,  35,  0, 30, 30, 20,  0,  0, null);
+const SOLAR_PANEL[]     = (@solar-panel,                 0.0,  0.0,   0, 10,  0,  8,  0,  0,  0, null);
+
+//const BATTERY_LARGE[]   = (@battery-large,              +4.0, +3.0,   0, 50,  0, 30, 20,  0,  0, null);
 
 // SUPPLY OPERATIONS
 
@@ -408,7 +419,7 @@ begin
     flareController = processor3;
     oreLocator = processor4;
     polyController = processor5;
-    polyController.startPolyController(core, @unit);
+    async(polyController.startPolyController(core, @unit));
 
     // Bind and flag units
     var flares = findUnits(@flare, out display.displayFlares);
@@ -425,9 +436,12 @@ begin
     powerTarget = 400;
 
     smelter = buildBlockFromCfg(ref SMELTER);
+    buildBlockFromCfg(ref INVERTED_SORT1);
     titaniumDrill = buildTitaniumDrill(ref PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
     unloader1 = buildBlockFromCfg(ref UNLOADER1);
+    buildBlockFromCfg(ref INVERTED_SORT2);
+    buildBlockFromCfg(ref OVERFLOW_GATE1);
 
     // Build and initialize base controller
 
@@ -475,15 +489,18 @@ begin
 
     // Kiln - needed for metaglass
     buildBlockFromCfg(ref UNLOADER3);
-    buildBlockFromCfg(ref JUNCTION);
-    buildBlockFromCfg(ref INVERTED_SORTER);
+    buildBlockFromCfg(ref INVERTED_SORT3);
     kiln = buildBlockFromCfg(ref KILN);
     controller.kiln = kiln;
 
     // Steam generator
     buildBlockFromCfg(ref WATER_EXT);
-    buildBlockFromCfg(ref OVERFLOW_GATE);
+    buildBlockFromCfg(ref OVERFLOW_GATE2);
+    buildBlockFromCfg(ref OVERFLOW_GATE3);
     controller.generator2 = buildBlockFromCfg(ref STEAM_GEN);
+
+    controller.multipress = buildBlockFromCfg(ref MULTIPRESS);
+    buildBlockFromCfg(ref WATER_EXT2);
 
     //buildBlockFromCfg(ref BATTERY_LARGE);
     graphiteSurplus = 200;
@@ -531,7 +548,7 @@ begin
         supplyBase();
     while !finished(layoutThoriumDrill);
 
-    buildThoriumDrill();
+    //buildThoriumDrill();
     //buildBlockFromCfg(ref SORTER);
 
     display.totalTargets = 0;
