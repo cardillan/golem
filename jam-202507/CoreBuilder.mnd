@@ -472,7 +472,6 @@ begin
     // Build stock
     graphiteSurplus = 60;
     siliconSurplus = 100;
-    metaglassSurplus = 60;
 
     // Kiln - needed for metaglass
     buildBlockFromCfg(ref UNLOADER3);
@@ -510,9 +509,20 @@ begin
 
     controller.flareTarget = 8;
     controller.polyTarget = 6;
-    while controller.flares < 8 do
+    while controller.flares < 2 do
         supplyBase();
     end;
+
+    ubind(@flare);
+    display.nextBlock = @ore-titanium;
+    oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, false, 1e9);
+    ubind(builder);
+
+    do
+        supplyBase();
+    while !finished(oreLocator.findDrillLocation);
+
+    display.nextBlock = null;
 
     findFreeUnit(@flare, 0);
     async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));

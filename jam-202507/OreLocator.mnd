@@ -19,7 +19,7 @@ linked bank1, message1, switch1;
 // to find the spot, the worse spot gets accepted)
 remote var attenuationRate = 50;
 
-noinit remote var angle, maxAngle, bestSpot;
+noinit remote var mapProgress, mapTotal, mapAction, mapSpots;
 
 // Drill infrastructure positions
 noinit remote var
@@ -191,6 +191,7 @@ const SPIRAL_WIDTH = 24 / (2 * @pi);
 inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
     var distance = SPIRAL_WIDTH * angle;
     angle = max(angle, @pi);
+    mapProgress = angle * angle;
 
     //var maxUnitDist = 32;
     while distance < distanceLimit do
@@ -201,6 +202,7 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
 
         // Compute the next position on the spiral
         angle += SPIRAL_WIDTH / distance;
+        mapProgress = angle * angle;
         distance = SPIRAL_WIDTH * angle;
 
         if !ulocate(:ore, ore, out x, out y) then
@@ -224,6 +226,7 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
                     // The spot we've found is probably in the direction of our travel.
                     // Advance two more steps on the spiral
                     angle += 2 * SPIRAL_WIDTH / distance;
+                    mapProgress = angle * angle;
                     return true;
                  end;
              else
@@ -234,6 +237,49 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
 
     // Search exhausted
     return false;
+end;
+
+var angle, cornerDistance, x0, y0, x1, y1;
+
+void trace(ore, x, y)
+    do
+        move(x, y);
+
+        mapProgress = cornerDistance - len(x - @unit.@x, y - @unit.@y);
+
+        var oreX, oreY;
+        if ulocate(:ore, ore, out oreX, out oreY) then
+            x0 = min(x0, oreX);
+            y0 = min(y0, oreY);
+            x1 = max(x1, oreX);
+            y1 = max(y1, oreY);
+        end;
+    while !within(x, y, 5);
+end;
+
+def findMaxOreDistance(ore)
+    mapAction = "Scanning map...";
+    mapProgress = 0;
+    mapTotal = 2 * (@mapw + @maph);
+
+    cornerDistance = 0;
+    x0 = @mapw;
+    y0 = @maph;
+    x1 = 0;
+    y1 = 0;
+
+    moveTo(0, 0);
+    cornerDistance += @mapw; trace(ore, @mapw, 0);
+    cornerDistance += @maph; trace(ore, @mapw, @maph);
+    cornerDistance += @mapw; trace(ore, 0, @maph);
+    cornerDistance += @maph; trace(ore, 0, 0);
+
+    var d0 = len(coreX - x0, coreY - y0);
+    var d1 = len(coreX - x0, coreY - y1);
+    var d2 = len(coreX - x1, coreY - y0);
+    var d3 = len(coreX - x1, coreY - y1);
+
+    return max(d0, d1, d2, d3);
 end;
 
 // Tries to find the best location for given ore, using the given unit.
@@ -249,15 +295,21 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx,
     locations = 0;
     coreX = x;
     coreY = y;
-    var distanceLimit = max(coreX, coreY, @mapw - coreX, @maph - coreY);
     ubind(unit);
 
-    angle = 0;
-    maxAngle = distanceLimit / SPIRAL_WIDTH;
+    mapSpots = dx = dy = capacity = 0;
+
+    var distanceLimit = limit >= 1000
+        ? findMaxOreDistance(item)           // Scanning the whole map
+        : max(coreX, coreY, @mapw - coreX, @maph - coreY);
+
+    mapAction = "Locating ore...";
+    mapProgress = angle = 0;
+    moveTo(coreX, coreY);
+    mapTotal = (distanceLimit / SPIRAL_WIDTH) ** 2;
 
     var count = -1;
     var oreX = 0, oreY = 0;
-    bestSpot = dx = dy = capacity = 0;
 
     while true do
         var best = 0, bestX = x, bestY = y;
@@ -265,11 +317,14 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx,
         // Recompute maximum distance
         var maxDistance = (limit - capacity) * attenuationRate;
         distanceLimit = min(distanceLimit, maxDistance);
-        maxAngle = distanceLimit / SPIRAL_WIDTH;
+        mapTotal = (distanceLimit / SPIRAL_WIDTH) ** 2;
 
         if !locateOreAway(item, in out oreX, in out oreY, in distanceLimit) then
             return capacity > 0;
         end;
+
+        if limit >= 1000 then mapSpots++; end;
+
         moveTo(oreX, oreY);
         //debugStop($"Found at $, $", oreX, oreY);
 
@@ -285,7 +340,7 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, large, limit, out dx,
                 dx = oreX + diffX;
                 dy = oreY + diffY;
                 capacity = score;
-                bestSpot = score;
+                if limit < 1000 then mapSpots = score; end;
                 if capacity >= limit then
                     unbind();
                     return true;

@@ -3,6 +3,8 @@
 //#set function-inlining = none;
 #set sort-variables;
 
+//require math;
+
 // At this point, we're only using a poly
 const RADIUS = 7;
 const capacity = 20;
@@ -26,14 +28,18 @@ begin
 
     while true do
         ubind(@mono);
-        if @unit == firstItem then printflush(message1); end;
+        if @unit == firstItem then
+            printflush(message1);
 
-        var lead = core.@lead;
-        var sand = core.@sand;
-        var copper = core.@copper;
-        min = min(lead, sand, copper);
-        minOre = min == sand ? @sand : min == lead ? @lead : @copper;
-        println("minOre:", minOre);
+            var lead = core.@lead;
+            var sand = core.@sand;
+            var copper = core.@copper;
+            min = min(lead, sand, copper);
+            minOre = min == sand ? @sand : min == lead ? @lead : @copper;
+            println("minOre:", minOre);
+
+            if min < 10 then min = -100; else min += 100; end;
+        end;
 
         var flag = @unit.@flag;
         println("Unit flag: ", flag);
@@ -62,7 +68,7 @@ void findOreToMine(ore)
 end;
 
 void mine(flag)
-    print("Mining: ");
+    print("Mining");
 
     flag \= 2;
     var ore = lookup(:item, flag % 16);
@@ -70,37 +76,53 @@ void mine(flag)
     var y = flag % 1000;
     var x = flag \ 1000;
 
-    if core.sensor(ore) > min + 500 then
-        print(", switching");
-        flag(1);
-        return;
+    if ore != minOre then
+        // We aren't mining the most needed ore
+        if core.sensor(ore) > min then
+            print(", switching to a more needed ore");
+            flag(1);
+            return;
+        end;
     end;
 
     if @unit.@firstItem != ore then
-        print(", dropping");
+        print(" (dropping)");
         itemDrop(@air, capacity);
     end;
-
-    print($", mining at $x, $y");
-    approach(x, y, RADIUS);
-    mine(x, y);
 
     if @unit.@totalItems >= capacity then
         print(", full");
         approach(coreX, coreY, RADIUS);
         flag(1);
+    else
+        var floor = null;
+
+        print($" at $x, $y");
+        approach(x, y, RADIUS);
+        var block = getBlock(x, y);
+        if block == null then
+            mine(x, y);
+        elsif floor != null then
+            // The spot got built over!
+            flag(1);
+            println(": ore disappeared!");
+        else
+            println(": too far away");
+        end;
     end;
 
     println();
 end;
 
 void returnItems()
-    println("Returning");
+    print("Returning ore");
     approach(coreX, coreY, RADIUS);
     itemDrop(core, capacity);
 
     if @unit.@firstItem == null then
-        println("    Finished");
+        println(" (finished)");
         flag(0);
     end;
+
+    println();
 end;
