@@ -1,97 +1,153 @@
-jump 6 always 0 0
-draw triangle .bank .battery .core .display .factory .flares
-draw triangle .generator .generator2 .kiln .kilnTarget .leadReserve .monos
-draw triangle .press .pressTarget .siliconReserve .smelter .smelterTarget .unitToProduce
-draw triangle .unloader2 :backgroundProcess:coreSilicon :backgroundProcess:enableFactory :backgroundProcess:factoryProgress :backgroundProcess:lastProgress :backgroundProcess:leadLimit
-draw triangle :backgroundProcess:power :log:encodedId :logUnit:unit 0 0 0
+jump 8 always 0 0
+draw triangle TIME_COMPRESS .bank .battery .core .display .factory
+draw triangle .factoryUnit .flareTarget .flares .generator .generator2 .kiln
+draw triangle .kilnTarget .leadReserve .monoTarget .monos .payloadRouter .polyTarget
+draw triangle .polys .press .pressTarget .reconstructor .siliconReserve .smelter
+draw triangle .smelterTarget .targetUnit .unloader2 :backgroundProcess:coreSilicon :backgroundProcess:enableFactory :backgroundProcess:factoryProgress
+draw triangle :backgroundProcess:lastProgress :backgroundProcess:lastRecoProgress :backgroundProcess:leadLimit :backgroundProcess:power :backgroundProcess:reconstructorProgress :factoryUnitFinished:unit
+draw triangle :log:encodedId :second:result 0 0 0 0
+set TIME_COMPRESS 8
 set .pressTarget 20
 set .smelterTarget 20
 set .kilnTarget 20
+set .flareTarget 0
+set .monoTarget 0
+set .polyTarget 0
 set *signature "0:v1"
 set :backgroundProcess:lastProgress 0
+set :backgroundProcess:lastRecoProgress 0
 set :backgroundProcess:enableFactory true
 sensor :backgroundProcess:coreSilicon .core @silicon
-set *tmp4 .smelter
-op lessThan *tmp6 :backgroundProcess:coreSilicon .smelterTarget
-control enabled *tmp4 *tmp6 0 0 0
-set *tmp7 .press
-sensor *tmp9 .core @graphite
-op lessThan *tmp10 *tmp9 .pressTarget
-control enabled *tmp7 *tmp10 0 0 0
-set *tmp11 .kiln
-sensor *tmp13 .core @metaglass
-op lessThan *tmp14 *tmp13 .kilnTarget
-control enabled *tmp11 *tmp14 0 0 0
+set *tmp6 .smelter
+op lessThan *tmp8 :backgroundProcess:coreSilicon .smelterTarget
+control enabled *tmp6 *tmp8 0 0 0
+set *tmp9 .press
+sensor *tmp11 .core @graphite
+op lessThan *tmp12 *tmp11 .pressTarget
+control enabled *tmp9 *tmp12 0 0 0
+set *tmp13 .kiln
+sensor *tmp15 .core @metaglass
+op lessThan *tmp16 *tmp15 .kilnTarget
+control enabled *tmp13 *tmp16 0 0 0
 sensor :backgroundProcess:power .battery @totalPower
-set *tmp16 .generator
-op lessThan *tmp18 :backgroundProcess:power 3500
-control enabled *tmp16 *tmp18 0 0 0
-set *tmp19 .generator2
-op lessThan *tmp21 :backgroundProcess:power 3800
-control enabled *tmp19 *tmp21 0 0 0
+jump 38 equal .generator2 false
+control enabled .generator false 0 0 0
+set *tmp21 .generator2
+op lessThan *tmp23 :backgroundProcess:power 3800
+control enabled *tmp21 *tmp23 0 0 0
+jump 41 always 0 0
+set *tmp24 .generator
+op lessThan *tmp26 :backgroundProcess:power 800
+control enabled *tmp24 *tmp26 0 0 0
+sensor :backgroundProcess:factoryProgress .factory @progress
+sensor :backgroundProcess:reconstructorProgress .reconstructor @progress
+jump 49 greaterThanEq .flares .flareTarget
+set .factoryUnit @flare
+set .targetUnit @flare
+write @flare .display ".displayNextUnit"
+control config .payloadRouter @oct 0 0 0
+jump 68 always 0 0
+jump 55 greaterThanEq .monos .monoTarget
+set .factoryUnit @mono
+set .targetUnit @mono
+write @mono .display ".displayNextUnit"
+control config .payloadRouter @oct 0 0 0
+jump 68 always 0 0
+jump 64 greaterThanEq .polys .polyTarget
+set .factoryUnit null
+sensor *tmp39 .reconstructor @payloadType
+jump 60 notEqual *tmp39 null
+set .factoryUnit @mono
+set .targetUnit @poly
+write @poly .display ".displayNextUnit"
+control config .payloadRouter @mono 0 0 0
+jump 68 always 0 0
+set .factoryUnit null
+set .targetUnit null
+write null .display ".displayNextUnit"
+control config .payloadRouter @mono 0 0 0
 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
-sensor :backgroundProcess:factoryProgress .factory @progress
-jump 39 notEqual .unitToProduce null
+jump 75 notEqual .factoryUnit null
 control enabled .factory false 0 0 0
 control config .factory @mono 0 0 0
 set :backgroundProcess:lastProgress 0
-jump 75 always 0 0
-op add *tmp32 :backgroundProcess:factoryProgress 0.1
-jump 67 lessThanEq :backgroundProcess:lastProgress *tmp32
+jump 114 always 0 0
+op add *tmp55 :backgroundProcess:factoryProgress 0.1
+jump 106 lessThanEq :backgroundProcess:lastProgress *tmp55
 control enabled .factory :backgroundProcess:enableFactory 0 0 0
-set :logUnit:unit .unitToProduce
-sensor *tmp37 :logUnit:unit @id
-op add :log:encodedId @blockCount *tmp37
-read *tmp2 .bank 511
-op sub *tmp39 *tmp2 1
-write *tmp39 .bank 511
-op floor *tmp42 @second 0
-op mul *tmp43 *tmp42 1000
-op add *tmp44 :log:encodedId *tmp43
-write *tmp44 .bank *tmp39
-jump 57 notEqual .unitToProduce @flare
-op add *tmp47 .flares 1
-set .flares *tmp47
-write *tmp47 .display ".flares"
-jump 60 always 0 0
-op add *tmp48 .monos 1
-set .monos *tmp48
-write *tmp48 .display ".monos"
-set .unitToProduce @mono
-jump 65 lessThan .monos 8
-set .unitToProduce null
-jump 65 greaterThanEq .flares 8
-set .unitToProduce @flare
+set :factoryUnitFinished:unit .factoryUnit
+jump 104 notEqual :factoryUnitFinished:unit .targetUnit
+sensor *tmp97 :factoryUnitFinished:unit @id
+op add :log:encodedId @blockCount *tmp97
+read *tmp4 .bank 511
+op sub *tmp99 *tmp4 1
+write *tmp99 .bank 511
+op mul :second:result @second TIME_COMPRESS
+op floor *tmp103 :second:result 0
+op mul *tmp104 *tmp103 1000
+op add *tmp105 :log:encodedId *tmp104
+write *tmp105 .bank *tmp99
+jump 95 notEqual :factoryUnitFinished:unit @flare
+op add *tmp108 .flares 1
+set .flares *tmp108
+write *tmp108 .display ".displayFlares"
+jump 104 always 0 0
+jump 100 notEqual :factoryUnitFinished:unit @mono
+op add *tmp109 .monos 1
+set .monos *tmp109
+write *tmp109 .display ".displayMonos"
+jump 104 always 0 0
+jump 104 notEqual :factoryUnitFinished:unit @poly
+op add *tmp110 .polys 1
+set .polys *tmp110
+write *tmp110 .display ".displayPolys"
 set :backgroundProcess:lastProgress 0
-jump 75 always 0 0
-sensor *tmp54 .factory @config
-jump 73 equal *tmp54 .unitToProduce
+jump 114 always 0 0
+sensor *tmp61 .factory @config
+jump 112 equal *tmp61 .factoryUnit
 control enabled .factory :backgroundProcess:enableFactory 0 0 0
-control config .factory .unitToProduce 0 0 0
+control config .factory .factoryUnit 0 0 0
 set :backgroundProcess:lastProgress 0
-jump 75 always 0 0
+jump 114 always 0 0
 control enabled .factory :backgroundProcess:enableFactory 0 0 0
 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
-sensor *tmp64 .generator2 @coal
-jump 79 greaterThanEq *tmp64 .generator2
+op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+jump 131 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+jump 129 notEqual @poly .targetUnit
+op add :log:encodedId @blockCount 21
+read *tmp4 .bank 511
+op sub *tmp99 *tmp4 1
+write *tmp99 .bank 511
+op mul :second:result @second TIME_COMPRESS
+op floor *tmp103 :second:result 0
+op mul *tmp104 *tmp103 1000
+op add *tmp105 :log:encodedId *tmp104
+write *tmp105 .bank *tmp99
+op add *tmp110 .polys 1
+set .polys *tmp110
+write *tmp110 .display ".displayPolys"
+set :backgroundProcess:lastRecoProgress 0
+jump 132 always 0 0
+set :backgroundProcess:lastRecoProgress :backgroundProcess:reconstructorProgress
+sensor *tmp74 .generator2 @coal
+jump 136 greaterThanEq *tmp74 .generator2
 control config .unloader2 @coal 0 0 0
-jump 12 always 0 0
-op equal *tmp69 .unitToProduce @mono
-op mul :backgroundProcess:leadLimit *tmp69 30
-sensor *tmp71 .factory @lead
-op lessThan *tmp72 *tmp71 :backgroundProcess:leadLimit
-sensor *tmp73 .core @lead
-op greaterThan *tmp74 *tmp73 .leadReserve
-op land *tmp75 *tmp72 *tmp74
-jump 89 equal *tmp75 false
+jump 19 always 0 0
+op equal *tmp79 .factoryUnit @mono
+op mul :backgroundProcess:leadLimit *tmp79 30
+sensor *tmp81 .factory @lead
+op lessThan *tmp82 *tmp81 :backgroundProcess:leadLimit
+sensor *tmp83 .core @lead
+op greaterThan *tmp84 *tmp83 .leadReserve
+op land *tmp85 *tmp82 *tmp84
+jump 146 equal *tmp85 false
 control config .unloader2 @lead 0 0 0
-jump 12 always 0 0
-jump 92 lessThanEq :backgroundProcess:coreSilicon .siliconReserve
+jump 19 always 0 0
+jump 149 lessThanEq :backgroundProcess:coreSilicon .siliconReserve
 control config .unloader2 @silicon 0 0 0
-jump 12 always 0 0
+jump 19 always 0 0
 control config .unloader2 @coal 0 0 0
-jump 12 always 0 0
-draw triangle .polys 0 0 0 0 0
+jump 19 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

@@ -14,30 +14,37 @@ noinit remote var
     smelter,
     kiln,
     generator,
-
     battery,
     factory,
     unloader2,
     generator2,
-    unitToProduce,
+    reconstructor,
 
     // Lead and/or silicone will only be sent to the Air Factory
     // if they are above these limits
     leadReserve,
     siliconReserve,
 
-    monos,
     flares,
-    polys;
+    monos,
+    polys,
+
+    factoryUnit,
+    targetUnit;
 
 remote var
     pressTarget = 20,
     smelterTarget = 20,
     kilnTarget = 20,
-    flareTarget = 1;
+    flareTarget = 0,
+    monoTarget = 0,
+    polyTarget = 0;
 
-remote display ".monos" var displayMonos;
-remote display ".flares" var displayFlares;
+remote display var
+    displayFlares,
+    displayMonos,
+    displayPolys,
+    displayNextUnit;
 
 external bank[511] var logPosition;
 
@@ -49,15 +56,16 @@ void logUnit(unit)
     log(@blockCount + unit.@id);
 end;
 
-void unitFinished()
-    logUnit(unitToProduce);
-    if unitToProduce == @flare then
-        displayFlares = ++flares;
-    else
-        displayMonos = ++monos;
+void factoryUnitFinished(unit)
+    // Do not announce when the
+    if unit == targetUnit then
+        logUnit(unit);
+        case unit
+            when @flare then displayFlares = ++flares;
+            when @mono  then displayMonos = ++monos;
+            when @poly  then displayPolys = ++polys;
+        end;
     end;
-
-    unitToProduce = flares < flareTarget ? @flare : monos < 8 ? @mono : flares < 8 ? @flare : null;
 end;
 
 inline def updateIfSmaller(ref value, in a, in b, in newValue)
@@ -71,6 +79,7 @@ end;
 
 void backgroundProcess()
     var lastProgress = 0, factoryProgress = 0;
+    var lastRecoProgress = 0, reconstructorProgress = 0;
     var enableFactory = true;
 
     while true do
@@ -80,28 +89,51 @@ void backgroundProcess()
         kiln.enabled = core.@metaglass < kilnTarget;
 
         var power = battery.@totalPower;
-        generator.enabled = power < 3500;
-        generator2.enabled = power < 3800;
+        if generator2 then
+            generator.enabled = false;
+            generator2.enabled = power < 3800;
+        else
+            generator.enabled = power < 800;
+        end;
+
+        factoryProgress = factory.@progress;
+        reconstructorProgress = reconstructor.@progress;
+
+        if flares < flareTarget then
+            displayNextUnit = targetUnit = factoryUnit = @flare;
+        elsif monos < monoTarget then
+            displayNextUnit = targetUnit = factoryUnit = @mono;
+        elsif polys < polyTarget then
+            factoryUnit = reconstructor.@payloadType == null ? @mono : null;
+            displayNextUnit = targetUnit = @poly;
+        else
+            displayNextUnit = targetUnit = factoryUnit = null;
+        end;
 
         fuzzyUpdate(ref enableFactory, power, 200, 500);
 
-        factoryProgress = factory.@progress;
-
-        if unitToProduce == null then
+        if factoryUnit == null then
             factory.enabled = false;
             factory.config = @mono;
             lastProgress = 0;
         elsif lastProgress > factoryProgress + 0.1 then
             factory.enabled = enableFactory;
-            unitFinished();
+            factoryUnitFinished(factoryUnit);
             lastProgress = 0;
-        elsif factory.config != unitToProduce then
+        elsif factory.config != factoryUnit then
             factory.enabled = enableFactory;
-            factory.config = unitToProduce;
+            factory.config = factoryUnit;
             lastProgress = 0;
         else
             factory.enabled = enableFactory;
             lastProgress = factoryProgress;
+        end;
+
+        if lastRecoProgress > reconstructorProgress + 0.1 then
+            factoryUnitFinished(@poly);
+            lastRecoProgress = 0;
+        else
+            lastRecoProgress = reconstructorProgress;
         end;
 
         if generator2.@coal < generator2 then
@@ -109,7 +141,7 @@ void backgroundProcess()
             continue;
         end;
 
-        var leadLimit = (unitToProduce == @mono) * 30;
+        var leadLimit = (factoryUnit == @mono) * 30;
         if factory.@lead < leadLimit and core.@lead > leadReserve then
             unloader2.config = @lead;
         elsif coreSilicon > siliconReserve then

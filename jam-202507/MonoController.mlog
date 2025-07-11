@@ -1,66 +1,87 @@
 jump 4 always 0 0
-draw triangle .core .coreX .coreY :copper :flag :lead
-draw triangle :sand :findOreToMine:x :findOreToMine:y :mine:flag :mine:ore :mine:x
-draw triangle :mine:y 0 0 0 0 0
+draw triangle message1 .core .coreX .coreY :copper :firstItem
+draw triangle :flag :lead :sand :findOreToMine:x :findOreToMine:y :mine:flag
+draw triangle :mine:ore :mine:x :mine:y 0 0 0
 ubind @mono
 jump 4 equal @unit null
+set :firstItem @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 6 equal .core null
+jump 7 equal .core null
 ubind @mono
+jump 12 notEqual @unit :firstItem
+printflush message1
 sensor :lead .core @lead
 sensor :sand .core @sand
 sensor :copper .core @copper
-op min *tmp7 :lead :sand
-op min *tmp7 *tmp7 :copper
-set *tmp9 @sand
-jump 19 equal *tmp7 :sand
-set *tmp9 @copper
-jump 19 notEqual *tmp7 :lead
-set *tmp9 @lead
+op min *tmp9 :lead :sand
+op min *tmp9 *tmp9 :copper
+set *tmp11 @sand
+jump 22 equal *tmp9 :sand
+set *tmp11 @copper
+jump 22 notEqual *tmp9 :lead
+set *tmp11 @lead
+print "minOre:{0}\nUnit flag: {0}\n"
+format *tmp11
 sensor :flag @unit @flag
-jump 37 notEqual :flag 0
-sensor *tmp15 @unit @firstItem
-jump 26 equal *tmp15 null
+format :flag
+jump 47 notEqual :flag 0
+sensor *tmp17 @unit @firstItem
+jump 32 equal *tmp17 null
 ucontrol itemDrop @air 20 0 0 0
-sensor *tmp18 @unit @firstItem
-jump 8 notEqual *tmp18 null
-ulocate ore core true *tmp9 :findOreToMine:x :findOreToMine:y 0 0
+sensor *tmp20 @unit @firstItem
+jump 9 notEqual *tmp20 null
+ulocate ore core true *tmp11 :findOreToMine:x :findOreToMine:y 0 0
 ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0
 ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
-op mul *tmp23 :findOreToMine:x 1000
-op add *tmp24 *tmp23 :findOreToMine:y
-op mul *tmp25 *tmp24 32
-sensor *tmp26 *tmp9 @id
-op mul *tmp27 *tmp26 2
-op add *tmp28 *tmp25 *tmp27
-ucontrol flag *tmp28 0 0 0 0
-jump 8 always 0 0
-jump 44 notEqual :flag 1
+op mul *tmp25 :findOreToMine:x 1000
+op add *tmp26 *tmp25 :findOreToMine:y
+op mul *tmp27 *tmp26 32
+sensor *tmp28 *tmp11 @id
+op mul *tmp29 *tmp28 2
+op add *tmp30 *tmp27 *tmp29
+ucontrol flag *tmp30 0 0 0 0
+print "Found {0} at {0}, {0}\n"
+format *tmp11
+format :findOreToMine:x
+format :findOreToMine:y
+jump 9 always 0 0
+jump 56 notEqual :flag 1
+print "Returning\n"
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol itemDrop .core 20 0 0 0
-sensor *tmp31 @unit @firstItem
-jump 8 notEqual *tmp31 null
+sensor *tmp33 @unit @firstItem
+jump 9 notEqual *tmp33 null
+print "    Finished\n"
 ucontrol flag 0 0 0 0 0
-jump 8 always 0 0
+jump 9 always 0 0
+print "Mining: "
 op idiv :mine:flag :flag 2
-op mod *tmp34 :mine:flag 16
-lookup item :mine:ore *tmp34
+op mod *tmp36 :mine:flag 16
+lookup item :mine:ore *tmp36
 op idiv :mine:flag :mine:flag 16
 op mod :mine:y :mine:flag 1000
 op idiv :mine:x :mine:flag 1000
-sensor *tmp38 .core :mine:ore
-op add *tmp39 *tmp7 500
-jump 54 lessThanEq *tmp38 *tmp39
-ucontrol flag 0 0 0 0 0
-sensor *tmp42 @unit @firstItem
-jump 57 equal *tmp42 :mine:ore
+sensor *tmp40 .core :mine:ore
+op add *tmp41 *tmp9 500
+jump 69 lessThanEq *tmp40 *tmp41
+print ", switching"
+ucontrol flag 1 0 0 0 0
+jump 9 always 0 0
+sensor *tmp44 @unit @firstItem
+jump 73 equal *tmp44 :mine:ore
+print ", dropping"
 ucontrol itemDrop @air 20 0 0 0
+print ", mining at {0}, "
+format :mine:x
+print :mine:y
 ucontrol approach :mine:x :mine:y 7 0 0
 ucontrol mine :mine:x :mine:y 0 0 0
-sensor *tmp45 @unit @totalItems
-jump 8 lessThan *tmp45 20
+sensor *tmp47 @unit @totalItems
+jump 83 lessThan *tmp47 20
+print ", full"
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol flag 1 0 0 0 0
-jump 8 always 0 0
+print "\n"
+jump 9 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

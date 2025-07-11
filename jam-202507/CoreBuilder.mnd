@@ -29,12 +29,7 @@ var
     smelter = null,
     titaniumDrill = null,
     unloader1 = null,
-    unloader2 = null,
-    factory = null,
-    generator2 = null,
-    kiln = null,
-    thoriumDrill = null,
-    thoriumGenerator = null;
+    kiln = null;
 
 // Targets to be met for the next build
 noinit var
@@ -54,6 +49,9 @@ var
     siliconSurplus = 20,
     metaglassSurplus = 20;
 
+var
+    flareControllerStarted = false;
+
 external bank1[511] logPosition = 511;
 
 // Blocks layout around the core and build requirements
@@ -70,30 +68,38 @@ const CFG_METAGLASS   = CFG_TITANIUM + 1;
 const CFG_ROTATION    = CFG_METAGLASS + 1;
 const CFG_CONFIG      = CFG_ROTATION + 1;
 
-//                         Block type                 X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
-const PRESS[]           = (@graphite-press,        -1.5, +2.5,  75, 30,  0,  0,  0,  0,  0, null);
-const BATTERY1[]        = (@battery,                0.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
-const BATTERY2[]        = (@battery,               -1.0, +4.0,   5, 20,  0,  0,  0,  0,  0, null);
-const GENERATOR[]       = (@combustion-generator,   0.0, +3.0,  25, 15,  0,  0,  0,  0,  0, null);
-const SMELTER[]         = (@silicon-smelter,       +1.5, +2.5,  30, 25,  0,  0,  0,  0,  0, null);
-const PNEUMATIC_DRILL[] = (@pneumatic-drill,        0.0,  0.0,  18,  0, 10,  0,  0,  0,  0, null);
-const UNLOADER1[]       = (@unloader,               0.0, +2.0,   0,  0,  0, 30, 25,  0,  0, null);
-const PROCESSOR[]       = (@micro-processor,       +1.0, +4.0,  90, 50,  0, 50,  0,  0,  0, processor2);
-const POWER_NODE[]      = (@power-node,            -2.0, -1.0,   2,  6,  0,  0,  0,  0,  0, null);
-const BATTERY_LARGE[]   = (@battery-large,         +4.0, +3.0,   0, 50,  0, 30, 20,  0,  0, null);
-const UNLOADER2[]       = (@unloader,              -2.0, +1.0,   0,  0,  0, 30, 25,  0,  0, null);
-const OVERFLOW_GATE[]   = (@overflow-gate,         -3.0,  1.0,   4,  2,  0,  0,  0,  0,  0, null);
-const AIR_FACTORY[]     = (@air-factory,           -4.0, -1.0,  60, 70,  0,  0,  0,  0,  3, @mono);
+//                         Block type                      X     Y   Cu  Pb  GR  Si  Ti  MG   R  Cfg
+const PRESS[]           = (@graphite-press,             -1.5, +2.5, 75, 30,  0,  0,  0,  0,  0, null);
+const BATTERY1[]        = (@battery,                     0.0, +4.0,  5, 20,  0,  0,  0,  0,  0, null);
+const BATTERY2[]        = (@battery,                    -1.0, +4.0,  5, 20,  0,  0,  0,  0,  0, null);
+const GENERATOR[]       = (@combustion-generator,        0.0, +3.0, 25, 15,  0,  0,  0,  0,  0, null);
+const SMELTER[]         = (@silicon-smelter,            +1.5, +2.5, 30, 25,  0,  0,  0,  0,  0, null);
+const PNEUMATIC_DRILL[] = (@pneumatic-drill,             0.0,  0.0, 18,  0, 10,  0,  0,  0,  0, null);
+const UNLOADER1[]       = (@unloader,                    0.0, +2.0,  0,  0,  0, 30, 25,  0,  0, null);
+const PROCESSOR[]       = (@micro-processor,            +1.0, +4.0, 90, 50,  0, 50,  0,  0,  0, processor2);
+const POWER_NODE[]      = (@power-node,                 -2.0, +1.0,  2,  6,  0,  0,  0,  0,  0, null);
+const UNLOADER2[]       = (@unloader,                   -2.0,  0.0,  0,  0,  0, 30, 25,  0,  0, null);
+const OVERFLOW_GATE[]   = (@overflow-gate,              -3.0,  0.0,  4,  2,  0,  0,  0,  0,  0, null);
+const AIR_FACTORY[]     = (@air-factory,                -3.0, -2.0, 60, 70,  0,  0,  0,  0,  3, @mono);
 
-const LASER_DRILL[]     = (@laser-drill,            0.0,  0.0,  35,  0, 30, 30, 20,  0,  0, null);
-const SOLAR_PANEL[]     = (@solar-panel,            0.0,  0.0,   0, 10,  0,  8,  0,  0,  0, null);
+const UNLOADER3[]       = (@unloader,                   +2.0, +1.0,  0,  0,  0, 30, 25,  0,  0, null);
+const KILN[]            = (@kiln,                       +3.5, +1.5, 60, 30, 30,  0,  0,  0,  0, null);
+const JUNCTION[]        = (@junction,                   +2.0, +0.0,  3,  0,  0,  0,  0,  0,  0, null);
+const INVERTED_SORTER[] = (@inverted-sorter,            +3.0, +0.0,  2,  2,  0,  0,  0,  0,  0, @metaglass);
+const WATER_EXT[]       = (@water-extractor,            -3.5, +3.5, 30, 30, 30,  0,  0, 30,  0, null);
+const STEAM_GEN[]       = (@steam-generator,            -3.5, +1.5, 35, 40, 25, 30,  0,  0,  0, null);
 
-const UNLOADER3[]       = (@unloader,              +2.0,  0.0,   0,  0,  0, 30, 25,  0,  0, null);
-const KILN[]            = (@kiln,                  +3.5, +0.5,  60, 30, 30,  0,  0,  0,  0, null);
-const JUNCTION[]        = (@junction,              +2.0, +1.0,   3,  0,  0,  0,  0,  0,  0, null);
-const WATER_EXT[]       = (@water-extractor,       -3.5, +4.5,  30, 30, 30,  0,  0, 30,  0, null);
-const STEAM_GEN[]       = (@steam-generator,       -3.5, +2.5,  35, 40, 25, 30,  0,  0,  0, null);
-const SORTER[]          = (@sorter,                -4.0,  1.0,   2,  2,  0,  0,  0,  0,  0, @coal);
+const PAYLOAD_CONV[]    = (@payload-conveyor,           -3.0, -5.0, 10,  0, 10,  0,  0,  0,  0, null);
+const UNLOADER4[]       = (@unloader,                    0.0, -2.0,  0,  0,  0, 30, 25,  0,  0, null);
+const UNDERFLOW_GATE[]  = (@underflow-gate,              0.0, -3.0,  4,  2,  0,  0,  0,  0,  0, null);
+const ADDITIVE_REC[]    = (@additive-reconstructor,      0.0, -5.0,200,120,  0, 90,  0,  0,  0, null);
+
+const SORTER[]          = (@sorter,                     -4.0,  0.0,  2,  2,  0,  0,  0,  0,  0, @coal);
+
+const LASER_DRILL[]     = (@laser-drill,                 0.0,  0.0, 35,  0, 30, 30, 20,  0,  0, null);
+const SOLAR_PANEL[]     = (@solar-panel,                 0.0,  0.0,  0, 10,  0,  8,  0,  0,  0, null);
+
+//const BATTERY_LARGE[]   = (@battery-large,              +4.0, +3.0,  0, 50,  0, 30, 20,  0,  0, null);
 
 // Non-core based blocks
 
@@ -178,7 +184,7 @@ void supplyBase0()
             elsif core.@copper < targetCopper then
                 status1("Goal 7: copper requirement");
                 mineOre(@copper);
-            elsif core.@lead < targetLead + 20 then
+            elsif core.@lead < targetLead then
                 status1("Goal 8: lead requirement");
                 mineOre(@lead);
             elsif core.@metaglass < targetMetaglass then
@@ -221,6 +227,13 @@ void supplyBase1()
 end;
 
 void supplyBase()
+    if !flareControllerStarted then
+        if controller.flares > 0 then
+            flareControllerStarted = true;
+            async(flareController.start(core, titaniumDrill));
+        end;
+    end;
+
     if controller.monos > 3 then
         supplyBase1();
     else
@@ -259,7 +272,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     display.targetMetaglass = metaglass;
 
     targetCopper = copper;
-    targetLead = lead + 20;
+    targetLead = lead + leadSurplus + 1;
     targetGraphite = graphite;
     targetSilicon = silicon;
     targetTitanium = titanium;
@@ -268,7 +281,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     controller.pressTarget = graphite + graphiteSurplus;
     controller.smelterTarget = silicon + siliconSurplus;
     controller.kilnTarget = metaglass + metaglassSurplus;
-    controller.leadReserve = lead + sign(lead) * 20;
+    controller.leadReserve = lead + leadSurplus;
     controller.siliconReserve = silicon + sign(silicon) * 20;
 
     while !targetMet() do
@@ -337,10 +350,6 @@ inline void meetTarget(ref cfg)
         cfg[CFG_METAGLASS]);
 end;
 
-inline void clearTarget()
-    meetTarget(0, 0, 0, 0, 0, 0, 0);
-end;
-
 inline def buildTitaniumDrill(ref cfg)
     meetTarget(ref cfg);
 
@@ -358,7 +367,7 @@ void buildThoriumDrill()
 
     var result = await(layoutThoriumDrill);
     if !result then error("Cannot locate spot for thorium drill"); end;
-    thoriumDrill = buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, false);
+    var thoriumDrill = buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, false);
 
     if oreLocator.water1X < 0 then return; end;
     meetTarget(ref WATER_EXT);
@@ -370,7 +379,7 @@ void buildThoriumDrill()
     buildBlockAt(@water-extractor, oreLocator.water2X, oreLocator.water2Y, null, 0, false);
 
     meetTarget(ref WATER_EXT);
-    thoriumGenerator = buildBlockAt(@steam-generator, oreLocator.generatorX, oreLocator.generatorY, null, 0, false);
+    var thoriumGenerator = buildBlockAt(@steam-generator, oreLocator.generatorX, oreLocator.generatorY, null, 0, false);
 
     meetTarget(ref POWER_NODE);
     buildBlockAt(@power-node, oreLocator.nodeX, oreLocator.nodeY, null, 0, false);
@@ -400,46 +409,48 @@ def findUnits(type, out count)
     count;
 end;
 
-void buildUnits(unit)
+void buildUnits()
+    meetTarget(0, 0, 0, 0, 0, 0, 0);
     display.totalTargets = 0;
     display.nextBlock = null;
     controller.leadReserve = 0;
     controller.siliconReserve = 0;
-    controller.unitToProduce = unit;
 end;
 
 begin
+    // INITIALIZATION
+
     do
         builder = ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
 
-    // Error - unrecognized remote processor
-    //verifySignature(display);
     display = processor1;
     flareController = processor3;
     oreLocator = processor4;
 
     // Bind and flag units
-    var monos = findUnits(@mono, out display.monos);
-    var flares = findUnits(@flare, out display.flares);
-    var polys = findUnits(@poly, out display.polys);
+    var flares = findUnits(@flare, out display.displayFlares);
+    var monos = findUnits(@mono, out display.displayMonos);
+    var polys = findUnits(@poly, out display.displayPolys);
 
-    // Basic blocks: copper and lead
+    // PHASE 0: BASIC BLOCKS
+
     press = buildBlockFromCfg(ref PRESS);
     battery = buildBlockFromCfg(ref BATTERY1);
     buildBlockFromCfg(ref BATTERY2);
     generator = buildBlockFromCfg(ref GENERATOR);
 
-    powerTarget = 800;
+    powerTarget = 400;
 
     smelter = buildBlockFromCfg(ref SMELTER);
     titaniumDrill = buildTitaniumDrill(ref PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
-
     unloader1 = buildBlockFromCfg(ref UNLOADER1);
-    controller = buildBlockFromCfg(ref PROCESSOR);
 
+    // Build and initialize base controller
+
+    controller = buildBlockFromCfg(ref PROCESSOR);
     controller.display = display;
     controller.core = core;
     controller.bank = bank1;
@@ -452,70 +463,83 @@ begin
     controller.polys = polys;
 
     buildBlockFromCfg(ref POWER_NODE);
-    unloader2 = buildBlockFromCfg(ref UNLOADER2);
-    controller.unloader2 = unloader2;
+    controller.unloader2 = buildBlockFromCfg(ref UNLOADER2);
 
-    buildBlockFromCfg(ref OVERFLOW_GATE);
-    factory = buildBlockFromCfg(ref AIR_FACTORY);
+    var factory = buildBlockFromCfg(ref AIR_FACTORY);
     controller.factory = factory;
     display.factory = factory;
 
-    // We're getting into the "build the damn units" mode
-    controller.flareTarget = 2;
-    buildUnits(@flare);
+    // PHASE 1: BUILDING UNITS
 
-    clearTarget();
-    siliconSurplus = leadSurplus = 20;
+    controller.flareTarget = 1;
+    controller.monoTarget = 3;
+    controller.polyTarget = 0;
     controller.pressTarget = 85;
     controller.smelterTarget = 150;
     controller.kilnTarget = 30;
+    siliconSurplus = leadSurplus = 20;
 
-    var searchThorium = true;
+    buildUnits();
     do
-        if searchThorium and controller.flares > 0 then
-            searchThorium = false;
-            findFreeUnit(@flare, 0);
-            async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));
-            ubind(builder);
-            flareController.start(core, titaniumDrill);
-        end;
-
         supplyBase();
+
+        // We're low on power: the air units might not get built in time
+        // Go on building additional power reserves yourself.
         if battery.@totalPower < 300 then break; end;
     while controller.monos < 3;
 
-    flareController.start(core, titaniumDrill);
+    // Build stock
+    graphiteSurplus = 60;
+    siliconSurplus = 100;
+    metaglassSurplus = 60;
 
+    // Kiln - needed for metaglass
     buildBlockFromCfg(ref UNLOADER3);
+    buildBlockFromCfg(ref JUNCTION);
+    buildBlockFromCfg(ref INVERTED_SORTER);
     kiln = buildBlockFromCfg(ref KILN);
     controller.kiln = kiln;
 
-    buildBlockFromCfg(ref JUNCTION);
+    // Steam generator
     buildBlockFromCfg(ref WATER_EXT);
-    generator2 = buildBlockFromCfg(ref STEAM_GEN);
-    controller.generator2 = generator2;
+    buildBlockFromCfg(ref OVERFLOW_GATE);
+    controller.generator2 = buildBlockFromCfg(ref STEAM_GEN);
+
     //buildBlockFromCfg(ref BATTERY_LARGE);
 
+    // POLYS
+    buildBlockFromCfg(ref PAYLOAD_CONV);
+    buildBlockFromCfg(ref UNLOADER4);
+    buildBlockFromCfg(ref UNDERFLOW_GATE);
+    var reconstructor = buildBlockFromCfg(ref ADDITIVE_REC);
+    controller.reconstructor = reconstructor;
+    display.reconstructor = reconstructor;
+
+    buildUnits();
+
+    // Even more stock
     graphiteSurplus = 200;
     siliconSurplus = 1000;
     metaglassSurplus = 200;
 
-    if searchThorium then
-        while controller.flares < 1 do
-            supplyBase();
-        end;
-
-        searchThorium = false;
-        findFreeUnit(@flare, 0);
-        async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));
-        ubind(builder);
-        do
-            supplyBase();
-        while !finished(layoutThoriumDrill);
+    controller.polyTarget = 4;
+    while controller.polys < 4 do
+        supplyBase();
     end;
 
+    while controller.flares < 1 do
+        supplyBase();
+    end;
+
+    findFreeUnit(@flare, 0);
+    async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));
+    ubind(builder);
+    do
+        supplyBase();
+    while !finished(layoutThoriumDrill);
+
     buildThoriumDrill();
-    buildBlockFromCfg(ref SORTER);
+    //buildBlockFromCfg(ref SORTER);
 
     display.totalTargets = 0;
     display.nextBlock = null;

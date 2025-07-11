@@ -7,10 +7,9 @@
 const RADIUS = 7;
 const capacity = 20;
 
-noinit var core, coreX, coreY;
+linked message1;
 
-const mining = 1;
-const returning = 2;
+noinit var core, coreX, coreY;
 
 var min = 0, minOre = null;
 
@@ -19,20 +18,25 @@ begin
         ubind(@mono);
     while @unit == null;
 
+    var firstItem = @unit;
+
     do
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
 
     while true do
         ubind(@mono);
+        if @unit == firstItem then printflush(message1); end;
 
         var lead = core.@lead;
         var sand = core.@sand;
         var copper = core.@copper;
         min = min(lead, sand, copper);
         minOre = min == sand ? @sand : min == lead ? @lead : @copper;
+        println("minOre:", minOre);
 
         var flag = @unit.@flag;
+        println("Unit flag: ", flag);
         if flag == 0 then
             findOreToMine(minOre);
         elsif flag == 1 then
@@ -54,9 +58,12 @@ void findOreToMine(ore)
     approach(x, y, RADIUS);
     mine(x, y);
     flag((x * 1000 + y) * 32 + ore.@id * 2);
+    println($"Found $ore at $x, $y");
 end;
 
 void mine(flag)
+    print("Mining: ");
+
     flag \= 2;
     var ore = lookup(:item, flag % 16);
     flag \= 16;
@@ -64,27 +71,36 @@ void mine(flag)
     var x = flag \ 1000;
 
     if core.sensor(ore) > min + 500 then
-        flag(0);
+        print(", switching");
+        flag(1);
+        return;
     end;
 
     if @unit.@firstItem != ore then
+        print(", dropping");
         itemDrop(@air, capacity);
     end;
 
+    print($", mining at $x, $y");
     approach(x, y, RADIUS);
     mine(x, y);
 
     if @unit.@totalItems >= capacity then
+        print(", full");
         approach(coreX, coreY, RADIUS);
         flag(1);
     end;
+
+    println();
 end;
 
 void returnItems()
+    println("Returning");
     approach(coreX, coreY, RADIUS);
     itemDrop(core, capacity);
 
     if @unit.@firstItem == null then
+        println("    Finished");
         flag(0);
     end;
 end;

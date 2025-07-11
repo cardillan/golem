@@ -18,6 +18,7 @@ var
 
 noinit remote var
     nextBlock,
+    displayNextUnit,
     targetCopper,
     targetLead,
     targetGraphite,
@@ -30,10 +31,11 @@ noinit remote var
     status1,
     status2, item2, block2,
     status3,
-    monos,
-    flares,
-    polys,
+    displayMonos,
+    displayFlares,
+    displayPolys,
     factory,
+    reconstructor,
     titaniumDrill,
     thoriumDrill;
 
@@ -53,7 +55,7 @@ inline void drawText(x, y, alignment, text...)
     drawPrint(x, y, alignment);
 end;
 
-var materialCount;
+noinit var materialCount;
 
 void updateDisplay()
     reset();
@@ -85,10 +87,16 @@ const HEADER4_Y = HEADER2_Y - 5 * ROW_HEIGHT - 5;
 
 inline void drawHeader()
     col(%[gold]);
-    drawBold(HEADER_X, HEADER1_Y, @bottom, nextBlock == @titanium ? "Searching" : "Building");
+    drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
 
     col(%[white]);
-    image(HEADER_X, HEADER1_Y - 24, nextBlock == null ? factory.@config : nextBlock, 32, 0);
+    if nextBlock + displayNextUnit == 2 then
+        image(HEADER_X - 15, HEADER1_Y - 22, nextBlock, 25, 0);
+        image(HEADER_X + 15, HEADER1_Y - 22, displayNextUnit, 25, 0);
+    else
+        var img = nextBlock != null ? nextBlock : displayNextUnit != null ? displayNextUnit : @blasted;
+        image(HEADER_X, HEADER1_Y - 24, img, 32, 0);
+    end;
 
     var t = floor(second());
     var m = t \ 60;
@@ -116,23 +124,38 @@ inline void drawMaterials()
     var col = 0, y = HEADER2_Y - ROW_HEIGHT;
 
     if nextBlock == null then
-        var unit = factory.@config;
         var unitCount;
-        if unit == @mono then
+        if displayNextUnit == @mono then
             targetFactoryLead = 15;
             targetFactorySilicon = 30;
             materialCount = 2;
-            unitCount = monos + 1;
-        else
+            unitCount = displayMonos + 1;
+        elsif displayNextUnit == @poly then
+            targetFactoryLead = 15;
+            targetFactorySilicon = 30;
+            materialCount = 2;
+            unitCount = 1;
+        elsif displayNextUnit == @flare then
             targetFactoryLead = 0;
             targetFactorySilicon = 15;
             materialCount = 1;
-            unitCount = flares + 1;
+            unitCount = displayFlares + 1;
         end;
 
         drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Air Factory");
-        if factory.@progress > 0 then
-            drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, unit, factory.@progress, 1.0, unitCount, "/8");
+        var factoryProgress = factory.@progress;
+        var reconstructorProgress = reconstructor.@progress;
+        if factoryProgress + reconstructorProgress > 0 then
+            if displayNextUnit == @poly then
+                if reconstructorProgress > 0 then
+                    drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @mono, 1.0, 1.0, "1/1");
+                else
+                    drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @mono, factoryProgress, 1.0, "1/1");
+                end;
+                drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, displayNextUnit, reconstructorProgress, 1.0, unitCount, "/8");
+            else
+                drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, displayNextUnit, factoryProgress, 1.0, unitCount, "/8");
+            end;
         else
             for var item, target in
                 @lead,    targetFactoryLead,
@@ -215,9 +238,9 @@ end;
 inline void drawUnits()
     var x = 170;
     col(%[white]);
-    drawUnitCount(@poly, polys, ref x);
-    drawUnitCount(@mono, monos, ref x);
-    drawUnitCount(@flare, flares, ref x);
+    drawUnitCount(@poly, displayPolys, ref x);
+    drawUnitCount(@mono, displayMonos, ref x);
+    drawUnitCount(@flare, displayFlares, ref x);
 end;
 
 inline void drawUnitCount(type, count, ref x)

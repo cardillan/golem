@@ -1,711 +1,1440 @@
-   150 instructions before optimizations.
-    17 instructions eliminated by Temp Variables Elimination (3 iterations).
-    17 instructions eliminated by Dead Code Elimination (6 iterations).
-     1 instructions eliminated by Jump Normalization (5 iterations).
-     8 instructions eliminated by Jump Optimization (5 iterations).
-     2 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
-     3 instructions eliminated by If Expression Optimization (3 iterations).
-    11 instructions eliminated by Data Flow Optimization (6 iterations).
-     3 instructions updated by JumpThreading.
-     3 instructions eliminated by Unreachable Code Elimination (2 iterations).
-    88 instructions after optimizations.
+   229 instructions before optimizations.
+    23 instructions eliminated by Temp Variables Elimination (3 iterations).
+     1 instructions eliminated by Case Expression Optimization.
+    31 instructions eliminated by Dead Code Elimination (6 iterations).
+     2 instructions eliminated by Jump Normalization (2 passes, 5 iterations).
+    11 instructions eliminated by Jump Optimization (5 iterations).
+     5 instructions eliminated by Single Step Elimination (3 passes, 8 iterations).
+     1 instructions modified by Expression Optimization (3 iterations).
+     1 instructions eliminated by If Expression Optimization (3 iterations).
+    18 instructions eliminated by Data Flow Optimization (3 passes, 11 iterations).
+    19 instructions added by Function Inlining (4 iterations).
+     2 function calls inlined by Function Inlining.
+     3 instructions eliminated by Jump Straightening (5 iterations).
+     4 instructions updated by JumpThreading.
+    10 instructions eliminated by Unreachable Code Elimination (2 iterations).
+   143 instructions after optimizations.
 
-Modifications by Initial phase, Dead Code Elimination, iteration 1 (-10 instructions):
+Pass 1: speed optimization selection (cost limit 859):
+  * Inline function 'factoryUnitFinished' defined at CoreController.mnd:60:1 size   +23, benefit       65.6, efficiency      2.853 (+18 instructions)
+    Inline function call at CoreController.mnd:126:13            size   +24, benefit       21.9, efficiency      0.911
+    Inline function call at CoreController.mnd:138:13            size   +24, benefit       43.8, efficiency      1.823
+C:\Home\golem\jam-202507\common.mnd:1:7 Variable 'TIME_COMPRESS' is not initialized.
+
+Modifications by Initial phase, Case Expression Optimization, iteration 1 (-1 instructions):
  
-    35 set :updateIfSmaller:b :fuzzyUpdate:limitLow
-    36 set :updateIfSmaller:newValue false
-    37 select :backgroundProcess:enableFactory lessThan :updateIfSmaller:a :updateIfSmaller:b :updateIfSmaller:newValue :backgroundProcess:enableFactory
--    * set *tmp23 null
+   236 write *tmp105 .bank *tmp100
+   237 label *label40
+   238 label *label39
+-    * set *tmp107 :factoryUnitFinished:unit
+-    * jump *label44 equal *tmp107 @flare
++  239 jump *label44 equal :factoryUnitFinished:unit @flare
+   240 jump *label43 always
+   241 label *label44
+   242 op add *tmp108 .flares 1
+ 
+   245 set *tmp106 *tmp108
+   246 jump *label42 always
+   247 label *label43
+-    * jump *label46 equal *tmp107 @mono
++  248 jump *label46 equal :factoryUnitFinished:unit @mono
+   249 jump *label45 always
+   250 label *label46
+   251 op add *tmp109 .monos 1
+ 
+   254 set *tmp106 *tmp109
+   255 jump *label42 always
+   256 label *label45
+-    * jump *label48 equal *tmp107 @poly
++  257 jump *label48 equal :factoryUnitFinished:unit @poly
+   258 jump *label47 always
+   259 label *label48
+   260 op add *tmp110 .polys 1
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-16 instructions):
+ 
+    34 set *tmp21 .generator2
+    35 op lessThan *tmp23 :backgroundProcess:power 3800
+    36 control enabled *tmp21 *tmp23
+-    * set *tmp18 *tmp23
+    37 jump *label8 always
     38 label *label7
-    39 set :updateIfSmaller.1:a :fuzzyUpdate:limitHigh
-    40 set :updateIfSmaller.1:b :fuzzyUpdate:value
+    39 set *tmp24 .generator
+    40 op lessThan *tmp26 :backgroundProcess:power 800
+    41 control enabled *tmp24 *tmp26
+-    * set *tmp18 *tmp26
+    42 label *label8
+    43 sensor *tmp27 .factory @progress
+    44 set :backgroundProcess:factoryProgress *tmp27
  
-    42 select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
-    43 set *tmp24 null
-    44 label *label8
--    * set *tmp22 *tmp24
-    45 label *label6
-    46 sensor *tmp25 .factory @progress
-    47 set :backgroundProcess:factoryProgress *tmp25
+    51 write @flare .display ".displayNextUnit"
+    52 set *tmp31 .payloadRouter
+    53 control config *tmp31 @oct
+-    * set *tmp30 @oct
+    54 jump *label10 always
+    55 label *label9
+    56 op lessThan *tmp33 .monos .monoTarget
  
-    52 set *tmp30 .factory
-    53 control config *tmp30 @mono
-    54 set :backgroundProcess:lastProgress 0
--    * set *tmp27 :backgroundProcess:lastProgress
-    55 jump *label10 always
-    56 label *label9
-    57 op add *tmp32 :backgroundProcess:factoryProgress 0.1
+    90 label *label14
+    91 set *tmp34 *tmp38
+    92 label *label12
+-    * set *tmp30 *tmp34
+    93 label *label10
+    94 set :fuzzyUpdate:value :backgroundProcess:power
+    95 set :fuzzyUpdate:limitLow 200
  
-    78 op add *tmp47 .flares 1
-    79 set .flares *tmp47
-    80 write *tmp47 .display ".flares"
--    * set *tmp46 *tmp47
-    81 jump *label17 always
-    82 label *label16
-    83 op add *tmp48 .monos 1
-    84 set .monos *tmp48
-    85 write *tmp48 .display ".monos"
+    98 set :updateIfSmaller:b :fuzzyUpdate:limitLow
+    99 set :updateIfSmaller:newValue false
+   100 select :backgroundProcess:enableFactory lessThan :updateIfSmaller:a :updateIfSmaller:b :updateIfSmaller:newValue :backgroundProcess:enableFactory
+-    * set *tmp47 null
+   101 label *label18
+   102 set :updateIfSmaller.1:a :fuzzyUpdate:limitHigh
+   103 set :updateIfSmaller.1:b :fuzzyUpdate:value
+ 
+   105 select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
+   106 set *tmp48 null
+   107 label *label19
 -    * set *tmp46 *tmp48
-    86 label *label17
-    87 op lessThan *tmp49 .monos 8
-    88 jump *label18 equal *tmp49 false
+   108 label *label17
+   109 op equal *tmp49 .factoryUnit null
+   110 jump *label20 equal *tmp49 false
  
-   124 label *label23
-   125 set *tmp34 *tmp56
-   126 label *label12
--    * set *tmp27 *tmp34
-   127 label *label10
-   128 sensor *tmp64 .generator2 @coal
-   129 op lessThan *tmp65 *tmp64 .generator2
+   113 set *tmp53 .factory
+   114 control config *tmp53 @mono
+   115 set :backgroundProcess:lastProgress 0
+-    * set *tmp50 :backgroundProcess:lastProgress
+   116 jump *label21 always
+   117 label *label20
+   118 op add *tmp55 :backgroundProcess:factoryProgress 0.1
  
-   131 set *tmp67 .unloader2
-   132 control config *tmp67 @coal
-   133 jump *label4 always
--    * set *tmp66 null
-   134 jump *label25 always
-   135 label *label24
--    * set *tmp66 null
-   136 label *label25
-   137 op equal *tmp69 .unitToProduce @mono
-   138 op mul *tmp70 *tmp69 30
+   148 label *label26
+   149 set *tmp57 *tmp63
+   150 label *label23
+-    * set *tmp50 *tmp57
+   151 label *label21
+   152 op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+   153 op greaterThan *tmp72 :backgroundProcess:lastRecoProgress *tmp71
  
-   145 jump *label26 equal *tmp75 false
-   146 set *tmp77 .unloader2
-   147 control config *tmp77 @lead
--    * set *tmp76 @lead
-   148 jump *label27 always
-   149 label *label26
-   150 op greaterThan *tmp79 :backgroundProcess:coreSilicon .siliconReserve
- 
-   158 control config *tmp83 @coal
-   159 set *tmp80 @coal
-   160 label *label29
--    * set *tmp76 *tmp80
+   157 call *label0 *invalid :factoryUnitFinished*retval (m:*label29) (h:*label29)
+   158 label *label29
+   159 set :backgroundProcess:lastRecoProgress 0
+-    * set *tmp73 :backgroundProcess:lastRecoProgress
+   160 jump *label28 always
    161 label *label27
-   162 label *label4
-   163 jump *label3 always
+   162 set :backgroundProcess:lastRecoProgress :backgroundProcess:reconstructorProgress
+-    * set *tmp73 :backgroundProcess:lastRecoProgress
+   163 label *label28
+   164 sensor *tmp74 .generator2 @coal
+   165 op lessThan *tmp75 *tmp74 .generator2
+ 
+   167 set *tmp77 .unloader2
+   168 control config *tmp77 @coal
+   169 jump *label5 always
+-    * set *tmp76 null
+   170 jump *label31 always
+   171 label *label30
+-    * set *tmp76 null
+   172 label *label31
+   173 op equal *tmp79 .factoryUnit @mono
+   174 op mul *tmp80 *tmp79 30
+ 
+   181 jump *label32 equal *tmp85 false
+   182 set *tmp87 .unloader2
+   183 control config *tmp87 @lead
+-    * set *tmp86 @lead
+   184 jump *label33 always
+   185 label *label32
+   186 op greaterThan *tmp89 :backgroundProcess:coreSilicon .siliconReserve
+ 
+   194 control config *tmp93 @coal
+   195 set *tmp90 @coal
+   196 label *label35
+-    * set *tmp86 *tmp90
+   197 label *label33
+   198 label *label5
+   199 jump *label4 always
+ 
+   251 label *label47
+   252 set *tmp106 null
+   253 label *label42
+-    * set *tmp96 *tmp106
+   254 jump *label38 always
+   255 label *label37
+-    * set *tmp96 null
+   256 label *label38
+   257 label *label36
+   258 return :factoryUnitFinished*retaddr
 
-Modifications by Initial phase, Dead Code Elimination, iteration 2 (-5 instructions):
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-11 instructions):
  
-    40 set :updateIfSmaller.1:b :fuzzyUpdate:value
-    41 set :updateIfSmaller.1:newValue true
-    42 select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
--    * set *tmp24 null
-    43 label *label8
-    44 label *label6
-    45 sensor *tmp25 .factory @progress
+    60 write @mono .display ".displayNextUnit"
+    61 set *tmp35 .payloadRouter
+    62 control config *tmp35 @oct
+-    * set *tmp34 @oct
+    63 jump *label12 always
+    64 label *label11
+    65 op lessThan *tmp37 .polys .polyTarget
  
-   100 set .unitToProduce *tmp50
-   101 label *label13
-   102 set :backgroundProcess:lastProgress 0
--    * set *tmp34 :backgroundProcess:lastProgress
-   103 jump *label12 always
-   104 label *label11
-   105 set *tmp53 .factory
+    87 control config *tmp44 @mono
+    88 set *tmp38 @mono
+    89 label *label14
+-    * set *tmp34 *tmp38
+    90 label *label12
+    91 label *label10
+    92 set :fuzzyUpdate:value :backgroundProcess:power
  
-   120 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
-   121 set *tmp56 :backgroundProcess:lastProgress
-   122 label *label23
--    * set *tmp34 *tmp56
-   123 label *label12
-   124 label *label10
-   125 sensor *tmp64 .generator2 @coal
+   101 set :updateIfSmaller.1:b :fuzzyUpdate:value
+   102 set :updateIfSmaller.1:newValue true
+   103 select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
+-    * set *tmp48 null
+   104 label *label19
+   105 label *label17
+   106 op equal *tmp49 .factoryUnit null
  
-   148 jump *label28 equal *tmp79 false
-   149 set *tmp81 .unloader2
-   150 control config *tmp81 @silicon
--    * set *tmp80 @silicon
-   151 jump *label29 always
-   152 label *label28
-   153 set *tmp83 .unloader2
-   154 control config *tmp83 @coal
--    * set *tmp80 @coal
-   155 label *label29
-   156 label *label27
-   157 label *label4
+   122 call *label0 *invalid :factoryUnitFinished*retval (m:*label24) (h:*label24)
+   123 label *label24
+   124 set :backgroundProcess:lastProgress 0
+-    * set *tmp57 :backgroundProcess:lastProgress
+   125 jump *label23 always
+   126 label *label22
+   127 set *tmp60 .factory
+ 
+   142 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
+   143 set *tmp63 :backgroundProcess:lastProgress
+   144 label *label26
+-    * set *tmp57 *tmp63
+   145 label *label23
+   146 label *label21
+   147 op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+ 
+   182 jump *label34 equal *tmp89 false
+   183 set *tmp91 .unloader2
+   184 control config *tmp91 @silicon
+-    * set *tmp90 @silicon
+   185 jump *label35 always
+   186 label *label34
+   187 set *tmp93 .unloader2
+   188 control config *tmp93 @coal
+-    * set *tmp90 @coal
+   189 label *label35
+   190 label *label33
+   191 label *label5
+ 
+   221 op add *tmp108 .flares 1
+   222 set .flares *tmp108
+   223 write *tmp108 .display ".displayFlares"
+-    * set *tmp106 *tmp108
+   224 jump *label42 always
+   225 label *label43
+   226 jump *label46 equal :factoryUnitFinished:unit @mono
+ 
+   229 op add *tmp109 .monos 1
+   230 set .monos *tmp109
+   231 write *tmp109 .display ".displayMonos"
+-    * set *tmp106 *tmp109
+   232 jump *label42 always
+   233 label *label45
+   234 jump *label48 equal :factoryUnitFinished:unit @poly
+ 
+   237 op add *tmp110 .polys 1
+   238 set .polys *tmp110
+   239 write *tmp110 .display ".displayPolys"
+-    * set *tmp106 *tmp110
+   240 jump *label42 always
+   241 label *label47
+-    * set *tmp106 null
+   242 label *label42
+   243 jump *label38 always
+   244 label *label37
 
-Modifications by Initial phase, Dead Code Elimination, iteration 3 (-2 instructions):
+Modifications by Initial phase, Dead Code Elimination, iteration 3 (-4 instructions):
  
-   112 set *tmp61 .unitToProduce
-   113 control config *tmp59 *tmp61
-   114 set :backgroundProcess:lastProgress 0
--    * set *tmp56 :backgroundProcess:lastProgress
-   115 jump *label23 always
-   116 label *label22
-   117 set *tmp62 .factory
-   118 control enabled *tmp62 :backgroundProcess:enableFactory
-   119 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
--    * set *tmp56 :backgroundProcess:lastProgress
-   120 label *label23
-   121 label *label12
-   122 label *label10
+    77 write @poly .display ".displayNextUnit"
+    78 set *tmp42 .payloadRouter
+    79 control config *tmp42 @mono
+-    * set *tmp38 @mono
+    80 jump *label14 always
+    81 label *label13
+    82 set .factoryUnit null
+ 
+    84 write null .display ".displayNextUnit"
+    85 set *tmp44 .payloadRouter
+    86 control config *tmp44 @mono
+-    * set *tmp38 @mono
+    87 label *label14
+    88 label *label12
+    89 label *label10
+ 
+   132 set *tmp68 .factoryUnit
+   133 control config *tmp66 *tmp68
+   134 set :backgroundProcess:lastProgress 0
+-    * set *tmp63 :backgroundProcess:lastProgress
+   135 jump *label26 always
+   136 label *label25
+   137 set *tmp69 .factory
+   138 control enabled *tmp69 :backgroundProcess:enableFactory
+   139 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
+-    * set *tmp63 :backgroundProcess:lastProgress
+   140 label *label26
+   141 label *label23
+   142 label *label21
 
-Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-16 instructions):
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-22 instructions):
  
-     7 set :backgroundProcess:enableFactory true
-     8 label *label3
-     9 jump *label5 equal true false
--    * sensor *tmp3 .core @silicon
--    * set :backgroundProcess:coreSilicon *tmp3
-+   10 sensor :backgroundProcess:coreSilicon .core @silicon
-    11 set *tmp4 .smelter
-    12 op lessThan *tmp6 :backgroundProcess:coreSilicon .smelterTarget
-    13 control enabled *tmp4 *tmp6
+    13 set :backgroundProcess:enableFactory true
+    14 label *label4
+    15 jump *label6 equal true false
+-    * sensor *tmp5 .core @silicon
+-    * set :backgroundProcess:coreSilicon *tmp5
++   16 sensor :backgroundProcess:coreSilicon .core @silicon
+    17 set *tmp6 .smelter
+    18 op lessThan *tmp8 :backgroundProcess:coreSilicon .smelterTarget
+    19 control enabled *tmp6 *tmp8
  
-    19 sensor *tmp13 .core @metaglass
-    20 op lessThan *tmp14 *tmp13 .kilnTarget
-    21 control enabled *tmp11 *tmp14
--    * sensor *tmp15 .battery @totalPower
--    * set :backgroundProcess:power *tmp15
-+   22 sensor :backgroundProcess:power .battery @totalPower
-    23 set *tmp16 .generator
-    24 op lessThan *tmp18 :backgroundProcess:power 3500
-    25 control enabled *tmp16 *tmp18
+    25 sensor *tmp15 .core @metaglass
+    26 op lessThan *tmp16 *tmp15 .kilnTarget
+    27 control enabled *tmp13 *tmp16
+-    * sensor *tmp17 .battery @totalPower
+-    * set :backgroundProcess:power *tmp17
++   28 sensor :backgroundProcess:power .battery @totalPower
+    29 jump *label7 equal .generator2 false
+-    * set *tmp19 .generator
+-    * control enabled *tmp19 false
++   30 control enabled .generator false
+    31 set *tmp21 .generator2
+    32 op lessThan *tmp23 :backgroundProcess:power 3800
+    33 control enabled *tmp21 *tmp23
  
-    40 select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
-    41 label *label8
-    42 label *label6
--    * sensor *tmp25 .factory @progress
--    * set :backgroundProcess:factoryProgress *tmp25
-+   43 sensor :backgroundProcess:factoryProgress .factory @progress
-    44 op equal *tmp26 .unitToProduce null
-    45 jump *label9 equal *tmp26 false
--    * set *tmp28 .factory
--    * control enabled *tmp28 false
--    * set *tmp30 .factory
--    * control config *tmp30 @mono
-+   46 control enabled .factory false
-+   47 control config .factory @mono
-    48 set :backgroundProcess:lastProgress 0
-    49 jump *label10 always
-    50 label *label9
-    51 op add *tmp32 :backgroundProcess:factoryProgress 0.1
-    52 op greaterThan *tmp33 :backgroundProcess:lastProgress *tmp32
-    53 jump *label11 equal *tmp33 false
--    * set *tmp35 .factory
--    * control enabled *tmp35 :backgroundProcess:enableFactory
-+   54 control enabled .factory :backgroundProcess:enableFactory
-    55 set :logUnit:unit .unitToProduce
-    56 sensor *tmp37 :logUnit:unit @id
--    * op add *tmp38 @blockCount *tmp37
--    * set :log:encodedId *tmp38
-+   57 op add :log:encodedId @blockCount *tmp37
-    58 read *tmp2 .bank 511
-    59 op sub *tmp39 *tmp2 1
-    60 write *tmp39 .bank 511
+    37 op lessThan *tmp26 :backgroundProcess:power 800
+    38 control enabled *tmp24 *tmp26
+    39 label *label8
+-    * sensor *tmp27 .factory @progress
+-    * set :backgroundProcess:factoryProgress *tmp27
+-    * sensor *tmp28 .reconstructor @progress
+-    * set :backgroundProcess:reconstructorProgress *tmp28
++   40 sensor :backgroundProcess:factoryProgress .factory @progress
++   41 sensor :backgroundProcess:reconstructorProgress .reconstructor @progress
+    42 op lessThan *tmp29 .flares .flareTarget
+    43 jump *label9 equal *tmp29 false
+    44 set .factoryUnit @flare
+    45 set .targetUnit @flare
+    46 write @flare .display ".displayNextUnit"
+-    * set *tmp31 .payloadRouter
+-    * control config *tmp31 @oct
++   47 control config .payloadRouter @oct
+    48 jump *label10 always
+    49 label *label9
+    50 op lessThan *tmp33 .monos .monoTarget
  
-    95 set :backgroundProcess:lastProgress 0
-    96 jump *label12 always
-    97 label *label11
+    52 set .factoryUnit @mono
+    53 set .targetUnit @mono
+    54 write @mono .display ".displayNextUnit"
+-    * set *tmp35 .payloadRouter
+-    * control config *tmp35 @oct
++   55 control config .payloadRouter @oct
+    56 jump *label12 always
+    57 label *label11
+    58 op lessThan *tmp37 .polys .polyTarget
+ 
+    68 set .factoryUnit *tmp41
+    69 set .targetUnit @poly
+    70 write @poly .display ".displayNextUnit"
+-    * set *tmp42 .payloadRouter
+-    * control config *tmp42 @mono
++   71 control config .payloadRouter @mono
+    72 jump *label14 always
+    73 label *label13
+    74 set .factoryUnit null
+    75 set .targetUnit null
+    76 write null .display ".displayNextUnit"
+-    * set *tmp44 .payloadRouter
+-    * control config *tmp44 @mono
++   77 control config .payloadRouter @mono
+    78 label *label14
+    79 label *label12
+    80 label *label10
+ 
+    94 label *label17
+    95 op equal *tmp49 .factoryUnit null
+    96 jump *label20 equal *tmp49 false
+-    * set *tmp51 .factory
+-    * control enabled *tmp51 false
 -    * set *tmp53 .factory
--    * sensor *tmp54 *tmp53 @config
-+   98 sensor *tmp54 .factory @config
-    99 op notEqual *tmp55 *tmp54 .unitToProduce
-   100 jump *label22 equal *tmp55 false
--    * set *tmp57 .factory
--    * control enabled *tmp57 :backgroundProcess:enableFactory
-+  101 control enabled .factory :backgroundProcess:enableFactory
-   102 set *tmp59 .factory
--    * set *tmp61 .unitToProduce
--    * control config *tmp59 *tmp61
-+  103 control config *tmp59 .unitToProduce
-   104 set :backgroundProcess:lastProgress 0
-   105 jump *label23 always
-   106 label *label22
--    * set *tmp62 .factory
--    * control enabled *tmp62 :backgroundProcess:enableFactory
-+  107 control enabled .factory :backgroundProcess:enableFactory
-   108 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
-   109 label *label23
-   110 label *label12
+-    * control config *tmp53 @mono
++   97 control enabled .factory false
++   98 control config .factory @mono
+    99 set :backgroundProcess:lastProgress 0
+   100 jump *label21 always
+   101 label *label20
+   102 op add *tmp55 :backgroundProcess:factoryProgress 0.1
+   103 op greaterThan *tmp56 :backgroundProcess:lastProgress *tmp55
+   104 jump *label22 equal *tmp56 false
+-    * set *tmp58 .factory
+-    * control enabled *tmp58 :backgroundProcess:enableFactory
++  105 control enabled .factory :backgroundProcess:enableFactory
+   106 set :factoryUnitFinished:unit .factoryUnit
+   107 setaddr :factoryUnitFinished*retaddr *label24 (h:*label24)
+   108 call *label0 *invalid :factoryUnitFinished*retval (m:*label24) (h:*label24)
  
-   112 sensor *tmp64 .generator2 @coal
-   113 op lessThan *tmp65 *tmp64 .generator2
-   114 jump *label24 equal *tmp65 false
--    * set *tmp67 .unloader2
--    * control config *tmp67 @coal
-+  115 control config .unloader2 @coal
-   116 jump *label4 always
-   117 jump *label25 always
-   118 label *label24
-   119 label *label25
-   120 op equal *tmp69 .unitToProduce @mono
--    * op mul *tmp70 *tmp69 30
--    * set :backgroundProcess:leadLimit *tmp70
-+  121 op mul :backgroundProcess:leadLimit *tmp69 30
-   122 sensor *tmp71 .factory @lead
-   123 op lessThan *tmp72 *tmp71 :backgroundProcess:leadLimit
-   124 sensor *tmp73 .core @lead
-   125 op greaterThan *tmp74 *tmp73 .leadReserve
-   126 op land *tmp75 *tmp72 *tmp74
-   127 jump *label26 equal *tmp75 false
+   110 set :backgroundProcess:lastProgress 0
+   111 jump *label23 always
+   112 label *label22
+-    * set *tmp60 .factory
+-    * sensor *tmp61 *tmp60 @config
++  113 sensor *tmp61 .factory @config
+   114 op notEqual *tmp62 *tmp61 .factoryUnit
+   115 jump *label25 equal *tmp62 false
+-    * set *tmp64 .factory
+-    * control enabled *tmp64 :backgroundProcess:enableFactory
++  116 control enabled .factory :backgroundProcess:enableFactory
+   117 set *tmp66 .factory
+-    * set *tmp68 .factoryUnit
+-    * control config *tmp66 *tmp68
++  118 control config *tmp66 .factoryUnit
+   119 set :backgroundProcess:lastProgress 0
+   120 jump *label26 always
+   121 label *label25
+-    * set *tmp69 .factory
+-    * control enabled *tmp69 :backgroundProcess:enableFactory
++  122 control enabled .factory :backgroundProcess:enableFactory
+   123 set :backgroundProcess:lastProgress :backgroundProcess:factoryProgress
+   124 label *label26
+   125 label *label23
+ 
+   139 sensor *tmp74 .generator2 @coal
+   140 op lessThan *tmp75 *tmp74 .generator2
+   141 jump *label30 equal *tmp75 false
 -    * set *tmp77 .unloader2
--    * control config *tmp77 @lead
-+  128 control config .unloader2 @lead
-   129 jump *label27 always
-   130 label *label26
-   131 op greaterThan *tmp79 :backgroundProcess:coreSilicon .siliconReserve
-   132 jump *label28 equal *tmp79 false
--    * set *tmp81 .unloader2
--    * control config *tmp81 @silicon
-+  133 control config .unloader2 @silicon
-   134 jump *label29 always
-   135 label *label28
--    * set *tmp83 .unloader2
--    * control config *tmp83 @coal
-+  136 control config .unloader2 @coal
-   137 label *label29
-   138 label *label27
-   139 label *label4
+-    * control config *tmp77 @coal
++  142 control config .unloader2 @coal
+   143 jump *label5 always
+   144 jump *label31 always
+   145 label *label30
+   146 label *label31
+   147 op equal *tmp79 .factoryUnit @mono
+-    * op mul *tmp80 *tmp79 30
+-    * set :backgroundProcess:leadLimit *tmp80
++  148 op mul :backgroundProcess:leadLimit *tmp79 30
+   149 sensor *tmp81 .factory @lead
+   150 op lessThan *tmp82 *tmp81 :backgroundProcess:leadLimit
+   151 sensor *tmp83 .core @lead
+   152 op greaterThan *tmp84 *tmp83 .leadReserve
+   153 op land *tmp85 *tmp82 *tmp84
+   154 jump *label32 equal *tmp85 false
+-    * set *tmp87 .unloader2
+-    * control config *tmp87 @lead
++  155 control config .unloader2 @lead
+   156 jump *label33 always
+   157 label *label32
+   158 op greaterThan *tmp89 :backgroundProcess:coreSilicon .siliconReserve
+   159 jump *label34 equal *tmp89 false
+-    * set *tmp91 .unloader2
+-    * control config *tmp91 @silicon
++  160 control config .unloader2 @silicon
+   161 jump *label35 always
+   162 label *label34
+-    * set *tmp93 .unloader2
+-    * control config *tmp93 @coal
++  163 control config .unloader2 @coal
+   164 label *label35
+   165 label *label33
+   166 label *label5
+ 
+   175 jump *label37 equal *tmp95 false
+   176 set :logUnit:unit :factoryUnitFinished:unit
+   177 sensor *tmp97 :logUnit:unit @id
+-    * op add *tmp98 @blockCount *tmp97
+-    * set :log:encodedId *tmp98
++  178 op add :log:encodedId @blockCount *tmp97
+   179 read *tmp4 .bank 511
+   180 op sub *tmp99 *tmp4 1
+   181 write *tmp99 .bank 511
 
 Modifications by Initial phase, Temp Variables Elimination, iteration 2 (-1 instructions):
  
-    99 op notEqual *tmp55 *tmp54 .unitToProduce
-   100 jump *label22 equal *tmp55 false
-   101 control enabled .factory :backgroundProcess:enableFactory
--    * set *tmp59 .factory
--    * control config *tmp59 .unitToProduce
-+  102 control config .factory .unitToProduce
-   103 set :backgroundProcess:lastProgress 0
-   104 jump *label23 always
-   105 label *label22
+   114 op notEqual *tmp62 *tmp61 .factoryUnit
+   115 jump *label25 equal *tmp62 false
+   116 control enabled .factory :backgroundProcess:enableFactory
+-    * set *tmp66 .factory
+-    * control config *tmp66 .factoryUnit
++  117 control config .factory .factoryUnit
+   118 set :backgroundProcess:lastProgress 0
+   119 jump *label26 always
+   120 label *label25
 
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
  
-     6 set :backgroundProcess:factoryProgress 0
-     7 set :backgroundProcess:enableFactory true
-     8 label *label3
--    * jump *label5 equal true false
-     9 sensor :backgroundProcess:coreSilicon .core @silicon
-    10 set *tmp4 .smelter
-    11 op lessThan *tmp6 :backgroundProcess:coreSilicon .smelterTarget
+    12 set :backgroundProcess:reconstructorProgress 0
+    13 set :backgroundProcess:enableFactory true
+    14 label *label4
+-    * jump *label6 equal true false
+    15 sensor :backgroundProcess:coreSilicon .core @silicon
+    16 set *tmp6 .smelter
+    17 op lessThan *tmp8 :backgroundProcess:coreSilicon .smelterTarget
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-8 instructions):
+Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-3 instructions):
  
-    40 label *label8
-    41 label *label6
-    42 sensor :backgroundProcess:factoryProgress .factory @progress
--    * op equal *tmp26 .unitToProduce null
--    * jump *label9 equal *tmp26 false
-+   43 jump *label9 notEqual .unitToProduce null
-    44 control enabled .factory false
-    45 control config .factory @mono
-    46 set :backgroundProcess:lastProgress 0
-    47 jump *label10 always
-    48 label *label9
-    49 op add *tmp32 :backgroundProcess:factoryProgress 0.1
--    * op greaterThan *tmp33 :backgroundProcess:lastProgress *tmp32
+   187 write *tmp105 .bank *tmp100
+   188 label *label40
+   189 label *label39
+-    * jump *label44 equal :factoryUnitFinished:unit @flare
+-    * jump *label43 always
++  190 jump *label43 notEqual :factoryUnitFinished:unit @flare
+   191 label *label44
+   192 op add *tmp108 .flares 1
+   193 set .flares *tmp108
+   194 write *tmp108 .display ".displayFlares"
+   195 jump *label42 always
+   196 label *label43
+-    * jump *label46 equal :factoryUnitFinished:unit @mono
+-    * jump *label45 always
++  197 jump *label45 notEqual :factoryUnitFinished:unit @mono
+   198 label *label46
+   199 op add *tmp109 .monos 1
+   200 set .monos *tmp109
+   201 write *tmp109 .display ".displayMonos"
+   202 jump *label42 always
+   203 label *label45
+-    * jump *label48 equal :factoryUnitFinished:unit @poly
+-    * jump *label47 always
++  204 jump *label47 notEqual :factoryUnitFinished:unit @poly
+   205 label *label48
+   206 op add *tmp110 .polys 1
+   207 set .polys *tmp110
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-11 instructions):
+ 
+    38 label *label8
+    39 sensor :backgroundProcess:factoryProgress .factory @progress
+    40 sensor :backgroundProcess:reconstructorProgress .reconstructor @progress
+-    * op lessThan *tmp29 .flares .flareTarget
+-    * jump *label9 equal *tmp29 false
++   41 jump *label9 greaterThanEq .flares .flareTarget
+    42 set .factoryUnit @flare
+    43 set .targetUnit @flare
+    44 write @flare .display ".displayNextUnit"
+    45 control config .payloadRouter @oct
+    46 jump *label10 always
+    47 label *label9
+-    * op lessThan *tmp33 .monos .monoTarget
 -    * jump *label11 equal *tmp33 false
-+   50 jump *label11 lessThanEq :backgroundProcess:lastProgress *tmp32
-    51 control enabled .factory :backgroundProcess:enableFactory
-    52 set :logUnit:unit .unitToProduce
-    53 sensor *tmp37 :logUnit:unit @id
++   48 jump *label11 greaterThanEq .monos .monoTarget
+    49 set .factoryUnit @mono
+    50 set .targetUnit @mono
+    51 write @mono .display ".displayNextUnit"
+    52 control config .payloadRouter @oct
+    53 jump *label12 always
+    54 label *label11
+-    * op lessThan *tmp37 .polys .polyTarget
+-    * jump *label13 equal *tmp37 false
++   55 jump *label13 greaterThanEq .polys .polyTarget
+    56 sensor *tmp39 .reconstructor @payloadType
+-    * op equal *tmp40 *tmp39 null
+-    * jump *label15 equal *tmp40 false
++   57 jump *label15 notEqual *tmp39 null
+    58 set *tmp41 @mono
+    59 jump *label16 always
+    60 label *label15
  
-    62 write *tmp44 .bank *tmp40
-    63 label *label15
-    64 label *label14
--    * op equal *tmp45 .unitToProduce @flare
--    * jump *label16 equal *tmp45 false
-+   65 jump *label16 notEqual .unitToProduce @flare
-    66 op add *tmp47 .flares 1
-    67 set .flares *tmp47
-    68 write *tmp47 .display ".flares"
+    87 select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
+    88 label *label19
+    89 label *label17
+-    * op equal *tmp49 .factoryUnit null
+-    * jump *label20 equal *tmp49 false
++   90 jump *label20 notEqual .factoryUnit null
+    91 control enabled .factory false
+    92 control config .factory @mono
+    93 set :backgroundProcess:lastProgress 0
+    94 jump *label21 always
+    95 label *label20
+    96 op add *tmp55 :backgroundProcess:factoryProgress 0.1
+-    * op greaterThan *tmp56 :backgroundProcess:lastProgress *tmp55
+-    * jump *label22 equal *tmp56 false
++   97 jump *label22 lessThanEq :backgroundProcess:lastProgress *tmp55
+    98 control enabled .factory :backgroundProcess:enableFactory
+    99 set :factoryUnitFinished:unit .factoryUnit
+   100 setaddr :factoryUnitFinished*retaddr *label24 (h:*label24)
  
-    72 set .monos *tmp48
-    73 write *tmp48 .display ".monos"
-    74 label *label17
--    * op lessThan *tmp49 .monos 8
--    * jump *label18 equal *tmp49 false
-+   75 jump *label18 greaterThanEq .monos 8
-    76 set *tmp50 @mono
-    77 jump *label19 always
-    78 label *label18
--    * op lessThan *tmp51 .flares 8
--    * jump *label20 equal *tmp51 false
-+   79 jump *label20 greaterThanEq .flares 8
-    80 set *tmp52 @flare
-    81 jump *label21 always
-    82 label *label20
+   104 jump *label23 always
+   105 label *label22
+   106 sensor *tmp61 .factory @config
+-    * op notEqual *tmp62 *tmp61 .factoryUnit
+-    * jump *label25 equal *tmp62 false
++  107 jump *label25 equal *tmp61 .factoryUnit
+   108 control enabled .factory :backgroundProcess:enableFactory
+   109 control config .factory .factoryUnit
+   110 set :backgroundProcess:lastProgress 0
  
-    90 jump *label12 always
-    91 label *label11
-    92 sensor *tmp54 .factory @config
--    * op notEqual *tmp55 *tmp54 .unitToProduce
--    * jump *label22 equal *tmp55 false
-+   93 jump *label22 equal *tmp54 .unitToProduce
-    94 control enabled .factory :backgroundProcess:enableFactory
-    95 control config .factory .unitToProduce
-    96 set :backgroundProcess:lastProgress 0
+   116 label *label23
+   117 label *label21
+   118 op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+-    * op greaterThan *tmp72 :backgroundProcess:lastRecoProgress *tmp71
+-    * jump *label27 equal *tmp72 false
++  119 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+   120 set :factoryUnitFinished:unit @poly
+   121 setaddr :factoryUnitFinished*retaddr *label29 (h:*label29)
+   122 call *label0 *invalid :factoryUnitFinished*retval (m:*label29) (h:*label29)
  
-   102 label *label12
-   103 label *label10
-   104 sensor *tmp64 .generator2 @coal
--    * op lessThan *tmp65 *tmp64 .generator2
--    * jump *label24 equal *tmp65 false
-+  105 jump *label24 greaterThanEq *tmp64 .generator2
-   106 control config .unloader2 @coal
-   107 jump *label4 always
-   108 jump *label25 always
+   127 set :backgroundProcess:lastRecoProgress :backgroundProcess:reconstructorProgress
+   128 label *label28
+   129 sensor *tmp74 .generator2 @coal
+-    * op lessThan *tmp75 *tmp74 .generator2
+-    * jump *label30 equal *tmp75 false
++  130 jump *label30 greaterThanEq *tmp74 .generator2
+   131 control config .unloader2 @coal
+   132 jump *label5 always
+   133 jump *label31 always
  
-   119 control config .unloader2 @lead
-   120 jump *label27 always
-   121 label *label26
--    * op greaterThan *tmp79 :backgroundProcess:coreSilicon .siliconReserve
--    * jump *label28 equal *tmp79 false
-+  122 jump *label28 lessThanEq :backgroundProcess:coreSilicon .siliconReserve
-   123 control config .unloader2 @silicon
-   124 jump *label29 always
-   125 label *label28
+   144 control config .unloader2 @lead
+   145 jump *label33 always
+   146 label *label32
+-    * op greaterThan *tmp89 :backgroundProcess:coreSilicon .siliconReserve
+-    * jump *label34 equal *tmp89 false
++  147 jump *label34 lessThanEq :backgroundProcess:coreSilicon .siliconReserve
+   148 control config .unloader2 @silicon
+   149 jump *label35 always
+   150 label *label34
+ 
+   159 jump *label2 always
+   160 end
+   161 label *label0
+-    * op equal *tmp95 :factoryUnitFinished:unit .targetUnit
+-    * jump *label37 equal *tmp95 false
++  162 jump *label37 notEqual :factoryUnitFinished:unit .targetUnit
+   163 set :logUnit:unit :factoryUnitFinished:unit
+   164 sensor *tmp97 :logUnit:unit @id
+   165 op add :log:encodedId @blockCount *tmp97
 
-Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-3 instructions):
  
-   105 jump *label24 greaterThanEq *tmp64 .generator2
-   106 control config .unloader2 @coal
-   107 jump *label4 always
--    * jump *label25 always
-   108 label *label24
-   109 label *label25
-   110 op equal *tmp69 .unitToProduce @mono
+   130 jump *label30 greaterThanEq *tmp74 .generator2
+   131 control config .unloader2 @coal
+   132 jump *label5 always
+-    * jump *label31 always
+   133 label *label30
+   134 label *label31
+   135 op equal *tmp79 .factoryUnit @mono
+ 
+   194 op add *tmp110 .polys 1
+   195 set .polys *tmp110
+   196 write *tmp110 .display ".displayPolys"
+-    * jump *label42 always
+   197 label *label47
+   198 label *label42
+-    * jump *label38 always
+   199 label *label37
+   200 label *label38
+   201 label *label36
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-2 instructions):
  
-     3 set *signature "0:v1"
-     4 label *label1
-     5 set :backgroundProcess:lastProgress 0
+     7 set *signature "0:v1"
+     8 label *label2
+     9 set :backgroundProcess:lastProgress 0
 -    * set :backgroundProcess:factoryProgress 0
-     6 set :backgroundProcess:enableFactory true
-     7 label *label3
-     8 sensor :backgroundProcess:coreSilicon .core @silicon
+    10 set :backgroundProcess:lastRecoProgress 0
+-    * set :backgroundProcess:reconstructorProgress 0
+    11 set :backgroundProcess:enableFactory true
+    12 label *label4
+    13 sensor :backgroundProcess:coreSilicon .core @silicon
  
-    27 set :fuzzyUpdate:value :backgroundProcess:power
-    28 set :fuzzyUpdate:limitLow 200
-    29 set :fuzzyUpdate:limitHigh 500
+    74 set :fuzzyUpdate:value :backgroundProcess:power
+    75 set :fuzzyUpdate:limitLow 200
+    76 set :fuzzyUpdate:limitHigh 500
 -    * set :updateIfSmaller:a :fuzzyUpdate:value
 -    * set :updateIfSmaller:b :fuzzyUpdate:limitLow
-+   30 set :updateIfSmaller:a :backgroundProcess:power
-+   31 set :updateIfSmaller:b 200
-    32 set :updateIfSmaller:newValue false
++   77 set :updateIfSmaller:a :backgroundProcess:power
++   78 set :updateIfSmaller:b 200
+    79 set :updateIfSmaller:newValue false
 -    * select :backgroundProcess:enableFactory lessThan :updateIfSmaller:a :updateIfSmaller:b :updateIfSmaller:newValue :backgroundProcess:enableFactory
-+   33 select :backgroundProcess:enableFactory lessThan :fuzzyUpdate:value :fuzzyUpdate:limitLow false :backgroundProcess:enableFactory
-    34 label *label7
++   80 select :backgroundProcess:enableFactory lessThan :fuzzyUpdate:value :fuzzyUpdate:limitLow false :backgroundProcess:enableFactory
+    81 label *label18
 -    * set :updateIfSmaller.1:a :fuzzyUpdate:limitHigh
 -    * set :updateIfSmaller.1:b :fuzzyUpdate:value
-+   35 set :updateIfSmaller.1:a 500
-+   36 set :updateIfSmaller.1:b :backgroundProcess:power
-    37 set :updateIfSmaller.1:newValue true
++   82 set :updateIfSmaller.1:a 500
++   83 set :updateIfSmaller.1:b :backgroundProcess:power
+    84 set :updateIfSmaller.1:newValue true
 -    * select :backgroundProcess:enableFactory lessThan :updateIfSmaller.1:a :updateIfSmaller.1:b :updateIfSmaller.1:newValue :backgroundProcess:enableFactory
-+   38 select :backgroundProcess:enableFactory lessThan :fuzzyUpdate:limitHigh :fuzzyUpdate:value true :backgroundProcess:enableFactory
-    39 label *label8
-    40 label *label6
-    41 sensor :backgroundProcess:factoryProgress .factory @progress
++   85 select :backgroundProcess:enableFactory lessThan :fuzzyUpdate:limitHigh :fuzzyUpdate:value true :backgroundProcess:enableFactory
+    86 label *label19
+    87 label *label17
+    88 jump *label20 notEqual .factoryUnit null
  
-    58 op floor *tmp42 @second
-    59 op mul *tmp43 *tmp42 1000
-    60 op add *tmp44 :log:encodedId *tmp43
--    * write *tmp44 .bank *tmp40
-+   61 write *tmp44 .bank *tmp39
-    62 label *label15
-    63 label *label14
-    64 jump *label16 notEqual .unitToProduce @flare
+   158 label *label0
+   159 jump *label37 notEqual :factoryUnitFinished:unit .targetUnit
+   160 set :logUnit:unit :factoryUnitFinished:unit
+-    * sensor *tmp97 :logUnit:unit @id
++  161 sensor *tmp97 :factoryUnitFinished:unit @id
+   162 op add :log:encodedId @blockCount *tmp97
+   163 read *tmp4 .bank 511
+   164 op sub *tmp99 *tmp4 1
+ 
+   167 op mul :second:result @second TIME_COMPRESS
+   168 set *tmp102 :second:result
+   169 label *label41
+-    * op floor *tmp103 *tmp102
++  170 op floor *tmp103 :second:result
+   171 op mul *tmp104 *tmp103 1000
+   172 op add *tmp105 :log:encodedId *tmp104
+-    * write *tmp105 .bank *tmp100
++  173 write *tmp105 .bank *tmp99
+   174 label *label40
+   175 label *label39
+   176 jump *label43 notEqual :factoryUnitFinished:unit @flare
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-7 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-9 instructions):
  
-    27 set :fuzzyUpdate:value :backgroundProcess:power
-    28 set :fuzzyUpdate:limitLow 200
-    29 set :fuzzyUpdate:limitHigh 500
+    74 set :fuzzyUpdate:value :backgroundProcess:power
+    75 set :fuzzyUpdate:limitLow 200
+    76 set :fuzzyUpdate:limitHigh 500
 -    * set :updateIfSmaller:a :backgroundProcess:power
 -    * set :updateIfSmaller:b 200
 -    * set :updateIfSmaller:newValue false
 -    * select :backgroundProcess:enableFactory lessThan :fuzzyUpdate:value :fuzzyUpdate:limitLow false :backgroundProcess:enableFactory
-+   30 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
-    31 label *label7
++   77 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
+    78 label *label18
 -    * set :updateIfSmaller.1:a 500
 -    * set :updateIfSmaller.1:b :backgroundProcess:power
 -    * set :updateIfSmaller.1:newValue true
 -    * select :backgroundProcess:enableFactory lessThan :fuzzyUpdate:limitHigh :fuzzyUpdate:value true :backgroundProcess:enableFactory
-+   32 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
-    33 label *label8
-    34 label *label6
-    35 sensor :backgroundProcess:factoryProgress .factory @progress
++   79 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
+    80 label *label19
+    81 label *label17
+    82 jump *label20 notEqual .factoryUnit null
  
-    48 read *tmp2 .bank 511
-    49 op sub *tmp39 *tmp2 1
-    50 write *tmp39 .bank 511
--    * set *tmp40 *tmp39
-    51 op floor *tmp42 @second
-    52 op mul *tmp43 *tmp42 1000
-    53 op add *tmp44 :log:encodedId *tmp43
+   151 end
+   152 label *label0
+   153 jump *label37 notEqual :factoryUnitFinished:unit .targetUnit
+-    * set :logUnit:unit :factoryUnitFinished:unit
+   154 sensor *tmp97 :factoryUnitFinished:unit @id
+   155 op add :log:encodedId @blockCount *tmp97
+   156 read *tmp4 .bank 511
+   157 op sub *tmp99 *tmp4 1
+   158 write *tmp99 .bank 511
+-    * set *tmp100 *tmp99
+   159 op mul :second:result @second TIME_COMPRESS
+-    * set *tmp102 :second:result
+   160 label *label41
+   161 op floor *tmp103 :second:result
+   162 op mul *tmp104 *tmp103 1000
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-3 instructions):
  
-    24 set *tmp19 .generator2
-    25 op lessThan *tmp21 :backgroundProcess:power 3800
-    26 control enabled *tmp19 *tmp21
+    71 label *label14
+    72 label *label12
+    73 label *label10
 -    * set :fuzzyUpdate:value :backgroundProcess:power
 -    * set :fuzzyUpdate:limitLow 200
 -    * set :fuzzyUpdate:limitHigh 500
-    27 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
-    28 label *label7
-    29 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
+    74 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
+    75 label *label18
+    76 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
 
-Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-3 instructions):
+Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-1 instructions):
  
-    61 set .monos *tmp48
-    62 write *tmp48 .display ".monos"
-    63 label *label17
--    * jump *label18 greaterThanEq .monos 8
--    * set *tmp50 @mono
--    * jump *label19 always
-+   64 set .unitToProduce @mono
-+   65 jump *label19 lessThan .monos 8
-    66 label *label18
--    * jump *label20 greaterThanEq .flares 8
--    * set *tmp52 @flare
-+   67 set .unitToProduce null
-+   68 jump *label21 greaterThanEq .flares 8
-+   69 set .unitToProduce @flare
-    70 jump *label21 always
--    * label *label20
--    * set *tmp52 null
-    71 label *label21
--    * set *tmp50 *tmp52
-    72 label *label19
--    * set .unitToProduce *tmp50
-    73 label *label13
-    74 set :backgroundProcess:lastProgress 0
-    75 jump *label12 always
+    51 jump *label12 always
+    52 label *label11
+    53 jump *label13 greaterThanEq .polys .polyTarget
++   54 set .factoryUnit null
+    55 sensor *tmp39 .reconstructor @payloadType
+-    * jump *label15 notEqual *tmp39 null
+-    * set *tmp41 @mono
++   56 jump *label16 notEqual *tmp39 null
++   57 set .factoryUnit @mono
+    58 jump *label16 always
+-    * label *label15
+-    * set *tmp41 null
+    59 label *label16
+-    * set .factoryUnit *tmp41
+    60 set .targetUnit @poly
+    61 write @poly .display ".displayNextUnit"
+    62 control config .payloadRouter @mono
+
+Modifications by Inline function 'factoryUnitFinished' defined at CoreController.mnd:60:1 (+19 instructions):
+ 
+    84 jump *label22 lessThanEq :backgroundProcess:lastProgress *tmp55
+    85 control enabled .factory :backgroundProcess:enableFactory
+    86 set :factoryUnitFinished:unit .factoryUnit
+-    * setaddr :factoryUnitFinished*retaddr *label24 (h:*label24)
+-    * call *label0 *invalid :factoryUnitFinished*retval (m:*label24) (h:*label24)
+-    * label *label24
++   87 label *label49
++   88 jump *label60 notEqual :factoryUnitFinished:unit .targetUnit
++   89 sensor *tmp97 :factoryUnitFinished:unit @id
++   90 op add :log:encodedId @blockCount *tmp97
++   91 read *tmp4 .bank 511
++   92 op sub *tmp99 *tmp4 1
++   93 write *tmp99 .bank 511
++   94 op mul :second:result @second TIME_COMPRESS
++   95 label *label50
++   96 op floor *tmp103 :second:result
++   97 op mul *tmp104 *tmp103 1000
++   98 op add *tmp105 :log:encodedId *tmp104
++   99 write *tmp105 .bank *tmp99
++  100 label *label51
++  101 label *label52
++  102 jump *label54 notEqual :factoryUnitFinished:unit @flare
++  103 label *label53
++  104 op add *tmp108 .flares 1
++  105 set .flares *tmp108
++  106 write *tmp108 .display ".displayFlares"
++  107 jump *label59 always
++  108 label *label54
++  109 jump *label56 notEqual :factoryUnitFinished:unit @mono
++  110 label *label55
++  111 op add *tmp109 .monos 1
++  112 set .monos *tmp109
++  113 write *tmp109 .display ".displayMonos"
++  114 jump *label59 always
++  115 label *label56
++  116 jump *label58 notEqual :factoryUnitFinished:unit @poly
++  117 label *label57
++  118 op add *tmp110 .polys 1
++  119 set .polys *tmp110
++  120 write *tmp110 .display ".displayPolys"
++  121 label *label58
++  122 label *label59
++  123 label *label60
++  124 label *label61
++  125 label *label62
+   126 set :backgroundProcess:lastProgress 0
+   127 jump *label23 always
+   128 label *label22
+ 
+   141 op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+   142 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+   143 set :factoryUnitFinished:unit @poly
+-    * setaddr :factoryUnitFinished*retaddr *label29 (h:*label29)
+-    * call *label0 *invalid :factoryUnitFinished*retval (m:*label29) (h:*label29)
+-    * label *label29
++  144 label *label63
++  145 jump *label74 notEqual :factoryUnitFinished:unit .targetUnit
++  146 sensor *tmp97 :factoryUnitFinished:unit @id
++  147 op add :log:encodedId @blockCount *tmp97
++  148 read *tmp4 .bank 511
++  149 op sub *tmp99 *tmp4 1
++  150 write *tmp99 .bank 511
++  151 op mul :second:result @second TIME_COMPRESS
++  152 label *label64
++  153 op floor *tmp103 :second:result
++  154 op mul *tmp104 *tmp103 1000
++  155 op add *tmp105 :log:encodedId *tmp104
++  156 write *tmp105 .bank *tmp99
++  157 label *label65
++  158 label *label66
++  159 jump *label68 notEqual :factoryUnitFinished:unit @flare
++  160 label *label67
++  161 op add *tmp108 .flares 1
++  162 set .flares *tmp108
++  163 write *tmp108 .display ".displayFlares"
++  164 jump *label73 always
++  165 label *label68
++  166 jump *label70 notEqual :factoryUnitFinished:unit @mono
++  167 label *label69
++  168 op add *tmp109 .monos 1
++  169 set .monos *tmp109
++  170 write *tmp109 .display ".displayMonos"
++  171 jump *label73 always
++  172 label *label70
++  173 jump *label72 notEqual :factoryUnitFinished:unit @poly
++  174 label *label71
++  175 op add *tmp110 .polys 1
++  176 set .polys *tmp110
++  177 write *tmp110 .display ".displayPolys"
++  178 label *label72
++  179 label *label73
++  180 label *label74
++  181 label *label75
++  182 label *label76
+   183 set :backgroundProcess:lastRecoProgress 0
+   184 jump *label28 always
+   185 label *label27
+ 
+   216 wait 1e12
+   217 jump *label2 always
+   218 end
+-    * label *label0
+-    * jump *label37 notEqual :factoryUnitFinished:unit .targetUnit
+-    * sensor *tmp97 :factoryUnitFinished:unit @id
+-    * op add :log:encodedId @blockCount *tmp97
+-    * read *tmp4 .bank 511
+-    * op sub *tmp99 *tmp4 1
+-    * write *tmp99 .bank 511
+-    * op mul :second:result @second TIME_COMPRESS
+-    * label *label41
+-    * op floor *tmp103 :second:result
+-    * op mul *tmp104 *tmp103 1000
+-    * op add *tmp105 :log:encodedId *tmp104
+-    * write *tmp105 .bank *tmp99
+-    * label *label40
+-    * label *label39
+-    * jump *label43 notEqual :factoryUnitFinished:unit @flare
+-    * label *label44
+-    * op add *tmp108 .flares 1
+-    * set .flares *tmp108
+-    * write *tmp108 .display ".displayFlares"
+-    * jump *label42 always
+-    * label *label43
+-    * jump *label45 notEqual :factoryUnitFinished:unit @mono
+-    * label *label46
+-    * op add *tmp109 .monos 1
+-    * set .monos *tmp109
+-    * write *tmp109 .display ".displayMonos"
+-    * jump *label42 always
+-    * label *label45
+-    * jump *label47 notEqual :factoryUnitFinished:unit @poly
+-    * label *label48
+-    * op add *tmp110 .polys 1
+-    * set .polys *tmp110
+-    * write *tmp110 .display ".displayPolys"
+-    * label *label47
+-    * label *label42
+-    * label *label37
+-    * label *label38
+-    * label *label36
+-    * return :factoryUnitFinished*retaddr
+-    * end
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+   142 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+   143 set :factoryUnitFinished:unit @poly
+   144 label *label63
+-    * jump *label74 notEqual :factoryUnitFinished:unit .targetUnit
+-    * sensor *tmp97 :factoryUnitFinished:unit @id
++  145 jump *label74 notEqual @poly .targetUnit
++  146 sensor *tmp97 @poly @id
+   147 op add :log:encodedId @blockCount *tmp97
+   148 read *tmp4 .bank 511
+   149 op sub *tmp99 *tmp4 1
+ 
+   156 write *tmp105 .bank *tmp99
+   157 label *label65
+   158 label *label66
+-    * jump *label68 notEqual :factoryUnitFinished:unit @flare
++  159 jump *label68 notEqual @poly @flare
+   160 label *label67
+   161 op add *tmp108 .flares 1
+   162 set .flares *tmp108
+   163 write *tmp108 .display ".displayFlares"
+   164 jump *label73 always
+   165 label *label68
+-    * jump *label70 notEqual :factoryUnitFinished:unit @mono
++  166 jump *label70 notEqual @poly @mono
+   167 label *label69
+   168 op add *tmp109 .monos 1
+   169 set .monos *tmp109
+   170 write *tmp109 .display ".displayMonos"
+   171 jump *label73 always
+   172 label *label70
+-    * jump *label72 notEqual :factoryUnitFinished:unit @poly
++  173 jump *label72 notEqual @poly @poly
+   174 label *label71
+   175 op add *tmp110 .polys 1
+   176 set .polys *tmp110
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1 instructions):
+ 
+   140 label *label21
+   141 op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+   142 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+-    * set :factoryUnitFinished:unit @poly
+   143 label *label63
+   144 jump *label74 notEqual @poly .targetUnit
+   145 sensor *tmp97 @poly @id
+
+Modifications by Iterated phase, Jump Normalization, pass 2, iteration 1 (-1 instructions):
+ 
+   155 write *tmp105 .bank *tmp99
+   156 label *label65
+   157 label *label66
+-    * jump *label68 notEqual @poly @flare
++  158 jump *label68 always
+   159 label *label67
+   160 op add *tmp108 .flares 1
+   161 set .flares *tmp108
+   162 write *tmp108 .display ".displayFlares"
+   163 jump *label73 always
+   164 label *label68
+-    * jump *label70 notEqual @poly @mono
++  165 jump *label70 always
+   166 label *label69
+   167 op add *tmp109 .monos 1
+   168 set .monos *tmp109
+   169 write *tmp109 .display ".displayMonos"
+   170 jump *label73 always
+   171 label *label70
+-    * jump *label72 notEqual @poly @poly
+   172 label *label71
+   173 op add *tmp110 .polys 1
+   174 set .polys *tmp110
 
 Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-1 instructions):
  
-    67 set .unitToProduce null
-    68 jump *label21 greaterThanEq .flares 8
-    69 set .unitToProduce @flare
--    * jump *label21 always
-    70 label *label21
-    71 label *label19
-    72 label *label13
+    55 sensor *tmp39 .reconstructor @payloadType
+    56 jump *label16 notEqual *tmp39 null
+    57 set .factoryUnit @mono
+-    * jump *label16 always
+    58 label *label16
+    59 set .targetUnit @poly
+    60 write @poly .display ".displayNextUnit"
+
+Modifications by Iterated phase, Expression Optimization, pass 2, iteration 1:
+ 
+   141 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+   142 label *label63
+   143 jump *label74 notEqual @poly .targetUnit
+-    * sensor *tmp97 @poly @id
++  144 set *tmp97 21
+   145 op add :log:encodedId @blockCount *tmp97
+   146 read *tmp4 .bank 511
+   147 op sub *tmp99 *tmp4 1
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-2 instructions):
+ 
+   142 label *label63
+   143 jump *label74 notEqual @poly .targetUnit
+   144 set *tmp97 21
+-    * op add :log:encodedId @blockCount *tmp97
++  145 op add :log:encodedId @blockCount 21
+   146 read *tmp4 .bank 511
+   147 op sub *tmp99 *tmp4 1
+   148 write *tmp99 .bank 511
+ 
+   156 label *label66
+   157 jump *label68 always
+   158 label *label67
+-    * op add *tmp108 .flares 1
+   159 set .flares *tmp108
+   160 write *tmp108 .display ".displayFlares"
+   161 jump *label73 always
+   162 label *label68
+   163 jump *label70 always
+   164 label *label69
+-    * op add *tmp109 .monos 1
+   165 set .monos *tmp109
+   166 write *tmp109 .display ".displayMonos"
+   167 jump *label73 always
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2 (-1 instructions):
+ 
+   141 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+   142 label *label63
+   143 jump *label74 notEqual @poly .targetUnit
+-    * set *tmp97 21
+   144 op add :log:encodedId @blockCount 21
+   145 read *tmp4 .bank 511
+   146 op sub *tmp99 *tmp4 1
 
 Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
  
-    25 op lessThan *tmp21 :backgroundProcess:power 3800
-    26 control enabled *tmp19 *tmp21
-    27 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
--    * label *label7
-    28 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
--    * label *label8
--    * label *label6
-    29 sensor :backgroundProcess:factoryProgress .factory @progress
-    30 jump *label9 notEqual .unitToProduce null
-    31 control enabled .factory false
- 
-    46 op mul *tmp43 *tmp42 1000
-    47 op add *tmp44 :log:encodedId *tmp43
-    48 write *tmp44 .bank *tmp39
--    * label *label15
--    * label *label14
-    49 jump *label16 notEqual .unitToProduce @flare
-    50 op add *tmp47 .flares 1
-    51 set .flares *tmp47
- 
-    58 label *label17
-    59 set .unitToProduce @mono
-    60 jump *label19 lessThan .monos 8
+    69 label *label12
+    70 label *label10
+    71 select :backgroundProcess:enableFactory lessThan :backgroundProcess:power 200 false :backgroundProcess:enableFactory
 -    * label *label18
-    61 set .unitToProduce null
-    62 jump *label21 greaterThanEq .flares 8
-    63 set .unitToProduce @flare
-    64 label *label21
-    65 label *label19
--    * label *label13
-    66 set :backgroundProcess:lastProgress 0
-    67 jump *label12 always
-    68 label *label11
+    72 select :backgroundProcess:enableFactory lessThan 500 :backgroundProcess:power true :backgroundProcess:enableFactory
+-    * label *label19
+-    * label *label17
+    73 jump *label20 notEqual .factoryUnit null
+    74 control enabled .factory false
+    75 control config .factory @mono
  
-    83 control config .unloader2 @coal
-    84 jump *label4 always
-    85 label *label24
--    * label *label25
-    86 op equal *tmp69 .unitToProduce @mono
-    87 op mul :backgroundProcess:leadLimit *tmp69 30
-    88 sensor *tmp71 .factory @lead
+    80 jump *label22 lessThanEq :backgroundProcess:lastProgress *tmp55
+    81 control enabled .factory :backgroundProcess:enableFactory
+    82 set :factoryUnitFinished:unit .factoryUnit
+-    * label *label49
+    83 jump *label60 notEqual :factoryUnitFinished:unit .targetUnit
+    84 sensor *tmp97 :factoryUnitFinished:unit @id
+    85 op add :log:encodedId @blockCount *tmp97
  
-   103 label *label27
-   104 label *label4
-   105 jump *label3 always
--    * label *label5
--    * label *label2
-   106 wait 1e12
-   107 jump *label1 always
-   108 end
+    87 op sub *tmp99 *tmp4 1
+    88 write *tmp99 .bank 511
+    89 op mul :second:result @second TIME_COMPRESS
+-    * label *label50
+    90 op floor *tmp103 :second:result
+    91 op mul *tmp104 *tmp103 1000
+    92 op add *tmp105 :log:encodedId *tmp104
+    93 write *tmp105 .bank *tmp99
+-    * label *label51
+-    * label *label52
+    94 jump *label54 notEqual :factoryUnitFinished:unit @flare
+-    * label *label53
+    95 op add *tmp108 .flares 1
+    96 set .flares *tmp108
+    97 write *tmp108 .display ".displayFlares"
+    98 jump *label59 always
+    99 label *label54
+   100 jump *label56 notEqual :factoryUnitFinished:unit @mono
+-    * label *label55
+   101 op add *tmp109 .monos 1
+   102 set .monos *tmp109
+   103 write *tmp109 .display ".displayMonos"
+   104 jump *label59 always
+   105 label *label56
+   106 jump *label58 notEqual :factoryUnitFinished:unit @poly
+-    * label *label57
+   107 op add *tmp110 .polys 1
+   108 set .polys *tmp110
+   109 write *tmp110 .display ".displayPolys"
+   110 label *label58
+   111 label *label59
+   112 label *label60
+-    * label *label61
+-    * label *label62
+   113 set :backgroundProcess:lastProgress 0
+   114 jump *label23 always
+   115 label *label22
+ 
+   127 label *label21
+   128 op add *tmp71 :backgroundProcess:reconstructorProgress 0.1
+   129 jump *label27 lessThanEq :backgroundProcess:lastRecoProgress *tmp71
+-    * label *label63
+   130 jump *label74 notEqual @poly .targetUnit
+   131 op add :log:encodedId @blockCount 21
+   132 read *tmp4 .bank 511
+   133 op sub *tmp99 *tmp4 1
+   134 write *tmp99 .bank 511
+   135 op mul :second:result @second TIME_COMPRESS
+-    * label *label64
+   136 op floor *tmp103 :second:result
+   137 op mul *tmp104 *tmp103 1000
+   138 op add *tmp105 :log:encodedId *tmp104
+   139 write *tmp105 .bank *tmp99
+-    * label *label65
+-    * label *label66
+   140 jump *label68 always
+-    * label *label67
+   141 set .flares *tmp108
+   142 write *tmp108 .display ".displayFlares"
+   143 jump *label73 always
+   144 label *label68
+   145 jump *label70 always
+-    * label *label69
+   146 set .monos *tmp109
+   147 write *tmp109 .display ".displayMonos"
+   148 jump *label73 always
+   149 label *label70
+-    * label *label71
+   150 op add *tmp110 .polys 1
+   151 set .polys *tmp110
+   152 write *tmp110 .display ".displayPolys"
+-    * label *label72
+   153 label *label73
+   154 label *label74
+-    * label *label75
+-    * label *label76
+   155 set :backgroundProcess:lastRecoProgress 0
+   156 jump *label28 always
+   157 label *label27
+ 
+   162 control config .unloader2 @coal
+   163 jump *label5 always
+   164 label *label30
+-    * label *label31
+   165 op equal *tmp79 .factoryUnit @mono
+   166 op mul :backgroundProcess:leadLimit *tmp79 30
+   167 sensor *tmp81 .factory @lead
+ 
+   182 label *label33
+   183 label *label5
+   184 jump *label4 always
+-    * label *label6
+-    * label *label3
+   185 wait 1e12
+   186 jump *label2 always
+   187 end
 
 Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
  
-    81 sensor *tmp64 .generator2 @coal
-    82 jump *label24 greaterThanEq *tmp64 .generator2
-    83 control config .unloader2 @coal
--    * jump *label4 always
-+   84 jump *label3 always
-    85 label *label24
-    86 op equal *tmp69 .unitToProduce @mono
-    87 op mul :backgroundProcess:leadLimit *tmp69 30
+   137 op mul *tmp104 *tmp103 1000
+   138 op add *tmp105 :log:encodedId *tmp104
+   139 write *tmp105 .bank *tmp99
+-    * jump *label68 always
++  140 jump *label70 always
+   141 set .flares *tmp108
+   142 write *tmp108 .display ".displayFlares"
+   143 jump *label73 always
  
-    92 op land *tmp75 *tmp72 *tmp74
-    93 jump *label26 equal *tmp75 false
-    94 control config .unloader2 @lead
--    * jump *label27 always
-+   95 jump *label3 always
-    96 label *label26
-    97 jump *label28 lessThanEq :backgroundProcess:coreSilicon .siliconReserve
-    98 control config .unloader2 @silicon
--    * jump *label29 always
-+   99 jump *label3 always
-   100 label *label28
-   101 control config .unloader2 @coal
-   102 label *label29
+   160 sensor *tmp74 .generator2 @coal
+   161 jump *label30 greaterThanEq *tmp74 .generator2
+   162 control config .unloader2 @coal
+-    * jump *label5 always
++  163 jump *label4 always
+   164 label *label30
+   165 op equal *tmp79 .factoryUnit @mono
+   166 op mul :backgroundProcess:leadLimit *tmp79 30
+ 
+   171 op land *tmp85 *tmp82 *tmp84
+   172 jump *label32 equal *tmp85 false
+   173 control config .unloader2 @lead
+-    * jump *label33 always
++  174 jump *label4 always
+   175 label *label32
+   176 jump *label34 lessThanEq :backgroundProcess:coreSilicon .siliconReserve
+   177 control config .unloader2 @silicon
+-    * jump *label35 always
++  178 jump *label4 always
+   179 label *label34
+   180 control config .unloader2 @coal
+   181 label *label35
 
-Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-3 instructions):
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-10 instructions):
  
-    99 jump *label3 always
-   100 label *label28
-   101 control config .unloader2 @coal
--    * label *label29
--    * label *label27
--    * label *label4
-   102 jump *label3 always
+   138 op add *tmp105 :log:encodedId *tmp104
+   139 write *tmp105 .bank *tmp99
+   140 jump *label70 always
+-    * set .flares *tmp108
+-    * write *tmp108 .display ".displayFlares"
+-    * jump *label73 always
+-    * label *label68
+-    * jump *label70 always
+-    * set .monos *tmp109
+-    * write *tmp109 .display ".displayMonos"
+-    * jump *label73 always
+   141 label *label70
+   142 op add *tmp110 .polys 1
+   143 set .polys *tmp110
+ 
+   170 jump *label4 always
+   171 label *label34
+   172 control config .unloader2 @coal
+-    * label *label35
+-    * label *label33
+-    * label *label5
+   173 jump *label4 always
 -    * wait 1e12
--    * jump *label1 always
+-    * jump *label2 always
 -    * end
 
 Modifications by Jumps phase, Dead Code Elimination, pass 4, iteration 1:
  
-     1 set .smelterTarget 20
-     2 set .kilnTarget 20
-     3 set *signature "0:v1"
--    * label *label1
-     4 set :backgroundProcess:lastProgress 0
-     5 set :backgroundProcess:enableFactory true
-     6 label *label3
+     5 set .monoTarget 0
+     6 set .polyTarget 0
+     7 set *signature "0:v1"
+-    * label *label2
+     8 set :backgroundProcess:lastProgress 0
+     9 set :backgroundProcess:lastRecoProgress 0
+    10 set :backgroundProcess:enableFactory true
+ 
+   141 op add *tmp110 .polys 1
+   142 set .polys *tmp110
+   143 write *tmp110 .display ".displayPolys"
+-    * label *label73
+   144 label *label74
+   145 set :backgroundProcess:lastRecoProgress 0
+   146 jump *label28 always
+
+Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
+ 
+   136 op mul *tmp104 *tmp103 1000
+   137 op add *tmp105 :log:encodedId *tmp104
+   138 write *tmp105 .bank *tmp99
+-    * jump *label70 always
+   139 label *label70
+   140 op add *tmp110 .polys 1
+   141 set .polys *tmp110
+
+Modifications by Jumps phase, Jump Normalization, pass 5, iteration 1:
+ 
+   136 op mul *tmp104 *tmp103 1000
+   137 op add *tmp105 :log:encodedId *tmp104
+   138 write *tmp105 .bank *tmp99
+-    * label *label70
+   139 op add *tmp110 .polys 1
+   140 set .polys *tmp110
+   141 write *tmp110 .display ".displayPolys"
 
 Final code before resolving virtual instructions:
 
-    0:  jump *label30 always 0 0
-    1:  draw triangle .bank .battery .core .display .factory .flares
-    2:  draw triangle .generator .generator2 .kiln .kilnTarget .leadReserve .monos
-    3:  draw triangle .press .pressTarget .siliconReserve .smelter .smelterTarget .unitToProduce
-    4:  draw triangle .unloader2 :backgroundProcess:coreSilicon :backgroundProcess:enableFactory :backgroundProcess:factoryProgress :backgroundProcess:lastProgress :backgroundProcess:leadLimit
-    5:  draw triangle :backgroundProcess:power :log:encodedId :logUnit:unit 0 0 0
-        label *label30
-    6:  set .pressTarget 20                                          remote var
-    7:  set .smelterTarget 20                                        ...
-    8:  set .kilnTarget 20                                           ...
-    9:  set *signature "0:v1"                                        #set target = 8;
-   10:  set :backgroundProcess:lastProgress 0                        var lastProgress = 0, factoryProgress = 0;
-   11:  set :backgroundProcess:enableFactory true                    var enableFactory = true;
-        label *label3                                                while true do
-   12:  sensor :backgroundProcess:coreSilicon .core @silicon         var coreSilicon = core.@silicon;
-   13:  set *tmp4 .smelter                                           smelter.enabled = coreSilicon < smelterTarget;
-   14:  op lessThan *tmp6 :backgroundProcess:coreSilicon .smelterTar ...
-   15:  control enabled *tmp4 *tmp6 0 0 0                            ...
-   16:  set *tmp7 .press                                             press.enabled = core.@graphite < pressTarget;
-   17:  sensor *tmp9 .core @graphite                                 ...
-   18:  op lessThan *tmp10 *tmp9 .pressTarget                        ...
-   19:  control enabled *tmp7 *tmp10 0 0 0                           ...
-   20:  set *tmp11 .kiln                                             kiln.enabled = core.@metaglass < kilnTarget;
-   21:  sensor *tmp13 .core @metaglass                               ...
-   22:  op lessThan *tmp14 *tmp13 .kilnTarget                        ...
-   23:  control enabled *tmp11 *tmp14 0 0 0                          ...
-   24:  sensor :backgroundProcess:power .battery @totalPower         var power = battery.@totalPower;
-   25:  set *tmp16 .generator                                        generator.enabled = power < 3500;
-   26:  op lessThan *tmp18 :backgroundProcess:power 3500             ...
-   27:  control enabled *tmp16 *tmp18 0 0 0                          ...
-   28:  set *tmp19 .generator2                                       generator2.enabled = power < 3800;
-   29:  op lessThan *tmp21 :backgroundProcess:power 3800             ...
-   30:  control enabled *tmp19 *tmp21 0 0 0                          ...
-   31:  select :backgroundProcess:enableFactory lessThan :background mlogSafe("select", out value, "lessThan", in a, in b, in newValue, in value);
-   32:  select :backgroundProcess:enableFactory lessThan 500 :backgr ...
-   33:  sensor :backgroundProcess:factoryProgress .factory @progress factoryProgress = factory.@progress;
-   34:  jump *label9 notEqual .unitToProduce null                    if unitToProduce == null then
-   35:  control enabled .factory false 0 0 0                         factory.enabled = false;
-   36:  control config .factory @mono 0 0 0                          factory.config = @mono;
-   37:  set :backgroundProcess:lastProgress 0                        lastProgress = 0;
-   38:  jump *label10 always 0 0                                     if unitToProduce == null then
+    0:  jump *label77 always 0 0
+    1:  draw triangle TIME_COMPRESS .bank .battery .core .display .factory
+    2:  draw triangle .factoryUnit .flareTarget .flares .generator .generator2 .kiln
+    3:  draw triangle .kilnTarget .leadReserve .monoTarget .monos .payloadRouter .polyTarget
+    4:  draw triangle .polys .press .pressTarget .reconstructor .siliconReserve .smelter
+    5:  draw triangle .smelterTarget .targetUnit .unloader2 :backgroundProcess:coreSilicon :backgroundProcess:enableFactory :backgroundProcess:factoryProgress
+    6:  draw triangle :backgroundProcess:lastProgress :backgroundProcess:lastRecoProgress :backgroundProcess:leadLimit :backgroundProcess:power :backgroundProcess:reconstructorProgress :factoryUnitFinished:unit
+    7:  draw triangle :log:encodedId :second:result 0 0 0 0
+        label *label77
+    8:  set TIME_COMPRESS 8                                          common.mnd: param TIME_COMPRESS = 8;
+    9:  set .pressTarget 20                                          CoreController.mnd: remote var
+   10:  set .smelterTarget 20                                        ...
+   11:  set .kilnTarget 20                                           ...
+   12:  set .flareTarget 0                                           ...
+   13:  set .monoTarget 0                                            ...
+   14:  set .polyTarget 0                                            ...
+   15:  set *signature "0:v1"                                        CoreController.mnd: #set target = 8;
+   16:  set :backgroundProcess:lastProgress 0                        CoreController.mnd: var lastProgress = 0, factoryProgress = 0;
+   17:  set :backgroundProcess:lastRecoProgress 0                    CoreController.mnd: var lastRecoProgress = 0, reconstructorProgress = 0;
+   18:  set :backgroundProcess:enableFactory true                    CoreController.mnd: var enableFactory = true;
+        label *label4                                                CoreController.mnd: while true do
+   19:  sensor :backgroundProcess:coreSilicon .core @silicon         CoreController.mnd: var coreSilicon = core.@silicon;
+   20:  set *tmp6 .smelter                                           CoreController.mnd: smelter.enabled = coreSilicon < smelterTarget;
+   21:  op lessThan *tmp8 :backgroundProcess:coreSilicon .smelterTar ...
+   22:  control enabled *tmp6 *tmp8 0 0 0                            ...
+   23:  set *tmp9 .press                                             CoreController.mnd: press.enabled = core.@graphite < pressTarget;
+   24:  sensor *tmp11 .core @graphite                                ...
+   25:  op lessThan *tmp12 *tmp11 .pressTarget                       ...
+   26:  control enabled *tmp9 *tmp12 0 0 0                           ...
+   27:  set *tmp13 .kiln                                             CoreController.mnd: kiln.enabled = core.@metaglass < kilnTarget;
+   28:  sensor *tmp15 .core @metaglass                               ...
+   29:  op lessThan *tmp16 *tmp15 .kilnTarget                        ...
+   30:  control enabled *tmp13 *tmp16 0 0 0                          ...
+   31:  sensor :backgroundProcess:power .battery @totalPower         CoreController.mnd: var power = battery.@totalPower;
+   32:  jump *label7 equal .generator2 false                         CoreController.mnd: if generator2 then
+   33:  control enabled .generator false 0 0 0                       CoreController.mnd: generator.enabled = false;
+   34:  set *tmp21 .generator2                                       CoreController.mnd: generator2.enabled = power < 3800;
+   35:  op lessThan *tmp23 :backgroundProcess:power 3800             ...
+   36:  control enabled *tmp21 *tmp23 0 0 0                          ...
+   37:  jump *label8 always 0 0                                      CoreController.mnd: if generator2 then
+        label *label7                                                ...
+   38:  set *tmp24 .generator                                        CoreController.mnd: generator.enabled = power < 800;
+   39:  op lessThan *tmp26 :backgroundProcess:power 800              ...
+   40:  control enabled *tmp24 *tmp26 0 0 0                          ...
+        label *label8                                                CoreController.mnd: if generator2 then
+   41:  sensor :backgroundProcess:factoryProgress .factory @progress CoreController.mnd: factoryProgress = factory.@progress;
+   42:  sensor :backgroundProcess:reconstructorProgress .reconstruct CoreController.mnd: reconstructorProgress = reconstructor.@progress;
+   43:  jump *label9 greaterThanEq .flares .flareTarget              CoreController.mnd: if flares < flareTarget then
+   44:  set .factoryUnit @flare                                      CoreController.mnd: displayNextUnit = targetUnit = factoryUnit = @flare;
+   45:  set .targetUnit @flare                                       ...
+   46:  write @flare .display ".displayNextUnit"                     ...
+   47:  control config .payloadRouter @oct 0 0 0                     CoreController.mnd: payloadRouter.config = @oct;
+   48:  jump *label10 always 0 0                                     CoreController.mnd: if flares < flareTarget then
         label *label9                                                ...
-   39:  op add *tmp32 :backgroundProcess:factoryProgress 0.1         elsif lastProgress > factoryProgress + 0.1 then
-   40:  jump *label11 lessThanEq :backgroundProcess:lastProgress *tm ...
-   41:  control enabled .factory :backgroundProcess:enableFactory 0  factory.enabled = enableFactory;
-   42:  set :logUnit:unit .unitToProduce                             logUnit(unitToProduce);
-   43:  sensor *tmp37 :logUnit:unit @id                              log(@blockCount + unit.@id);
-   44:  op add :log:encodedId @blockCount *tmp37                     ...
-   45:  read *tmp2 .bank 511                                         bank[--logPosition] = encodedId + floor(@second) * 1000;
-   46:  op sub *tmp39 *tmp2 1                                        ...
-   47:  write *tmp39 .bank 511                                       ...
-   48:  op floor *tmp42 @second 0                                    ...
-   49:  op mul *tmp43 *tmp42 1000                                    ...
-   50:  op add *tmp44 :log:encodedId *tmp43                          ...
-   51:  write *tmp44 .bank *tmp39                                    ...
-   52:  jump *label16 notEqual .unitToProduce @flare                 if unitToProduce == @flare then
-   53:  op add *tmp47 .flares 1                                      displayFlares = ++flares;
-   54:  set .flares *tmp47                                           ...
-   55:  write *tmp47 .display ".flares"                              ...
-   56:  jump *label17 always 0 0                                     if unitToProduce == @flare then
-        label *label16                                               ...
-   57:  op add *tmp48 .monos 1                                       displayMonos = ++monos;
-   58:  set .monos *tmp48                                            ...
-   59:  write *tmp48 .display ".monos"                               ...
-        label *label17                                               if unitToProduce == @flare then
-   60:  set .unitToProduce @mono                                     unitToProduce = monos < 8 ? @mono : flares < 8 ? @flare : null;
-   61:  jump *label19 lessThan .monos 8                              ...
-   62:  set .unitToProduce null                                      ...
-   63:  jump *label21 greaterThanEq .flares 8                        ...
-   64:  set .unitToProduce @flare                                    ...
-        label *label21                                               ...
-        label *label19                                               ...
-   65:  set :backgroundProcess:lastProgress 0                        lastProgress = 0;
-   66:  jump *label12 always 0 0                                     elsif lastProgress > factoryProgress + 0.1 then
+   49:  jump *label11 greaterThanEq .monos .monoTarget               CoreController.mnd: elsif monos < monoTarget then
+   50:  set .factoryUnit @mono                                       CoreController.mnd: displayNextUnit = targetUnit = factoryUnit = @mono;
+   51:  set .targetUnit @mono                                        ...
+   52:  write @mono .display ".displayNextUnit"                      ...
+   53:  control config .payloadRouter @oct 0 0 0                     CoreController.mnd: payloadRouter.config = @oct;
+   54:  jump *label12 always 0 0                                     CoreController.mnd: elsif monos < monoTarget then
         label *label11                                               ...
-   67:  sensor *tmp54 .factory @config                               elsif factory.config != unitToProduce then
-   68:  jump *label22 equal *tmp54 .unitToProduce                    ...
-   69:  control enabled .factory :backgroundProcess:enableFactory 0  factory.enabled = enableFactory;
-   70:  control config .factory .unitToProduce 0 0 0                 factory.config = unitToProduce;
-   71:  set :backgroundProcess:lastProgress 0                        lastProgress = 0;
-   72:  jump *label23 always 0 0                                     elsif factory.config != unitToProduce then
+   55:  jump *label13 greaterThanEq .polys .polyTarget               CoreController.mnd: elsif polys < polyTarget then
+   56:  set .factoryUnit null                                        CoreController.mnd: factoryUnit = reconstructor.@payloadType == null ? @mono : null;
+   57:  sensor *tmp39 .reconstructor @payloadType                    ...
+   58:  jump *label16 notEqual *tmp39 null                           ...
+   59:  set .factoryUnit @mono                                       ...
+        label *label16                                               ...
+   60:  set .targetUnit @poly                                        CoreController.mnd: displayNextUnit = targetUnit = @poly;
+   61:  write @poly .display ".displayNextUnit"                      ...
+   62:  control config .payloadRouter @mono 0 0 0                    CoreController.mnd: payloadRouter.config = @mono;
+   63:  jump *label14 always 0 0                                     CoreController.mnd: elsif polys < polyTarget then
+        label *label13                                               ...
+   64:  set .factoryUnit null                                        CoreController.mnd: displayNextUnit = targetUnit = factoryUnit = null;
+   65:  set .targetUnit null                                         ...
+   66:  write null .display ".displayNextUnit"                       ...
+   67:  control config .payloadRouter @mono 0 0 0                    CoreController.mnd: payloadRouter.config = @mono;
+        label *label14                                               CoreController.mnd: elsif polys < polyTarget then
+        label *label12                                               CoreController.mnd: elsif monos < monoTarget then
+        label *label10                                               CoreController.mnd: if flares < flareTarget then
+   68:  select :backgroundProcess:enableFactory lessThan :background CoreController.mnd: mlogSafe("select", out value, "lessThan", in a, in b, in newValue, in value);
+   69:  select :backgroundProcess:enableFactory lessThan 500 :backgr ...
+   70:  jump *label20 notEqual .factoryUnit null                     CoreController.mnd: if factoryUnit == null then
+   71:  control enabled .factory false 0 0 0                         CoreController.mnd: factory.enabled = false;
+   72:  control config .factory @mono 0 0 0                          CoreController.mnd: factory.config = @mono;
+   73:  set :backgroundProcess:lastProgress 0                        CoreController.mnd: lastProgress = 0;
+   74:  jump *label21 always 0 0                                     CoreController.mnd: if factoryUnit == null then
+        label *label20                                               ...
+   75:  op add *tmp55 :backgroundProcess:factoryProgress 0.1         CoreController.mnd: elsif lastProgress > factoryProgress + 0.1 then
+   76:  jump *label22 lessThanEq :backgroundProcess:lastProgress *tm ...
+   77:  control enabled .factory :backgroundProcess:enableFactory 0  CoreController.mnd: factory.enabled = enableFactory;
+   78:  set :factoryUnitFinished:unit .factoryUnit                   CoreController.mnd: factoryUnitFinished(factoryUnit);
+   79:  jump *label60 notEqual :factoryUnitFinished:unit .targetUnit CoreController.mnd: if unit == targetUnit then
+   80:  sensor *tmp97 :factoryUnitFinished:unit @id                  CoreController.mnd: log(@blockCount + unit.@id);
+   81:  op add :log:encodedId @blockCount *tmp97                     ...
+   82:  read *tmp4 .bank 511                                         CoreController.mnd: bank[--logPosition] = encodedId + floor(second()) * 1000;
+   83:  op sub *tmp99 *tmp4 1                                        ...
+   84:  write *tmp99 .bank 511                                       ...
+   85:  op mul :second:result @second TIME_COMPRESS                  common.mnd: mlog (out result) {
+   86:  op floor *tmp103 :second:result 0                            CoreController.mnd: bank[--logPosition] = encodedId + floor(second()) * 1000;
+   87:  op mul *tmp104 *tmp103 1000                                  ...
+   88:  op add *tmp105 :log:encodedId *tmp104                        ...
+   89:  write *tmp105 .bank *tmp99                                   ...
+   90:  jump *label54 notEqual :factoryUnitFinished:unit @flare      CoreController.mnd: case unit
+   91:  op add *tmp108 .flares 1                                     CoreController.mnd: when @flare then displayFlares = ++flares;
+   92:  set .flares *tmp108                                          ...
+   93:  write *tmp108 .display ".displayFlares"                      ...
+   94:  jump *label59 always 0 0                                     CoreController.mnd: case unit
+        label *label54                                               ...
+   95:  jump *label56 notEqual :factoryUnitFinished:unit @mono       ...
+   96:  op add *tmp109 .monos 1                                      CoreController.mnd: when @mono  then displayMonos = ++monos;
+   97:  set .monos *tmp109                                           ...
+   98:  write *tmp109 .display ".displayMonos"                       ...
+   99:  jump *label59 always 0 0                                     CoreController.mnd: case unit
+        label *label56                                               ...
+  100:  jump *label58 notEqual :factoryUnitFinished:unit @poly       ...
+  101:  op add *tmp110 .polys 1                                      CoreController.mnd: when @poly  then displayPolys = ++polys;
+  102:  set .polys *tmp110                                           ...
+  103:  write *tmp110 .display ".displayPolys"                       ...
+        label *label58                                               CoreController.mnd: case unit
+        label *label59                                               ...
+        label *label60                                               CoreController.mnd: if unit == targetUnit then
+  104:  set :backgroundProcess:lastProgress 0                        CoreController.mnd: lastProgress = 0;
+  105:  jump *label23 always 0 0                                     CoreController.mnd: elsif lastProgress > factoryProgress + 0.1 then
         label *label22                                               ...
-   73:  control enabled .factory :backgroundProcess:enableFactory 0  factory.enabled = enableFactory;
-   74:  set :backgroundProcess:lastProgress :backgroundProcess:facto lastProgress = factoryProgress;
-        label *label23                                               elsif factory.config != unitToProduce then
-        label *label12                                               elsif lastProgress > factoryProgress + 0.1 then
-        label *label10                                               if unitToProduce == null then
-   75:  sensor *tmp64 .generator2 @coal                              if generator2.@coal < generator2 then
-   76:  jump *label24 greaterThanEq *tmp64 .generator2               ...
-   77:  control config .unloader2 @coal 0 0 0                        unloader2.config = @coal;
-   78:  jump *label3 always 0 0                                      continue;
-        label *label24                                               if generator2.@coal < generator2 then
-   79:  op equal *tmp69 .unitToProduce @mono                         var leadLimit = (unitToProduce == @mono) * 30;
-   80:  op mul :backgroundProcess:leadLimit *tmp69 30                ...
-   81:  sensor *tmp71 .factory @lead                                 if factory.@lead < leadLimit and core.@lead > leadReserve then
-   82:  op lessThan *tmp72 *tmp71 :backgroundProcess:leadLimit       ...
-   83:  sensor *tmp73 .core @lead                                    ...
-   84:  op greaterThan *tmp74 *tmp73 .leadReserve                    ...
-   85:  op land *tmp75 *tmp72 *tmp74                                 ...
-   86:  jump *label26 equal *tmp75 false                             ...
-   87:  control config .unloader2 @lead 0 0 0                        unloader2.config = @lead;
-   88:  jump *label3 always 0 0                                      if factory.@lead < leadLimit and core.@lead > leadReserve then
-        label *label26                                               ...
-   89:  jump *label28 lessThanEq :backgroundProcess:coreSilicon .sil elsif coreSilicon > siliconReserve then
-   90:  control config .unloader2 @silicon 0 0 0                     unloader2.config = @silicon;
-   91:  jump *label3 always 0 0                                      elsif coreSilicon > siliconReserve then
-        label *label28                                               ...
-   92:  control config .unloader2 @coal 0 0 0                        unloader2.config = @coal;
-   93:  jump *label3 always 0 0                                      while true do
+  106:  sensor *tmp61 .factory @config                               CoreController.mnd: elsif factory.config != factoryUnit then
+  107:  jump *label25 equal *tmp61 .factoryUnit                      ...
+  108:  control enabled .factory :backgroundProcess:enableFactory 0  CoreController.mnd: factory.enabled = enableFactory;
+  109:  control config .factory .factoryUnit 0 0 0                   CoreController.mnd: factory.config = factoryUnit;
+  110:  set :backgroundProcess:lastProgress 0                        CoreController.mnd: lastProgress = 0;
+  111:  jump *label26 always 0 0                                     CoreController.mnd: elsif factory.config != factoryUnit then
+        label *label25                                               ...
+  112:  control enabled .factory :backgroundProcess:enableFactory 0  CoreController.mnd: factory.enabled = enableFactory;
+  113:  set :backgroundProcess:lastProgress :backgroundProcess:facto CoreController.mnd: lastProgress = factoryProgress;
+        label *label26                                               CoreController.mnd: elsif factory.config != factoryUnit then
+        label *label23                                               CoreController.mnd: elsif lastProgress > factoryProgress + 0.1 then
+        label *label21                                               CoreController.mnd: if factoryUnit == null then
+  114:  op add *tmp71 :backgroundProcess:reconstructorProgress 0.1   CoreController.mnd: if lastRecoProgress > reconstructorProgress + 0.1 then
+  115:  jump *label27 lessThanEq :backgroundProcess:lastRecoProgress ...
+  116:  jump *label74 notEqual @poly .targetUnit                     CoreController.mnd: if unit == targetUnit then
+  117:  op add :log:encodedId @blockCount 21                         CoreController.mnd: log(@blockCount + unit.@id);
+  118:  read *tmp4 .bank 511                                         CoreController.mnd: bank[--logPosition] = encodedId + floor(second()) * 1000;
+  119:  op sub *tmp99 *tmp4 1                                        ...
+  120:  write *tmp99 .bank 511                                       ...
+  121:  op mul :second:result @second TIME_COMPRESS                  common.mnd: mlog (out result) {
+  122:  op floor *tmp103 :second:result 0                            CoreController.mnd: bank[--logPosition] = encodedId + floor(second()) * 1000;
+  123:  op mul *tmp104 *tmp103 1000                                  ...
+  124:  op add *tmp105 :log:encodedId *tmp104                        ...
+  125:  write *tmp105 .bank *tmp99                                   ...
+  126:  op add *tmp110 .polys 1                                      CoreController.mnd: when @poly  then displayPolys = ++polys;
+  127:  set .polys *tmp110                                           ...
+  128:  write *tmp110 .display ".displayPolys"                       ...
+        label *label74                                               CoreController.mnd: if unit == targetUnit then
+  129:  set :backgroundProcess:lastRecoProgress 0                    CoreController.mnd: lastRecoProgress = 0;
+  130:  jump *label28 always 0 0                                     CoreController.mnd: if lastRecoProgress > reconstructorProgress + 0.1 then
+        label *label27                                               ...
+  131:  set :backgroundProcess:lastRecoProgress :backgroundProcess:r CoreController.mnd: lastRecoProgress = reconstructorProgress;
+        label *label28                                               CoreController.mnd: if lastRecoProgress > reconstructorProgress + 0.1 then
+  132:  sensor *tmp74 .generator2 @coal                              CoreController.mnd: if generator2.@coal < generator2 then
+  133:  jump *label30 greaterThanEq *tmp74 .generator2               ...
+  134:  control config .unloader2 @coal 0 0 0                        CoreController.mnd: unloader2.config = @coal;
+  135:  jump *label4 always 0 0                                      CoreController.mnd: continue;
+        label *label30                                               CoreController.mnd: if generator2.@coal < generator2 then
+  136:  op equal *tmp79 .factoryUnit @mono                           CoreController.mnd: var leadLimit = (factoryUnit == @mono) * 30;
+  137:  op mul :backgroundProcess:leadLimit *tmp79 30                ...
+  138:  sensor *tmp81 .factory @lead                                 CoreController.mnd: if factory.@lead < leadLimit and core.@lead > leadReserve then
+  139:  op lessThan *tmp82 *tmp81 :backgroundProcess:leadLimit       ...
+  140:  sensor *tmp83 .core @lead                                    ...
+  141:  op greaterThan *tmp84 *tmp83 .leadReserve                    ...
+  142:  op land *tmp85 *tmp82 *tmp84                                 ...
+  143:  jump *label32 equal *tmp85 false                             ...
+  144:  control config .unloader2 @lead 0 0 0                        CoreController.mnd: unloader2.config = @lead;
+  145:  jump *label4 always 0 0                                      CoreController.mnd: if factory.@lead < leadLimit and core.@lead > leadReserve then
+        label *label32                                               ...
+  146:  jump *label34 lessThanEq :backgroundProcess:coreSilicon .sil CoreController.mnd: elsif coreSilicon > siliconReserve then
+  147:  control config .unloader2 @silicon 0 0 0                     CoreController.mnd: unloader2.config = @silicon;
+  148:  jump *label4 always 0 0                                      CoreController.mnd: elsif coreSilicon > siliconReserve then
+        label *label34                                               ...
+  149:  control config .unloader2 @coal 0 0 0                        CoreController.mnd: unloader2.config = @coal;
+  150:  jump *label4 always 0 0                                      CoreController.mnd: while true do
 
 
-Performance: parsed in 224 ms, compiled in 261 ms, optimized in 241 ms, run in 2 ms.
+Performance: parsed in 248 ms, compiled in 290 ms, optimized in 395 ms, run in 7 ms.
 
 Compiled mlog code was sent to Mlog Watcher.
-  Mlog Watcher: success.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
 
-Program output (8 steps):
+Program output (13 steps):
 The program didn't generate any output.
-Execution exception at instruction 12: sensor :backgroundProcess:coreSilicon .core @silicon:
+Execution exception at instruction 19: sensor :backgroundProcess:coreSilicon .core @silicon:
 Instruction not supported by Mindcode emulator.
 (Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)
