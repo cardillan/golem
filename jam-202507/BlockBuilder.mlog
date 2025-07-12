@@ -1,0 +1,63 @@
+jump 6 always 0 0
+jump 13 always 0 0
+draw triangle bank1 processor1 .ERROR .ERROR_BLOCK_NEW .ERROR_BLOCK_OLD .ERROR_X
+draw triangle .ERROR_Y .builder .core .coreX .coreY :buildBlockAt:block
+draw triangle :buildBlockAt:building :buildBlockAt:config :buildBlockAt:fullBuildSupport :buildBlockAt:rotation :buildBlockAt:type :buildBlockAt:x
+draw triangle :buildBlockAt:y :log:encodedId 0 0 0 0
+ubind @poly
+set .builder @unit
+ulocate building core false @copper .coreX .coreY 0 .core
+jump 6 equal .core null
+set *signature "e4bd0450ec228cd3:v1"
+wait 1e12
+jump 11 always 0 0
+ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7 0
+jump 18 notEqual *tmp7 false
+ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5 0 0
+ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7 0
+jump 15 equal *tmp7 false
+ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+jump 29 equal :buildBlockAt:building null
+jump 23 notEqual :buildBlockAt:type :buildBlockAt:block
+set :buildBlockAt*retval :buildBlockAt:building
+jump 59 always 0 0
+set .ERROR "Cannot build at position"
+set .ERROR_BLOCK_NEW :buildBlockAt:block
+set .ERROR_BLOCK_OLD :buildBlockAt:type
+set .ERROR_X :buildBlockAt:x
+set .ERROR_Y :buildBlockAt:y
+stop
+sensor *tmp16 .core @coal
+op greaterThan :buildBlockAt:fullBuildSupport *tmp16 200
+ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+wait 0.25
+jump 39 equal :buildBlockAt:fullBuildSupport false
+control enabled processor1 false 0 0 0
+ubind @poly
+jump 39 equal @unit .builder
+ucontrol approach :buildBlockAt:x :buildBlockAt:y 6 0 0
+ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+jump 47 notEqual :buildBlockAt:building null
+set .ERROR "Cannot build at position"
+set .ERROR_BLOCK_NEW :buildBlockAt:block
+set .ERROR_BLOCK_OLD "unknown"
+set .ERROR_X :buildBlockAt:x
+set .ERROR_Y :buildBlockAt:y
+stop
+jump 33 notEqual :buildBlockAt:type :buildBlockAt:block
+control enabled processor1 true 0 0 0
+ubind .builder
+sensor :log:encodedId :buildBlockAt:block @id
+read *tmp0 bank1 511
+op sub *tmp29 *tmp0 1
+write *tmp29 bank1 511
+op idiv *tmp33 @second 0.001
+op mul *tmp34 *tmp33 1000
+op add *tmp35 :log:encodedId *tmp34
+write *tmp35 bank1 *tmp29
+set :buildBlockAt*retval :buildBlockAt:building
+set :buildBlockAt*finished true
+jump 11 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

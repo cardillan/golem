@@ -22,25 +22,33 @@ var
 noinit remote var
     nextBlock,
     displayNextUnit,
+    displayUnitReset,
     targetCopper,
     targetLead,
     targetGraphite,
     targetSilicon,
     targetTitanium,
     targetMetaglass,
+    targetThorium,
     totalTargets,
     transportTarget,
     transportItem,
     status1,
     status2, item2, block2,
     status3,
-    displayMonos,
-    displayFlares,
-    displayPolys,
-    factory,
+    airFactory,
     reconstructor,
+    multiReconstructor,
     titaniumDrill,
-    thoriumDrill;
+    thoriumDrill,
+    thoriumContainer;
+
+remote var
+    displayMonos = 0,
+    displayFlares = 0,
+    displayPolys = 1,
+    displayMegas = 0;
+
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
@@ -116,50 +124,75 @@ inline void drawHeader()
         image(x - 20 - 7 * (count \ 10), 146, @titanium, 12, 0);
     end;
 
-    count = thoriumDrill.@thorium;
+    count = thoriumContainer.@thorium;
     if count then
         var x = 133;
+        var len = floor(log10(count));
         drawText(x, 155, @topRight, "x", count);
-        image(x - 20 - 7 * (count \ 10), 146, @thorium, 12, 0);
+        image(x - 20 - 7 * len, 146, @thorium, 12, 0);
     end;
 end;
+
+noinit var factoryProgress, reconstructorProgress;
 
 inline void drawMaterials()
     var count, targetFactoryLead, targetFactorySilicon;
     var col = 0, y = HEADER2_Y - ROW_HEIGHT;
 
     if nextBlock == null then
-        var unitCount;
+        factoryProgress = max(factoryProgress, airFactory.@progress);
+        reconstructorProgress = max(reconstructorProgress, reconstructor.@progress);
+        var multiReconstructorProgress = multiReconstructor.@progress;
+        var unit1, unit2, unit3;
+        var unitCount1, unitCount2;
+        var unitTotal1, unitTotal2;
+
         if displayNextUnit == @mono then
             targetFactoryLead = 15;
             targetFactorySilicon = 30;
             materialCount = 2;
-            unitCount = displayMonos + 1;
-        elsif displayNextUnit == @poly then
-            targetFactoryLead = 15;
-            targetFactorySilicon = 30;
-            materialCount = 2;
-            unitCount = 1;
+            unitCount1 = displayMonos + 1;
+            unitTotal1 = "/8";
+            unit1 = displayNextUnit;
+            unit2 = unit3 = null;
         elsif displayNextUnit == @flare then
             targetFactoryLead = 0;
             targetFactorySilicon = 15;
             materialCount = 1;
-            unitCount = displayFlares + 1;
+            unitCount1 = displayFlares + 1;
+            unitTotal1 = "/8";
+            unit1 = displayNextUnit;
+            unit2 = unit3 = null;
+        elsif displayNextUnit == @poly then
+            unitCount1 = 1;
+            unitCount2 = displayPolys;
+            unitTotal1 = "/1";
+            unitTotal2 = "/8";
+            unit1 = @mono;
+            unit2 = displayNextUnit;
+            unit3 = null;
+            factoryProgress = max(factoryProgress, reconstructorProgress > 0);
+        elsif displayNextUnit == @mega then
+            unitCount1 = 1;
+            unitCount2 = 1;
+            unitTotal1 = "/1";
+            unitTotal2 = "/1";
+            unit1 = @mono;
+            unit2 = @poly;
+            unit3 = displayNextUnit;
+            factoryProgress = max(factoryProgress, reconstructorProgress > 0);
+            reconstructorProgress = max(reconstructorProgress, multiReconstructorProgress > 0);
         end;
 
-        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Air Factory");
-        var factoryProgress = factory.@progress;
-        var reconstructorProgress = reconstructor.@progress;
-        if factoryProgress + reconstructorProgress > 0 then
-            if displayNextUnit == @poly then
-                if reconstructorProgress > 0 then
-                    drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @mono, 1.0, 1.0, "1/1");
-                else
-                    drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @mono, factoryProgress, 1.0, "1/1");
+        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Unit factories");
+
+        if factoryProgress > 0 then
+            drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, unit1, factoryProgress, 1.0, unitCount1, unitTotal1);
+            if unit2 != null then
+                drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, unit2, reconstructorProgress, 1.0, unitCount2, unitTotal2);
+                if unit3 != null then
+                    drawItem(in 0, in HEADER2_Y - 3 * ROW_HEIGHT, 1, unit3, multiReconstructorProgress, 1.0, displayMegas + 1, "/1");
                 end;
-                drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, displayNextUnit, reconstructorProgress, 1.0, unitCount, "/8");
-            else
-                drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, displayNextUnit, factoryProgress, 1.0, unitCount, "/8");
             end;
         else
             for var item, target in
@@ -167,7 +200,7 @@ inline void drawMaterials()
                 @silicon, targetFactorySilicon
             do
                 if target > 0 then
-                    drawItem(in out col, in out y, 1, item, factory.sensor(item), target, target);
+                    drawItem(in out col, in out y, 1, item, airFactory.sensor(item), target, target);
                 end;
             end;
         end;
@@ -186,7 +219,8 @@ inline void drawMaterials()
                 @graphite,  targetGraphite,
                 @silicon,   targetSilicon,
                 @titanium,  targetTitanium,
-                @metaglass, targetMetaglass
+                @metaglass, targetMetaglass,
+                @thorium,   targetThorium
             do
                 if target > 0 then
                     drawItem(in out col, in out y, columns, item, core.sensor(item), target, target);
@@ -264,8 +298,6 @@ void updateMessage()
     printflush(message1);
 end;
 
-var lastTime;
-
 inline void displayRecordAt(ref x, ref y, image, text)
     image(x, y, image, 14, 0);
     drawText(x + 56 - 12, y + 2, @right, text);
@@ -295,36 +327,40 @@ end;
 void displayLog(page)
     var x = 3 + 8;
     var y = 176 - 5 - 8;
-    reset();
-    clear(0, 0, 32);
 
-    lastTime = 0;
     var logPosition = bank1[511];
     var records = (511 - logPosition);
-    numPages = 3 + (records - 1) \ 33;
-    var position = 511 - 33 * (page - 1);
-    while true do
-        var record = bank1[--position];
-        if !record then break; end;
-        displayRecord(ref x, ref y, record);
-    end;
+    var pages = (records - 1) \ 32 + 1;
+    numPages = pages + 2;
+    var start = 511 - 32 * page;
+    var stop = max(logPosition, start - 32);
 
-    drawflush(display1);
+    col(%[lightgray]);
+    print(page + 1, "/");
+    drawText(172, 4, @bottomRight, pages);
+
+    col(%[white]);
+    for var position in stop ... start descending do
+        var record = bank1[position];
+        displayRecord(ref x, ref y, record);
+        drawflush(display1);
+        if switch1.enabled then break; end;
+    end;
 end;
 
 //external bank1[0 ... 4] var minX, minY, maxX, maxY;
 
 remote processor1 var locations;
 var mapw = @mapw, maph = @maph;
-var frame = 0;
 
 void displayOreMap()
     reset();
     clear(0, 0, 32);
 
-    col(%[white]);
-    drawText(4, 172, @topLeft, ++frame);
+    col(%[gold]);
+    drawText(4, 172, @topLeft, "Map");
 
+    col(%[white]);
     scale(176 / mapw, 176 / maph);
     var imgSize = ceil(mapw / 176);
     //stroke(max(width, height));
@@ -362,15 +398,22 @@ void main()
     printflush(null);
     drawflush(null);
 
-    var nextSwitch = @second + 3;
+    //var factoryBackup;
 
     while true do
+        if displayUnitReset then
+            factoryProgress = reconstructorProgress = 0;
+            displayUnitReset = false;
+        end;
+
         if page == 0 then
+//            if factoryBackup == null then factoryBackup = airFactory; end;
+//            if airFactory == null then airFactory = factoryBackup; end;
             updateDisplay();
-        elsif page == numPages - 1 then
+        elsif page == 1 then
             displayOreMap();
         else
-            displayLog(page);
+            displayLog(page - 2);
         end;
 
         updateMessage();
@@ -378,6 +421,9 @@ void main()
         if switch1.enabled then
             switch1.enabled = false;
             page = (page + 1) % numPages;
+            drawflush(null);
+            reset();
+            clear(0, 0, 32);
         end;
     end;
 end;

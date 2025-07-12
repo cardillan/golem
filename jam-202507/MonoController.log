@@ -1,13 +1,13 @@
    199 instructions before optimizations.
      9 instructions eliminated by Temp Variables Elimination (2 iterations).
-    28 instructions eliminated by Dead Code Elimination (7 iterations).
+    28 instructions eliminated by Dead Code Elimination (6 iterations).
      1 instructions eliminated by Jump Normalization (5 iterations).
     20 instructions eliminated by Jump Optimization (5 iterations).
     10 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
      4 instructions eliminated by If Expression Optimization (3 iterations).
      5 instructions eliminated by Data Flow Optimization (5 iterations).
      1 instructions eliminated by Jump Straightening (5 iterations).
-     4 instructions updated by JumpThreading.
+     5 instructions updated by JumpThreading.
      1 instructions eliminated by Unreachable Code Elimination (2 iterations).
     13 instructions eliminated by Print Merging.
    107 instructions after optimizations.
@@ -84,8 +84,8 @@ Modifications by Initial phase, Dead Code Elimination, iteration 1 (-14 instruct
    183 label *label40
    184 set :mine:floor null
  
-   220 label *label45
-   221 set *tmp60 *tmp62
+   220 label *label47
+   221 set *tmp60 *tmp64
    222 label *label43
 -    * set *tmp56 *tmp60
    223 label *label41
@@ -142,18 +142,18 @@ Modifications by Initial phase, Dead Code Elimination, iteration 2 (-10 instruct
    158 jump *label35 always
    159 label *label34
  
-   188 ucontrol flag 1
-   189 print ": ore disappeared!"
-   190 print "\n"
--    * set *tmp60 ": ore disappeared!"
-   191 jump *label43 always
-   192 label *label42
-   193 op equal *tmp61 :mine:floor null
- 
-   210 label *label47
-   211 set *tmp62 *tmp64
-   212 label *label45
+   197 print "\n"
+   198 set *tmp62 ": no ore!"
+   199 label *label45
 -    * set *tmp60 *tmp62
+   200 jump *label43 always
+   201 label *label42
+   202 op equal *tmp63 :mine:block null
+ 
+   210 print "\n"
+   211 set *tmp64 ": blocked!"
+   212 label *label47
+-    * set *tmp60 *tmp64
    213 label *label43
    214 label *label41
    215 print "\n"
@@ -163,39 +163,34 @@ Modifications by Initial phase, Dead Code Elimination, iteration 2 (-10 instruct
    218 label *label18
    219 label *label7
 
-Modifications by Initial phase, Dead Code Elimination, iteration 3 (-2 instructions):
+Modifications by Initial phase, Dead Code Elimination, iteration 3 (-4 instructions):
  
-   194 jump *label44 equal *tmp61 false
-   195 print ": too far away"
+   189 jump *label44 equal *tmp61 false
+   190 print ": too far"
+   191 print "\n"
+-    * set *tmp62 ": too far"
+   192 jump *label45 always
+   193 label *label44
+   194 ucontrol flag 1
+   195 print ": no ore!"
    196 print "\n"
--    * set *tmp62 ": too far away"
-   197 jump *label45 always
-   198 label *label44
-   199 op equal *tmp63 :mine:block null
- 
-   207 print "\n"
-   208 set *tmp64 ": block has been built!"
-   209 label *label47
--    * set *tmp62 *tmp64
-   210 label *label45
-   211 label *label43
-   212 label *label41
-
-Modifications by Initial phase, Dead Code Elimination, iteration 4 (-2 instructions):
- 
-   199 op equal *tmp63 :mine:block null
-   200 jump *label46 equal *tmp63 false
-   201 ucontrol mine :mine:x :mine:y
+-    * set *tmp62 ": no ore!"
+   197 label *label45
+   198 jump *label43 always
+   199 label *label42
+   200 op equal *tmp63 :mine:block null
+   201 jump *label46 equal *tmp63 false
+   202 ucontrol mine :mine:x :mine:y
 -    * set *tmp64 null
-   202 jump *label47 always
-   203 label *label46
-   204 ucontrol flag 1
-   205 print ": block has been built!"
-   206 print "\n"
--    * set *tmp64 ": block has been built!"
-   207 label *label47
-   208 label *label45
+   203 jump *label47 always
+   204 label *label46
+   205 ucontrol flag 1
+   206 print ": blocked!"
+   207 print "\n"
+-    * set *tmp64 ": blocked!"
+   208 label *label47
    209 label *label43
+   210 label *label41
 
 Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-9 instructions):
  
@@ -269,7 +264,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-9 inst
 +  176 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
    177 op notEqual *tmp59 :mine:floor :mine:floorOre
    178 jump *label42 equal *tmp59 false
-   179 ucontrol flag 1
+   179 op equal *tmp61 :mine:floor null
 
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
  
@@ -424,25 +419,23 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-20 ins
    158 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
 -    * op notEqual *tmp59 :mine:floor :mine:floorOre
 -    * jump *label42 equal *tmp59 false
-+  159 jump *label42 equal :mine:floor :mine:floorOre
-   160 ucontrol flag 1
-   161 print ": ore disappeared!"
-   162 print "\n"
-   163 jump *label43 always
-   164 label *label42
 -    * op equal *tmp61 :mine:floor null
 -    * jump *label44 equal *tmp61 false
-+  165 jump *label44 notEqual :mine:floor null
-   166 print ": too far away"
-   167 print "\n"
-   168 jump *label45 always
-   169 label *label44
++  159 jump *label42 equal :mine:floor :mine:floorOre
++  160 jump *label44 notEqual :mine:floor null
+   161 print ": too far"
+   162 print "\n"
+   163 jump *label45 always
+ 
+   168 label *label45
+   169 jump *label43 always
+   170 label *label42
 -    * op equal *tmp63 :mine:block null
 -    * jump *label46 equal *tmp63 false
-+  170 jump *label46 notEqual :mine:block null
-   171 ucontrol mine :mine:x :mine:y
-   172 jump *label47 always
-   173 label *label46
++  171 jump *label46 notEqual :mine:block null
+   172 ucontrol mine :mine:x :mine:y
+   173 jump *label47 always
+   174 label *label46
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-7 instructions):
  
@@ -568,8 +561,8 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1
    150 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
 -    * jump *label42 equal :mine:floor :mine:floorOre
 +  151 jump *label42 equal :mine:floor *tmp43
-   152 ucontrol flag 1
-   153 print ": ore disappeared!"
+   152 jump *label44 notEqual :mine:floor null
+   153 print ": too far"
    154 print "\n"
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-4 instructions):
@@ -835,6 +828,15 @@ Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
    100 label *label36
    101 label *label34
    102 sensor *tmp51 @unit @firstItem
+ 
+   122 jump *label44 notEqual :mine:floor null
+   123 print ": too far"
+   124 print "\n"
+-    * jump *label45 always
++  125 jump *label43 always
+   126 label *label44
+   127 ucontrol flag 1
+   128 print ": no ore!"
 
 Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-1 instructions):
  
@@ -846,13 +848,21 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
     65 label *label17
     66 jump *label24 notEqual :flag 1
  
-   140 label *label43
-   141 label *label41
-   142 print "\n"
+   126 ucontrol flag 1
+   127 print ": no ore!"
+   128 print "\n"
+-    * label *label45
+   129 jump *label43 always
+   130 label *label42
+   131 jump *label46 notEqual :mine:block null
+ 
+   139 label *label43
+   140 label *label41
+   141 print "\n"
 -    * label *label29
 -    * label *label25
 -    * label *label18
-   143 jump *label6 always
+   142 jump *label6 always
 -    * end
 
 Modifications by Final phase, Print Merging, iteration 1 (-13 instructions):
@@ -923,29 +933,29 @@ Modifications by Final phase, Print Merging, iteration 1 (-13 instructions):
    108 ucontrol approach :mine:x :mine:y 7
    109 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
    110 jump *label42 equal :mine:floor *tmp43
-   111 ucontrol flag 1
--    * print ": ore disappeared!"
+   111 jump *label44 notEqual :mine:floor null
+-    * print ": too far"
 -    * print "\n"
-+  112 print ": ore disappeared!\n"
++  112 print ": too far\n"
    113 jump *label43 always
-   114 label *label42
-   115 jump *label44 notEqual :mine:floor null
--    * print ": too far away"
+   114 label *label44
+   115 ucontrol flag 1
+-    * print ": no ore!"
 -    * print "\n"
-+  116 print ": too far away\n"
-   117 jump *label45 always
-   118 label *label44
++  116 print ": no ore!\n"
+   117 jump *label43 always
+   118 label *label42
    119 jump *label46 notEqual :mine:block null
  
    121 jump *label47 always
    122 label *label46
    123 ucontrol flag 1
--    * print ": block has been built!"
+-    * print ": blocked!"
 -    * print "\n"
-+  124 print ": block has been built!\n"
++  124 print ": blocked!\n"
    125 label *label47
-   126 label *label45
-   127 label *label43
+   126 label *label43
+   127 label *label41
 
 Final code before resolving virtual instructions:
 
@@ -1066,32 +1076,32 @@ Final code before resolving virtual instructions:
    96:  ucontrol approach :mine:x :mine:y 7 0 0                      approach(x, y, RADIUS);
    97:  ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor  var block = getBlock(x, y, , out floor);
    98:  jump *label42 equal :mine:floor *tmp43                       if floor != floorOre then
-   99:  ucontrol flag 1 0 0 0 0                                      flag(1);
-  100:  print ": ore disappeared!\n"                                 println(": ore disappeared!");
-  101:  jump *label43 always 0 0                                     if floor != floorOre then
-        label *label42                                               ...
-  102:  jump *label44 notEqual :mine:floor null                      elsif floor == null then
-  103:  print ": too far away\n"                                     println(": too far away");
-  104:  jump *label45 always 0 0                                     elsif floor == null then
+   99:  jump *label44 notEqual :mine:floor null                      if floor == null then
+  100:  print ": too far\n"                                          println(": too far");
+  101:  jump *label43 always 0 0                                     if floor == null then
         label *label44                                               ...
+  102:  ucontrol flag 1 0 0 0 0                                      flag(1);
+  103:  print ": no ore!\n"                                          println(": no ore!");
+  104:  jump *label43 always 0 0                                     if floor != floorOre then
+        label *label42                                               ...
   105:  jump *label46 notEqual :mine:block null                      elsif block == null then
   106:  ucontrol mine :mine:x :mine:y 0 0 0                          mine(x, y);
   107:  jump *label47 always 0 0                                     elsif block == null then
         label *label46                                               ...
   108:  ucontrol flag 1 0 0 0 0                                      flag(1);
-  109:  print ": block has been built!\n"                            println(": block has been built!");
+  109:  print ": blocked!\n"                                         println(": blocked!");
         label *label47                                               elsif block == null then
-        label *label45                                               elsif floor == null then
         label *label43                                               if floor != floorOre then
         label *label41                                               if @unit.@totalItems >= capacity then
   110:  print "\n"                                                   println();
   111:  jump *label6 always 0 0                                      while true do
 
 
-Performance: parsed in 215 ms, compiled in 274 ms, optimized in 235 ms, run in 3 ms.
+Performance: parsed in 209 ms, compiled in 245 ms, optimized in 230 ms, run in 6 ms.
 
 Compiled mlog code was sent to Mlog Watcher.
-  Mlog Watcher: success.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
 
 Program output (4 steps):
 The program didn't generate any output.

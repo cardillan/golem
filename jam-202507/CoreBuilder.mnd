@@ -2,11 +2,12 @@
 #set syntax = strict;
 #set sort-variables;
 //#set function-inlining = none;
+#set goal = size;
 
 // Linked variables
 linked message1, bank1, processor1, processor2, processor3, processor4, processor5;
 
-noinit var display, controller, flareController, oreLocator, polyController;
+noinit var display, controller, flareController, oreLocator, blockBuilder;
 
 require units;
 require "Actions.mnd";
@@ -14,7 +15,7 @@ require "Display.mnd" remote display;
 require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote controller;
 require "FlareController.mnd" remote flareController;
-require "PolyController.mnd" remote polyController;
+require "BlockBuilder.mnd" remote blockBuilder;
 
 // At this point, we're only using a poly
 const capacity = 30;
@@ -27,7 +28,10 @@ var
     smelter = null,
     titaniumDrill = null,
     unloader1 = null,
-    kiln = null;
+    kiln = null,
+    thoriumDrill = null,
+    thoriumContainer = null,
+    thoriumGenerator = null;
 
 noinit var
     core, coreX, coreY,
@@ -40,6 +44,7 @@ noinit var
     targetSilicon,
     targetTitanium,
     targetMetaglass,
+    targetThorium,
     powerTarget;
 
 var
@@ -54,39 +59,45 @@ var
 external bank1[511] logPosition = 511;
 
 // See BlockConfiguration.mnd
-const PRESS = "#'+nA#####";
-const BATTERY1 = "k*/(7#####";
-const BATTERY2 = "k+/(7#####";
-const GENERATOR = "m*.<2#####";
-const SMELTER = "%+-A<#####";
-const INVERTED_SORT1 = "T+,%%#####";
-const PNEUMATIC_DRILL = "w**5#-####";
-const UNLOADER1 = "*,###A<##";
-const INVERTED_SORT2 = "T),%%#####";
-const OVERFLOW_GATE1 = "W*-'%#####";
-const PROCESSOR = "®-.}U#U###";
-const POWER_NODE = "g)'%)#####";
-const UNLOADER2 = "(*###A<##";
-const AIR_FACTORY = "'(_i####&";
-const UNLOADER3 = ",)###A<##";
-const INVERTED_SORT3 = "T,*%%#####";
-const KILN = "',+_AA####";
-const WATER_EXT = "z%-AAA##A#";
-const OVERFLOW_GATE2 = "W'*'%#####";
-const OVERFLOW_GATE3 = "W&*'%#####";
-const STEAM_GEN = "o%+FK<A###";
-const MULTIPRESS = "$(.#U<##";
-const WATER_EXT2 = "z%/AAA##A#";
-const PAYLOAD_ROUTER = " '%-#2####";
-const UNLOADER4 = "*(###A<##";
-const UNDERFLOW_GATE = "X*''%#####";
-const ADDITIVE_REC = "*%ë#}###";
-const OVERFLOW_GATE4 = "W&*'%#####";
-const LASER_DRILL = "x**F#AA7##";
-const SOLAR_PANEL = "r**#-#+###";
-const BATTERY_LARGE = "l.-#U#A7##";
+const PRESS = "#'+nA######";
+const BATTERY1 = "k*/(7######";
+const BATTERY2 = "k+/(7######";
+const GENERATOR = "m*.<2######";
+const SMELTER = "%+-A<######";
+const INVERTED_SORT1 = "T+,%%######";
+const PNEUMATIC_DRILL = "w**5#-#####";
+const UNLOADER1 = "*,###A<###";
+const INVERTED_SORT2 = "T),%%######";
+const OVERFLOW_GATE1 = "W*-'%######";
+const PROCESSOR = "®-.}U#U####";
+const POWER_NODE = "g)'%)######";
+const UNLOADER2 = "(*###A<###";
+const AIR_FACTORY = "'(_i#####&";
+const UNLOADER3 = ",)###A<###";
+const INVERTED_SORT3 = "T,*%%######";
+const KILN = "',+_AA#####";
+const WATER_EXT = "z%-AAA##A##";
+const OVERFLOW_GATE2 = "W'*'%######";
+const OVERFLOW_GATE3 = "W&*'%######";
+const STEAM_GEN = "o%+FK<A####";
+const MULTIPRESS = "$(.#U<###";
+const WATER_EXT2 = "z%/AAA##A##";
+const PAYLOAD_ROUTER = " '%-#2#####";
+const UNLOADER4 = "*(###A<###";
+const UNDERFLOW_GATE = "X*''%######";
+const ADDITIVE_REC = "*%ë#}####";
+const BATTERY_LARGE = "l/-#U#A7###";
+const OVERFLOW_GATE4 = "W&*'%######";
+const LASER_DRILL = "x**F#AA7###";
+const SOLAR_PANEL = "r**#-#+####";
+const CONTAINER = "**#######";
+const SMELTER2 = "%-)A<######";
+const UNLOADER5 = "--###A<###";
+const UNLOADER6 = "+(###A<###";
+const UNDERFLOW_GATE2 = "X+''%######";
+const MULTIPLICATIVE_REC = ".&#ʭ#ǥƁ#ʭ#";
 
-void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out rotation)
+void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation)
     var index = 0;
     type = lookup(:block, char(cfg, index++) - 35);
     x = char(cfg, index++) - 35 - 7;
@@ -97,6 +108,7 @@ void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out 
     si = char(cfg, index++) - 35;
     ti = char(cfg, index++) - 35;
     mg = char(cfg, index++) - 35;
+    th = char(cfg, index++) - 35;
     rotation = char(cfg, index++) - 35;
     //println($"Type: $type, x: $x, y: $y, $cu, $pb, $gr, $si, $ti, $mg, $rotation");
 end;
@@ -176,6 +188,13 @@ inline void supplyBase1()
     mineOre(@coal);
 end;
 
+inline void supplyBase2()
+    status1("Phase 2: servicing thorium drill");
+
+    supplyBlockFromCore(thoriumGenerator, @coal);
+    fetchBlock(thoriumContainer, @thorium);
+end;
+
 void supplyBase()
     if !flareControllerStarted then
         if controller.flares > 0 then
@@ -184,7 +203,9 @@ void supplyBase()
         end;
     end;
 
-    if controller.monos > 3 then
+    if thoriumContainer then
+        supplyBase2();
+    elsif controller.monos > 3 then
         supplyBase1();
     else
         supplyBase0();
@@ -192,20 +213,21 @@ void supplyBase()
 end;
 
 inline def targetMet()
-    // This is horrible, but Mindcode doesn'T do short-circuit evaluation yet.
+    // This is horrible, but Mindcode doesn't do short-circuit evaluation yet.
     if core.@copper < targetCopper then return false; end;
     if core.@lead < targetLead then return false; end;
     if core.@graphite < targetGraphite then return false; end;
     if core.@silicon < targetSilicon then return false; end;
     if core.@titanium < targetTitanium then return false; end;
     if core.@metaglass < targetMetaglass then return false; end;
+    if core.@thorium < targetThorium then return false; end;
     return true;
 end;
 
-void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
+void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium)
     // Update display
     var count = 0;
-    for var t in copper, lead, graphite, silicon, titanium, metaglass do count += sign(t); end;
+    for var t in copper, lead, graphite, silicon, titanium, metaglass, thorium do count += sign(t); end;
     display.totalTargets = count;
     display.nextBlock = block;
     display.targetCopper = copper;
@@ -214,6 +236,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     display.targetSilicon = silicon;
     display.targetTitanium = titanium;
     display.targetMetaglass = metaglass;
+    display.targetThorium = thorium;
 
     targetCopper = copper;
     targetLead = lead + leadSurplus + 1;
@@ -221,6 +244,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass)
     targetSilicon = silicon;
     targetTitanium = titanium;
     targetMetaglass = metaglass;
+    targetThorium = thorium;
 
     controller.pressTarget = graphite + graphiteSurplus;
     controller.smelterTarget = silicon + siliconSurplus;
@@ -243,56 +267,44 @@ inline void logBlock(block)
     log(block.@id);
 end;
 
-def buildBlockAt(block, x, y, rotation, config, skipError)
-    moveTo(x, y);
-
-    status3("Building...");
-    var type;
-    var building = getBlock(x, y, out type);
-    if building != null then
-        // The block is already there
-        if type == block then return building; end;
-        if skipError then return null; end;
-        error("Cannot build at (", x, ", ", y, "), tile already contains ", building);
-    end;
-
-    build(x, y, block, rotation, config);
-    wait(0.25);
-    do
-        building = getBlock(x, y, out type);
-        if building == null then return null; end;
-    while type != block;
-
-    logBlock(block);
-
-    return building;
+def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, thorium, rotation, config)
+    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium);
+    return blockBuilder.buildBlockAt(block, x, y, rotation, config);
 end;
 
-def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, rotation, config)
-    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass);
-    return buildBlockAt(block, x, y, rotation, config, false);
+def buildRemoteBlock(cfg, x, y)
+    if x >= 0 then
+        var type, cu, pb, gr, si, ti, mg, th, rotation;
+        unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation);
+        return buildBlock(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, null);
+    end;
+    return false;
 end;
 
 // Builds a block
-def buildBlockFromCfg(cfg)
-    var type, x, y, cu, pb, gr, si, ti, mg, rotation;
-    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out rotation);
-    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, rotation, null);
+def buildBlockFromCfg(cfg, config)
+    var type, x, y, cu, pb, gr, si, ti, mg, th, rotation;
+    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation);
+    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config);
 end;
 
-def buildBlockFromCfg(cfg, config)
-    var type, x, y, cu, pb, gr, si, ti, mg, rotation;
-    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out rotation);
-    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, rotation, config);
+def buildBlockFromCfg(cfg)
+    buildBlockFromCfg(cfg, null);
 end;
 
 void meetTarget(cfg)
-    var type, cu, pb, gr, si, ti, mg;
-    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg);
-    meetTarget(type, cu, pb, gr, si, ti, mg);
+    var type, cu, pb, gr, si, ti, mg, th;
+    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
+    meetTarget(type, cu, pb, gr, si, ti, mg, th);
 end;
 
-def buildTitaniumDrill(cfg)
+void meetMultipleTargets(cfg, multiple)
+    var type, cu, pb, gr, si, ti, mg, th;
+    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
+    meetTarget(type, multiple * cu, multiple * pb, multiple * gr, multiple * si, multiple * ti, multiple * mg, multiple * th);
+end;
+
+def buildFirstTitaniumDrill(cfg)
     meetTarget(cfg);
 
     display.nextBlock = @titanium;
@@ -301,58 +313,105 @@ def buildTitaniumDrill(cfg)
     if !result then error("Cannot locate spot for titanium drill"); end;
     display.nextBlock = @pneumatic-drill;
 
-    return buildBlockAt(@pneumatic-drill, dx, dy, null, 0, false);
+    return blockBuilder.buildBlockAt(@pneumatic-drill, dx, dy, null, 0);
+end;
+
+def titaniumDrillScore(x, y, in out positive, in out negative)
+    case getFloor(x, y)
+        when @ore-titanium then positive++;
+        when @ore-copper, @ore-lead, @ore-scrap, @ore-coal then negative++;
+    end;
+end;
+
+volatile var positive = 0, negative = 0;
+
+void buildTitaniumDrill(x, y, in out count)
+    if count < 8 then
+        moveTo(x, y);
+        positive = 0; negative = 0;
+        titaniumDrillScore(x, y, in out positive, in out negative);
+        titaniumDrillScore(x, y + 0.5, in out positive, in out negative);
+        titaniumDrillScore(x + 0.5, y, in out positive, in out negative);
+        titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
+
+        if positive > negative && positive >= 2 then
+            var drill = blockBuilder.buildBlockAt(@pneumatic-drill, x, y, null, 0);
+            if drill != null then
+                flareController.addTitaniumDrill(drill);
+
+                // Build a flare to service this drill
+                controller.flareTarget = ++count;
+            end;
+        end;
+    end;
+end;
+
+void buildTitaniumDrills()
+    // The base is already autonomous. The drill needs copper and graphite.
+    // Both are provided in abundance at this moment
+
+    // Make sure to bind and flag the flare in a single tick
+    wait(1e-9);
+    ubind(@flare);
+
+    var current = oreLocator.locations;
+    async(oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, 4, 1e9));
+
+    // Bind the main builder back
+    ubind(builder);
+
+    // We know we have one drill
+    var count = 1, searching = true;
+    while searching do
+        searching = !finished(oreLocator.findDrillLocation);
+
+        while current < oreLocator.locations do
+            var index = current * 4;
+            var size = bank1[index + 1];
+            if size >= 3 then
+                var x = bank1[index + 2];
+                var y = bank1[index + 3];
+
+                buildTitaniumDrill(x - 1, y - 1, in out count);
+                buildTitaniumDrill(x + 1, y - 1, in out count);
+                buildTitaniumDrill(x - 1, y + 1, in out count);
+                buildTitaniumDrill(x + 1, y + 1, in out count);
+            end;
+            current++;
+        end;
+
+        if count >= 8 then break; end;
+    end;
+
+    async(oreLocator.stopLocation());
 end;
 
 void buildThoriumDrill()
+    // We're using the main builder for this, and calling synchronously
+    oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7);
+
     meetTarget(LASER_DRILL);
 
-    var result = await(layoutThoriumDrill);
+    var result = await(oreLocator.layoutThoriumDrill);
     if !result then error("Cannot locate spot for thorium drill"); end;
-    var thoriumDrill = buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, false);
+    thoriumDrill = blockBuilder.buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0);
 
-    if oreLocator.water1X < 0 then return; end;
-    meetTarget(WATER_EXT);
-    buildBlockAt(@water-extractor, oreLocator.water1X, oreLocator.water1Y, null, 0, false);
-
-    if oreLocator.water2X < 0 then return; end;
-
-    meetTarget(WATER_EXT);
-    buildBlockAt(@water-extractor, oreLocator.water2X, oreLocator.water2Y, null, 0, false);
-
-    meetTarget(WATER_EXT);
-    var thoriumGenerator = buildBlockAt(@steam-generator, oreLocator.generatorX, oreLocator.generatorY, null, 0, false);
-
-    meetTarget(POWER_NODE);
-    buildBlockAt(@power-node, oreLocator.nodeX, oreLocator.nodeY, null, 0, false);
-
-    meetTarget(SOLAR_PANEL);
-    buildBlockAt(@solar-panel, oreLocator.panelX, oreLocator.panelY, null, 0, false);
-
-    meetTarget(BATTERY1);
-    buildBlockAt(@battery, oreLocator.batteryX, oreLocator.batteryY, null, 0, false);
-
+    buildRemoteBlock(WATER_EXT, oreLocator.water1X, oreLocator.water1Y);
+    buildRemoteBlock(WATER_EXT, oreLocator.water2X, oreLocator.water2Y);
+    thoriumGenerator = buildRemoteBlock(STEAM_GEN, oreLocator.generatorX, oreLocator.generatorY);
+    buildRemoteBlock(POWER_NODE, oreLocator.nodeX, oreLocator.nodeY);
+    buildRemoteBlock(SOLAR_PANEL, oreLocator.panelX, oreLocator.panelY);
+    buildRemoteBlock(BATTERY1, oreLocator.batteryX, oreLocator.batteryY);
+    thoriumContainer = buildRemoteBlock(CONTAINER, oreLocator.containerX, oreLocator.containerY);
+    if thoriumContainer == null then thoriumContainer = thoriumDrill; end;
     display.thoriumDrill = thoriumDrill;
-    flareController.addThoriumDrill(thoriumDrill, thoriumGenerator);
+    display.thoriumContainer = thoriumContainer;
 end;
 
 // MAIN
 
-def findUnits(type, out count)
-    count = 0;
-    var firstUnit = ubind(type);
-    if firstUnit != null then
-        do
-            count++;
-            ubind(type);
-        while @unit != firstUnit;
-    end;
-
-    count;
-end;
-
 void buildUnits()
-    meetTarget(0, 0, 0, 0, 0, 0, 0);
+    meetTarget(0, 0, 0, 0, 0, 0, 0, 0);
     display.totalTargets = 0;
     display.nextBlock = null;
     controller.leadReserve = 0;
@@ -370,13 +429,7 @@ begin
     display = processor1;
     flareController = processor3;
     oreLocator = processor4;
-    polyController = processor5;
-    async(polyController.startPolyController(core, @unit));
-
-    // Bind and flag units
-    var flares = findUnits(@flare, out display.displayFlares);
-    var monos = findUnits(@mono, out display.displayMonos);
-    var polys = findUnits(@poly, out display.displayPolys);
+    blockBuilder = processor5;
 
     // PHASE 0: BASIC BLOCKS
 
@@ -389,9 +442,10 @@ begin
 
     smelter = buildBlockFromCfg(SMELTER);
     buildBlockFromCfg(INVERTED_SORT1);
-    titaniumDrill = buildTitaniumDrill(PNEUMATIC_DRILL);
+    titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
     unloader1 = buildBlockFromCfg(UNLOADER1);
+    controller.unloader1 = unloader1;
     buildBlockFromCfg(INVERTED_SORT2);
     buildBlockFromCfg(OVERFLOW_GATE1);
     graphiteSurplus = 100;
@@ -406,16 +460,13 @@ begin
     controller.generator = generator;
     controller.smelter = smelter;
     controller.press = press;
-    controller.monos = monos;
-    controller.flares = flares;
-    controller.polys = polys;
 
     buildBlockFromCfg(POWER_NODE);
     controller.unloader2 = buildBlockFromCfg(UNLOADER2);
 
     var factory = buildBlockFromCfg(AIR_FACTORY);
     controller.factory = factory;
-    display.factory = factory;
+    display.airFactory = factory;
 
     // PHASE 1: BUILDING UNITS
 
@@ -464,6 +515,7 @@ begin
     var reconstructor = buildBlockFromCfg(ADDITIVE_REC);
     controller.reconstructor = reconstructor;
     display.reconstructor = reconstructor;
+    buildBlockFromCfg(BATTERY_LARGE);
 
     buildUnits();
 
@@ -471,47 +523,49 @@ begin
     siliconSurplus = 1000;
     metaglassSurplus = 200;
 
-    controller.polyTarget = 3;
-    while controller.polys < 3 do
+    controller.polyTarget = 4;
+    controller.smelter2 = buildBlockFromCfg(SMELTER2);
+    buildBlockFromCfg(UNLOADER5, @sand);
+    buildUnits();
+
+    while controller.polys < 2 do
         supplyBase();
     end;
 
-    controller.flareTarget = 8;
-    controller.polyTarget = 6;
+    controller.flareTarget = 3;
     while controller.flares < 2 do
         supplyBase();
     end;
 
-    ubind(@flare);
+    controller.monoTarget = 8;
+    controller.polyTarget = 6;
+
+    // Build more titanium drills now
+    // The base can already be fully served by monos and polys,
+    // the main builder no longer needs to be occupied by supplying base
+    // Note: display three concurrent goals
     display.nextBlock = @ore-titanium;
-    oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, 4, 1e9);
-    ubind(builder);
-
-    do
-        supplyBase();
-    while !finished(oreLocator.findDrillLocation);
-
+    buildTitaniumDrills();
     display.nextBlock = null;
-
-    findFreeUnit(@flare, 0);
-    async(oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7));
-    ubind(builder);
-    do
-        supplyBase();
-    while !finished(layoutThoriumDrill);
 
     buildThoriumDrill();
-
-    display.totalTargets = 0;
     display.nextBlock = null;
-    do
+
+    controller.megaTarget = 1;
+    while controller.polys < 6 do
         supplyBase();
-    while controller.flares + controller.monos < 16;
+    end;
+
+    buildBlockFromCfg(UNLOADER6, @silicon);
+    buildBlockFromCfg(UNDERFLOW_GATE2);
+    var multiReconstructor = buildBlockFromCfg(MULTIPLICATIVE_REC);
+    controller.multiReconstructor = multiReconstructor;
+    display.multiReconstructor = multiReconstructor;
+
+    buildUnits();
+//    controller.megaTarget = 8;
 
     while true do
         supplyBase();
     end;
-
-    stop();
-    error("Done");
 end;

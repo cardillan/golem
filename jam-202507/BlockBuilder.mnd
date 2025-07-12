@@ -1,0 +1,93 @@
+#set target = 8;
+#set syntax = strict;
+#set sort-variables;
+
+module BlockController;
+
+linked
+    bank1,
+    polyController = processor1;
+
+noinit var
+    core, coreX, coreY,
+    builder;
+
+const RADIUS =  6;
+
+noinit volatile var ERROR, ERROR_BLOCK_NEW, ERROR_BLOCK_OLD, ERROR_X, ERROR_Y;
+
+inline void buildError(new, old, x, y);
+    ERROR = "Cannot build at position";
+    ERROR_BLOCK_NEW = new;
+    ERROR_BLOCK_OLD = old;
+    ERROR_X = x;
+    ERROR_Y = y;
+    stopProcessor();
+end;
+
+// Moves the unit to a given distance from the location
+void moveTo(x, y, radius)
+    while !within(x, y, radius) do
+        approach(x, y, radius - 0.5);
+    end;
+end;
+
+// Moves the unit to a mining distance from the location
+void moveTo(x, y)
+    moveTo(x, y, RADIUS);
+end;
+
+external bank1[511] var logPosition;
+
+inline void log(encodedId)
+    bank1[--logPosition] = encodedId + floor(@second * 1000) * 1000;
+end;
+
+inline void logBlock(block)
+    log(block.@id);
+end;
+
+remote def buildBlockAt(block, x, y, rotation, config)
+    moveTo(x, y);
+
+    var type;
+    var building = getBlock(x, y, out type);
+    if building != null then
+        // The block is already there
+        if type == block then return building; end;
+        buildError(block, type, x, y);
+    end;
+
+    var coal = core.@coal > 200;
+    var fullBuildSupport = coal > 200;
+    build(x, y, block, rotation, config);
+    wait(0.25);
+    do
+        if fullBuildSupport then
+            polyController.enabled = false;     // Brutal, but effective :)
+            ubind(@poly);
+            if @unit != builder then
+                approach(x, y, RADIUS);
+                build(x, y, block, rotation, config);
+            end;
+        end;
+        building = getBlock(x, y, out type);
+        if building == null then
+            buildError(block, "unknown", x, y);
+        end;
+    while type != block;
+
+    polyController.enabled = true;
+    ubind(builder);
+
+    logBlock(block);
+
+    return building;
+end;
+
+begin
+    do
+        builder = ubind(@poly);
+        core = ulocate(:building, :core, false, out coreX, out coreY);
+    while core == null;
+end;

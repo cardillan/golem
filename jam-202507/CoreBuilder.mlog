@@ -1,92 +1,77 @@
-jump 18 always 0 0
+jump 24 always 0 0
 draw triangle bank1 processor1 processor2 processor3 processor4 processor5
-draw triangle .ERROR .battery .builder .controller .core .coreX
-draw triangle .coreY .display .flareController .flareControllerStarted .generator .graphiteSurplus
-draw triangle .leadSurplus .metaglassSurplus .powerTarget .press .siliconSurplus .smelter
-draw triangle .targetCopper .targetGraphite .targetLead .targetMetaglass .targetSilicon .targetTitanium
-draw triangle .titaniumDrill .unloader1 :flares :monos :buildBlock:block :buildBlock:config
-draw triangle :buildBlock:rotation :buildBlock:x :buildBlock:y :buildBlockAt:block :buildBlockAt:building :buildBlockAt:config
-draw triangle :buildBlockAt:rotation :buildBlockAt:skipError :buildBlockAt:type :buildBlockAt:x :buildBlockAt:y :buildBlockFromCfg:cfg
-draw triangle :buildThoriumDrill:result :buildThoriumDrill:thoriumDrill :buildThoriumDrill:thoriumGenerator :buildTitaniumDrill:dx :buildTitaniumDrill:dy :buildTitaniumDrill:result
-draw triangle :depositItems:cap :fetchBlock:unitItem :findFreeUnit:first_unit :findUnits:count :findUnits:firstUnit :locateOre:x
-draw triangle :locateOre:y :log:encodedId :meetTarget:block :meetTarget.1:cfg :meetTarget:copper :meetTarget:count
-draw triangle :meetTarget:graphite :meetTarget:lead :meetTarget:metaglass :meetTarget:silicon :meetTarget:titanium :mineOre:amount
-draw triangle :mineOre:block :mineOre:item :mineOre.1:ore :mineOre:ore :mineOre:stop :supplyBase0:coal.1
-draw triangle :supplyBase0:coal :supplyBase0:sand.1 :supplyBase0:sand :supplyBase0:supplied :supplyBlock.3:blockCapacity :supplyBlock:blockCapacity
-draw triangle :supplyBlock.1:blockCapacity :supplyBlock.2:blockCapacity :supplyBlock.1:missing :supplyBlock:missing :supplyBlock.2:missing :supplyBlock.3:missing
-draw triangle :transportStatus.2:target :unpackCfg:cu :unpackCfg:gr :unpackCfg:mg :unpackCfg:pb :unpackCfg:rotation
-draw triangle :unpackCfg:si :unpackCfg:ti :unpackCfg:type :unpackCfg:x :unpackCfg:y 0
+draw triangle .ERROR .battery .blockBuilder .builder .controller .core
+draw triangle .coreX .coreY .display .flareController .flareControllerStarted .generator
+draw triangle .graphiteSurplus .leadSurplus .metaglassSurplus .negative .positive .powerTarget
+draw triangle .press .siliconSurplus .smelter .targetCopper .targetGraphite .targetLead
+draw triangle .targetMetaglass .targetSilicon .targetThorium .targetTitanium .thoriumContainer .thoriumDrill
+draw triangle .thoriumGenerator .titaniumDrill .unloader1 :buildBlock:block :buildBlock:config :buildBlock:copper
+draw triangle :buildBlock:graphite :buildBlock:lead :buildBlock:metaglass :buildBlock:rotation :buildBlock:silicon :buildBlock:thorium
+draw triangle :buildBlock:titanium :buildBlock:x :buildBlock:y :buildBlockFromCfg.1:cfg :buildBlockFromCfg:cfg :buildBlockFromCfg:config
+draw triangle :buildFirstTitaniumDrill:dx :buildFirstTitaniumDrill:dy :buildFirstTitaniumDrill:result :buildRemoteBlock:cfg :buildRemoteBlock:x :buildRemoteBlock:y
+draw triangle :buildThoriumDrill:result :buildTitaniumDrill:count :buildTitaniumDrill:drill :buildTitaniumDrill:x :buildTitaniumDrill:y :buildTitaniumDrills:count
+draw triangle :buildTitaniumDrills:current :buildTitaniumDrills:index :buildTitaniumDrills:searching :buildTitaniumDrills:size :buildTitaniumDrills:x :buildTitaniumDrills:y
+draw triangle :depositItems:block :depositItems:cap :depositItems:item :error:error :fetchBlock:block :fetchBlock:item
+draw triangle :fetchBlock:unitItem :getFloor:floor :locateOre:x :locateOre:y :meetTarget:block :meetTarget.1:cfg
+draw triangle :meetTarget:copper :meetTarget:count :meetTarget:graphite :meetTarget:lead :meetTarget:metaglass :meetTarget:silicon
+draw triangle :meetTarget:thorium :meetTarget:titanium :mineOre:amount :mineOre:block :mineOre:item :mineOre.1:ore
+draw triangle :mineOre:ore :mineOre:stop :mineOre:x :mineOre:y :moveTo:radius :moveTo:x
+draw triangle :moveTo:y :moveToEmpty:x :moveToEmpty:y :status2:block :status2:item :status2:text
+draw triangle :supplyBase0:coal.1 :supplyBase0:coal :supplyBase0:sand.1 :supplyBase0:sand :supplyBase0:supplied :supplyBlock:block
+draw triangle :supplyBlock:blockCapacity :supplyBlock:missing :supplyBlock:ore :supplyBlockFromCore:item :supplyBlockFromCore:target :supplyBlockFromCore:unitItem
+draw triangle :titaniumDrillScore:negative :titaniumDrillScore:positive :titaniumDrillScore:x :titaniumDrillScore:y :transportStatus:item :transportStatus:target
+draw triangle :unpackCfg:cfg :unpackCfg:cu :unpackCfg:gr :unpackCfg:mg :unpackCfg:pb :unpackCfg:rotation
+draw triangle :unpackCfg:si :unpackCfg:th :unpackCfg:ti :unpackCfg:type :unpackCfg:x :unpackCfg:y
 set .ERROR ""
+set .press null
+set .generator null
+set .battery null
+set .smelter null
 set .titaniumDrill null
 set .unloader1 null
+set .thoriumContainer null
+set .thoriumGenerator null
 set .leadSurplus 0
 set .graphiteSurplus 20
 set .siliconSurplus 20
 set .metaglassSurplus 20
 set .flareControllerStarted false
 write 511 bank1 511
+set .positive 0
+set .negative 0
 ubind @poly
 set .builder @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 27 equal .core null
+jump 41 equal .core null
 set .display processor1
 set .flareController processor3
-write .core processor5 ":startPolyController:aCore"
-write @unit processor5 ":startPolyController:aBuilder"
-write false processor5 ":startPolyController*finished"
-write 1 processor5 "@counter"
-set :findUnits:count 0
-ubind @flare
-set :findUnits:firstUnit @unit
-jump 44 equal :findUnits:firstUnit null
-op add :findUnits:count :findUnits:count 1
-ubind @flare
-jump 41 notEqual @unit :findUnits:firstUnit
-write :findUnits:count processor1 ".displayFlares"
-set :flares :findUnits:count
-set :findUnits:count 0
-ubind @mono
-set :findUnits:firstUnit @unit
-jump 53 equal :findUnits:firstUnit null
-op add :findUnits:count :findUnits:count 1
-ubind @mono
-jump 50 notEqual @unit :findUnits:firstUnit
-write :findUnits:count processor1 ".displayMonos"
-set :monos :findUnits:count
-set :findUnits:count 0
-ubind @poly
-set :findUnits:firstUnit @unit
-jump 62 equal :findUnits:firstUnit null
-op add :findUnits:count :findUnits:count 1
-ubind @poly
-jump 59 notEqual @unit :findUnits:firstUnit
-write :findUnits:count processor1 ".displayPolys"
-set :buildBlockFromCfg:cfg "#'+nA#####"
-set :buildBlockFromCfg*retaddr 66
-jump 916 always 0 0
-set .press :buildBlockFromCfg*retval
-set :buildBlockFromCfg:cfg "k*/(7#####"
-set :buildBlockFromCfg*retaddr 70
-jump 916 always 0 0
-set .battery :buildBlockFromCfg*retval
-set :buildBlockFromCfg:cfg "k+/(7#####"
-set :buildBlockFromCfg*retaddr 74
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "m*.<2#####"
-set :buildBlockFromCfg*retaddr 77
-jump 916 always 0 0
-set .generator :buildBlockFromCfg*retval
+set .blockBuilder processor5
+set :buildBlockFromCfg.1:cfg "#'+nA######"
+set :buildBlockFromCfg.1*retaddr 51
+jump 869 always 0 0
+set .press :buildBlockFromCfg.1*retval
+set :buildBlockFromCfg.1:cfg "k*/(7######"
+set :buildBlockFromCfg.1*retaddr 55
+jump 869 always 0 0
+set .battery :buildBlockFromCfg.1*retval
+set :buildBlockFromCfg.1:cfg "k+/(7######"
+set :buildBlockFromCfg.1*retaddr 59
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "m*.<2######"
+set :buildBlockFromCfg.1*retaddr 62
+jump 869 always 0 0
+set .generator :buildBlockFromCfg.1*retval
 set .powerTarget 400
-set :buildBlockFromCfg:cfg "%+-A<#####"
-set :buildBlockFromCfg*retaddr 82
-jump 916 always 0 0
-set .smelter :buildBlockFromCfg*retval
-set :buildBlockFromCfg:cfg "T+,%%#####"
-set :buildBlockFromCfg*retaddr 86
-jump 916 always 0 0
-set :meetTarget.1:cfg "w**5#-####"
-set :meetTarget.1*retaddr 89
-jump 963 always 0 0
+set :buildBlockFromCfg.1:cfg "%+-A<######"
+set :buildBlockFromCfg.1*retaddr 67
+jump 869 always 0 0
+set .smelter :buildBlockFromCfg.1*retval
+set :buildBlockFromCfg.1:cfg "T+,%%######"
+set :buildBlockFromCfg.1*retaddr 71
+jump 869 always 0 0
+set :meetTarget.1:cfg "w**5#-#####"
+set :meetTarget.1*retaddr 74
+jump 875 always 0 0
 write @titanium processor1 ".nextBlock"
 write .coreX processor4 ":findDrillLocation:x"
 write .coreY processor4 ":findDrillLocation:y"
@@ -98,211 +83,161 @@ write 4 processor4 ":findDrillLocation:limit"
 write false processor4 ":findDrillLocation*finished"
 write 1 processor4 "@counter"
 wait 1e-15
-read *tmp120 processor4 ":findDrillLocation*finished"
-jump 99 equal *tmp120 false
-read :buildTitaniumDrill:dx processor4 ":findDrillLocation:dx"
-read :buildTitaniumDrill:dy processor4 ":findDrillLocation:dy"
-read :buildTitaniumDrill:result processor4 ":findDrillLocation*retval"
-jump 108 notEqual :buildTitaniumDrill:result false
-set .ERROR "Cannot locate spot for titanium drill"
-stop
+read *tmp126 processor4 ":findDrillLocation*finished"
+jump 84 equal *tmp126 false
+read :buildFirstTitaniumDrill:dx processor4 ":findDrillLocation:dx"
+read :buildFirstTitaniumDrill:dy processor4 ":findDrillLocation:dy"
+read :buildFirstTitaniumDrill:result processor4 ":findDrillLocation*retval"
+jump 94 notEqual :buildFirstTitaniumDrill:result false
+set :error:error "Cannot locate spot for titanium drill"
+set :error*retaddr 94
+jump 396 always 0 0
 write @pneumatic-drill processor1 ".nextBlock"
-set :buildBlockAt:block @pneumatic-drill
-set :buildBlockAt:x :buildTitaniumDrill:dx
-set :buildBlockAt:y :buildTitaniumDrill:dy
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 117
-jump 882 always 0 0
-set .titaniumDrill :buildBlockAt*retval
-write :buildBlockAt*retval processor1 ".titaniumDrill"
-set :buildBlockFromCfg:cfg "*,###A<##"
-set :buildBlockFromCfg*retaddr 122
-jump 916 always 0 0
-set .unloader1 :buildBlockFromCfg*retval
-set :buildBlockFromCfg:cfg "T),%%#####"
-set :buildBlockFromCfg*retaddr 126
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "W*-'%#####"
-set :buildBlockFromCfg*retaddr 129
-jump 916 always 0 0
+write @pneumatic-drill processor5 ":buildBlockAt:block"
+write :buildFirstTitaniumDrill:dx processor5 ":buildBlockAt:x"
+write :buildFirstTitaniumDrill:dy processor5 ":buildBlockAt:y"
+write null processor5 ":buildBlockAt:rotation"
+write 0 processor5 ":buildBlockAt:config"
+write false processor5 ":buildBlockAt*finished"
+write 1 processor5 "@counter"
+wait 1e-15
+read *tmp135 processor5 ":buildBlockAt*finished"
+jump 102 equal *tmp135 false
+read *tmp115 processor5 ":buildBlockAt*retval"
+set .titaniumDrill *tmp115
+write *tmp115 processor1 ".titaniumDrill"
+set :buildBlockFromCfg.1:cfg "*,###A<###"
+set :buildBlockFromCfg.1*retaddr 111
+jump 869 always 0 0
+set .unloader1 :buildBlockFromCfg.1*retval
+write :buildBlockFromCfg.1*retval .controller ".unloader1"
+set :buildBlockFromCfg.1:cfg "T),%%######"
+set :buildBlockFromCfg.1*retaddr 116
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "W*-'%######"
+set :buildBlockFromCfg.1*retaddr 119
+jump 869 always 0 0
 set .graphiteSurplus 100
-read *tmp245 "®-.}U#U###" 0
-op sub *tmp246 *tmp245 35
-lookup block :unpackCfg:type *tmp246
-read *tmp249 "®-.}U#U###" 1
-op sub :unpackCfg:x *tmp249 42
-read *tmp253 "®-.}U#U###" 2
-op sub :unpackCfg:y *tmp253 42
-read *tmp257 "®-.}U#U###" 3
-op sub :unpackCfg:cu *tmp257 35
-read *tmp260 "®-.}U#U###" 4
-op sub :unpackCfg:pb *tmp260 35
-read *tmp263 "®-.}U#U###" 5
-op sub :unpackCfg:gr *tmp263 35
-read *tmp266 "®-.}U#U###" 6
-op sub :unpackCfg:si *tmp266 35
-read *tmp269 "®-.}U#U###" 7
-op sub :unpackCfg:ti *tmp269 35
-read *tmp272 "®-.}U#U###" 8
-op sub :unpackCfg:mg *tmp272 35
-read *tmp275 "®-.}U#U###" 9
-op sub :unpackCfg:rotation *tmp275 35
-op add *tmp128 .coreX :unpackCfg:x
-op add *tmp129 .coreY :unpackCfg:y
-set :buildBlock:block :unpackCfg:type
-set :buildBlock:x *tmp128
-set :buildBlock:y *tmp129
-set :buildBlock:rotation :unpackCfg:rotation
-set :buildBlock:config processor2
-set :meetTarget:block :unpackCfg:type
-set :meetTarget:copper :unpackCfg:cu
-set :meetTarget:lead :unpackCfg:pb
-set :meetTarget:graphite :unpackCfg:gr
-set :meetTarget:silicon :unpackCfg:si
-set :meetTarget:titanium :unpackCfg:ti
-set :meetTarget:metaglass :unpackCfg:mg
-set :meetTarget*retaddr 167
-jump 788 always 0 0
-set :buildBlockAt:block :buildBlock:block
-set :buildBlockAt:x :buildBlock:x
-set :buildBlockAt:y :buildBlock:y
-set :buildBlockAt:rotation :buildBlock:rotation
-set :buildBlockAt:config :buildBlock:config
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 175
-jump 882 always 0 0
-set *tmp127 :buildBlockAt*retval
-set .controller :buildBlockAt*retval
-write processor1 :buildBlockAt*retval ".display"
-write .core :buildBlockAt*retval ".core"
-write bank1 :buildBlockAt*retval ".bank"
-write .battery :buildBlockAt*retval ".battery"
-write .generator :buildBlockAt*retval ".generator"
-write .smelter :buildBlockAt*retval ".smelter"
-write .press :buildBlockAt*retval ".press"
-write :monos :buildBlockAt*retval ".monos"
-write :flares :buildBlockAt*retval ".flares"
-write :findUnits:count :buildBlockAt*retval ".polys"
-set :buildBlockFromCfg:cfg "g)'%)#####"
-set :buildBlockFromCfg*retaddr 190
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "(*###A<##"
-set :buildBlockFromCfg*retaddr 193
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".unloader2"
-set :buildBlockFromCfg:cfg "'(_i####&"
-set :buildBlockFromCfg*retaddr 197
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".factory"
-write :buildBlockFromCfg*retval processor1 ".factory"
-write 1 *tmp127 ".flareTarget"
-write 3 *tmp127 ".monoTarget"
-write 0 *tmp127 ".polyTarget"
-write 85 *tmp127 ".pressTarget"
-write 150 *tmp127 ".smelterTarget"
-write 30 *tmp127 ".kilnTarget"
+set :buildBlockFromCfg:cfg "®-.}U#U####"
+set :buildBlockFromCfg:config processor2
+set :buildBlockFromCfg*retaddr 124
+jump 848 always 0 0
+set .controller :buildBlockFromCfg*retval
+write processor1 :buildBlockFromCfg*retval ".display"
+write .core :buildBlockFromCfg*retval ".core"
+write bank1 :buildBlockFromCfg*retval ".bank"
+write .battery :buildBlockFromCfg*retval ".battery"
+write .generator :buildBlockFromCfg*retval ".generator"
+write .smelter :buildBlockFromCfg*retval ".smelter"
+write .press :buildBlockFromCfg*retval ".press"
+set :buildBlockFromCfg.1:cfg "g)'%)######"
+set :buildBlockFromCfg.1*retaddr 135
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "(*###A<###"
+set :buildBlockFromCfg.1*retaddr 138
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".unloader2"
+set :buildBlockFromCfg.1:cfg "'(_i#####&"
+set :buildBlockFromCfg.1*retaddr 142
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".factory"
+write :buildBlockFromCfg.1*retval processor1 ".airFactory"
+write 1 .controller ".flareTarget"
+write 3 .controller ".monoTarget"
+write 0 .controller ".polyTarget"
+write 85 .controller ".pressTarget"
+write 150 .controller ".smelterTarget"
+write 30 .controller ".kilnTarget"
 set .leadSurplus 20
 set .siliconSurplus 20
-set :meetTarget:block 0
-set :meetTarget:copper 0
-set :meetTarget:lead 0
-set :meetTarget:graphite 0
-set :meetTarget:silicon 0
-set :meetTarget:titanium 0
-set :meetTarget:metaglass 0
-set :meetTarget*retaddr 216
-jump 788 always 0 0
-write 0 processor1 ".totalTargets"
-write null processor1 ".nextBlock"
-write 0 .controller ".leadReserve"
-write 0 .controller ".siliconReserve"
-set :supplyBase*retaddr 222
-jump 577 always 0 0
-sensor *tmp133 .battery @totalPower
-jump 226 lessThan *tmp133 300
-read *tmp73 *tmp127 ".monos"
-jump 220 lessThan *tmp73 3
-set .siliconSurplus 100
-set :buildBlockFromCfg:cfg ",)###A<##"
-set :buildBlockFromCfg*retaddr 230
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "T,*%%#####"
-set :buildBlockFromCfg*retaddr 233
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "',+_AA####"
-set :buildBlockFromCfg*retaddr 236
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".kiln"
-set :buildBlockFromCfg:cfg "z%-AAA##A#"
-set :buildBlockFromCfg*retaddr 240
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "W'*'%#####"
-set :buildBlockFromCfg*retaddr 243
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "W&*'%#####"
-set :buildBlockFromCfg*retaddr 246
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "o%+FK<A###"
-set :buildBlockFromCfg*retaddr 249
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".generator2"
-set :buildBlockFromCfg:cfg "$(.#U<##"
-set :buildBlockFromCfg*retaddr 253
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".multipress"
-set :buildBlockFromCfg:cfg "z%/AAA##A#"
-set :buildBlockFromCfg*retaddr 257
-jump 916 always 0 0
+set :buildUnits*retaddr 154
+jump 967 always 0 0
+set :supplyBase*retaddr 156
+jump 567 always 0 0
+sensor *tmp144 .battery @totalPower
+jump 160 lessThan *tmp144 300
+read *tmp86 .controller ".monos"
+jump 154 lessThan *tmp86 3
+set .siliconSurplus 65
+set :buildBlockFromCfg.1:cfg ",)###A<###"
+set :buildBlockFromCfg.1*retaddr 164
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "T,*%%######"
+set :buildBlockFromCfg.1*retaddr 167
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "',+_AA#####"
+set :buildBlockFromCfg.1*retaddr 170
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".kiln"
+set :buildBlockFromCfg.1:cfg "z%-AAA##A##"
+set :buildBlockFromCfg.1*retaddr 174
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "W'*'%######"
+set :buildBlockFromCfg.1*retaddr 177
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "W&*'%######"
+set :buildBlockFromCfg.1*retaddr 180
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "o%+FK<A####"
+set :buildBlockFromCfg.1*retaddr 183
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".generator2"
+set :buildBlockFromCfg.1:cfg "$(.#U<###"
+set :buildBlockFromCfg.1*retaddr 187
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".multipress"
 set .graphiteSurplus 200
-set :buildBlockFromCfg:cfg " '%-#2####"
-set :buildBlockFromCfg*retaddr 261
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".payloadRouter"
-set :buildBlockFromCfg:cfg "*(###A<##"
-set :buildBlockFromCfg*retaddr 265
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "X*''%#####"
-set :buildBlockFromCfg*retaddr 268
-jump 916 always 0 0
-set :buildBlockFromCfg:cfg "*%ë#}###"
-set :buildBlockFromCfg*retaddr 271
-jump 916 always 0 0
-write :buildBlockFromCfg*retval *tmp127 ".reconstructor"
-write :buildBlockFromCfg*retval processor1 ".reconstructor"
-set :meetTarget:block 0
-set :meetTarget:copper 0
-set :meetTarget:lead 0
-set :meetTarget:graphite 0
-set :meetTarget:silicon 0
-set :meetTarget:titanium 0
-set :meetTarget:metaglass 0
-set :meetTarget*retaddr 282
-jump 788 always 0 0
-write 0 processor1 ".totalTargets"
-write null processor1 ".nextBlock"
-write 0 .controller ".leadReserve"
-write 0 .controller ".siliconReserve"
+set :buildBlockFromCfg.1:cfg " '%-#2#####"
+set :buildBlockFromCfg.1*retaddr 192
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".payloadRouter"
+set :buildBlockFromCfg.1:cfg "*(###A<###"
+set :buildBlockFromCfg.1*retaddr 196
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "X*''%######"
+set :buildBlockFromCfg.1*retaddr 199
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg "*%ë#}####"
+set :buildBlockFromCfg.1*retaddr 202
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".reconstructor"
+write :buildBlockFromCfg.1*retval processor1 ".reconstructor"
+set :buildBlockFromCfg.1:cfg "l.-#U#A7###"
+set :buildBlockFromCfg.1*retaddr 207
+jump 869 always 0 0
+set :buildUnits*retaddr 209
+jump 967 always 0 0
 set .siliconSurplus 1000
 set .metaglassSurplus 200
-write 3 *tmp127 ".polyTarget"
-read *tmp74 *tmp127 ".polys"
-jump 295 greaterThanEq *tmp74 3
-set :supplyBase*retaddr 293
-jump 577 always 0 0
-read *tmp74 *tmp127 ".polys"
-jump 291 lessThan *tmp74 3
-write 8 *tmp127 ".flareTarget"
-write 6 *tmp127 ".polyTarget"
-read *tmp72 *tmp127 ".flares"
-jump 303 greaterThanEq *tmp72 2
-set :supplyBase*retaddr 301
-jump 577 always 0 0
-read *tmp72 *tmp127 ".flares"
-jump 299 lessThan *tmp72 2
-ubind @flare
+write 4 .controller ".polyTarget"
+set :buildBlockFromCfg.1:cfg "%-)A<######"
+set :buildBlockFromCfg.1*retaddr 215
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".smelter2"
+set :buildBlockFromCfg:cfg "--###A<###"
+set :buildBlockFromCfg:config @sand
+set :buildBlockFromCfg*retaddr 220
+jump 848 always 0 0
+set :buildUnits*retaddr 222
+jump 967 always 0 0
+read *tmp87 .controller ".polys"
+jump 227 greaterThanEq *tmp87 2
+set :supplyBase*retaddr 226
+jump 567 always 0 0
+jump 222 always 0 0
+write 3 .controller ".flareTarget"
+read *tmp85 .controller ".flares"
+jump 233 greaterThanEq *tmp85 2
+set :supplyBase*retaddr 232
+jump 567 always 0 0
+jump 228 always 0 0
+write 8 .controller ".monoTarget"
+write 6 .controller ".polyTarget"
 write @ore-titanium processor1 ".nextBlock"
+wait 0.000000001
+ubind @flare
+read *tmp47 processor4 ".locations"
+set :buildTitaniumDrills:current *tmp47
 write .coreX processor4 ":findDrillLocation:x"
 write .coreY processor4 ":findDrillLocation:y"
 write @unit processor4 ":findDrillLocation:unit"
@@ -312,491 +247,498 @@ write 4 processor4 ":findDrillLocation:size"
 write 1000000000 processor4 ":findDrillLocation:limit"
 write false processor4 ":findDrillLocation*finished"
 write 1 processor4 "@counter"
-wait 1e-15
-read *tmp162 processor4 ":findDrillLocation*finished"
-jump 314 equal *tmp162 false
 ubind .builder
-set :supplyBase*retaddr 320
-jump 577 always 0 0
-read *tmp164 processor4 ":findDrillLocation*finished"
-jump 318 equal *tmp164 false
+set :buildTitaniumDrills:count 1
+read *tmp175 processor4 ":findDrillLocation*finished"
+op equal :buildTitaniumDrills:searching *tmp175 false
+read *tmp47 processor4 ".locations"
+jump 287 greaterThanEq :buildTitaniumDrills:current *tmp47
+op mul :buildTitaniumDrills:index :buildTitaniumDrills:current 4
+op add *tmp180 :buildTitaniumDrills:index 1
+read :buildTitaniumDrills:size bank1 *tmp180
+jump 285 lessThan :buildTitaniumDrills:size 3
+op add *tmp184 :buildTitaniumDrills:index 2
+read :buildTitaniumDrills:x bank1 *tmp184
+op add *tmp188 :buildTitaniumDrills:index 3
+read :buildTitaniumDrills:y bank1 *tmp188
+op sub *tmp190 :buildTitaniumDrills:x 1
+op sub *tmp191 :buildTitaniumDrills:y 1
+set :buildTitaniumDrill:x *tmp190
+set :buildTitaniumDrill:y *tmp191
+set :buildTitaniumDrill:count :buildTitaniumDrills:count
+set :buildTitaniumDrill*retaddr 270
+jump 899 always 0 0
+op add *tmp192 :buildTitaniumDrills:x 1
+set :buildTitaniumDrill:x *tmp192
+set :buildTitaniumDrill:y *tmp191
+set :buildTitaniumDrill*retaddr 275
+jump 899 always 0 0
+op add *tmp195 :buildTitaniumDrills:y 1
+set :buildTitaniumDrill:x *tmp190
+set :buildTitaniumDrill:y *tmp195
+set :buildTitaniumDrill*retaddr 280
+jump 899 always 0 0
+set :buildTitaniumDrill:x *tmp192
+set :buildTitaniumDrill:y *tmp195
+set :buildTitaniumDrill*retaddr 284
+jump 899 always 0 0
+set :buildTitaniumDrills:count :buildTitaniumDrill:count
+op add :buildTitaniumDrills:current :buildTitaniumDrills:current 1
+jump 253 always 0 0
+jump 289 greaterThanEq :buildTitaniumDrills:count 8
+jump 251 notEqual :buildTitaniumDrills:searching false
+write false processor4 ":stopLocation*finished"
+write 3 processor4 "@counter"
 write null processor1 ".nextBlock"
-ubind @flare
-jump 335 equal @unit null
-set :findFreeUnit:first_unit @unit
-sensor *tmp169 @unit @controlled
-jump 330 notEqual *tmp169 0
-ucontrol flag 0 0 0 0 0
-jump 335 always 0 0
-sensor *tmp172 :findFreeUnit:first_unit @dead
-jump 333 notEqual *tmp172 1
-set :findFreeUnit:first_unit @unit
-ubind @flare
-jump 326 notEqual :findFreeUnit:first_unit @unit
 write .coreX processor4 ":layoutThoriumDrill:x"
 write .coreY processor4 ":layoutThoriumDrill:y"
 write @unit processor4 ":layoutThoriumDrill:unit"
 write 7 processor4 ":layoutThoriumDrill:limit"
 write false processor4 ":layoutThoriumDrill*finished"
 write 2 processor4 "@counter"
-ubind .builder
-set :supplyBase*retaddr 344
-jump 577 always 0 0
-read *tmp181 processor4 ":layoutThoriumDrill*finished"
-jump 342 equal *tmp181 false
-set :meetTarget.1:cfg "x**F#AA7##"
-set :meetTarget.1*retaddr 349
-jump 963 always 0 0
 wait 1e-15
-read *tmp183 processor4 ":layoutThoriumDrill*finished"
-jump 349 equal *tmp183 false
+read *tmp205 processor4 ":layoutThoriumDrill*finished"
+jump 298 equal *tmp205 false
+set :meetTarget.1:cfg "x**F#AA7###"
+set :meetTarget.1*retaddr 304
+jump 875 always 0 0
+wait 1e-15
+read *tmp207 processor4 ":layoutThoriumDrill*finished"
+jump 304 equal *tmp207 false
 read :buildThoriumDrill:result processor4 ":layoutThoriumDrill*retval"
-jump 356 notEqual :buildThoriumDrill:result false
-set .ERROR "Cannot locate spot for thorium drill"
-stop
-set :buildBlockAt:block @laser-drill
-read :buildBlockAt:x processor4 ".drillX"
-read :buildBlockAt:y processor4 ".drillY"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 364
-jump 882 always 0 0
-set :buildThoriumDrill:thoriumDrill :buildBlockAt*retval
-read *tmp44 processor4 ".water1X"
-jump 446 lessThan *tmp44 0
-set :meetTarget.1:cfg "z%-AAA##A#"
-set :meetTarget.1*retaddr 370
-jump 963 always 0 0
-set :buildBlockAt:block @water-extractor
-read *tmp44 processor4 ".water1X"
-set :buildBlockAt:x *tmp44
-read :buildBlockAt:y processor4 ".water1Y"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 379
-jump 882 always 0 0
-read *tmp46 processor4 ".water2X"
-jump 446 lessThan *tmp46 0
-set :meetTarget.1:cfg "z%-AAA##A#"
-set :meetTarget.1*retaddr 384
-jump 963 always 0 0
-set :buildBlockAt:block @water-extractor
-read *tmp46 processor4 ".water2X"
-set :buildBlockAt:x *tmp46
-read :buildBlockAt:y processor4 ".water2Y"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 393
-jump 882 always 0 0
-set :meetTarget.1:cfg "z%-AAA##A#"
-set :meetTarget.1*retaddr 396
-jump 963 always 0 0
-set :buildBlockAt:block @steam-generator
-read :buildBlockAt:x processor4 ".generatorX"
-read :buildBlockAt:y processor4 ".generatorY"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 404
-jump 882 always 0 0
-set :buildThoriumDrill:thoriumGenerator :buildBlockAt*retval
-set :meetTarget.1:cfg "g)'%)#####"
-set :meetTarget.1*retaddr 408
-jump 963 always 0 0
-set :buildBlockAt:block @power-node
-read :buildBlockAt:x processor4 ".nodeX"
-read :buildBlockAt:y processor4 ".nodeY"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 416
-jump 882 always 0 0
-set :meetTarget.1:cfg "r**#-#+###"
-set :meetTarget.1*retaddr 419
-jump 963 always 0 0
-set :buildBlockAt:block @solar-panel
-read :buildBlockAt:x processor4 ".panelX"
-read :buildBlockAt:y processor4 ".panelY"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 427
-jump 882 always 0 0
-set :meetTarget.1:cfg "k*/(7#####"
-set :meetTarget.1*retaddr 430
-jump 963 always 0 0
-set :buildBlockAt:block @battery
-read :buildBlockAt:x processor4 ".batteryX"
-read :buildBlockAt:y processor4 ".batteryY"
-set :buildBlockAt:rotation null
-set :buildBlockAt:config 0
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 438
-jump 882 always 0 0
-write :buildThoriumDrill:thoriumDrill processor1 ".thoriumDrill"
-write :buildThoriumDrill:thoriumDrill processor3 ":addThoriumDrill:drill"
-write :buildThoriumDrill:thoriumGenerator processor3 ":addThoriumDrill:generator"
-write false processor3 ":addThoriumDrill*finished"
-write 1 processor3 "@counter"
+jump 312 notEqual :buildThoriumDrill:result false
+set :error:error "Cannot locate spot for thorium drill"
+set :error*retaddr 312
+jump 396 always 0 0
+write @laser-drill processor5 ":buildBlockAt:block"
+read *tmp48 processor4 ".drillX"
+write *tmp48 processor5 ":buildBlockAt:x"
+read *tmp49 processor4 ".drillY"
+write *tmp49 processor5 ":buildBlockAt:y"
+write null processor5 ":buildBlockAt:rotation"
+write 0 processor5 ":buildBlockAt:config"
+write false processor5 ":buildBlockAt*finished"
+write 1 processor5 "@counter"
 wait 1e-15
-read *tmp200 processor3 ":addThoriumDrill*finished"
-jump 443 equal *tmp200 false
-write 0 processor1 ".totalTargets"
+read *tmp216 processor5 ":buildBlockAt*finished"
+jump 321 equal *tmp216 false
+read .thoriumDrill processor5 ":buildBlockAt*retval"
+set :buildRemoteBlock:cfg "z%-AAA##A##"
+read :buildRemoteBlock:x processor4 ".water1X"
+read :buildRemoteBlock:y processor4 ".water1Y"
+set :buildRemoteBlock*retaddr 330
+jump 826 always 0 0
+read :buildRemoteBlock:x processor4 ".water2X"
+read :buildRemoteBlock:y processor4 ".water2Y"
+set :buildRemoteBlock*retaddr 334
+jump 826 always 0 0
+set :buildRemoteBlock:cfg "o%+FK<A####"
+read :buildRemoteBlock:x processor4 ".generatorX"
+read :buildRemoteBlock:y processor4 ".generatorY"
+set :buildRemoteBlock*retaddr 339
+jump 826 always 0 0
+set .thoriumGenerator :buildRemoteBlock*retval
+set :buildRemoteBlock:cfg "g)'%)######"
+read :buildRemoteBlock:x processor4 ".nodeX"
+read :buildRemoteBlock:y processor4 ".nodeY"
+set :buildRemoteBlock*retaddr 345
+jump 826 always 0 0
+set :buildRemoteBlock:cfg "r**#-#+####"
+read :buildRemoteBlock:x processor4 ".panelX"
+read :buildRemoteBlock:y processor4 ".panelY"
+set :buildRemoteBlock*retaddr 350
+jump 826 always 0 0
+set :buildRemoteBlock:cfg "k*/(7######"
+read :buildRemoteBlock:x processor4 ".batteryX"
+read :buildRemoteBlock:y processor4 ".batteryY"
+set :buildRemoteBlock*retaddr 355
+jump 826 always 0 0
+set :buildRemoteBlock:cfg "**#######"
+read :buildRemoteBlock:x processor4 ".containerX"
+read :buildRemoteBlock:y processor4 ".containerY"
+set :buildRemoteBlock*retaddr 360
+jump 826 always 0 0
+set .thoriumContainer :buildRemoteBlock*retval
+jump 363 notEqual :buildRemoteBlock*retval null
+set .thoriumContainer .thoriumDrill
+write .thoriumDrill processor1 ".thoriumDrill"
+write .thoriumContainer processor1 ".thoriumContainer"
 write null processor1 ".nextBlock"
-set :supplyBase*retaddr 450
-jump 577 always 0 0
-read *tmp72 *tmp127 ".flares"
-read *tmp73 *tmp127 ".monos"
-op add *tmp201 *tmp72 *tmp73
-jump 448 lessThan *tmp201 16
-set :supplyBase*retaddr 456
-jump 577 always 0 0
-jump 454 always 0 0
+write 1 .controller ".megaTarget"
+read *tmp87 .controller ".polys"
+jump 372 greaterThanEq *tmp87 6
+set :supplyBase*retaddr 371
+jump 567 always 0 0
+jump 367 always 0 0
+set :buildBlockFromCfg:cfg "+(###A<###"
+set :buildBlockFromCfg:config @silicon
+set :buildBlockFromCfg*retaddr 376
+jump 848 always 0 0
+set :buildBlockFromCfg.1:cfg "X+''%######"
+set :buildBlockFromCfg.1*retaddr 379
+jump 869 always 0 0
+set :buildBlockFromCfg.1:cfg ".&#ʭ#ǥƁ#ʭ#"
+set :buildBlockFromCfg.1*retaddr 382
+jump 869 always 0 0
+write :buildBlockFromCfg.1*retval .controller ".multiReconstructor"
+write :buildBlockFromCfg.1*retval processor1 ".multiReconstructor"
+set :buildUnits*retaddr 386
+jump 967 always 0 0
+set :supplyBase*retaddr 388
+jump 567 always 0 0
+jump 386 always 0 0
+write :status2:text .display ".status2"
+write :status2:item .display ".item2"
+write :status2:block .display ".block2"
+set @counter :status2*retaddr
+write :transportStatus:target .display ".transportTarget"
+write :transportStatus:item .display ".transportItem"
+set @counter :transportStatus*retaddr
+set .ERROR :error:error
+stop
+set @counter :error*retaddr
+write "Moving..." .display ".status3"
+op sub *tmp233 :moveTo:radius 0.5
+ucontrol within :moveTo:x :moveTo:y :moveTo:radius *tmp231 0
+jump 405 notEqual *tmp231 false
+ucontrol approach :moveTo:x :moveTo:y *tmp233 0 0
+jump 401 always 0 0
+set @counter :moveTo*retaddr
+write "Moving..." .display ".status3"
+sensor *tmp234 @unit @firstItem
+jump 410 equal *tmp234 null
+ucontrol itemDrop @air 1000 0 0 0
+ucontrol approach :moveToEmpty:x :moveToEmpty:y 5.5 0 0
+ucontrol within :moveToEmpty:x :moveToEmpty:y 6 *tmp237 0
+jump 407 equal *tmp237 false
+set @counter :moveToEmpty*retaddr
+sensor *tmp239 @unit @firstItem
+jump 418 equal *tmp239 null
+ucontrol itemDrop @air 1000 0 0 0
+jump 414 always 0 0
+set @counter :dropAll*retaddr
+write "Depositing..." .display ".status3"
+sensor *tmp243 @unit @firstItem
+jump 436 notEqual *tmp243 :depositItems:item
+sensor *tmp241 :depositItems:block @x
+sensor *tmp242 :depositItems:block @y
+set :moveTo:x *tmp241
+set :moveTo:y *tmp242
+set :moveTo:radius 6
+set :moveTo*retaddr 429
+jump 399 always 0 0
+sensor :depositItems:cap :depositItems:block @itemCapacity
+ucontrol itemDrop :depositItems:block 30 0 0 0
+sensor *tmp247 @unit @firstItem
+op mul *tmp248 *tmp247 :depositItems:cap
+sensor *tmp249 :depositItems:block :depositItems:item
+jump 430 greaterThan *tmp248 *tmp249
+jump 440 always 0 0
+sensor *tmp251 @unit @firstItem
+jump 440 equal *tmp251 null
+ucontrol itemDrop @air 1000 0 0 0
+jump 436 always 0 0
+set :transportStatus:target 0
+set :transportStatus:item null
+set :transportStatus*retaddr 444
+jump 393 always 0 0
+set @counter :depositItems*retaddr
 op min :mineOre:amount :mineOre:amount 30
-write :mineOre:amount .display ".transportTarget"
-write :mineOre:ore .display ".transportItem"
-ulocate ore core true :mineOre:ore :locateOre:x :locateOre:y *tmp219 0
-jump 464 notEqual *tmp219 false
-set .ERROR "Cannot locate ore"
-stop
-write "Moving..." .display ".status3"
-sensor *tmp223 @unit @firstItem
-jump 468 equal *tmp223 null
-ucontrol itemDrop @air 1000 0 0 0
-ucontrol approach :locateOre:x :locateOre:y 5.5 0 0
-ucontrol within :locateOre:x :locateOre:y 6 *tmp226 0
-jump 465 equal *tmp226 false
-sensor *tmp228 @unit @firstItem
-jump 478 equal *tmp228 :mineOre:ore
-sensor *tmp231 @unit @firstItem
-jump 478 equal *tmp231 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp231 @unit @firstItem
-jump 475 notEqual *tmp231 null
+set :transportStatus:target :mineOre:amount
+set :transportStatus:item :mineOre:ore
+set :transportStatus*retaddr 450
+jump 393 always 0 0
+ulocate ore core true :mineOre:ore :locateOre:x :locateOre:y *tmp253 0
+jump 455 notEqual *tmp253 false
+set :error:error "Cannot locate ore"
+set :error*retaddr 455
+jump 396 always 0 0
+set :mineOre:x :locateOre:x
+set :mineOre:y :locateOre:y
+set :moveToEmpty:x :locateOre:x
+set :moveToEmpty:y :locateOre:y
+set :moveToEmpty*retaddr 461
+jump 406 always 0 0
+sensor *tmp258 @unit @firstItem
+jump 465 equal *tmp258 :mineOre:ore
+set :dropAll*retaddr 465
+jump 414 always 0 0
 write "Mining..." .display ".status3"
 op add :mineOre:stop @second 10
 sensor :mineOre:item @unit @firstItem
-op notEqual *tmp235 :mineOre:item null
-op notEqual *tmp236 :mineOre:item :mineOre:ore
-op land *tmp237 *tmp235 *tmp236
-jump 489 notEqual *tmp237 false
-ucontrol mine :locateOre:x :locateOre:y 0 0 0
-jump 489 greaterThan @second :mineOre:stop
-sensor *tmp241 @unit @totalItems
-jump 480 lessThan *tmp241 :mineOre:amount
+op notEqual *tmp263 :mineOre:item null
+op notEqual *tmp264 :mineOre:item :mineOre:ore
+op land *tmp265 *tmp263 *tmp264
+jump 476 notEqual *tmp265 false
+ucontrol mine :mineOre:x :mineOre:y 0 0 0
+jump 476 greaterThan @second :mineOre:stop
+sensor *tmp269 @unit @totalItems
+jump 467 lessThan *tmp269 :mineOre:amount
 ucontrol unbind 0 0 0 0 0
-write "Depositing..." .display ".status3"
-sensor *tmp203 @unit @firstItem
-jump 508 notEqual *tmp203 :mineOre:ore
-sensor *tmp206 :mineOre:block @x
-sensor *tmp207 :mineOre:block @y
-write "Moving..." .display ".status3"
-ucontrol within *tmp206 *tmp207 6 *tmp208 0
-jump 501 notEqual *tmp208 false
-ucontrol approach *tmp206 *tmp207 5.5 0 0
-ucontrol within *tmp206 *tmp207 6 *tmp208 0
-jump 498 equal *tmp208 false
-sensor :depositItems:cap :mineOre:block @itemCapacity
-ucontrol itemDrop :mineOre:block 30 0 0 0
-sensor *tmp212 @unit @firstItem
-op mul *tmp213 *tmp212 :depositItems:cap
-sensor *tmp214 :mineOre:block :mineOre:ore
-jump 502 greaterThan *tmp213 *tmp214
-jump 513 always 0 0
-sensor *tmp216 @unit @firstItem
-jump 513 equal *tmp216 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp216 @unit @firstItem
-jump 510 notEqual *tmp216 null
-write 0 .display ".transportTarget"
-write null .display ".transportItem"
+set :depositItems:block :mineOre:block
+set :depositItems:item :mineOre:ore
+set :depositItems*retaddr 481
+jump 419 always 0 0
 set @counter :mineOre*retaddr
-write "Mining " .display ".status2"
-write :mineOre.1:ore .display ".item2"
-write "core" .display ".block2"
-write 30 .display ".transportTarget"
-write :mineOre.1:ore .display ".transportItem"
-ulocate ore core true :mineOre.1:ore :locateOre:x :locateOre:y *tmp219 0
-jump 525 notEqual *tmp219 false
-set .ERROR "Cannot locate ore"
-stop
-write "Moving..." .display ".status3"
-sensor *tmp223 @unit @firstItem
-jump 529 equal *tmp223 null
-ucontrol itemDrop @air 1000 0 0 0
-ucontrol approach :locateOre:x :locateOre:y 5.5 0 0
-ucontrol within :locateOre:x :locateOre:y 6 *tmp226 0
-jump 526 equal *tmp226 false
-sensor *tmp228 @unit @firstItem
-jump 539 equal *tmp228 :mineOre.1:ore
-sensor *tmp231 @unit @firstItem
-jump 539 equal *tmp231 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp231 @unit @firstItem
-jump 536 notEqual *tmp231 null
-write "Mining..." .display ".status3"
-op add :mineOre:stop @second 10
-sensor :mineOre:item @unit @firstItem
-op notEqual *tmp235 :mineOre:item null
-op notEqual *tmp236 :mineOre:item :mineOre.1:ore
-op land *tmp237 *tmp235 *tmp236
-jump 550 notEqual *tmp237 false
-ucontrol mine :locateOre:x :locateOre:y 0 0 0
-jump 550 greaterThan @second :mineOre:stop
-sensor *tmp241 @unit @totalItems
-jump 541 lessThan *tmp241 30
-ucontrol unbind 0 0 0 0 0
-write "Depositing..." .display ".status3"
-sensor *tmp203 @unit @firstItem
-jump 569 notEqual *tmp203 :mineOre.1:ore
-sensor *tmp206 .core @x
-sensor *tmp207 .core @y
-write "Moving..." .display ".status3"
-ucontrol within *tmp206 *tmp207 6 *tmp208 0
-jump 562 notEqual *tmp208 false
-ucontrol approach *tmp206 *tmp207 5.5 0 0
-ucontrol within *tmp206 *tmp207 6 *tmp208 0
-jump 559 equal *tmp208 false
-sensor :depositItems:cap .core @itemCapacity
-ucontrol itemDrop .core 30 0 0 0
-sensor *tmp212 @unit @firstItem
-op mul *tmp213 *tmp212 :depositItems:cap
-sensor *tmp214 .core :mineOre.1:ore
-jump 563 greaterThan *tmp213 *tmp214
-jump 574 always 0 0
-sensor *tmp216 @unit @firstItem
-jump 574 equal *tmp216 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp216 @unit @firstItem
-jump 571 notEqual *tmp216 null
-write 0 .display ".transportTarget"
-write null .display ".transportItem"
+set :status2:text "Mining "
+set :status2:item :mineOre.1:ore
+set :status2:block "core"
+set :status2*retaddr 487
+jump 389 always 0 0
+set :mineOre:ore :mineOre.1:ore
+set :mineOre:amount 30
+set :mineOre:block .core
+set :mineOre*retaddr 492
+jump 445 always 0 0
 set @counter :mineOre.1*retaddr
-jump 585 notEqual .flareControllerStarted false
-read *tmp72 .controller ".flares"
-jump 585 lessThanEq *tmp72 0
+sensor *tmp272 :fetchBlock:block @itemCapacity
+op min :transportStatus:target *tmp272 30
+set :transportStatus:item :fetchBlock:item
+set :transportStatus*retaddr 498
+jump 393 always 0 0
+set :status2:text "Fetching "
+set :status2:item :fetchBlock:item
+set :status2:block :fetchBlock:block
+set :status2*retaddr 503
+jump 389 always 0 0
+sensor *tmp274 :fetchBlock:block @x
+sensor *tmp275 :fetchBlock:block @y
+set :moveToEmpty:x *tmp274
+set :moveToEmpty:y *tmp275
+set :moveToEmpty*retaddr 509
+jump 406 always 0 0
+set :dropAll*retaddr 511
+jump 414 always 0 0
+ucontrol itemTake :fetchBlock:block :fetchBlock:item 30 0 0
+sensor :fetchBlock:unitItem @unit @firstItem
+op notEqual *tmp277 :fetchBlock:unitItem null
+op notEqual *tmp278 :fetchBlock:unitItem :fetchBlock:item
+op land *tmp279 *tmp277 *tmp278
+jump 518 equal *tmp279 false
+ucontrol itemDrop @air 1000 0 0 0
+sensor *tmp281 @unit :fetchBlock:item
+op lessThan *tmp282 *tmp281 30
+sensor *tmp283 :fetchBlock:block :fetchBlock:item
+op land *tmp284 *tmp282 *tmp283
+jump 511 notEqual *tmp284 false
+set :depositItems:block .core
+set :depositItems:item :fetchBlock:item
+set :depositItems*retaddr 527
+jump 419 always 0 0
+set @counter :fetchBlock*retaddr
+set :status2:text "Supplying "
+set :status2:item :supplyBlock:ore
+set :status2:block :supplyBlock:block
+set :status2*retaddr 533
+jump 389 always 0 0
+sensor :supplyBlock:blockCapacity :supplyBlock:block @itemCapacity
+sensor *tmp286 :supplyBlock:block :supplyBlock:ore
+op sub :supplyBlock:missing :supplyBlock:blockCapacity *tmp286
+jump 542 lessThanEq :supplyBlock:missing 0
+set :mineOre:ore :supplyBlock:ore
+set :mineOre:amount :supplyBlock:blockCapacity
+set :mineOre:block :supplyBlock:block
+set :mineOre*retaddr 542
+jump 445 always 0 0
+set @counter :supplyBlock*retaddr
+read *tmp302 :unpackCfg:cfg 0
+op sub *tmp303 *tmp302 35
+lookup block :unpackCfg:type *tmp303
+read *tmp306 :unpackCfg:cfg 1
+op sub :unpackCfg:x *tmp306 42
+read *tmp310 :unpackCfg:cfg 2
+op sub :unpackCfg:y *tmp310 42
+read *tmp314 :unpackCfg:cfg 3
+op sub :unpackCfg:cu *tmp314 35
+read *tmp317 :unpackCfg:cfg 4
+op sub :unpackCfg:pb *tmp317 35
+read *tmp320 :unpackCfg:cfg 5
+op sub :unpackCfg:gr *tmp320 35
+read *tmp323 :unpackCfg:cfg 6
+op sub :unpackCfg:si *tmp323 35
+read *tmp326 :unpackCfg:cfg 7
+op sub :unpackCfg:ti *tmp326 35
+read *tmp329 :unpackCfg:cfg 8
+op sub :unpackCfg:mg *tmp329 35
+read *tmp332 :unpackCfg:cfg 9
+op sub :unpackCfg:th *tmp332 35
+read *tmp335 :unpackCfg:cfg 10
+op sub :unpackCfg:rotation *tmp335 35
+set @counter :unpackCfg*retaddr
+jump 575 notEqual .flareControllerStarted false
+read *tmp85 .controller ".flares"
+jump 575 lessThanEq *tmp85 0
 set .flareControllerStarted true
 write .core .flareController ":start:aCore"
 write .titaniumDrill .flareController ":start:drill"
 write false .flareController ":start*finished"
-write 3 .flareController "@counter"
-read *tmp73 .controller ".monos"
-jump 598 lessThanEq *tmp73 3
+write 2 .flareController "@counter"
+jump 616 equal .thoriumContainer false
+write "Phase 2: servicing thorium drill" .display ".status1"
+set :supplyBlockFromCore:target .thoriumGenerator
+set :supplyBlockFromCore:item @coal
+sensor *tmp290 .thoriumGenerator @itemCapacity
+op min :transportStatus:target *tmp290 30
+set :transportStatus:item @coal
+set :transportStatus*retaddr 584
+jump 393 always 0 0
+set :status2:text "Transferring "
+set :status2:item :supplyBlockFromCore:item
+set :status2:block :supplyBlockFromCore:target
+set :status2*retaddr 589
+jump 389 always 0 0
+set :moveToEmpty:x .coreX
+set :moveToEmpty:y .coreY
+set :moveToEmpty*retaddr 593
+jump 406 always 0 0
+set :dropAll*retaddr 595
+jump 414 always 0 0
+ucontrol itemTake .core :supplyBlockFromCore:item 30 0 0
+sensor :supplyBlockFromCore:unitItem @unit @firstItem
+op notEqual *tmp293 :supplyBlockFromCore:unitItem null
+op notEqual *tmp294 :supplyBlockFromCore:unitItem :supplyBlockFromCore:item
+op land *tmp295 *tmp293 *tmp294
+jump 602 equal *tmp295 false
+ucontrol itemDrop @air 1000 0 0 0
+sensor *tmp297 @unit :supplyBlockFromCore:item
+op lessThan *tmp298 *tmp297 30
+sensor *tmp299 .core :supplyBlockFromCore:item
+op land *tmp300 *tmp298 *tmp299
+jump 595 notEqual *tmp300 false
+set :depositItems:block :supplyBlockFromCore:target
+set :depositItems:item :supplyBlockFromCore:item
+set :depositItems*retaddr 611
+jump 419 always 0 0
+set :fetchBlock:block .thoriumContainer
+set :fetchBlock:item @thorium
+set :fetchBlock*retaddr 615
+jump 493 always 0 0
+set @counter :supplyBase*retaddr
+read *tmp86 .controller ".monos"
+jump 623 lessThanEq *tmp86 3
 write "Phase 1: supplying base" .display ".status1"
 set :mineOre.1:ore @coal
-write "Mining " .display ".status2"
-write @coal .display ".item2"
-write "core" .display ".block2"
-set :mineOre:ore @coal
-set :mineOre:amount 30
-set :mineOre:block .core
-set :mineOre*retaddr 597
-jump 457 always 0 0
+set :mineOre.1*retaddr 622
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
 set :supplyBase0:supplied false
-jump 671 notEqual .unloader1 null
-sensor *tmp287 .core @graphite
-jump 618 greaterThanEq *tmp287 .targetGraphite
-sensor *tmp290 .press @coal
-jump 618 greaterThanEq *tmp290 5
+jump 664 notEqual .unloader1 null
+sensor *tmp348 .core @graphite
+jump 635 greaterThanEq *tmp348 .targetGraphite
+sensor *tmp351 .press @coal
+jump 635 greaterThanEq *tmp351 5
 write "Goal 1: graphite requirement" .display ".status1"
-write "Supplying " .display ".status2"
-write @coal .display ".item2"
-write .press .display ".block2"
-sensor :supplyBlock:blockCapacity .press @itemCapacity
-sensor *tmp294 .press @coal
-op sub :supplyBlock:missing :supplyBlock:blockCapacity *tmp294
-jump 617 lessThanEq :supplyBlock:missing 0
-set :mineOre:ore @coal
-set :mineOre:amount :supplyBlock:blockCapacity
-set :mineOre:block .press
-set :mineOre*retaddr 617
-jump 457 always 0 0
+set :supplyBlock:block .press
+set :supplyBlock:ore @coal
+set :supplyBlock*retaddr 634
+jump 528 always 0 0
 set :supplyBase0:supplied true
-sensor *tmp298 .core @silicon
-jump 653 greaterThanEq *tmp298 .targetSilicon
-sensor *tmp301 .smelter @coal
-jump 637 greaterThanEq *tmp301 5
+sensor *tmp354 .core @silicon
+jump 654 greaterThanEq *tmp354 .targetSilicon
+sensor *tmp357 .smelter @coal
+jump 646 greaterThanEq *tmp357 5
 write "Goal 2: coal for silicon requirement" .display ".status1"
-write "Supplying " .display ".status2"
-write @coal .display ".item2"
-write .smelter .display ".block2"
-sensor :supplyBlock.1:blockCapacity .smelter @itemCapacity
-sensor *tmp305 .smelter @coal
-op sub :supplyBlock.1:missing :supplyBlock.1:blockCapacity *tmp305
-jump 635 lessThanEq :supplyBlock.1:missing 0
-set :mineOre:ore @coal
-set :mineOre:amount :supplyBlock.1:blockCapacity
-set :mineOre:block .smelter
-set :mineOre*retaddr 635
-jump 457 always 0 0
+set :supplyBlock:block .smelter
+set :supplyBlock:ore @coal
+set :supplyBlock*retaddr 644
+jump 528 always 0 0
 set :supplyBase0:supplied true
-jump 653 always 0 0
-sensor *tmp309 .smelter @sand
-jump 653 greaterThanEq *tmp309 5
+jump 654 always 0 0
+sensor *tmp360 .smelter @sand
+jump 654 greaterThanEq *tmp360 5
 write "Goal 3: sand for silicon requirement" .display ".status1"
-write "Supplying " .display ".status2"
-write @sand .display ".item2"
-write .smelter .display ".block2"
-sensor :supplyBlock.2:blockCapacity .smelter @itemCapacity
-sensor *tmp313 .smelter @sand
-op sub :supplyBlock.2:missing :supplyBlock.2:blockCapacity *tmp313
-jump 652 lessThanEq :supplyBlock.2:missing 0
-set :mineOre:ore @sand
-set :mineOre:amount :supplyBlock.2:blockCapacity
-set :mineOre:block .smelter
-set :mineOre*retaddr 652
-jump 457 always 0 0
+set :supplyBlock:block .smelter
+set :supplyBlock:ore @sand
+set :supplyBlock*retaddr 653
+jump 528 always 0 0
 set :supplyBase0:supplied true
-sensor *tmp317 .battery @totalPower
-jump 671 greaterThanEq *tmp317 .powerTarget
-sensor *tmp320 .generator @coal
-jump 671 greaterThanEq *tmp320 2
+sensor *tmp363 .battery @totalPower
+jump 664 greaterThanEq *tmp363 .powerTarget
+sensor *tmp366 .generator @coal
+jump 664 greaterThanEq *tmp366 2
 write "Goal 4: supplying generator" .display ".status1"
-write "Supplying " .display ".status2"
-write @coal .display ".item2"
-write .generator .display ".block2"
-sensor :supplyBlock.3:blockCapacity .generator @itemCapacity
-sensor *tmp324 .generator @coal
-op sub :supplyBlock.3:missing :supplyBlock.3:blockCapacity *tmp324
-jump 670 lessThanEq :supplyBlock.3:missing 0
-set :mineOre:ore @coal
-set :mineOre:amount :supplyBlock.3:blockCapacity
-set :mineOre:block .generator
-set :mineOre*retaddr 670
-jump 457 always 0 0
+set :supplyBlock:block .generator
+set :supplyBlock:ore @coal
+set :supplyBlock*retaddr 663
+jump 528 always 0 0
 set :supplyBase0:supplied true
-set *tmp330 100
-sensor *tmp328 .core @titanium
-jump 677 greaterThanEq *tmp328 .targetTitanium
-sensor *tmp331 .core @titanium
-op sub *tmp332 .targetTitanium *tmp331
-op min *tmp330 7 *tmp332
-sensor *tmp334 .titaniumDrill @titanium
-jump 729 greaterThanEq *tmp334 *tmp330
-jump 787 notEqual :supplyBase0:supplied false
-sensor *tmp339 .battery @totalPower
-op mul *tmp340 .unloader1 .powerTarget
-jump 688 greaterThanEq *tmp339 *tmp340
+set *tmp371 100
+sensor *tmp369 .core @titanium
+jump 670 greaterThanEq *tmp369 .targetTitanium
+sensor *tmp372 .core @titanium
+op sub *tmp373 .targetTitanium *tmp372
+op min *tmp371 7 *tmp373
+sensor *tmp375 .titaniumDrill @titanium
+jump 722 greaterThanEq *tmp375 *tmp371
+jump 727 notEqual :supplyBase0:supplied false
+sensor *tmp380 .battery @totalPower
+op mul *tmp381 .unloader1 .powerTarget
+jump 681 greaterThanEq *tmp380 *tmp381
 write "Goal 5: supplying generator" .display ".status1"
 set :mineOre.1:ore @coal
-set :mineOre.1*retaddr 687
-jump 516 always 0 0
+set :mineOre.1*retaddr 680
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
-sensor *tmp343 .core @silicon
-jump 699 greaterThanEq *tmp343 .targetSilicon
+sensor *tmp384 .core @silicon
+jump 692 greaterThanEq *tmp384 .targetSilicon
 write "Goal 6: silicon requirement" .display ".status1"
 sensor :supplyBase0:coal .core @coal
 sensor :supplyBase0:sand .core @sand
 set :mineOre.1:ore @sand
-jump 696 greaterThanEq :supplyBase0:coal :supplyBase0:sand
+jump 689 greaterThanEq :supplyBase0:coal :supplyBase0:sand
 set :mineOre.1:ore @coal
-set :mineOre.1*retaddr 698
-jump 516 always 0 0
+set :mineOre.1*retaddr 691
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
-sensor *tmp350 .core @copper
-jump 706 greaterThanEq *tmp350 .targetCopper
+sensor *tmp391 .core @copper
+jump 699 greaterThanEq *tmp391 .targetCopper
 write "Goal 7: copper requirement" .display ".status1"
 set :mineOre.1:ore @copper
-set :mineOre.1*retaddr 705
-jump 516 always 0 0
+set :mineOre.1*retaddr 698
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
-sensor *tmp353 .core @lead
-jump 713 greaterThanEq *tmp353 .targetLead
+sensor *tmp394 .core @lead
+jump 706 greaterThanEq *tmp394 .targetLead
 write "Goal 8: lead requirement" .display ".status1"
 set :mineOre.1:ore @lead
-set :mineOre.1*retaddr 712
-jump 516 always 0 0
+set :mineOre.1*retaddr 705
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
-sensor *tmp356 .core @metaglass
-jump 720 greaterThanEq *tmp356 .targetMetaglass
+sensor *tmp397 .core @metaglass
+jump 713 greaterThanEq *tmp397 .targetMetaglass
 write "Goal 9: metaglass requirement" .display ".status1"
 set :mineOre.1:ore @sand
-set :mineOre.1*retaddr 719
-jump 516 always 0 0
+set :mineOre.1*retaddr 712
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
 write "Goal 10: supplying base" .display ".status1"
 sensor :supplyBase0:coal.1 .core @coal
 sensor :supplyBase0:sand.1 .core @sand
 set :mineOre.1:ore @sand
-jump 726 greaterThan :supplyBase0:coal.1 :supplyBase0:sand.1
+jump 719 greaterThan :supplyBase0:coal.1 :supplyBase0:sand.1
 set :mineOre.1:ore @coal
-set :mineOre.1*retaddr 728
-jump 516 always 0 0
+set :mineOre.1*retaddr 721
+jump 482 always 0 0
 set @counter :supplyBase*retaddr
 write "Goal 11: Fetching titanium" .display ".status1"
-sensor :transportStatus.2:target .titaniumDrill @itemCapacity
-write :transportStatus.2:target .display ".transportTarget"
-write @titanium .display ".transportItem"
-write "Fetching " .display ".status2"
-write @titanium .display ".item2"
-write .titaniumDrill .display ".block2"
-sensor *tmp364 .titaniumDrill @x
-sensor *tmp365 .titaniumDrill @y
-write "Moving..." .display ".status3"
-sensor *tmp366 @unit @firstItem
-jump 742 equal *tmp366 null
-ucontrol itemDrop @air 1000 0 0 0
-ucontrol approach *tmp364 *tmp365 5.5 0 0
-ucontrol within *tmp364 *tmp365 6 *tmp369 0
-jump 739 equal *tmp369 false
-sensor *tmp371 @unit @firstItem
-jump 750 equal *tmp371 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp371 @unit @firstItem
-jump 747 notEqual *tmp371 null
-ucontrol itemTake .titaniumDrill @titanium 30 0 0
-sensor :fetchBlock:unitItem @unit @firstItem
-op notEqual *tmp374 :fetchBlock:unitItem null
-op notEqual *tmp375 :fetchBlock:unitItem @titanium
-op land *tmp376 *tmp374 *tmp375
-jump 757 equal *tmp376 false
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp378 @unit @titanium
-op lessThan *tmp379 *tmp378 30
-sensor *tmp380 .titaniumDrill @titanium
-op land *tmp381 *tmp379 *tmp380
-jump 750 notEqual *tmp381 false
-write "Depositing..." .display ".status3"
-sensor *tmp203 @unit @firstItem
-jump 780 notEqual *tmp203 @titanium
-sensor *tmp206 .core @x
-sensor *tmp207 .core @y
-write "Moving..." .display ".status3"
-ucontrol within *tmp206 *tmp207 6 *tmp208 0
-jump 773 notEqual *tmp208 false
-ucontrol approach *tmp206 *tmp207 5.5 0 0
-ucontrol within *tmp206 *tmp207 6 *tmp208 0
-jump 770 equal *tmp208 false
-sensor :depositItems:cap .core @itemCapacity
-ucontrol itemDrop .core 30 0 0 0
-sensor *tmp212 @unit @firstItem
-op mul *tmp213 *tmp212 :depositItems:cap
-sensor *tmp214 .core @titanium
-jump 774 greaterThan *tmp213 *tmp214
-jump 785 always 0 0
-sensor *tmp216 @unit @firstItem
-jump 785 equal *tmp216 null
-ucontrol itemDrop @air 1000 0 0 0
-sensor *tmp216 @unit @firstItem
-jump 782 notEqual *tmp216 null
-write 0 .display ".transportTarget"
-write null .display ".transportItem"
+set :fetchBlock:block .titaniumDrill
+set :fetchBlock:item @titanium
+set :fetchBlock*retaddr 727
+jump 493 always 0 0
 set @counter :supplyBase*retaddr
 op sign :meetTarget:count :meetTarget:copper 0
-op sign *tmp383 :meetTarget:lead 0
-op add :meetTarget:count :meetTarget:count *tmp383
-op sign *tmp383 :meetTarget:graphite 0
-op add :meetTarget:count :meetTarget:count *tmp383
-op sign *tmp383 :meetTarget:silicon 0
-op add :meetTarget:count :meetTarget:count *tmp383
-op sign *tmp383 :meetTarget:titanium 0
-op add :meetTarget:count :meetTarget:count *tmp383
-op sign *tmp383 :meetTarget:metaglass 0
-op add :meetTarget:count :meetTarget:count *tmp383
+op sign *tmp405 :meetTarget:lead 0
+op add :meetTarget:count :meetTarget:count *tmp405
+op sign *tmp405 :meetTarget:graphite 0
+op add :meetTarget:count :meetTarget:count *tmp405
+op sign *tmp405 :meetTarget:silicon 0
+op add :meetTarget:count :meetTarget:count *tmp405
+op sign *tmp405 :meetTarget:titanium 0
+op add :meetTarget:count :meetTarget:count *tmp405
+op sign *tmp405 :meetTarget:metaglass 0
+op add :meetTarget:count :meetTarget:count *tmp405
+op sign *tmp405 :meetTarget:thorium 0
+op add :meetTarget:count :meetTarget:count *tmp405
 write :meetTarget:count .display ".totalTargets"
 write :meetTarget:block .display ".nextBlock"
 write :meetTarget:copper .display ".targetCopper"
@@ -805,183 +747,135 @@ write :meetTarget:graphite .display ".targetGraphite"
 write :meetTarget:silicon .display ".targetSilicon"
 write :meetTarget:titanium .display ".targetTitanium"
 write :meetTarget:metaglass .display ".targetMetaglass"
+write :meetTarget:thorium .display ".targetThorium"
 set .targetCopper :meetTarget:copper
-op add *tmp384 :meetTarget:lead .leadSurplus
-op add .targetLead *tmp384 1
+op add *tmp406 :meetTarget:lead .leadSurplus
+op add .targetLead *tmp406 1
 set .targetGraphite :meetTarget:graphite
 set .targetSilicon :meetTarget:silicon
 set .targetTitanium :meetTarget:titanium
 set .targetMetaglass :meetTarget:metaglass
-op add *tmp386 :meetTarget:graphite .graphiteSurplus
-write *tmp386 .controller ".pressTarget"
-op add *tmp387 :meetTarget:silicon .siliconSurplus
-write *tmp387 .controller ".smelterTarget"
-op add *tmp388 :meetTarget:metaglass .metaglassSurplus
-write *tmp388 .controller ".kilnTarget"
-write *tmp384 .controller ".leadReserve"
-op sign *tmp390 :meetTarget:silicon 0
-op mul *tmp391 *tmp390 20
-op add *tmp392 :meetTarget:silicon *tmp391
-write *tmp392 .controller ".siliconReserve"
-sensor *tmp394 .core @copper
-jump 829 greaterThanEq *tmp394 :meetTarget:copper
-set *tmp393 false
-jump 851 always 0 0
-sensor *tmp397 .core @lead
-jump 833 greaterThanEq *tmp397 .targetLead
-set *tmp393 false
-jump 851 always 0 0
-sensor *tmp400 .core @graphite
-jump 837 greaterThanEq *tmp400 :meetTarget:graphite
-set *tmp393 false
-jump 851 always 0 0
-sensor *tmp403 .core @silicon
-jump 841 greaterThanEq *tmp403 :meetTarget:silicon
-set *tmp393 false
-jump 851 always 0 0
-sensor *tmp406 .core @titanium
-jump 845 greaterThanEq *tmp406 :meetTarget:titanium
-set *tmp393 false
-jump 851 always 0 0
-sensor *tmp409 .core @metaglass
-jump 849 greaterThanEq *tmp409 :meetTarget:metaglass
-set *tmp393 false
-jump 851 always 0 0
-set *tmp393 true
-jump 851 always 0 0
-jump 881 notEqual *tmp393 false
-set :supplyBase*retaddr 854
-jump 577 always 0 0
-sensor *tmp394 .core @copper
-jump 858 greaterThanEq *tmp394 .targetCopper
-set *tmp393 false
-jump 880 always 0 0
-sensor *tmp397 .core @lead
-jump 862 greaterThanEq *tmp397 .targetLead
-set *tmp393 false
-jump 880 always 0 0
-sensor *tmp400 .core @graphite
-jump 866 greaterThanEq *tmp400 .targetGraphite
-set *tmp393 false
-jump 880 always 0 0
-sensor *tmp403 .core @silicon
-jump 870 greaterThanEq *tmp403 .targetSilicon
-set *tmp393 false
-jump 880 always 0 0
-sensor *tmp406 .core @titanium
-jump 874 greaterThanEq *tmp406 .targetTitanium
-set *tmp393 false
-jump 880 always 0 0
-sensor *tmp409 .core @metaglass
-jump 878 greaterThanEq *tmp409 .targetMetaglass
-set *tmp393 false
-jump 880 always 0 0
-set *tmp393 true
-jump 880 always 0 0
-jump 852 equal *tmp393 false
+set .targetThorium :meetTarget:thorium
+op add *tmp408 :meetTarget:graphite .graphiteSurplus
+write *tmp408 .controller ".pressTarget"
+op add *tmp409 :meetTarget:silicon .siliconSurplus
+write *tmp409 .controller ".smelterTarget"
+op add *tmp410 :meetTarget:metaglass .metaglassSurplus
+write *tmp410 .controller ".kilnTarget"
+write *tmp406 .controller ".leadReserve"
+op sign *tmp412 :meetTarget:silicon 0
+op mul *tmp413 *tmp412 20
+op add *tmp414 :meetTarget:silicon *tmp413
+write *tmp414 .controller ".siliconReserve"
+sensor *tmp416 .core @copper
+jump 773 greaterThanEq *tmp416 .targetCopper
+set *tmp415 false
+jump 799 always 0 0
+sensor *tmp419 .core @lead
+jump 777 greaterThanEq *tmp419 .targetLead
+set *tmp415 false
+jump 799 always 0 0
+sensor *tmp422 .core @graphite
+jump 781 greaterThanEq *tmp422 .targetGraphite
+set *tmp415 false
+jump 799 always 0 0
+sensor *tmp425 .core @silicon
+jump 785 greaterThanEq *tmp425 .targetSilicon
+set *tmp415 false
+jump 799 always 0 0
+sensor *tmp428 .core @titanium
+jump 789 greaterThanEq *tmp428 .targetTitanium
+set *tmp415 false
+jump 799 always 0 0
+sensor *tmp431 .core @metaglass
+jump 793 greaterThanEq *tmp431 .targetMetaglass
+set *tmp415 false
+jump 799 always 0 0
+sensor *tmp434 .core @thorium
+jump 797 greaterThanEq *tmp434 .targetThorium
+set *tmp415 false
+jump 799 always 0 0
+set *tmp415 true
+jump 799 always 0 0
+jump 803 notEqual *tmp415 false
+set :supplyBase*retaddr 802
+jump 567 always 0 0
+jump 769 always 0 0
 set @counter :meetTarget*retaddr
-write "Moving..." .display ".status3"
-ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp415 0
-jump 888 notEqual *tmp415 false
-ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5 0 0
-ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp415 0
-jump 885 equal *tmp415 false
-write "Building..." .display ".status3"
-ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
-jump 899 equal :buildBlockAt:building null
-jump 894 notEqual :buildBlockAt:type :buildBlockAt:block
-set :buildBlockAt*retval :buildBlockAt:building
-set @counter :buildBlockAt*retaddr
-jump 897 equal :buildBlockAt:skipError false
-set :buildBlockAt*retval null
-set @counter :buildBlockAt*retaddr
-set .ERROR "Cannot build at ("
-stop
-ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
-wait 0.25
-ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
-jump 905 notEqual :buildBlockAt:building null
-set :buildBlockAt*retval null
-set @counter :buildBlockAt*retaddr
-jump 901 notEqual :buildBlockAt:type :buildBlockAt:block
-sensor :log:encodedId :buildBlockAt:block @id
-read *tmp90 bank1 511
-op sub *tmp431 *tmp90 1
-write *tmp431 bank1 511
-op idiv *tmp435 @second 0.001
-op mul *tmp436 *tmp435 1000
-op add *tmp437 :log:encodedId *tmp436
-write *tmp437 bank1 *tmp431
-set :buildBlockAt*retval :buildBlockAt:building
-set @counter :buildBlockAt*retaddr
-read *tmp245 :buildBlockFromCfg:cfg 0
-op sub *tmp246 *tmp245 35
-lookup block :unpackCfg:type *tmp246
-read *tmp249 :buildBlockFromCfg:cfg 1
-op sub :unpackCfg:x *tmp249 42
-read *tmp253 :buildBlockFromCfg:cfg 2
-op sub :unpackCfg:y *tmp253 42
-read *tmp257 :buildBlockFromCfg:cfg 3
-op sub :unpackCfg:cu *tmp257 35
-read *tmp260 :buildBlockFromCfg:cfg 4
-op sub :unpackCfg:pb *tmp260 35
-read *tmp263 :buildBlockFromCfg:cfg 5
-op sub :unpackCfg:gr *tmp263 35
-read *tmp266 :buildBlockFromCfg:cfg 6
-op sub :unpackCfg:si *tmp266 35
-read *tmp269 :buildBlockFromCfg:cfg 7
-op sub :unpackCfg:ti *tmp269 35
-read *tmp272 :buildBlockFromCfg:cfg 8
-op sub :unpackCfg:mg *tmp272 35
-read *tmp275 :buildBlockFromCfg:cfg 9
-op sub :unpackCfg:rotation *tmp275 35
-op add *tmp438 .coreX :unpackCfg:x
-op add *tmp439 .coreY :unpackCfg:y
+set :meetTarget:block :buildBlock:block
+set :meetTarget:copper :buildBlock:copper
+set :meetTarget:lead :buildBlock:lead
+set :meetTarget:graphite :buildBlock:graphite
+set :meetTarget:silicon :buildBlock:silicon
+set :meetTarget:titanium :buildBlock:titanium
+set :meetTarget:metaglass :buildBlock:metaglass
+set :meetTarget:thorium :buildBlock:thorium
+set :meetTarget*retaddr 814
+jump 728 always 0 0
+write :buildBlock:block .blockBuilder ":buildBlockAt:block"
+write :buildBlock:x .blockBuilder ":buildBlockAt:x"
+write :buildBlock:y .blockBuilder ":buildBlockAt:y"
+write :buildBlock:rotation .blockBuilder ":buildBlockAt:rotation"
+write :buildBlock:config .blockBuilder ":buildBlockAt:config"
+write false .blockBuilder ":buildBlockAt*finished"
+write 1 .blockBuilder "@counter"
+wait 1e-15
+read *tmp458 .blockBuilder ":buildBlockAt*finished"
+jump 821 equal *tmp458 false
+read :buildBlock*retval .blockBuilder ":buildBlockAt*retval"
+set @counter :buildBlock*retaddr
+jump 846 lessThan :buildRemoteBlock:x 0
+set :unpackCfg:cfg :buildRemoteBlock:cfg
+set :unpackCfg*retaddr 830
+jump 543 always 0 0
 set :buildBlock:block :unpackCfg:type
-set :buildBlock:x *tmp438
-set :buildBlock:y *tmp439
+set :buildBlock:x :buildRemoteBlock:x
+set :buildBlock:y :buildRemoteBlock:y
+set :buildBlock:copper :unpackCfg:cu
+set :buildBlock:lead :unpackCfg:pb
+set :buildBlock:graphite :unpackCfg:gr
+set :buildBlock:silicon :unpackCfg:si
+set :buildBlock:titanium :unpackCfg:ti
+set :buildBlock:metaglass :unpackCfg:mg
+set :buildBlock:thorium :unpackCfg:th
 set :buildBlock:rotation :unpackCfg:rotation
 set :buildBlock:config null
-set :meetTarget:block :unpackCfg:type
-set :meetTarget:copper :unpackCfg:cu
-set :meetTarget:lead :unpackCfg:pb
-set :meetTarget:graphite :unpackCfg:gr
-set :meetTarget:silicon :unpackCfg:si
-set :meetTarget:titanium :unpackCfg:ti
-set :meetTarget:metaglass :unpackCfg:mg
-set :meetTarget*retaddr 953
-jump 788 always 0 0
-set :buildBlockAt:block :buildBlock:block
-set :buildBlockAt:x :buildBlock:x
-set :buildBlockAt:y :buildBlock:y
-set :buildBlockAt:rotation :buildBlock:rotation
-set :buildBlockAt:config :buildBlock:config
-set :buildBlockAt:skipError false
-set :buildBlockAt*retaddr 961
-jump 882 always 0 0
-set :buildBlockFromCfg*retval :buildBlockAt*retval
+set :buildBlock*retaddr 844
+jump 804 always 0 0
+set :buildRemoteBlock*retval :buildBlock*retval
+set @counter :buildRemoteBlock*retaddr
+set :buildRemoteBlock*retval false
+set @counter :buildRemoteBlock*retaddr
+set :unpackCfg:cfg :buildBlockFromCfg:cfg
+set :unpackCfg*retaddr 851
+jump 543 always 0 0
+op add *tmp462 .coreX :unpackCfg:x
+op add *tmp463 .coreY :unpackCfg:y
+set :buildBlock:block :unpackCfg:type
+set :buildBlock:x *tmp462
+set :buildBlock:y *tmp463
+set :buildBlock:copper :unpackCfg:cu
+set :buildBlock:lead :unpackCfg:pb
+set :buildBlock:graphite :unpackCfg:gr
+set :buildBlock:silicon :unpackCfg:si
+set :buildBlock:titanium :unpackCfg:ti
+set :buildBlock:metaglass :unpackCfg:mg
+set :buildBlock:thorium :unpackCfg:th
+set :buildBlock:rotation :unpackCfg:rotation
+set :buildBlock:config :buildBlockFromCfg:config
+set :buildBlock*retaddr 867
+jump 804 always 0 0
+set :buildBlockFromCfg*retval :buildBlock*retval
 set @counter :buildBlockFromCfg*retaddr
-read *tmp245 :meetTarget.1:cfg 0
-op sub *tmp246 *tmp245 35
-lookup block :unpackCfg:type *tmp246
-read *tmp249 :meetTarget.1:cfg 1
-op sub :unpackCfg:x *tmp249 42
-read *tmp253 :meetTarget.1:cfg 2
-op sub :unpackCfg:y *tmp253 42
-read *tmp257 :meetTarget.1:cfg 3
-op sub :unpackCfg:cu *tmp257 35
-read *tmp260 :meetTarget.1:cfg 4
-op sub :unpackCfg:pb *tmp260 35
-read *tmp263 :meetTarget.1:cfg 5
-op sub :unpackCfg:gr *tmp263 35
-read *tmp266 :meetTarget.1:cfg 6
-op sub :unpackCfg:si *tmp266 35
-read *tmp269 :meetTarget.1:cfg 7
-op sub :unpackCfg:ti *tmp269 35
-read *tmp272 :meetTarget.1:cfg 8
-op sub :unpackCfg:mg *tmp272 35
-read *tmp275 :meetTarget.1:cfg 9
-op sub :unpackCfg:rotation *tmp275 35
+set :buildBlockFromCfg:cfg :buildBlockFromCfg.1:cfg
+set :buildBlockFromCfg:config null
+set :buildBlockFromCfg*retaddr 873
+jump 848 always 0 0
+set :buildBlockFromCfg.1*retval :buildBlockFromCfg*retval
+set @counter :buildBlockFromCfg.1*retaddr
+set :unpackCfg:cfg :meetTarget.1:cfg
+set :unpackCfg*retaddr 878
+jump 543 always 0 0
 set :meetTarget:block :unpackCfg:type
 set :meetTarget:copper :unpackCfg:cu
 set :meetTarget:lead :unpackCfg:pb
@@ -989,8 +883,102 @@ set :meetTarget:graphite :unpackCfg:gr
 set :meetTarget:silicon :unpackCfg:si
 set :meetTarget:titanium :unpackCfg:ti
 set :meetTarget:metaglass :unpackCfg:mg
-set :meetTarget*retaddr 993
-jump 788 always 0 0
+set :meetTarget:thorium :unpackCfg:th
+set :meetTarget*retaddr 888
+jump 728 always 0 0
 set @counter :meetTarget.1*retaddr
+ucontrol getBlock :titaniumDrillScore:x :titaniumDrillScore:y 0 0 :getFloor:floor
+jump 893 notEqual :getFloor:floor @ore-titanium
+op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
+set @counter :titaniumDrillScore*retaddr
+jump 897 equal :getFloor:floor @ore-copper
+jump 897 equal :getFloor:floor @ore-lead
+jump 897 equal :getFloor:floor @ore-scrap
+jump 898 notEqual :getFloor:floor @ore-coal
+op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
+set @counter :titaniumDrillScore*retaddr
+jump 966 greaterThanEq :buildTitaniumDrill:count 8
+set :moveTo:x :buildTitaniumDrill:x
+set :moveTo:y :buildTitaniumDrill:y
+set :moveTo:radius 6
+set :moveTo*retaddr 905
+jump 399 always 0 0
+set .positive 0
+set .negative 0
+set :titaniumDrillScore:x :buildTitaniumDrill:x
+set :titaniumDrillScore:y :buildTitaniumDrill:y
+set :titaniumDrillScore:positive .positive
+set :titaniumDrillScore:negative .negative
+set :titaniumDrillScore*retaddr 913
+jump 889 always 0 0
+set .positive :titaniumDrillScore:positive
+set .negative :titaniumDrillScore:negative
+op add *tmp484 :buildTitaniumDrill:y 0.5
+set :titaniumDrillScore:x :buildTitaniumDrill:x
+set :titaniumDrillScore:y *tmp484
+set :titaniumDrillScore:positive .positive
+set :titaniumDrillScore:negative .negative
+set :titaniumDrillScore*retaddr 922
+jump 889 always 0 0
+set .positive :titaniumDrillScore:positive
+set .negative :titaniumDrillScore:negative
+op add :titaniumDrillScore:x :buildTitaniumDrill:x 0.5
+set :titaniumDrillScore:y :buildTitaniumDrill:y
+set :titaniumDrillScore:positive .positive
+set :titaniumDrillScore:negative .negative
+set :titaniumDrillScore*retaddr 930
+jump 889 always 0 0
+set .positive :titaniumDrillScore:positive
+set .negative :titaniumDrillScore:negative
+op add *tmp488 :buildTitaniumDrill:x 0.5
+op add *tmp489 :buildTitaniumDrill:y 0.5
+set :titaniumDrillScore:x *tmp488
+set :titaniumDrillScore:y *tmp489
+set :titaniumDrillScore:positive .positive
+set :titaniumDrillScore:negative .negative
+set :titaniumDrillScore*retaddr 940
+jump 889 always 0 0
+set .positive :titaniumDrillScore:positive
+set .negative :titaniumDrillScore:negative
+op greaterThan *tmp491 .positive .negative
+op greaterThanEq *tmp492 .positive 2
+op land *tmp493 *tmp491 *tmp492
+jump 966 equal *tmp493 false
+write @pneumatic-drill .blockBuilder ":buildBlockAt:block"
+write :buildTitaniumDrill:x .blockBuilder ":buildBlockAt:x"
+write :buildTitaniumDrill:y .blockBuilder ":buildBlockAt:y"
+write null .blockBuilder ":buildBlockAt:rotation"
+write 0 .blockBuilder ":buildBlockAt:config"
+write false .blockBuilder ":buildBlockAt*finished"
+write 1 .blockBuilder "@counter"
+wait 1e-15
+read *tmp500 .blockBuilder ":buildBlockAt*finished"
+jump 953 equal *tmp500 false
+read :buildTitaniumDrill:drill .blockBuilder ":buildBlockAt*retval"
+jump 966 equal :buildTitaniumDrill:drill null
+write :buildTitaniumDrill:drill .flareController ":addTitaniumDrill:drill"
+write false .flareController ":addTitaniumDrill*finished"
+write 1 .flareController "@counter"
+wait 1e-15
+read *tmp505 .flareController ":addTitaniumDrill*finished"
+jump 961 equal *tmp505 false
+op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
+write :buildTitaniumDrill:count .controller ".flareTarget"
+set @counter :buildTitaniumDrill*retaddr
+set :meetTarget:block 0
+set :meetTarget:copper 0
+set :meetTarget:lead 0
+set :meetTarget:graphite 0
+set :meetTarget:silicon 0
+set :meetTarget:titanium 0
+set :meetTarget:metaglass 0
+set :meetTarget:thorium 0
+set :meetTarget*retaddr 977
+jump 728 always 0 0
+write 0 .display ".totalTargets"
+write null .display ".nextBlock"
+write 0 .controller ".leadReserve"
+write 0 .controller ".siliconReserve"
+set @counter :buildUnits*retaddr
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

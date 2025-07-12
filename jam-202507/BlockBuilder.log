@@ -1,0 +1,606 @@
+   107 instructions before optimizations.
+     6 instructions eliminated by Temp Variables Elimination (2 iterations).
+    10 instructions eliminated by Dead Code Elimination (5 iterations).
+C:\Home\golem\jam-202507\BlockBuilder.mnd:12:11 Variable 'coreX' is not used.
+C:\Home\golem\jam-202507\BlockBuilder.mnd:12:18 Variable 'coreY' is not used.
+C:\Home\golem\jam-202507\BlockBuilder.mnd:17:21 Variable 'ERROR' is not used.
+C:\Home\golem\jam-202507\BlockBuilder.mnd:17:28 Variable 'ERROR_BLOCK_NEW' is not used.
+C:\Home\golem\jam-202507\BlockBuilder.mnd:17:45 Variable 'ERROR_BLOCK_OLD' is not used.
+C:\Home\golem\jam-202507\BlockBuilder.mnd:17:62 Variable 'ERROR_X' is not used.
+C:\Home\golem\jam-202507\BlockBuilder.mnd:17:71 Variable 'ERROR_Y' is not used.
+     7 instructions eliminated by Jump Optimization (5 iterations).
+     6 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
+     1 instructions eliminated by Expression Optimization (3 iterations).
+    19 instructions eliminated by Data Flow Optimization (7 iterations).
+     1 instructions added by Loop Optimization (3 iterations).
+     1 loops improved by Loop Optimization.
+     2 instructions eliminated by Unreachable Code Elimination (2 iterations).
+    57 instructions after optimizations.
+
+Pass 1: speed optimization selection (cost limit 941):
+  * Replicate loop condition at line 30:5                        size    +1, benefit       25.0, efficiency     25.000 (+1 instructions)
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-8 instructions):
+ 
+    42 jump *label14 equal *tmp14 false
+    43 set :buildBlockAt*retval :buildBlockAt:building
+    44 jump *label6 always
+-    * set *tmp15 null
+    45 jump *label15 always
+    46 label *label14
+-    * set *tmp15 null
+    47 label *label15
+    48 set :buildError:new :buildBlockAt:block
+    49 set :buildError:old :buildBlockAt:type
+ 
+    56 set .ERROR_Y :buildError:y
+    57 stop
+    58 label *label16
+-    * set *tmp13 null
+    59 jump *label13 always
+    60 label *label12
+-    * set *tmp13 null
+    61 label *label13
+    62 sensor *tmp16 .core @coal
+    63 op greaterThan *tmp17 *tmp16 200
+ 
+    77 label *label22
+    78 set *tmp21 null
+    79 label *label23
+-    * set *tmp18 *tmp21
+    80 jump *label21 always
+    81 label *label20
+-    * set *tmp18 null
+    82 label *label21
+    83 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type *tmp22 *tmp23
+    84 set :buildBlockAt:building *tmp22
+ 
+    95 set .ERROR_Y :buildError.1:y
+    96 stop
+    97 label *label26
+-    * set *tmp25 null
+    98 jump *label25 always
+    99 label *label24
+-    * set *tmp25 null
+   100 label *label25
+   101 label *label18
+   102 op notEqual *tmp26 :buildBlockAt:type :buildBlockAt:block
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-2 instructions):
+ 
+    72 jump *label22 equal *tmp20 false
+    73 ucontrol approach :buildBlockAt:x :buildBlockAt:y 6
+    74 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+-    * set *tmp21 null
+    75 jump *label23 always
+    76 label *label22
+-    * set *tmp21 null
+    77 label *label23
+    78 jump *label21 always
+    79 label *label20
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-6 instructions):
+ 
+     2 label *label1
+     3 label *label2
+     4 ubind @poly
+-    * set *tmp1 @unit
+-    * set .builder *tmp1
+-    * ulocate building core false @copper .coreX .coreY *tmp3 *tmp2
+-    * set .core *tmp2
++    5 set .builder @unit
++    6 ulocate building core false @copper .coreX .coreY 0 .core
+     7 label *label3
+     8 op equal *tmp4 .core null
+     9 jump *label2 notEqual *tmp4 false
+ 
+    32 label *label11
+    33 label *label8
+    34 label *label7
+-    * ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type *tmp10 *tmp11
+-    * set :buildBlockAt:building *tmp10
++   35 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+    36 op notEqual *tmp12 :buildBlockAt:building null
+    37 jump *label12 equal *tmp12 false
+    38 op equal *tmp14 :buildBlockAt:type :buildBlockAt:block
+ 
+    57 label *label12
+    58 label *label13
+    59 sensor *tmp16 .core @coal
+-    * op greaterThan *tmp17 *tmp16 200
+-    * set :buildBlockAt:fullBuildSupport *tmp17
++   60 op greaterThan :buildBlockAt:fullBuildSupport *tmp16 200
+    61 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+    62 wait 0.25
+    63 label *label17
+ 
+    74 jump *label21 always
+    75 label *label20
+    76 label *label21
+-    * ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type *tmp22 *tmp23
+-    * set :buildBlockAt:building *tmp22
++   77 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+    78 op equal *tmp24 :buildBlockAt:building null
+    79 jump *label24 equal *tmp24 false
+    80 set :buildError.1:new :buildBlockAt:block
+ 
+    98 control enabled processor1 true
+    99 ubind .builder
+   100 set :logBlock:block :buildBlockAt:block
+-    * sensor *tmp28 :logBlock:block @id
+-    * set :log:encodedId *tmp28
++  101 sensor :log:encodedId :logBlock:block @id
+   102 read *tmp0 bank1 511
+   103 op sub *tmp29 *tmp0 1
+   104 write *tmp29 bank1 511
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-7 instructions):
+ 
+     5 set .builder @unit
+     6 ulocate building core false @copper .coreX .coreY 0 .core
+     7 label *label3
+-    * op equal *tmp4 .core null
+-    * jump *label2 notEqual *tmp4 false
++    8 jump *label2 equal .core null
+     9 label *label4
+    10 set *signature "e4bd0450ec228cd3:v1"
+    11 label *label5
+ 
+    22 set :moveTo.1:radius 6
+    23 label *label9
+    24 ucontrol within :moveTo.1:x :moveTo.1:y :moveTo.1:radius *tmp7
+-    * op equal *tmp8 *tmp7 false
+-    * jump *label11 equal *tmp8 false
++   25 jump *label11 notEqual *tmp7 false
+    26 op sub *tmp9 :moveTo.1:radius 0.5
+    27 ucontrol approach :moveTo.1:x :moveTo.1:y *tmp9
+    28 label *label10
+ 
+    31 label *label8
+    32 label *label7
+    33 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+-    * op notEqual *tmp12 :buildBlockAt:building null
+-    * jump *label12 equal *tmp12 false
+-    * op equal *tmp14 :buildBlockAt:type :buildBlockAt:block
+-    * jump *label14 equal *tmp14 false
++   34 jump *label12 equal :buildBlockAt:building null
++   35 jump *label14 notEqual :buildBlockAt:type :buildBlockAt:block
+    36 set :buildBlockAt*retval :buildBlockAt:building
+    37 jump *label6 always
+    38 jump *label15 always
+ 
+    60 jump *label20 equal :buildBlockAt:fullBuildSupport false
+    61 control enabled processor1 false
+    62 ubind @poly
+-    * op notEqual *tmp20 @unit .builder
+-    * jump *label22 equal *tmp20 false
++   63 jump *label22 equal @unit .builder
+    64 ucontrol approach :buildBlockAt:x :buildBlockAt:y 6
+    65 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+    66 jump *label23 always
+ 
+    70 label *label20
+    71 label *label21
+    72 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+-    * op equal *tmp24 :buildBlockAt:building null
+-    * jump *label24 equal *tmp24 false
++   73 jump *label24 notEqual :buildBlockAt:building null
+    74 set :buildError.1:new :buildBlockAt:block
+    75 set :buildError.1:old "unknown"
+    76 set :buildError.1:x :buildBlockAt:x
+ 
+    86 label *label24
+    87 label *label25
+    88 label *label18
+-    * op notEqual *tmp26 :buildBlockAt:type :buildBlockAt:block
+-    * jump *label17 notEqual *tmp26 false
++   89 jump *label17 notEqual :buildBlockAt:type :buildBlockAt:block
+    90 label *label19
+    91 control enabled processor1 true
+    92 ubind .builder
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-5 instructions):
+ 
+    35 jump *label14 notEqual :buildBlockAt:type :buildBlockAt:block
+    36 set :buildBlockAt*retval :buildBlockAt:building
+    37 jump *label6 always
+-    * jump *label15 always
+    38 label *label14
+    39 label *label15
+    40 set :buildError:new :buildBlockAt:block
+ 
+    48 set .ERROR_Y :buildError:y
+    49 stop
+    50 label *label16
+-    * jump *label13 always
+    51 label *label12
+    52 label *label13
+    53 sensor *tmp16 .core @coal
+ 
+    61 jump *label22 equal @unit .builder
+    62 ucontrol approach :buildBlockAt:x :buildBlockAt:y 6
+    63 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+-    * jump *label23 always
+    64 label *label22
+    65 label *label23
+-    * jump *label21 always
+    66 label *label20
+    67 label *label21
+    68 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+ 
+    78 set .ERROR_Y :buildError.1:y
+    79 stop
+    80 label *label26
+-    * jump *label25 always
+    81 label *label24
+    82 label *label25
+    83 label *label18
+
+Modifications by Iterated phase, Expression Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+    91 op sub *tmp29 *tmp0 1
+    92 write *tmp29 bank1 511
+    93 set *tmp30 *tmp29
+-    * op mul *tmp32 @second 1000
+-    * op floor *tmp33 *tmp32
++   94 op idiv *tmp33 @second 0.001
+    95 op mul *tmp34 *tmp33 1000
+    96 op add *tmp35 :log:encodedId *tmp34
+    97 write *tmp35 bank1 *tmp30
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+    15 label *label0
+    16 set :moveTo:x :buildBlockAt:x
+    17 set :moveTo:y :buildBlockAt:y
+-    * set *tmp5 :moveTo:x
+-    * set *tmp6 :moveTo:y
+-    * set :moveTo.1:x *tmp5
+-    * set :moveTo.1:y *tmp6
++   18 set *tmp5 :buildBlockAt:x
++   19 set *tmp6 :buildBlockAt:y
++   20 set :moveTo.1:x :moveTo:x
++   21 set :moveTo.1:y :moveTo:y
+    22 set :moveTo.1:radius 6
+    23 label *label9
+-    * ucontrol within :moveTo.1:x :moveTo.1:y :moveTo.1:radius *tmp7
++   24 ucontrol within *tmp5 *tmp6 6 *tmp7
+    25 jump *label11 notEqual *tmp7 false
+-    * op sub *tmp9 :moveTo.1:radius 0.5
+-    * ucontrol approach :moveTo.1:x :moveTo.1:y *tmp9
++   26 op sub *tmp9 6 0.5
++   27 ucontrol approach *tmp5 *tmp6 5.5
+    28 label *label10
+    29 jump *label9 always
+    30 label *label11
+ 
+    42 set :buildError:x :buildBlockAt:x
+    43 set :buildError:y :buildBlockAt:y
+    44 set .ERROR "Cannot build at position"
+-    * set .ERROR_BLOCK_NEW :buildError:new
+-    * set .ERROR_BLOCK_OLD :buildError:old
+-    * set .ERROR_X :buildError:x
+-    * set .ERROR_Y :buildError:y
++   45 set .ERROR_BLOCK_NEW :buildBlockAt:block
++   46 set .ERROR_BLOCK_OLD :buildBlockAt:type
++   47 set .ERROR_X :buildBlockAt:x
++   48 set .ERROR_Y :buildBlockAt:y
+    49 stop
+    50 label *label16
+    51 label *label12
+ 
+    72 set :buildError.1:x :buildBlockAt:x
+    73 set :buildError.1:y :buildBlockAt:y
+    74 set .ERROR "Cannot build at position"
+-    * set .ERROR_BLOCK_NEW :buildError.1:new
+-    * set .ERROR_BLOCK_OLD :buildError.1:old
+-    * set .ERROR_X :buildError.1:x
+-    * set .ERROR_Y :buildError.1:y
++   75 set .ERROR_BLOCK_NEW :buildBlockAt:block
++   76 set .ERROR_BLOCK_OLD "unknown"
++   77 set .ERROR_X :buildBlockAt:x
++   78 set .ERROR_Y :buildBlockAt:y
+    79 stop
+    80 label *label26
+    81 label *label24
+ 
+    86 control enabled processor1 true
+    87 ubind .builder
+    88 set :logBlock:block :buildBlockAt:block
+-    * sensor :log:encodedId :logBlock:block @id
++   89 sensor :log:encodedId :buildBlockAt:block @id
+    90 read *tmp0 bank1 511
+    91 op sub *tmp29 *tmp0 1
+    92 write *tmp29 bank1 511
+ 
+    94 op idiv *tmp33 @second 0.001
+    95 op mul *tmp34 *tmp33 1000
+    96 op add *tmp35 :log:encodedId *tmp34
+-    * write *tmp35 bank1 *tmp30
++   97 write *tmp35 bank1 *tmp29
+    98 label *label28
+    99 label *label27
+   100 set :buildBlockAt*retval :buildBlockAt:building
+   101 jump *label6 always
+-    * set :buildBlockAt*retval null
+   102 label *label6
+   103 set :buildBlockAt*finished true
+   104 jump *label5 always
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-12 instructions):
+ 
+    17 set :moveTo:y :buildBlockAt:y
+    18 set *tmp5 :buildBlockAt:x
+    19 set *tmp6 :buildBlockAt:y
+-    * set :moveTo.1:x :moveTo:x
+-    * set :moveTo.1:y :moveTo:y
+-    * set :moveTo.1:radius 6
++   20 set :moveTo.1:x :buildBlockAt:x
++   21 set :moveTo.1:y :buildBlockAt:y
+    22 label *label9
+-    * ucontrol within *tmp5 *tmp6 6 *tmp7
++   23 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
+    24 jump *label11 notEqual *tmp7 false
+-    * op sub *tmp9 6 0.5
+-    * ucontrol approach *tmp5 *tmp6 5.5
++   25 ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5
+    26 label *label10
+    27 jump *label9 always
+    28 label *label11
+ 
+    35 jump *label6 always
+    36 label *label14
+    37 label *label15
+-    * set :buildError:new :buildBlockAt:block
+-    * set :buildError:old :buildBlockAt:type
+-    * set :buildError:x :buildBlockAt:x
+-    * set :buildError:y :buildBlockAt:y
+    38 set .ERROR "Cannot build at position"
+    39 set .ERROR_BLOCK_NEW :buildBlockAt:block
+    40 set .ERROR_BLOCK_OLD :buildBlockAt:type
+ 
+    61 label *label21
+    62 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+    63 jump *label24 notEqual :buildBlockAt:building null
+-    * set :buildError.1:new :buildBlockAt:block
+-    * set :buildError.1:old "unknown"
+-    * set :buildError.1:x :buildBlockAt:x
+-    * set :buildError.1:y :buildBlockAt:y
+    64 set .ERROR "Cannot build at position"
+    65 set .ERROR_BLOCK_NEW :buildBlockAt:block
+    66 set .ERROR_BLOCK_OLD "unknown"
+ 
+    75 label *label19
+    76 control enabled processor1 true
+    77 ubind .builder
+-    * set :logBlock:block :buildBlockAt:block
+    78 sensor :log:encodedId :buildBlockAt:block @id
+    79 read *tmp0 bank1 511
+    80 op sub *tmp29 *tmp0 1
+    81 write *tmp29 bank1 511
+-    * set *tmp30 *tmp29
+    82 op idiv *tmp33 @second 0.001
+    83 op mul *tmp34 *tmp33 1000
+    84 op add *tmp35 :log:encodedId *tmp34
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-6 instructions):
+ 
+    13 jump *label5 always
+    14 end
+    15 label *label0
+-    * set :moveTo:x :buildBlockAt:x
+-    * set :moveTo:y :buildBlockAt:y
+-    * set *tmp5 :buildBlockAt:x
+-    * set *tmp6 :buildBlockAt:y
+-    * set :moveTo.1:x :buildBlockAt:x
+-    * set :moveTo.1:y :buildBlockAt:y
+    16 label *label9
+    17 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
+    18 jump *label11 notEqual *tmp7 false
+
+Modifications by Replicate loop condition at line 30:5 (+1 instructions):
+ 
+    16 label *label9
+    17 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
+    18 jump *label11 notEqual *tmp7 false
++   19 label *label29
+    20 ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5
+    21 label *label10
+-    * jump *label9 always
++   22 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
++   23 jump *label29 equal *tmp7 false
+    24 label *label11
+    25 label *label8
+    26 label *label7
+
+Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-1 instructions):
+ 
+    82 label *label28
+    83 label *label27
+    84 set :buildBlockAt*retval :buildBlockAt:building
+-    * jump *label6 always
+    85 label *label6
+    86 set :buildBlockAt*finished true
+    87 jump *label5 always
+
+Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
+ 
+     4 ubind @poly
+     5 set .builder @unit
+     6 ulocate building core false @copper .coreX .coreY 0 .core
+-    * label *label3
+     7 jump *label2 equal .core null
+-    * label *label4
+     8 set *signature "e4bd0450ec228cd3:v1"
+     9 label *label5
+    10 wait 1e12
+    11 jump *label5 always
+    12 end
+    13 label *label0
+-    * label *label9
+    14 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
+    15 jump *label11 notEqual *tmp7 false
+    16 label *label29
+    17 ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5
+-    * label *label10
+    18 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
+    19 jump *label29 equal *tmp7 false
+    20 label *label11
+-    * label *label8
+-    * label *label7
+    21 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+    22 jump *label12 equal :buildBlockAt:building null
+    23 jump *label14 notEqual :buildBlockAt:type :buildBlockAt:block
+    24 set :buildBlockAt*retval :buildBlockAt:building
+    25 jump *label6 always
+    26 label *label14
+-    * label *label15
+    27 set .ERROR "Cannot build at position"
+    28 set .ERROR_BLOCK_NEW :buildBlockAt:block
+    29 set .ERROR_BLOCK_OLD :buildBlockAt:type
+    30 set .ERROR_X :buildBlockAt:x
+    31 set .ERROR_Y :buildBlockAt:y
+    32 stop
+-    * label *label16
+    33 label *label12
+-    * label *label13
+    34 sensor *tmp16 .core @coal
+    35 op greaterThan :buildBlockAt:fullBuildSupport *tmp16 200
+    36 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+ 
+    43 ucontrol approach :buildBlockAt:x :buildBlockAt:y 6
+    44 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+    45 label *label22
+-    * label *label23
+    46 label *label20
+-    * label *label21
+    47 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
+    48 jump *label24 notEqual :buildBlockAt:building null
+    49 set .ERROR "Cannot build at position"
+ 
+    52 set .ERROR_X :buildBlockAt:x
+    53 set .ERROR_Y :buildBlockAt:y
+    54 stop
+-    * label *label26
+    55 label *label24
+-    * label *label25
+-    * label *label18
+    56 jump *label17 notEqual :buildBlockAt:type :buildBlockAt:block
+-    * label *label19
+    57 control enabled processor1 true
+    58 ubind .builder
+    59 sensor :log:encodedId :buildBlockAt:block @id
+ 
+    64 op mul *tmp34 *tmp33 1000
+    65 op add *tmp35 :log:encodedId *tmp34
+    66 write *tmp35 bank1 *tmp29
+-    * label *label28
+-    * label *label27
+    67 set :buildBlockAt*retval :buildBlockAt:building
+    68 label *label6
+    69 set :buildBlockAt*finished true
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-2 instructions):
+ 
+     9 label *label5
+    10 wait 1e12
+    11 jump *label5 always
+-    * end
+    12 label *label0
+    13 ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7
+    14 jump *label11 notEqual *tmp7 false
+ 
+    67 label *label6
+    68 set :buildBlockAt*finished true
+    69 jump *label5 always
+-    * end
+
+Final code before resolving virtual instructions:
+
+    0:  jump *label1 always 0 0                                      #set target = 8;
+    1:  jump *label0 always 0 0                                      ...
+    2:  draw triangle bank1 processor1 .ERROR .ERROR_BLOCK_NEW .ERROR_BLOCK_OLD .ERROR_X
+    3:  draw triangle .ERROR_Y .builder .core .coreX .coreY :buildBlockAt:block
+    4:  draw triangle :buildBlockAt:building :buildBlockAt:config :buildBlockAt:fullBuildSupport :buildBlockAt:rotation :buildBlockAt:type :buildBlockAt:x
+    5:  draw triangle :buildBlockAt:y :log:encodedId 0 0 0 0
+        label *label1                                                ...
+        label *label2                                                do
+    6:  ubind @poly                                                  builder = ubind(@poly);
+    7:  set .builder @unit                                           ...
+    8:  ulocate building core false @copper .coreX .coreY 0 .core    core = ulocate(:building, :core, false, out coreX, out coreY);
+    9:  jump *label2 equal .core null                                do
+   10:  set *signature "e4bd0450ec228cd3:v1"                         #set target = 8;
+        label *label5                                                ...
+   11:  wait 1e12                                                    ...
+   12:  jump *label5 always 0 0                                      ...
+        label *label0                                                remote def buildBlockAt(block, x, y, rotation, config)
+   13:  ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7 0    while !within(x, y, radius) do
+   14:  jump *label11 notEqual *tmp7 false                           ...
+        label *label29                                               ...
+   15:  ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5 0 0    approach(x, y, radius - 0.5);
+   16:  ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp7 0    while !within(x, y, radius) do
+   17:  jump *label29 equal *tmp7 false                              ...
+        label *label11                                               ...
+   18:  ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBloc var building = getBlock(x, y, out type);
+   19:  jump *label12 equal :buildBlockAt:building null              if building != null then
+   20:  jump *label14 notEqual :buildBlockAt:type :buildBlockAt:bloc if type == block then return building; end;
+   21:  set :buildBlockAt*retval :buildBlockAt:building              ...
+   22:  jump *label6 always 0 0                                      ...
+        label *label14                                               ...
+   23:  set .ERROR "Cannot build at position"                        ERROR = "Cannot build at position";
+   24:  set .ERROR_BLOCK_NEW :buildBlockAt:block                     ERROR_BLOCK_NEW = new;
+   25:  set .ERROR_BLOCK_OLD :buildBlockAt:type                      ERROR_BLOCK_OLD = old;
+   26:  set .ERROR_X :buildBlockAt:x                                 ERROR_X = x;
+   27:  set .ERROR_Y :buildBlockAt:y                                 ERROR_Y = y;
+   28:  stop                                                         stopProcessor();
+        label *label12                                               if building != null then
+   29:  sensor *tmp16 .core @coal                                    var fullBuildSupport = core.@coal > 200;
+   30:  op greaterThan :buildBlockAt:fullBuildSupport *tmp16 200     ...
+   31:  ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt build(x, y, block, rotation, config);
+   32:  wait 0.25                                                    wait(0.25);
+        label *label17                                               do
+   33:  jump *label20 equal :buildBlockAt:fullBuildSupport false     if fullBuildSupport then
+   34:  control enabled processor1 false 0 0 0                       polyController.enabled = false;     // Brutal, but effective :)
+   35:  ubind @poly                                                  ubind(@poly);
+   36:  jump *label22 equal @unit .builder                           if @unit != builder then
+   37:  ucontrol approach :buildBlockAt:x :buildBlockAt:y 6 0 0      approach(x, y, RADIUS);
+   38:  ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt build(x, y, block, rotation, config);
+        label *label22                                               if @unit != builder then
+        label *label20                                               if fullBuildSupport then
+   39:  ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBloc building = getBlock(x, y, out type);
+   40:  jump *label24 notEqual :buildBlockAt:building null           if building == null then
+   41:  set .ERROR "Cannot build at position"                        ERROR = "Cannot build at position";
+   42:  set .ERROR_BLOCK_NEW :buildBlockAt:block                     ERROR_BLOCK_NEW = new;
+   43:  set .ERROR_BLOCK_OLD "unknown"                               ERROR_BLOCK_OLD = old;
+   44:  set .ERROR_X :buildBlockAt:x                                 ERROR_X = x;
+   45:  set .ERROR_Y :buildBlockAt:y                                 ERROR_Y = y;
+   46:  stop                                                         stopProcessor();
+        label *label24                                               if building == null then
+   47:  jump *label17 notEqual :buildBlockAt:type :buildBlockAt:bloc do
+   48:  control enabled processor1 true 0 0 0                        polyController.enabled = true;
+   49:  ubind .builder                                               ubind(builder);
+   50:  sensor :log:encodedId :buildBlockAt:block @id                log(block.@id);
+   51:  read *tmp0 bank1 511                                         bank1[--logPosition] = encodedId + floor(@second * 1000) * 1000;
+   52:  op sub *tmp29 *tmp0 1                                        ...
+   53:  write *tmp29 bank1 511                                       ...
+   54:  op idiv *tmp33 @second 0.001                                 ...
+   55:  op mul *tmp34 *tmp33 1000                                    ...
+   56:  op add *tmp35 :log:encodedId *tmp34                          ...
+   57:  write *tmp35 bank1 *tmp29                                    ...
+   58:  set :buildBlockAt*retval :buildBlockAt:building              return building;
+        label *label6                                                remote def buildBlockAt(block, x, y, rotation, config)
+   59:  set :buildBlockAt*finished true                              ...
+   60:  jump *label5 always 0 0                                      ...
+
+
+Performance: parsed in 190 ms, compiled in 222 ms, optimized in 151 ms, run in 3 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
+
+Program output (2 steps):
+The program didn't generate any output.
+Execution exception at instruction 6: ubind @poly:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

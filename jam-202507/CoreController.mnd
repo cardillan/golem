@@ -2,6 +2,8 @@
 #set syntax = strict;
 #set sort-variables;
 
+// Note: remake this so that status gets updated via remote calls
+
 module CoreController;
 
 noinit remote var
@@ -9,7 +11,9 @@ noinit remote var
     display,
     bank,
     press,
+    unloader1,
     smelter,
+    smelter2,
     kiln,
     generator,
     battery,
@@ -19,32 +23,39 @@ noinit remote var
     multipress,
     payloadRouter,
     reconstructor,
+    multiReconstructor,
 
     // Lead and/or silicone will only be sent to the Air Factory
     // if they are above these limits
     leadReserve,
     siliconReserve,
 
-    flares,
-    monos,
-    polys,
-
     factoryUnit,
     targetUnit;
 
 remote var
+    flares = 0,
+    monos = 0,
+    polys= 1,
+    megas = 0,
+
     pressTarget = 20,
     smelterTarget = 20,
     kilnTarget = 20,
     flareTarget = 0,
     monoTarget = 0,
-    polyTarget = 0;
+    polyTarget = 0,
+    megaTarget = 0;
 
+// Due to Mindcode restriction of requiring a single module from two places, we need to declare these
+// variables in the display processor explicitly.
 remote display var
     displayFlares,
     displayMonos,
     displayPolys,
-    displayNextUnit;
+    displayMegas,
+    displayNextUnit,
+    displayUnitReset;
 
 external bank[511] var logPosition;
 
@@ -64,7 +75,9 @@ void factoryUnitFinished(unit)
             when @flare then displayFlares = ++flares;
             when @mono  then displayMonos = ++monos;
             when @poly  then displayPolys = ++polys;
+            when @mega  then displayMegas = ++megas;
         end;
+        displayUnitReset = true;
     end;
 end;
 
@@ -80,19 +93,22 @@ end;
 void backgroundProcess()
     var lastProgress = 0, factoryProgress = 0;
     var lastRecoProgress = 0, reconstructorProgress = 0;
+    var lastMultiProgress = 0, multiReconstructorProgress = 0;
     var enableFactory = true;
 
     while true do
         var coreSilicon = core.@silicon;
         var coreGraphite = core.@graphite;
-        smelter.enabled = coreSilicon < smelterTarget;
+        smelter2.enabled = smelter.enabled = coreSilicon < smelterTarget;
         press.enabled = !multipress and coreGraphite < pressTarget;
         multipress.enabled = coreGraphite < pressTarget;
         kiln.enabled = core.@metaglass < kilnTarget;
 
+        if smelter2 then unloader1.config = @coal; end;
+
         var power = battery.@totalPower;
         if generator2 then
-            generator.enabled = false;
+            generator.enabled = power < 10;
             generator2.enabled = power < 3800;
         else
             generator.enabled = power < 800;
@@ -100,18 +116,27 @@ void backgroundProcess()
 
         factoryProgress = factory.@progress;
         reconstructorProgress = reconstructor.@progress;
+        multiReconstructorProgress = multiReconstructor.@progress;
 
         if flares < flareTarget then
             displayNextUnit = targetUnit = factoryUnit = @flare;
+            payloadRouter.config = targetUnit;
         elsif monos < monoTarget then
             displayNextUnit = targetUnit = factoryUnit = @mono;
+            payloadRouter.config = targetUnit;
         elsif polys < polyTarget then
             factoryUnit = reconstructor.@payloadType == null ? @mono : null;
             displayNextUnit = targetUnit = @poly;
+            reconstructor.enabled = true;
+            payloadRouter.config = targetUnit;
+        elsif megas < megaTarget then
+            factoryUnit = multiReconstructor.@payloadType == null ? @mono : null;
+            displayNextUnit = targetUnit = @mega;
+            reconstructor.enabled = multiReconstructor;
+            payloadRouter.config = targetUnit;
         else
             displayNextUnit = targetUnit = factoryUnit = null;
         end;
-        payloadRouter.config = targetUnit;
 
         fuzzyUpdate(ref enableFactory, power, 200, 500);
 
@@ -139,7 +164,14 @@ void backgroundProcess()
             lastRecoProgress = reconstructorProgress;
         end;
 
-        if generator2.@coal < generator2 then
+        if lastMultiProgress > multiReconstructorProgress + 0.1 then
+            factoryUnitFinished(@mega);
+            lastMultiProgress = 0;
+        else
+            lastMultiProgress = multiReconstructorProgress;
+        end;
+
+        if generator2.@coal < 5 * generator2 then
             unloader2.config = @coal;
             continue;
         end;

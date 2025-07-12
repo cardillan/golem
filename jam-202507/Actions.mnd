@@ -1,26 +1,32 @@
 module Actions;
 
-const RADIUS =  6;     // or build
+const RADIUS =  6;
 
 // UTILITY FUNCTIONS
 
-inline void status1(text)
+void status1(text)
     display.status1 = text;
 end;
 
-inline void status2(text, item, block)
+void status2(text, item, block)
     display.status2  = text;
     display.item2  = item;
     display.block2 = block;
 end;
 
-inline void status3(text)
+void status3(text)
     display.status3 = text;
 end;
 
-inline void transportStatus(target, item)
+void transportStatus(target, item)
     display.transportTarget = target;
     display.transportItem = item;
+end;
+
+def getFloor(x, y)
+    var floor;
+    getBlock(x, y, , out floor);
+    return floor;
 end;
 
 // BASIC OPERATIONS
@@ -28,18 +34,13 @@ end;
 
 volatile var ERROR = "";
 
-inline void debug(text)
-    print(text);
-    printflush(message1);
-end;
-
-inline void error(error, parameters...)
+void error(error)
     ERROR = error;
     stopProcessor();
 end;
 
 // Moves the unit to a given distance from the location
-inline void moveTo(x, y, radius)
+void moveTo(x, y, radius)
     status3("Moving...");
     while !within(x, y, radius) do
         approach(x, y, radius - 0.5);
@@ -47,12 +48,12 @@ inline void moveTo(x, y, radius)
 end;
 
 // Moves the unit to a mining distance from the location
-inline void moveTo(x, y)
+void moveTo(x, y)
     moveTo(x, y, RADIUS);
 end;
 
 // Moves the unit to the given location, ensuring it is empty on arrival
-inline void moveToEmpty(x, y)
+void moveToEmpty(x, y)
     status3("Moving...");
     do
         // If ore is held, try to drop it during transport to start cooldown earlier
@@ -61,7 +62,7 @@ inline void moveToEmpty(x, y)
     while !within(x, y, RADIUS);
 end;
 
-inline void dropAll()
+void dropAll()
     // Now drop it for real
     while @unit.@firstItem != null do
         itemDrop(@air, 1000);
@@ -69,7 +70,7 @@ inline void dropAll()
 end;
 
 // Moves the unit to the a given distance from a block
-inline void moveToBlock(block, radius)
+void moveToBlock(block, radius)
     moveTo(block.@x, block.@y, radius);
 end;
 
@@ -94,7 +95,7 @@ void depositItems(block, item)
 end;
 
 // Locates the ore, crashes when not successful
-inline void locateOre(ore, out x, out y)
+void locateOre(ore, out x, out y)
     if !ulocate(:ore, ore, out x, out y) then
         error("Cannot locate ore");
     end;
@@ -135,8 +136,8 @@ void mineOre(ore)
     mineOre(ore, capacity, core);
 end;
 
-inline void fetchBlock(block, item)
-    transportStatus(block.@itemCapacity, item);
+void fetchBlock(block, item)
+    transportStatus(min(block.@itemCapacity, capacity), item);
     status2("Fetching ", item, block);
     moveToEmpty(block.@x, block.@y);
     dropAll();
@@ -153,12 +154,29 @@ inline void fetchBlock(block, item)
 end;
 
 // Supplies the block with the given amount of ore
-inline void supplyBlock(block, ore)
+void supplyBlock(block, ore)
     status2("Supplying ", ore, block);
     var blockCapacity = block.@itemCapacity;
     var missing = blockCapacity - block.sensor(ore);
     if missing > 0 then
         mineOre(ore, blockCapacity, block);
     end;
+end;
+
+void supplyBlockFromCore(target, item)
+    transportStatus(min(target.@itemCapacity, capacity), item);
+    status2("Transferring ", item, target);
+    moveToEmpty(coreX, coreY);
+    dropAll();
+
+    do
+        itemTake(core, item, capacity);
+        var unitItem = @unit.@firstItem;
+        if unitItem != null and unitItem != item then
+            itemDrop(@air, 1000);
+        end;
+     while @unit.sensor(item) < capacity and core.sensor(item);
+
+    depositItems(target, item);
 end;
 

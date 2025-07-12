@@ -3,15 +3,13 @@
 #set sort-variables;
 #set remarks = none;
 
-//#set symbolic-labels = true;
-
-//#set optimization = none;
+#set loop-unrolling = none;
 
 module OreLocator;
 
 require math;
 
-const RADIUS =  6;     // or build
+const RADIUS =  6;
 
 linked bank1, message1, switch1;
 
@@ -21,11 +19,13 @@ linked bank1, message1, switch1;
 remote var attenuationRate = 50;
 
 noinit remote var mapProgress, mapTotal, mapAction, mapSpots;
+remote var locations = 0;
 
 // Drill infrastructure positions
 noinit remote var
     drillX, drillY,
     water1X, water1Y,
+    containerX, containerY,
     water2X, water2Y,
     generatorX, generatorY,
     nodeX, nodeY,
@@ -33,8 +33,7 @@ noinit remote var
     batteryX, batteryY;
 
 var coreX, coreY;
-var count = -1, locations = 0, locationsStart;
-var start;
+var count = -1, locationsStart, start;
 
 // Moves the unit to a given distance from the location
 inline void moveTo(x, y, radius)
@@ -48,22 +47,23 @@ inline void moveTo(x, y)
     moveTo(x, y, RADIUS);
 end;
 
-// To avoid possible problems in double precision arithmetic,
-// the fifth bit is left empty and the WALL flag is stored in the sixth bit.
-// After summing up four values, at most the 8th bit will be set, but the
-// sixth should remain empty.
-// Values >= WALL represent walls, regular ore values should all be below 16 / 255.
 const ORE = 1 / 255;
-const WALL = 32 / 255;
+const WALL = 25 / 255;
+
+// Values >= WALL represent walls, regular values should all be less or equal to 16 / 255.
+// For 2x2 drills, the highest possible value is 4*25.
+// For 3x3 drills, the highest possible value is 9*25 (225).
+// For 4x4 drills, the highest possible value would be 16*25, which wouldn't fit in 8 bits.
+// For those, the summed column values need to be clamped, resulting in a highest possible value 4*25.
 const LIMIT = 20 / 255;
 
 inline def spotValue(x, y, ore)
     var result;
     // Written in pure mlog for speed.
     // Will be rewritten to Mindcode when native support for select gets implemented.
-    mlog(in x, in y, in ore, out result) {
+    mlog(in x, in y, in ore, in ORE, in WALL, out result) {
         ucontrol getBlock x y type building floor
-        select value equal floor ore $ORE 0
+        select value equal floor ore ORE 0
         sensor solid type @solid
         select result notEqual solid false WALL value
     }
@@ -89,18 +89,23 @@ def computeRowValues(x, y, ore, size)
         );
     elsif size == 3 then
         // 3x3 drill
+        // Using parentheses to help the optimizer
         return packcolor(
-            x1 + x2 + x3,   // drill at x - 1
-            x2 + x3 + x4,   // drill at x
+            x1 + (x2 + x3),   // drill at x - 1
+            (x2 + x3) + x4,   // drill at x
             x3 + x4 + x5,   // drill at x + 1
             0);
     else
         // 4x4 drill
+        // Using parentheses to help the optimizer
+        var x0 = spotValue(x - 3, y, ore);
+        var x6 = spotValue(x + 3, y, ore);
         return packcolor(
-            x1 + x2 + x3 + x4,   // drill at x - 0.5
-            x2 + x3 + x4 + x5,   // drill at x + 0.5
-            0,
-            0);
+            min(WALL, x0 + (x1 + x2 + x3)),   // drill at x - 1.5
+            min(WALL, (x1 + x2 + x3) + x4),   // drill at x - 0.5
+            min(WALL, x2 + (x3 + x4 + x5)),   // drill at x + 0.5
+            min(WALL, (x3 + x4 + x5) + x6)    // drill at x + 1.5
+        );
     end;
 end;
 
@@ -126,6 +131,7 @@ inline void updateRowPositions2x2(dy, rowSum, ref bestX, ref bestY, ref best)
     updatePosition(-0.5, dy, col2, ref bestX, ref bestY, ref best);
     updatePosition(+0.5, dy, col3, ref bestX, ref bestY, ref best);
     updatePosition(+1.5, dy, col4, ref bestX, ref bestY, ref best);
+//    remark($"updateRowPositions2x2: $bestX, $bestY: ${best * 255}\n");
 end;
 
 // Finds the best possible column position over a sum of row values
@@ -140,10 +146,12 @@ end;
 
 // Finds the best possible column position over a sum of row values
 inline void updateRowPositions4x4(dy, rowSum, ref bestX, ref bestY, ref best)
-    var col1, col2;
-    unpackcolor(out col1, out col2, , , rowSum);
-    updatePosition(-0.5, dy, col1, ref bestX, ref bestY, ref best);
-    updatePosition(+0.5, dy, col2, ref bestX, ref bestY, ref best);
+    var col1, col2, col3, col4;
+    unpackcolor(out col1, out col2, out col3, out col4, rowSum);
+    updatePosition(-1.5, dy, col1, ref bestX, ref bestY, ref best);
+    updatePosition(-0.5, dy, col2, ref bestX, ref bestY, ref best);
+    updatePosition(+0.5, dy, col3, ref bestX, ref bestY, ref best);
+    updatePosition(+1.5, dy, col4, ref bestX, ref bestY, ref best);
 //    remark($"updateRowPositions4x4: $bestX, $bestY: ${best * 255}\n");
 end;
 
@@ -172,8 +180,8 @@ inline def findBestPosition(x, y, ore, size, ref bestX, ref bestY)
 //        remark($"findBestPosition: $bestX, $bestY: ${best * 255}\n");
     elsif size == 3 then
         // 3x3 drill
-        var row1 = y1 + y2 + y3;    // drill at y - 1
-        var row2 = y2 + y3 + y4;    // drill at y
+        var row1 = y1 + (y2 + y3);  // drill at y - 1
+        var row2 = (y2 + y3) + y4;  // drill at y
         var row3 = y3 + y4 + y5;    // drill at y + 1
 
         updateRowPositions3x3(-1, row1, ref bestX, ref bestY, ref best);
@@ -182,15 +190,21 @@ inline def findBestPosition(x, y, ore, size, ref bestX, ref bestY)
 //        remark($"findBestPosition: $bestX, $bestY: ${best * 255}\n");
     else
         // 4x4 drill
-        var row1 = y1 + y2 + y3 + y4;    // drill at y - 0.5
-        var row2 = y2 + y3 + y4 + y5;    // drill at y + 0.5
+        var y0 = computeRowValues(x, y - 3, ore, size);
+        var y6 = computeRowValues(x, y + 3, ore, size);
+        var row1 = y0 + (y1 + y2 + y3);     // drill at y - 1.5
+        var row2 = (y1 + y2 + y3) + y4;     // drill at y - 0.5
+        var row3 = y2 + (y3 + y4 + y5);     // drill at y + 0.5
+        var row4 = (y3 + y4 + y5) + y6;     // drill at y + 1.5
 
-        updateRowPositions4x4(-0.5, row1, ref bestX, ref bestY, ref best);
-        updateRowPositions4x4(+0.5, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(-1.5, row1, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(-0.5, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(+0.5, row3, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(+1.5, row4, ref bestX, ref bestY, ref best);
 //        remark($"findBestPosition: $bestX, $bestY: ${best * 255}\n");
     end;
 
-    debugPause();
+//    debugPause();
 
     return best * 255;
 end;
@@ -237,6 +251,7 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
 //        remark($"Core dist: $coreDist\n");
 //        remark($"Unit dist: ${round(unitDist)}\n");
 //        debugPrintSpot("");
+//        debugPause();
 
         if coreDist >= 7 then
             if unitDist < distance then
@@ -250,7 +265,10 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
                     mapProgress = angle * angle;
                     printflush(message1);
                     return true;
-                 end;
+                end;
+
+//                remark("Already visited.");
+//                debugPause();
             end;
         end;
 
@@ -313,10 +331,11 @@ end;
 //        Setting limit to 10 means we'll try it all over the map
 // Returns true if something was found
 noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity)
+    ubind(unit);
+
     locationsStart = locations;
     coreX = x;
     coreY = y;
-    ubind(unit);
 
     mapSpots = dx = dy = capacity = 0;
 
@@ -334,7 +353,7 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
     var oreX = 0, oreY = 0;
 
     while true do
-        var best = 0, bestX = x, bestY = y;
+        var best = -1, bestX = x, bestY = y;
 
         // Recompute maximum distance
         var maxDistance = (limit - capacity) * attenuationRate;
@@ -394,9 +413,10 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
 
 //        remark($"Storing best to memory: $best, $bestX, $bestY\n");
 
-        saveLocation(item, best, bestX, bestY);
-
-        debugPrintSpot("");
+        if best >= 0 then
+            saveLocation(item, best, bestX, bestY);
+//            debugPrintSpot("");
+        end;
     end;
 end;
 
@@ -420,16 +440,19 @@ inline def visited(in x, in y)
 end;
 
 inline void saveLocation(item, value, x, y)
+//    remark($"Saving spot #${count+1}:\nValue: $value at $x, $y\n");
     bank1[++count] = item.@id;
     bank1[++count] = value;
     bank1[++count] = x;
     bank1[++count] = y;
     locations++;
+//    remark($"Locations: $locations");
+    debugPause();
 end;
 
 inline void debugPrintSpot(text)
     if debug then
-        remark("Time: ", round(@second - start), " s\n");
+//        remark("Time: ", round(@second - start), " s\n");
         var index = 4 * locationsStart;
         for var i in locationsStart ... locations do
             // We skipped the first index
@@ -437,7 +460,7 @@ inline void debugPrintSpot(text)
             var x = bank1[++index];
             var y = bank1[++index];
             index++;
-            remark($"$x, $y: $size\n");
+//            remark($"$x, $y: $size\n");
         end;
         print(text);
         printflush(message1);
@@ -639,15 +662,15 @@ noinline def layoutThoriumDrillAtLocation()
             0b1000001);
 
     // The extractor mask
-    var extractorMask = createFixedMatrix(0b11, 0b11);
+    var mask2x2 = createFixedMatrix(0b11, 0b11);
 
     printMask("terrainMask:", terrainMask);
     printMask("cornersMask:", cornersMask);
-    printMask("extractorMask:", extractorMask);
+    printMask("mask2x2:", mask2x2);
     debugStop("");
 
     var r, c;
-    var shift = findPossiblePlacement(cornersMask, extractorMask, 2, 2, out c, out r);
+    var shift = findPossiblePlacement(cornersMask, mask2x2, 2, 2, out c, out r);
 
     // When the water extractor can't be built, we'll do without.
     if shift >= 0 then
@@ -655,14 +678,22 @@ noinline def layoutThoriumDrillAtLocation()
         water1X = drillX + 0.5 + c;
         water1Y = drillY + 0.5 + r;
 
-        // Shift the mask in place (may need it later)
-        extractorMask <<= shift;
-
-        // Add it to the terrain mask
-        terrainMask |= extractorMask;
+        // Add it to the terrain masks
+        terrainMask |= (mask2x2 << shift);
+        cornersMask |= (mask2x2 << shift);
     end;
 
-//    printMask("extractor:", extractorMask);
+    // Secondly, reserve space for a container. The same constrains as for the water extractor apply
+    shift = findPossiblePlacement(cornersMask, mask2x2, 2, 2, out c, out r);
+    if shift >= 0 then
+        // Obtain water extractor position
+        containerX = drillX + 0.5 + c;
+        containerY = drillY + 0.5 + r;
+
+        // Add it to the terrain mask
+        terrainMask |= (mask2x2 << shift);
+    end;
+
 //    printMask("new terrain mask:", terrainMask);
 //    remark($"Shift: $shift, r: $r, c: $c\n");
 //    remark($"water1X: $water1X, water1Y: $water1Y\n");
@@ -679,12 +710,12 @@ noinline def layoutThoriumDrillAtLocation()
     for var sx in 3, 3, -3, -3; var sy in 3, -3, 3, -3 do
         // Create the new terrain mask
         // Shift the terrain mask in the opposite direction!
-        var newX = drillX + sx;
-        var newY = drillY + sy;
+        var newX = drillX - sx;
+        var newY = drillY - sy;
 
         var newTerrainMask = createTerrainMask(newX, newY);
 
-        var shiftedMask = shiftMask(terrainMask, -sx, -sy);
+        var shiftedMask = shiftMask(terrainMask, sx, sy);
         var combinedMask = newTerrainMask | shiftedMask;
 
 //        printMask("shiftedMask:", shiftedMask);
@@ -695,7 +726,7 @@ noinline def layoutThoriumDrillAtLocation()
 //        remark($"New center: ${drillX + sx}, ${drillY + sy}\n");
 //        debugPause();
 
-        if tryPlaceGenerator(drillX + sx, drillY + sy, combinedMask, generatorHorizontal, generatorVertical) then return true; end;
+        if tryPlaceGenerator(drillX - sx, drillY - sy, combinedMask, generatorHorizontal, generatorVertical) then return true; end;
     end;
 
     // We can't place the accessories, but we can place the drill
@@ -712,6 +743,11 @@ remote def layoutThoriumDrill(x, y, unit, limit)
     end;
 
     layoutThoriumDrillAtLocation();
+end;
+
+remote void stopLocation()
+    mapProgress = mapTotal = mapAction = mapSpots = 0;
+    unbind();
 end;
 
 // DEBUG
@@ -754,31 +790,48 @@ const debugMask = false;
 //    printflush(message1);
 //    var core, x, y;
 //    do
-//        ubind(@flare);
+//        ubind(@poly);
 //        core = ulocate(:building, :core, false, out x, out y);
 //    while core == null;
 //
 //    moveTo(x, y, 1);
 //
 //    start = @second;
-//    if true then
+////    if true then
 //        var dx, dy, capacity;
-//        findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 1e9, out dx, out dy, out capacity);
-//        println($"Found $capacity at $dx, $dy.");
-//    else
-//        drillX = 129;
-//        drillY = 96;
-//        layoutThoriumDrillAtLocation();
+//        var ox = 131;
+//        var oy = 118;
+//        moveTo(ox, oy);
+//        var score = findBestPosition(ox, oy, @ore-titanium, 4, ref dx, ref dy);
+//        moveTo(x, y);
+//        println($"$score at $, $", ox + dx, oy + dy);
+//        printflush(message1);
+//        stop();
 //
-//        buildAt(drillX, drillY, @laser-drill);
-//        buildAt(water1X, water1Y, @water-extractor);
-//        buildAt(water2X, water2Y, @water-extractor);
-//        buildAt(generatorX, generatorY, @steam-generator);
-//        buildAt(nodeX, nodeY, @power-node);
-//        buildAt(panelX, panelY, @solar-panel);
-//    end;
-//
-//    debugStop("Finished.");
+//////        findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 2, out dx, out dy, out capacity);
+//////        println($"Found $capacity at $dx, $dy.");
+//////        printflush(message1);
+//////        debugPause();
+//////        ubind(@poly);
+//////        buildAt(dx, dy, @blast-drill);
+//////        wait(1);
+//////        ubind(@flare);
+////
+////        //findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 1e9, out dx, out dy, out capacity);
+////    else
+////        drillX = 129;
+////        drillY = 96;
+////        layoutThoriumDrillAtLocation();
+////
+////        buildAt(drillX, drillY, @laser-drill);
+////        buildAt(water1X, water1Y, @water-extractor);
+////        buildAt(water2X, water2Y, @water-extractor);
+////        buildAt(generatorX, generatorY, @steam-generator);
+////        buildAt(nodeX, nodeY, @power-node);
+////        buildAt(panelX, panelY, @solar-panel);
+////    end;
+////
+////    debugStop("Finished.");
 //end;
 //
 //inline void buildAt(x, y, block)

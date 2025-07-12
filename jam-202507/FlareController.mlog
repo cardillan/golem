@@ -1,699 +1,543 @@
-jump 17 always 0 0
-jump 689 always 0 0
-jump 584 always 0 0
-jump 576 always 0 0
-draw triangle message1 .core .coreX .coreY .drills .outgoing
-draw triangle .servicedDrills .thoriumDrill .thoriumDrillX .thoriumDrillY .thoriumGenerator .thoriumGeneratorX
-draw triangle .thoriumGeneratorY .titaniumDrills*0 .titaniumDrills*1 .titaniumDrills*10 .titaniumDrills*11 .titaniumDrills*12
-draw triangle .titaniumDrills*13 .titaniumDrills*14 .titaniumDrills*15 .titaniumDrills*16 .titaniumDrills*17 .titaniumDrills*18
-draw triangle .titaniumDrills*19 .titaniumDrills*2 .titaniumDrills*20 .titaniumDrills*21 .titaniumDrills*22 .titaniumDrills*23
-draw triangle .titaniumDrills*24 .titaniumDrills*25 .titaniumDrills*26 .titaniumDrills*27 .titaniumDrills*28 .titaniumDrills*29
-draw triangle .titaniumDrills*3 .titaniumDrills*30 .titaniumDrills*31 .titaniumDrills*32 .titaniumDrills*33 .titaniumDrills*34
-draw triangle .titaniumDrills*35 .titaniumDrills*36 .titaniumDrills*37 .titaniumDrills*38 .titaniumDrills*39 .titaniumDrills*4
-draw triangle .titaniumDrills*40 .titaniumDrills*41 .titaniumDrills*42 .titaniumDrills*43 .titaniumDrills*44 .titaniumDrills*45
-draw triangle .titaniumDrills*46 .titaniumDrills*47 .titaniumDrills*48 .titaniumDrills*49 .titaniumDrills*5 .titaniumDrills*6
-draw triangle .titaniumDrills*7 .titaniumDrills*8 .titaniumDrills*9 :addThoriumDrill:drill :addThoriumDrill:generator :addTitaniumDrill:drill
-draw triangle :backgroundProcess:firstUnit :backgroundProcess:flag :backgroundProcess:serviced :backgroundProcess:thoriumFlare :handleThoriumFlare:item :handleTitaniumFlare:allDrills
-draw triangle :handleTitaniumFlare:drill :handleTitaniumFlare:drill.1 :handleTitaniumFlare:index :handleTitaniumFlare:item :start:aCore :start:drill
-set .drills 0
-set .outgoing true
-set .servicedDrills 0
-set *signature "5c2f0f03eecc869a:v1"
-jump 574 equal .core null
-set :backgroundProcess:thoriumFlare null
-set :backgroundProcess:firstUnit null
-set :backgroundProcess:serviced 0
-ubind @flare
-op equal *tmp2 :backgroundProcess:firstUnit null
-sensor *tmp3 :backgroundProcess:firstUnit @dead
-op or *tmp5 *tmp2 *tmp3
-jump 31 equal *tmp5 false
-set :backgroundProcess:firstUnit @unit
-jump 34 notEqual @unit :backgroundProcess:firstUnit
-set .servicedDrills :backgroundProcess:serviced
-set :backgroundProcess:serviced 0
-sensor *tmp10 @unit @controller
-jump 38 equal *tmp10 @this
-sensor *tmp13 @unit @controlled
-jump 25 notEqual *tmp13 0
-sensor *tmp15 :backgroundProcess:thoriumFlare @controller
-jump 41 equal *tmp15 @this
-set :backgroundProcess:thoriumFlare @unit
-jump 63 notEqual @unit :backgroundProcess:thoriumFlare
-sensor :handleThoriumFlare:item @unit @firstItem
-jump 48 notEqual :handleThoriumFlare:item @coal
-set .outgoing true
-ucontrol approach .thoriumGeneratorX .thoriumGeneratorY 4 0 0
-ucontrol itemDrop .thoriumGenerator 10 0 0 0
-jump 25 always 0 0
-jump 53 notEqual :handleThoriumFlare:item @thorium
-set .outgoing false
-ucontrol approach .coreX .coreY 4 0 0
-ucontrol itemDrop .core 10 0 0 0
-jump 25 always 0 0
-jump 56 equal :handleThoriumFlare:item null
-ucontrol itemDrop @air 10 0 0 0
-jump 25 always 0 0
-jump 60 equal .outgoing false
-ucontrol approach .thoriumDrillX .thoriumDrillY 4 0 0
-ucontrol itemTake .thoriumDrill @thorium 10 0 0
-jump 25 always 0 0
-ucontrol approach .coreX .coreY 4 0 0
-ucontrol itemTake .core @coal 10 0 0
-jump 25 always 0 0
-sensor :backgroundProcess:flag @unit @flag
-print "Found flare with a flag {0}\n"
-format :backgroundProcess:flag
-op greaterThan *tmp30 :backgroundProcess:flag 1
-op lessThanEq *tmp31 :backgroundProcess:flag .drills
-op land *tmp32 *tmp30 *tmp31
-jump 78 equal *tmp32 false
-op sub *tmp34 :backgroundProcess:flag 1
-op shl *tmp35 1 *tmp34
-op and *tmp36 :backgroundProcess:serviced *tmp35
-jump 76 equal *tmp36 false
-ucontrol flag 0 0 0 0 0
-jump 79 always 0 0
-op or :backgroundProcess:serviced :backgroundProcess:serviced *tmp35
-jump 79 always 0 0
-ucontrol flag 0 0 0 0 0
-sensor *tmp40 @unit @flag
-op sub :handleTitaniumFlare:index *tmp40 1
-op lessThan *tmp42 :handleTitaniumFlare:index 0
-op greaterThanEq *tmp43 :handleTitaniumFlare:index .drills
-op or *tmp44 *tmp42 *tmp43
-jump 450 equal *tmp44 false
-print "Looking for a drill for the flare\nservicedDrills: {0}\ndrills: {0}\nallDrills: {0}\n"
-op shl *tmp46 1 .drills
-op sub :handleTitaniumFlare:allDrills *tmp46 1
-format .servicedDrills
-format .drills
-format :handleTitaniumFlare:allDrills
-op sub *tmp48 :handleTitaniumFlare:allDrills 1
-jump 572 equal .servicedDrills *tmp48
-set :handleTitaniumFlare:index 0
-set :handleTitaniumFlare:drill .titaniumDrills*0
-jump 572 greaterThan 0 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 100 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 1
-jump 444 equal *tmp58 0
-set :handleTitaniumFlare:index 1
-set :handleTitaniumFlare:drill .titaniumDrills*1
-jump 572 greaterThan 1 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 107 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 2
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 1 1
-set :handleTitaniumFlare:drill .titaniumDrills*2
-jump 572 greaterThan 2 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 114 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 4
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 2 1
-set :handleTitaniumFlare:drill .titaniumDrills*3
-jump 572 greaterThan 3 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 121 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 8
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 3 1
-set :handleTitaniumFlare:drill .titaniumDrills*4
-jump 572 greaterThan 4 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 128 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 16
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 4 1
-set :handleTitaniumFlare:drill .titaniumDrills*5
-jump 572 greaterThan 5 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 135 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 32
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 5 1
-set :handleTitaniumFlare:drill .titaniumDrills*6
-jump 572 greaterThan 6 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 142 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 64
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 6 1
-set :handleTitaniumFlare:drill .titaniumDrills*7
-jump 572 greaterThan 7 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 149 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 128
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 7 1
-set :handleTitaniumFlare:drill .titaniumDrills*8
-jump 572 greaterThan 8 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 156 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 256
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 8 1
-set :handleTitaniumFlare:drill .titaniumDrills*9
-jump 572 greaterThan 9 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 163 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 512
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 9 1
-set :handleTitaniumFlare:drill .titaniumDrills*10
-jump 572 greaterThan 10 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 170 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 1024
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 10 1
-set :handleTitaniumFlare:drill .titaniumDrills*11
-jump 572 greaterThan 11 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 177 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 2048
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 11 1
-set :handleTitaniumFlare:drill .titaniumDrills*12
-jump 572 greaterThan 12 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 184 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 4096
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 12 1
-set :handleTitaniumFlare:drill .titaniumDrills*13
-jump 572 greaterThan 13 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 191 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 8192
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 13 1
-set :handleTitaniumFlare:drill .titaniumDrills*14
-jump 572 greaterThan 14 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 198 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 16384
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 14 1
-set :handleTitaniumFlare:drill .titaniumDrills*15
-jump 572 greaterThan 15 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 205 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 32768
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 15 1
-set :handleTitaniumFlare:drill .titaniumDrills*16
-jump 572 greaterThan 16 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 212 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 65536
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 16 1
-set :handleTitaniumFlare:drill .titaniumDrills*17
-jump 572 greaterThan 17 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 219 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 131072
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 17 1
-set :handleTitaniumFlare:drill .titaniumDrills*18
-jump 572 greaterThan 18 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 226 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 262144
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 18 1
-set :handleTitaniumFlare:drill .titaniumDrills*19
-jump 572 greaterThan 19 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 233 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 524288
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 19 1
-set :handleTitaniumFlare:drill .titaniumDrills*20
-jump 572 greaterThan 20 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 240 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 1048576
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 20 1
-set :handleTitaniumFlare:drill .titaniumDrills*21
-jump 572 greaterThan 21 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 247 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 2097152
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 21 1
-set :handleTitaniumFlare:drill .titaniumDrills*22
-jump 572 greaterThan 22 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 254 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 4194304
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 22 1
-set :handleTitaniumFlare:drill .titaniumDrills*23
-jump 572 greaterThan 23 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 261 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 8388608
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 23 1
-set :handleTitaniumFlare:drill .titaniumDrills*24
-jump 572 greaterThan 24 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 268 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 16777216
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 24 1
-set :handleTitaniumFlare:drill .titaniumDrills*25
-jump 572 greaterThan 25 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 275 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 33554432
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 25 1
-set :handleTitaniumFlare:drill .titaniumDrills*26
-jump 572 greaterThan 26 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 282 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 67108864
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 26 1
-set :handleTitaniumFlare:drill .titaniumDrills*27
-jump 572 greaterThan 27 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 289 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 134217728
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 27 1
-set :handleTitaniumFlare:drill .titaniumDrills*28
-jump 572 greaterThan 28 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 296 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 268435456
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 28 1
-set :handleTitaniumFlare:drill .titaniumDrills*29
-jump 572 greaterThan 29 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 303 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 536870912
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 29 1
-set :handleTitaniumFlare:drill .titaniumDrills*30
-jump 572 greaterThan 30 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 310 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 1073741824
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 30 1
-set :handleTitaniumFlare:drill .titaniumDrills*31
-jump 572 greaterThan 31 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 317 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 2147483648
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 31 1
-set :handleTitaniumFlare:drill .titaniumDrills*32
-jump 572 greaterThan 32 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 324 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 4294967296
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 32 1
-set :handleTitaniumFlare:drill .titaniumDrills*33
-jump 572 greaterThan 33 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 331 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 8589934592
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 33 1
-set :handleTitaniumFlare:drill .titaniumDrills*34
-jump 572 greaterThan 34 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 338 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 17179869184
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 34 1
-set :handleTitaniumFlare:drill .titaniumDrills*35
-jump 572 greaterThan 35 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 345 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 34359738368
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 35 1
-set :handleTitaniumFlare:drill .titaniumDrills*36
-jump 572 greaterThan 36 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 352 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 68719476736
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 36 1
-set :handleTitaniumFlare:drill .titaniumDrills*37
-jump 572 greaterThan 37 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 359 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 137438953472
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 37 1
-set :handleTitaniumFlare:drill .titaniumDrills*38
-jump 572 greaterThan 38 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 366 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 274877906944
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 38 1
-set :handleTitaniumFlare:drill .titaniumDrills*39
-jump 572 greaterThan 39 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 373 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 549755813888
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 39 1
-set :handleTitaniumFlare:drill .titaniumDrills*40
-jump 572 greaterThan 40 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 380 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 1099511627776
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 40 1
-set :handleTitaniumFlare:drill .titaniumDrills*41
-jump 572 greaterThan 41 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 387 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 2199023255552
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 41 1
-set :handleTitaniumFlare:drill .titaniumDrills*42
-jump 572 greaterThan 42 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 394 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 4398046511104
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 42 1
-set :handleTitaniumFlare:drill .titaniumDrills*43
-jump 572 greaterThan 43 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 401 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 8796093022208
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 43 1
-set :handleTitaniumFlare:drill .titaniumDrills*44
-jump 572 greaterThan 44 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 408 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 17592186044416
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 44 1
-set :handleTitaniumFlare:drill .titaniumDrills*45
-jump 572 greaterThan 45 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 415 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 35184372088832
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 45 1
-set :handleTitaniumFlare:drill .titaniumDrills*46
-jump 572 greaterThan 46 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 422 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 70368744177664
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 46 1
-set :handleTitaniumFlare:drill .titaniumDrills*47
-jump 572 greaterThan 47 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 429 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 140737488355328
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 47 1
-set :handleTitaniumFlare:drill .titaniumDrills*48
-jump 572 greaterThan 48 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 436 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 281474976710656
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 48 1
-set :handleTitaniumFlare:drill .titaniumDrills*49
-jump 572 greaterThan 49 .drills
-sensor *tmp54 :handleTitaniumFlare:drill @totalItems
-jump 443 lessThanEq *tmp54 5
-op and *tmp58 .servicedDrills 562949953421312
-jump 444 equal *tmp58 0
-op add :handleTitaniumFlare:index 49 1
-print "Found drill {0}\n"
-format :handleTitaniumFlare:index
-op shl *tmp62 1 :handleTitaniumFlare:index
-op or .servicedDrills .servicedDrills *tmp62
-op add *tmp63 :handleTitaniumFlare:index 1
-ucontrol flag *tmp63 0 0 0 0
-op mul *tmp86 :handleTitaniumFlare:index 2
-op add @counter *tmp86 452
-set :handleTitaniumFlare:drill.1 .titaniumDrills*0
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*1
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*2
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*3
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*4
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*5
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*6
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*7
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*8
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*9
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*10
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*11
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*12
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*13
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*14
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*15
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*16
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*17
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*18
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*19
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*20
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*21
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*22
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*23
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*24
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*25
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*26
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*27
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*28
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*29
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*30
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*31
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*32
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*33
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*34
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*35
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*36
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*37
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*38
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*39
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*40
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*41
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*42
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*43
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*44
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*45
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*46
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*47
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*48
-jump 551 always 0 0
-set :handleTitaniumFlare:drill.1 .titaniumDrills*49
-sensor :handleTitaniumFlare:item @unit @firstItem
-sensor *tmp67 :handleTitaniumFlare:drill.1 @x
-sensor *tmp68 :handleTitaniumFlare:drill.1 @y
-print "Drill: {0} at {0}, {0}\n"
-format :handleTitaniumFlare:drill.1
-format *tmp67
-format *tmp68
-jump 563 notEqual :handleTitaniumFlare:item @titanium
-print "Dropping titanium\n"
-ucontrol approach .coreX .coreY 4 0 0
-ucontrol itemDrop .core 10 0 0 0
-jump 572 always 0 0
-jump 570 notEqual :handleTitaniumFlare:item null
-print "Fetching titanium\n"
-sensor *tmp73 :handleTitaniumFlare:drill.1 @x
-sensor *tmp74 :handleTitaniumFlare:drill.1 @y
-ucontrol approach *tmp73 *tmp74 4 0 0
-ucontrol itemTake :handleTitaniumFlare:drill.1 @titanium 10 0 0
-jump 572 always 0 0
-print "Wrong item\n"
-ucontrol itemDrop @air 10 0 0 0
-printflush message1
-jump 25 always 0 0
-wait 1e12
-jump 21 always 0 0
-set .core :start:aCore
-sensor .coreX .core @x
-sensor .coreY .core @y
-set .titaniumDrills*0 :start:drill
-set .drills 1
-wait 1
-set :start*finished true
-jump 21 always 0 0
-jump 687 greaterThanEq .drills 49
-op mul *tmp87 .drills 2
-op add @counter *tmp87 587
-set .titaniumDrills*0 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*1 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*2 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*3 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*4 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*5 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*6 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*7 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*8 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*9 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*10 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*11 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*12 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*13 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*14 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*15 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*16 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*17 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*18 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*19 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*20 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*21 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*22 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*23 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*24 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*25 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*26 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*27 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*28 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*29 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*30 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*31 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*32 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*33 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*34 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*35 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*36 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*37 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*38 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*39 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*40 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*41 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*42 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*43 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*44 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*45 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*46 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*47 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*48 :addTitaniumDrill:drill
-jump 686 always 0 0
-set .titaniumDrills*49 :addTitaniumDrill:drill
-op add .drills .drills 1
-set :addTitaniumDrill*finished true
-jump 21 always 0 0
-set .thoriumDrill :addThoriumDrill:drill
-sensor .thoriumDrillX :addThoriumDrill:drill @x
-sensor .thoriumDrillY :addThoriumDrill:drill @y
-set .thoriumGenerator :addThoriumDrill:generator
-sensor .thoriumGeneratorX :addThoriumDrill:generator @x
-sensor .thoriumGeneratorY :addThoriumDrill:generator @y
-set :addThoriumDrill*finished true
-jump 21 always 0 0
-print "Compiled by Mindcode - github.com/cardillan/mindcode"
+# Mlog code compiled with support for symbolic labels
+# You can safely add/remove instructions, in most parts of the program
+# Pay closer attention to sections of the program manipulating @counter
+jump label_9 always 0 0
+jump label_392 always 0 0
+jump label_385 always 0 0
+draw triangle .core .coreX .coreY .drills .titaniumDrills*0 .titaniumDrills*1
+draw triangle .titaniumDrills*2 .titaniumDrills*3 .titaniumDrills*4 .titaniumDrills*5 .titaniumDrills*6 .titaniumDrills*7
+draw triangle .titaniumDrills*8 .titaniumDrills*9 .units*0 .units*1 .units*2 .units*3
+draw triangle .units*4 .units*5 .units*6 .units*7 .units*8 .units*9
+draw triangle :addTitaniumDrill:drill :backgroundProcess:drill :backgroundProcess:unit :findFreeUnit:first_unit :serviceDrill:item :start:aCore
+draw triangle :start:drill 0 0 0 0 0
+label_9:
+    set .drills 0
+    set *signature "ea15a0387a220137:v1"
+        # Function: void backgroundProcess()
+    label_11:
+        jump label_383 equal .core null
+    label_12:
+            set :backgroundProcess:drill .titaniumDrills*0
+            set :backgroundProcess:unit .units*0
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_35 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_21 notEqual @unit null
+                    set *tmp8 null
+                        jump label_33 always 0 0
+                label_21:
+                set :findFreeUnit:first_unit @unit
+                label_22:
+                    sensor *tmp11 @unit @controlled
+                    jump label_27 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_33 always 0 0
+                    label_27:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_30 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_30:
+                    ubind @flare
+                jump label_22 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_33:
+                set :backgroundProcess:unit *tmp8
+                jump label_48 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_35:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_41 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_48 always 0 0
+            label_41:
+                jump label_47 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_48 always 0 0
+                label_47:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_48:
+            set .units*0 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*1
+            set :backgroundProcess:unit .units*1
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_72 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_58 notEqual @unit null
+                    set *tmp8 null
+                        jump label_70 always 0 0
+                label_58:
+                set :findFreeUnit:first_unit @unit
+                label_59:
+                    sensor *tmp11 @unit @controlled
+                    jump label_64 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_70 always 0 0
+                    label_64:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_67 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_67:
+                    ubind @flare
+                jump label_59 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_70:
+                set :backgroundProcess:unit *tmp8
+                jump label_85 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_72:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_78 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_85 always 0 0
+            label_78:
+                jump label_84 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_85 always 0 0
+                label_84:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_85:
+            set .units*1 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*2
+            set :backgroundProcess:unit .units*2
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_109 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_95 notEqual @unit null
+                    set *tmp8 null
+                        jump label_107 always 0 0
+                label_95:
+                set :findFreeUnit:first_unit @unit
+                label_96:
+                    sensor *tmp11 @unit @controlled
+                    jump label_101 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_107 always 0 0
+                    label_101:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_104 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_104:
+                    ubind @flare
+                jump label_96 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_107:
+                set :backgroundProcess:unit *tmp8
+                jump label_122 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_109:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_115 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_122 always 0 0
+            label_115:
+                jump label_121 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_122 always 0 0
+                label_121:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_122:
+            set .units*2 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*3
+            set :backgroundProcess:unit .units*3
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_146 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_132 notEqual @unit null
+                    set *tmp8 null
+                        jump label_144 always 0 0
+                label_132:
+                set :findFreeUnit:first_unit @unit
+                label_133:
+                    sensor *tmp11 @unit @controlled
+                    jump label_138 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_144 always 0 0
+                    label_138:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_141 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_141:
+                    ubind @flare
+                jump label_133 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_144:
+                set :backgroundProcess:unit *tmp8
+                jump label_159 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_146:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_152 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_159 always 0 0
+            label_152:
+                jump label_158 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_159 always 0 0
+                label_158:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_159:
+            set .units*3 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*4
+            set :backgroundProcess:unit .units*4
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_183 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_169 notEqual @unit null
+                    set *tmp8 null
+                        jump label_181 always 0 0
+                label_169:
+                set :findFreeUnit:first_unit @unit
+                label_170:
+                    sensor *tmp11 @unit @controlled
+                    jump label_175 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_181 always 0 0
+                    label_175:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_178 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_178:
+                    ubind @flare
+                jump label_170 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_181:
+                set :backgroundProcess:unit *tmp8
+                jump label_196 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_183:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_189 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_196 always 0 0
+            label_189:
+                jump label_195 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_196 always 0 0
+                label_195:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_196:
+            set .units*4 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*5
+            set :backgroundProcess:unit .units*5
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_220 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_206 notEqual @unit null
+                    set *tmp8 null
+                        jump label_218 always 0 0
+                label_206:
+                set :findFreeUnit:first_unit @unit
+                label_207:
+                    sensor *tmp11 @unit @controlled
+                    jump label_212 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_218 always 0 0
+                    label_212:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_215 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_215:
+                    ubind @flare
+                jump label_207 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_218:
+                set :backgroundProcess:unit *tmp8
+                jump label_233 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_220:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_226 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_233 always 0 0
+            label_226:
+                jump label_232 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_233 always 0 0
+                label_232:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_233:
+            set .units*5 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*6
+            set :backgroundProcess:unit .units*6
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_257 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_243 notEqual @unit null
+                    set *tmp8 null
+                        jump label_255 always 0 0
+                label_243:
+                set :findFreeUnit:first_unit @unit
+                label_244:
+                    sensor *tmp11 @unit @controlled
+                    jump label_249 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_255 always 0 0
+                    label_249:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_252 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_252:
+                    ubind @flare
+                jump label_244 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_255:
+                set :backgroundProcess:unit *tmp8
+                jump label_270 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_257:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_263 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_270 always 0 0
+            label_263:
+                jump label_269 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_270 always 0 0
+                label_269:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_270:
+            set .units*6 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*7
+            set :backgroundProcess:unit .units*7
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_294 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_280 notEqual @unit null
+                    set *tmp8 null
+                        jump label_292 always 0 0
+                label_280:
+                set :findFreeUnit:first_unit @unit
+                label_281:
+                    sensor *tmp11 @unit @controlled
+                    jump label_286 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_292 always 0 0
+                    label_286:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_289 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_289:
+                    ubind @flare
+                jump label_281 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_292:
+                set :backgroundProcess:unit *tmp8
+                jump label_307 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_294:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_300 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_307 always 0 0
+            label_300:
+                jump label_306 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_307 always 0 0
+                label_306:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_307:
+            set .units*7 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*8
+            set :backgroundProcess:unit .units*8
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_331 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_317 notEqual @unit null
+                    set *tmp8 null
+                        jump label_329 always 0 0
+                label_317:
+                set :findFreeUnit:first_unit @unit
+                label_318:
+                    sensor *tmp11 @unit @controlled
+                    jump label_323 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_329 always 0 0
+                    label_323:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_326 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_326:
+                    ubind @flare
+                jump label_318 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_329:
+                set :backgroundProcess:unit *tmp8
+                jump label_344 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_331:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_337 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_344 always 0 0
+            label_337:
+                jump label_343 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_344 always 0 0
+                label_343:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_344:
+            set .units*8 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*9
+            set :backgroundProcess:unit .units*9
+            jump label_12 equal :backgroundProcess:drill null
+            sensor *tmp5 :backgroundProcess:unit @controller
+            jump label_368 equal *tmp5 @this
+                # Function: def findFreeUnit(in unit_type, in initial_flag)
+                ubind @flare
+                jump label_354 notEqual @unit null
+                    set *tmp8 null
+                        jump label_366 always 0 0
+                label_354:
+                set :findFreeUnit:first_unit @unit
+                label_355:
+                    sensor *tmp11 @unit @controlled
+                    jump label_360 notEqual *tmp11 0
+                        ucontrol flag 0 0 0 0 0
+                        set *tmp8 @unit
+                            jump label_366 always 0 0
+                    label_360:
+                        sensor *tmp14 :findFreeUnit:first_unit @dead
+                        jump label_363 notEqual *tmp14 1
+                            set :findFreeUnit:first_unit @unit
+                        label_363:
+                    ubind @flare
+                jump label_355 notEqual :findFreeUnit:first_unit @unit
+                set *tmp8 null
+                label_366:
+                set :backgroundProcess:unit *tmp8
+                jump label_381 equal *tmp8 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_368:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_374 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_381 always 0 0
+            label_374:
+                jump label_380 notEqual :serviceDrill:item null
+                    sensor *tmp26 :backgroundProcess:drill @x
+                    sensor *tmp27 :backgroundProcess:drill @y
+                    ucontrol approach *tmp26 *tmp27 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_381 always 0 0
+                label_380:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_381:
+            set .units*9 :backgroundProcess:unit
+            jump label_12 always 0 0
+    label_383:
+        wait 1e12
+    jump label_11 always 0 0
+    # Function: remote void start(in aCore, in drill)
+label_385:
+    set .core :start:aCore
+    sensor .coreX .core @x
+    sensor .coreY .core @y
+    set .titaniumDrills*0 :start:drill
+    set .drills 1
+    set :start*finished true
+        jump label_11 always 0 0
+    # Function: remote void addTitaniumDrill(in drill)
+label_392:
+    jump label_415 greaterThanEq .drills 9
+        op mul *tmp35 .drills 2
+        op add @counter @counter *tmp35
+        set .titaniumDrills*0 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*1 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*2 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*3 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*4 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*5 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*6 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*7 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*8 :addTitaniumDrill:drill
+        jump label_414 always 0 0
+        set .titaniumDrills*9 :addTitaniumDrill:drill
+    label_414:
+        op add .drills .drills 1
+    label_415:
+    set :addTitaniumDrill*finished true
+        jump label_11 always 0 0
+        print "Compiled by Mindcode - github.com/cardillan/mindcode"
 
