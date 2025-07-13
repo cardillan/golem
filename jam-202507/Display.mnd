@@ -51,7 +51,6 @@ remote var
     polyTarget = 0,
     megaTarget = 0;
 
-
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
 inline void drawPrint(x, y, alignment)
@@ -61,6 +60,10 @@ end;
 inline void drawBold(x, y, alignment, text...)
     drawText(x, y, alignment, text);
     drawText(x + 1, y, alignment, text);
+end;
+
+inline void drawText(x, y, alignment)
+    drawPrint(x, y, alignment);
 end;
 
 inline void drawText(x, y, alignment, text...)
@@ -97,6 +100,25 @@ const HEADER1_Y = 176 - 15;
 const HEADER2_Y = HEADER1_Y - 56;
 const HEADER3_Y = HEADER2_Y - 4 * ROW_HEIGHT - 5;
 const HEADER4_Y = HEADER2_Y - 5 * ROW_HEIGHT - 5;
+
+var animation = -10;
+
+inline def lerp(from, to, ratio)
+    (1 - ratio) * from + ratio * to;
+end;
+
+inline void animate()
+    reset();
+    clear(0, 0, 32);
+    col(%[white]);
+    var ratio = max(0, min(animation / 30, 1));
+    var x = lerp(HEADER_X, 176 / 2, ratio);
+    var y = lerp(HEADER1_Y - 24, 176 / 2, ratio);
+    var size = lerp(32, 168, ratio);
+    image(x, y, @mega, size, 0);
+    drawflush(display1);
+    animation++;
+end;
 
 inline void drawHeader()
     col(%[gold]);
@@ -405,8 +427,6 @@ void main()
     printflush(null);
     drawflush(null);
 
-    //var factoryBackup;
-
     while true do
         if displayUnitReset then
             factoryProgress = reconstructorProgress = 0;
@@ -414,9 +434,11 @@ void main()
         end;
 
         if page == 0 then
-//            if factoryBackup == null then factoryBackup = airFactory; end;
-//            if airFactory == null then airFactory = factoryBackup; end;
-            updateDisplay();
+            if displayMegas > 0 then
+                animate();
+            else
+                updateDisplay();
+            end;
         elsif page == 1 then
             displayOreMap();
         else

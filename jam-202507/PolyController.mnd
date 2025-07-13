@@ -18,8 +18,27 @@ noinit volatile var
     thoriumDrone;
 
 remote var
-    thoriumContainer = null,
-    thoriumGenerator = null;
+    thoriumContainer = null;
+
+volatile var
+    thoriumLimit = 100,
+    thoriumContainerX = 0, thoriumContainerY = 0;
+
+remote void setThoriumContainer(container)
+    thoriumContainer = container;
+    thoriumContainerX = container.@x;
+    thoriumContainerY = container.@y;
+    thoriumLimit = thoriumContainer.@itemCapacity > 10 ? 100 : 0;
+end;
+
+remote void pause();
+    // Must be called asynchronously
+    do while true;
+end;
+
+remote void resume()
+    // Do nothing
+end;
 
 void backgroundProcess()
     if core == null then return; end;
@@ -32,8 +51,7 @@ void backgroundProcess()
         elsif thoriumDrone == null then
             thoriumDrone = @unit;
         else
-
-            if @unit == thoriumDrone and thoriumContainer.@thorium > max(0, thoriumContainer.@itemCapacity - 200) then
+            if @unit == thoriumDrone and thoriumContainer.@thorium > thoriumLimit then
                 serviceThoriumDrill();
                 continue;
             end;
@@ -134,7 +152,7 @@ void serviceThoriumDrill()
         itemDrop(core, CAPACITY);
     elsif item == null then
         // Take titanium
-        approach(thoriumContainer.@x, thoriumContainer.@y, RADIUS);
+        approach(thoriumContainerX, thoriumContainerY, RADIUS);
         itemTake(thoriumContainer, @thorium, CAPACITY);
     else
         itemDrop(@air, CAPACITY);

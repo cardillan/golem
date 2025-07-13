@@ -1,116 +1,98 @@
-jump 4 always 0 0
+jump 8 always 0 0
+jump 120 always 0 0
+jump 121 always 0 0
+jump 111 always 0 0
 draw triangle message1 .builder .coalX .coalY .core .coreX
-draw triangle .coreY .distance .onBase .thoriumContainer .thoriumDrone .thoriumGenerator
-draw triangle :backgroundProcess:flag :findOreToMine:dist :findOreToMine:floor :findOreToMine:x :findOreToMine:y :serviceThoriumDrill:item
+draw triangle .coreY .distance .thoriumContainer .thoriumContainerX .thoriumContainerY .thoriumDrone
+draw triangle .thoriumLimit :backgroundProcess:flag :findOreToMine:dist :findOreToMine:floor :findOreToMine:x :findOreToMine:y
+draw triangle :serviceThoriumDrill:item :setThoriumContainer:container 0 0 0 0
 set .thoriumContainer null
-set .thoriumGenerator null
+set .thoriumLimit 100
+set .thoriumContainerX 0
+set .thoriumContainerY 0
 set .coalX 0
 set .coalY 0
 set .distance 1000000000
-set .onBase true
 ubind @poly
 set .builder @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 10 equal .core null
-set *signature "0:v1"
-jump 127 equal .core null
+jump 15 equal .core null
+set *signature "5f95d6f938a8462e:v1"
+jump 109 equal .core null
 ubind @poly
-jump 21 notEqual @unit .builder
+jump 26 notEqual @unit .builder
 print "Found builder unit.\n"
 printflush message1
-jump 16 always 0 0
-jump 24 notEqual .thoriumDrone null
+jump 21 always 0 0
+jump 29 notEqual .thoriumDrone null
 set .thoriumDrone @unit
-jump 16 always 0 0
+jump 21 always 0 0
 op equal *tmp11 @unit .thoriumDrone
 sensor *tmp12 .thoriumContainer @thorium
-op greaterThan *tmp13 *tmp12 100
+op greaterThan *tmp13 *tmp12 .thoriumLimit
 op land *tmp14 *tmp11 *tmp13
-jump 63 equal *tmp14 false
+jump 45 equal *tmp14 false
 sensor :serviceThoriumDrill:item @unit @firstItem
-jump 44 equal .onBase false
-jump 38 notEqual :serviceThoriumDrill:item @coal
-sensor *tmp20 .thoriumGenerator @x
-sensor *tmp21 .thoriumGenerator @y
-ucontrol approach *tmp20 *tmp21 6 0 0
-ucontrol itemDrop .thoriumGenerator 30 0 0 0
-set .onBase false
-jump 16 always 0 0
-ucontrol approach .coreX .coreY 6 0 0
-jump 42 notEqual :serviceThoriumDrill:item null
-ucontrol itemTake .core @coal 8 0 0
-jump 16 always 0 0
-ucontrol itemDrop .core 30 0 0 0
-jump 16 always 0 0
-jump 49 notEqual :serviceThoriumDrill:item @thorium
+jump 39 notEqual :serviceThoriumDrill:item @thorium
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
-set .onBase true
-jump 16 always 0 0
-jump 55 notEqual :serviceThoriumDrill:item @coal
-sensor *tmp28 .thoriumGenerator @x
-sensor *tmp29 .thoriumGenerator @y
-ucontrol approach *tmp28 *tmp29 6 0 0
-ucontrol itemDrop .thoriumGenerator 30 0 0 0
-jump 16 always 0 0
-jump 61 notEqual :serviceThoriumDrill:item null
-sensor *tmp32 .thoriumContainer @x
-sensor *tmp33 .thoriumContainer @y
-ucontrol approach *tmp32 *tmp33 6 0 0
+jump 21 always 0 0
+jump 43 notEqual :serviceThoriumDrill:item null
+ucontrol approach .thoriumContainerX .thoriumContainerY 6 0 0
 ucontrol itemTake .thoriumContainer @thorium 30 0 0
-jump 16 always 0 0
+jump 21 always 0 0
 ucontrol itemDrop @air 30 0 0 0
-jump 16 always 0 0
+jump 21 always 0 0
 sensor :backgroundProcess:flag @unit @flag
 print "Unit flag: {0}\n"
 format :backgroundProcess:flag
-jump 101 notEqual :backgroundProcess:flag 0
-sensor *tmp37 @unit @firstItem
-jump 74 equal *tmp37 null
+jump 83 notEqual :backgroundProcess:flag 0
+sensor *tmp24 @unit @firstItem
+jump 56 equal *tmp24 null
 ucontrol itemDrop @air 30 0 0 0
-sensor *tmp40 @unit @firstItem
-jump 74 equal *tmp40 null
+sensor *tmp27 @unit @firstItem
+jump 56 equal *tmp27 null
 print "Holding wrong item.\n"
-jump 16 always 0 0
+jump 21 always 0 0
 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
-op sub *tmp45 :findOreToMine:x .coreX
-op sub *tmp46 :findOreToMine:y .coreY
-op len :findOreToMine:dist *tmp45 *tmp46
-jump 82 greaterThanEq :findOreToMine:dist .distance
+op sub *tmp32 :findOreToMine:x .coreX
+op sub *tmp33 :findOreToMine:y .coreY
+op len :findOreToMine:dist *tmp32 *tmp33
+jump 64 greaterThanEq :findOreToMine:dist .distance
 set .coalX :findOreToMine:x
 set .coalY :findOreToMine:y
 set .distance :findOreToMine:dist
 ucontrol approach .coalX .coalY 6 0 0
 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
-jump 91 notEqual :findOreToMine:floor @ore-coal
+jump 73 notEqual :findOreToMine:floor @ore-coal
 ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
 print "Found coal at {0}, {0}\n"
 format .coalX
 format .coalY
 ucontrol flag 2 0 0 0 0
-jump 16 always 0 0
-jump 97 equal :findOreToMine:floor null
+jump 21 always 0 0
+jump 79 equal :findOreToMine:floor null
 set .distance 1000000000
 print "Coal at {0}, {0} disappeared\n"
 format .coalX
 format .coalY
-jump 16 always 0 0
+jump 21 always 0 0
 print "Not close enough to {0}, {0}\n"
 format .coalX
 format .coalY
-jump 16 always 0 0
-jump 110 notEqual :backgroundProcess:flag 1
+jump 21 always 0 0
+jump 92 notEqual :backgroundProcess:flag 1
 print "Returning\n"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
-sensor *tmp58 @unit @firstItem
-jump 16 notEqual *tmp58 null
+sensor *tmp45 @unit @firstItem
+jump 21 notEqual *tmp45 null
 print "    Finished\n"
 ucontrol flag 0 0 0 0 0
-jump 16 always 0 0
+jump 21 always 0 0
 print "Mining"
-sensor *tmp61 @unit @firstItem
-jump 115 equal *tmp61 @coal
+sensor *tmp48 @unit @firstItem
+jump 97 equal *tmp48 @coal
 print " (dropping)"
 ucontrol itemDrop @air 30 0 0 0
 print " at {0}, "
@@ -118,14 +100,26 @@ format .coalX
 print .coalY
 ucontrol approach .coalX .coalY 6 0 0
 ucontrol mine .coalX .coalY 0 0 0
-sensor *tmp64 @unit @totalItems
-jump 125 lessThan *tmp64 30
+sensor *tmp51 @unit @totalItems
+jump 107 lessThan *tmp51 30
 print ", full"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol flag 1 0 0 0 0
 print "\n"
-jump 16 always 0 0
+jump 21 always 0 0
 wait 1e12
-jump 15 always 0 0
+jump 20 always 0 0
+set .thoriumContainer :setThoriumContainer:container
+sensor .thoriumContainerX :setThoriumContainer:container @x
+sensor .thoriumContainerY :setThoriumContainer:container @y
+set .thoriumLimit 0
+sensor *tmp56 .thoriumContainer @itemCapacity
+jump 118 lessThanEq *tmp56 10
+set .thoriumLimit 100
+set :setThoriumContainer*finished true
+jump 20 always 0 0
+jump 120 always 0 0
+set :resume*finished true
+jump 20 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

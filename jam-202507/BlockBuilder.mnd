@@ -6,12 +6,30 @@ module BlockController;
 
 linked
     bank1,
-    polyController = processor1,
-    timer = processor2;
+    timer = processor1,
+    polyController = processor2,
+    flareController = processor3,
+    display = processor4,
+    oreLocator = processor5;
+
+require "FlareController.mnd" remote flareController;
 
 noinit var
     core, coreX, coreY,
-    builder;
+    builder,
+    controller;
+
+remote display ".flareTarget" var displayFlareTarget;
+remote controller ".flareTarget" var controllerFlareTarget;
+remote oreLocator var searchFinished, locations;
+
+// Initialization
+begin
+    do
+        builder = ubind(@poly);
+        core = ulocate(:building, :core, false, out coreX, out coreY);
+    while core == null;
+end;
 
 const RADIUS =  6;
 
@@ -48,7 +66,7 @@ inline void logBlock(block)
     log(block.@id);
 end;
 
-remote def buildBlockAt(block, x, y, rotation, config)
+def buildBlockAtLocal(block, x, y, rotation, config)
     moveTo(x, y);
 
     var type;
@@ -76,6 +94,7 @@ remote def buildBlockAt(block, x, y, rotation, config)
             polyController.enabled = false;     // Brutal, but effective :)
             ubind(@poly);
             if @unit != builder then
+                if @unit.@itemCount then itemDrop(@air, 1000); end;
                 approach(x, y, RADIUS);
                 build(x, y, block, rotation, config);
             end;
@@ -90,9 +109,86 @@ remote def buildBlockAt(block, x, y, rotation, config)
     return building;
 end;
 
-begin
-    do
-        builder = ubind(@poly);
-        core = ulocate(:building, :core, false, out coreX, out coreY);
-    while core == null;
+remote def buildBlockAt(block, x, y, rotation, config)
+    return buildBlockAtLocal(block, x, y, rotation, config);
 end;
+
+remote def buildFirstTitaniumDrillAt(x, y)
+    var drill = buildBlockAtLocal(@pneumatic-drill, x, y, 0, null);
+    flareController.addTitaniumDrill(drill);
+    return drill;
+end;
+
+
+def getFloor(x, y)
+    var floor;
+    getBlock(x, y, , out floor);
+    return floor;
+end;
+
+def titaniumDrillScore(x, y, in out positive, in out negative)
+    case getFloor(x, y)
+        when @ore-titanium then positive++;
+        when @ore-copper, @ore-lead, @ore-scrap, @ore-coal then negative++;
+    end;
+end;
+
+volatile var positive = 0, negative = 0;
+
+void buildTitaniumDrill(x, y, in out count)
+    if count < 8 then
+        moveTo(x, y);
+        positive = 0; negative = 0;
+        titaniumDrillScore(x, y, in out positive, in out negative);
+        titaniumDrillScore(x, y + 0.5, in out positive, in out negative);
+        titaniumDrillScore(x + 0.5, y, in out positive, in out negative);
+        titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
+
+        if positive > negative && positive >= 2 then
+            var drill = buildBlockAtLocal(@pneumatic-drill, x, y, null, 0);
+            if drill != null then
+                flareController.addTitaniumDrill(drill);
+
+                // Build a flare to service this drill
+                setFlareTarget(++count);
+            end;
+        end;
+    end;
+end;
+
+remote void buildTitaniumDrills(aController, current)
+    controller = aController;
+    // The base is already autonomous. The drill needs copper and graphite.
+    // Both are provided in abundance at this moment
+
+    // We know we have one drill
+    var count = 1;
+
+    wait(1e-4);
+    wait(1e-4);
+
+    while !searchFinished do
+        while current < locations do
+            var index = current * 4;
+            var size = bank1[index + 1];
+            if size >= 3 then
+                var x = bank1[index + 2];
+                var y = bank1[index + 3];
+
+                buildTitaniumDrill(x - 1, y - 1, in out count);
+                buildTitaniumDrill(x + 1, y - 1, in out count);
+                buildTitaniumDrill(x - 1, y + 1, in out count);
+                buildTitaniumDrill(x + 1, y + 1, in out count);
+            end;
+            current++;
+        end;
+
+        if count >= 8 then break; end;
+    end;
+end;
+
+inline void setFlareTarget(target)
+    controllerFlareTarget = target;
+    displayFlareTarget = target;
+end;
+

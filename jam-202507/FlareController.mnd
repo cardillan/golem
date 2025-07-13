@@ -24,16 +24,6 @@ volatile var titaniumDrills[10];
 volatile var units[10];
 volatile var drills = 0;
 
-remote void start(aCore, drill)
-    core = aCore;
-    coreX = core.@x;
-    coreY = core.@y;
-    titaniumDrills[0] = drill;
-    drills = 1;
-
-    // The rest will happen in backgroundProcess
-end;
-
 remote void addTitaniumDrill(drill)
     // Keeps the last element always empty as a stop
     if drills < length(titaniumDrills) - 1 then
@@ -59,8 +49,14 @@ void serviceDrill(drill, unit)
 end;
 
 void backgroundProcess()
-    // Not yet started
-    if core == null then return; end;
+    if core == null then
+        do
+            ubind(@flare);
+            core = ulocate(:building, :core, false, out coreX, out coreY);
+        while core == null;
+        coreX = core.@x;
+        coreY = core.@y;
+    end;
 
     // This loops until interrupted by a remote function call
     while true do

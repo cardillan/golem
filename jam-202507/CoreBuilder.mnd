@@ -5,16 +5,21 @@
 #set goal = size;
 
 // Linked variables
-linked message1, bank1, processor1, processor2, processor3, processor4, processor5, processor6, processor7;
+linked message1, bank1, processor1, processor2, processor3, processor4, processor5, timer = processor6;
 
-noinit var display, controller, flareController, polyController, oreLocator, blockBuilder;
+noinit var controller;
+
+var display = processor1,
+    polyController = processor3,
+    blockBuilder = processor5,
+    oreLocator = processor4;
+
 
 require units;
 require "Actions.mnd";
 require "Display.mnd" remote display;
 require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote controller;
-require "FlareController.mnd" remote flareController;
 require "PolyController.mnd" remote polyController;
 require "BlockBuilder.mnd" remote blockBuilder;
 
@@ -53,9 +58,6 @@ var
     graphiteSurplus = 20,
     siliconSurplus = 20,
     metaglassSurplus = 20;
-
-var
-    flareControllerStarted = false;
 
 external bank1[511] logPosition = 511;
 
@@ -197,13 +199,6 @@ inline void supplyBase2()
 end;
 
 void supplyBase()
-    if !flareControllerStarted then
-        if controller.flares > 0 then
-            flareControllerStarted = true;
-            async(flareController.start(core, titaniumDrill));
-        end;
-    end;
-
     if thoriumContainer then
         supplyBase2();
     elsif controller.monos > 3 then
@@ -315,43 +310,10 @@ def buildFirstTitaniumDrill(cfg)
     if !result then error("Cannot locate spot for titanium drill"); end;
     display.nextBlock = @pneumatic-drill;
 
-    return blockBuilder.buildBlockAt(@pneumatic-drill, dx, dy, null, 0);
+    return blockBuilder.buildFirstTitaniumDrillAt(dx, dy);
 end;
 
-def titaniumDrillScore(x, y, in out positive, in out negative)
-    case getFloor(x, y)
-        when @ore-titanium then positive++;
-        when @ore-copper, @ore-lead, @ore-scrap, @ore-coal then negative++;
-    end;
-end;
-
-volatile var positive = 0, negative = 0;
-
-void buildTitaniumDrill(x, y, in out count)
-    if count < 8 then
-        moveTo(x, y);
-        positive = 0; negative = 0;
-        titaniumDrillScore(x, y, in out positive, in out negative);
-        titaniumDrillScore(x, y + 0.5, in out positive, in out negative);
-        titaniumDrillScore(x + 0.5, y, in out positive, in out negative);
-        titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
-
-        if positive > negative && positive >= 2 then
-            var drill = blockBuilder.buildBlockAt(@pneumatic-drill, x, y, null, 0);
-            if drill != null then
-                flareController.addTitaniumDrill(drill);
-
-                // Build a flare to service this drill
-                setFlareTarget(++count);
-            end;
-        end;
-    end;
-end;
-
-void buildTitaniumDrills()
-    // The base is already autonomous. The drill needs copper and graphite.
-    // Both are provided in abundance at this moment
-
+void blocksBuildTitaniumDrills()
     // Make sure to bind and flag the flare in a single tick
     wait(1e-9);
     ubind(@flare);
@@ -362,31 +324,10 @@ void buildTitaniumDrills()
     // Bind the main builder back
     ubind(builder);
 
-    // We know we have one drill
-    var count = 1, searching = true;
-    while searching do
-        searching = !finished(oreLocator.findDrillLocation);
-
-        while current < oreLocator.locations do
-            var index = current * 4;
-            var size = bank1[index + 1];
-            if size >= 3 then
-                var x = bank1[index + 2];
-                var y = bank1[index + 3];
-
-                buildTitaniumDrill(x - 1, y - 1, in out count);
-                buildTitaniumDrill(x + 1, y - 1, in out count);
-                buildTitaniumDrill(x - 1, y + 1, in out count);
-                buildTitaniumDrill(x + 1, y + 1, in out count);
-            end;
-            current++;
-        end;
-
-        if count >= 8 then break; end;
-    end;
-
+    blockBuilder.buildTitaniumDrills(controller, current);
     async(oreLocator.stopLocation());
 end;
+
 
 void buildThoriumDrill()
     // We're using the main builder for this, and calling synchronously
@@ -409,8 +350,25 @@ void buildThoriumDrill()
     display.thoriumDrill = thoriumDrill;
     display.thoriumContainer = thoriumContainer;
 
-    polyController.thoriumGenerator = thoriumGenerator;
-    polyController.thoriumContainer = thoriumContainer;
+    polyController.setThoriumContainer(thoriumContainer);
+end;
+
+void buildMultiplicativeReconstructor()
+//    meetTarget(MULTIPLICATIVE_REC);
+//    async(polyController.pause());
+
+    var multiReconstructor = buildBlockFromCfg(MULTIPLICATIVE_REC);
+    controller.multiReconstructor = multiReconstructor;
+    display.multiReconstructor = multiReconstructor;
+
+//    do
+//        ubind(@poly);
+//        moveTo(coreX, coreY);
+//        itemTake(core, @silicon, capacity);
+//        itemDrop(multiReconstructor, capacity);
+//    while multiReconstructor.@silicon < 130;
+//
+//    async(polyController.resume());
 end;
 
 // MAIN
@@ -431,12 +389,6 @@ begin
         builder = ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
-
-    display = processor1;
-    flareController = processor3;
-    oreLocator = processor4;
-    blockBuilder = processor5;
-    polyController = processor6;
 
     // PHASE 0: BASIC BLOCKS
 
@@ -459,7 +411,7 @@ begin
     // Build and initialize base controller
 
     controller = buildBlockFromCfg(PROCESSOR, processor2);
-    controller.timer = processor7;
+    controller.timer = timer;
     controller.display = display;
     controller.core = core;
     controller.bank = bank1;
@@ -551,7 +503,7 @@ begin
     // the main builder no longer needs to be occupied by supplying base
     // Note: display three concurrent goals
     display.nextBlock = @ore-titanium;
-    buildTitaniumDrills();
+    blocksBuildTitaniumDrills();
     display.nextBlock = null;
 
     buildThoriumDrill();
@@ -564,9 +516,7 @@ begin
 
     controller.unloader6 = buildBlockFromCfg(UNLOADER6, @silicon);
     buildBlockFromCfg(UNDERFLOW_GATE2);
-    var multiReconstructor = buildBlockFromCfg(MULTIPLICATIVE_REC);
-    controller.multiReconstructor = multiReconstructor;
-    display.multiReconstructor = multiReconstructor;
+    buildMultiplicativeReconstructor();
 
     buildUnits();
 //    controller.megaTarget = 8;

@@ -23,6 +23,7 @@ remote var locations = 0;
 
 // Drill infrastructure positions
 noinit remote var
+    searchFinished,
     drillX, drillY,
     water1X, water1Y,
     containerX, containerY,
@@ -570,27 +571,10 @@ end;
 def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, generatorVertical)
     var c, r;
 
-    var shift = findPossiblePlacement(terrainMask, generatorHorizontal, 4, 2, out c, out r);
+    // Try vertical first for a neater layout
+    var shift = findPossiblePlacement(terrainMask, generatorVertical, 2, 4, out c, out r);
 
     if shift >= 0 then
-        water2X = centerX + 0.5 + c;
-        water2Y = centerY + 0.5 + r;
-        generatorX = centerX + 2.5 + c;
-        generatorY = centerY + 0.5 + r;
-
-//        printMask("terrainMask:", terrainMask);
-
-        terrainMask |= (generatorHorizontal << shift);
-
-//        printMask("generatorShifted:", generatorHorizontal << shift);
-//        remark($"Shift: $shift, r: $r, c: $c\n");
-//        remark($"centerX: $centerX, centerY: $centerY\n");
-//        remark($"water1X: $water1X, water1Y: $water1Y\n");
-//        remark($"water2X: $water2X, water2Y: $water2Y\n");
-//        remark($"generatorX: $generatorX, generatorY: $generatorY\n");
-//        debugPause();
-    else
-        shift = findPossiblePlacement(terrainMask, generatorVertical, 2, 4, out c, out r);
         if shift < 0 then return false; end;
         water2X = centerX + 0.5 + c;
         water2Y = centerY + 0.5 + r;
@@ -602,6 +586,24 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
         terrainMask |= (generatorVertical << shift);
 
 //        printMask("generatorShifted:", generatorVertical << shift);
+//        remark($"Shift: $shift, r: $r, c: $c\n");
+//        remark($"centerX: $centerX, centerY: $centerY\n");
+//        remark($"water1X: $water1X, water1Y: $water1Y\n");
+//        remark($"water2X: $water2X, water2Y: $water2Y\n");
+//        remark($"generatorX: $generatorX, generatorY: $generatorY\n");
+//        debugPause();
+    else
+        shift = findPossiblePlacement(terrainMask, generatorHorizontal, 4, 2, out c, out r);
+        water2X = centerX + 0.5 + c;
+        water2Y = centerY + 0.5 + r;
+        generatorX = centerX + 2.5 + c;
+        generatorY = centerY + 0.5 + r;
+
+//        printMask("terrainMask:", terrainMask);
+
+        terrainMask |= (generatorHorizontal << shift);
+
+//        printMask("generatorShifted:", generatorHorizontal << shift);
 //        remark($"Shift: $shift, r: $r, c: $c\n");
 //        remark($"centerX: $centerX, centerY: $centerY\n");
 //        remark($"water1X: $water1X, water1Y: $water1Y\n");
@@ -734,7 +736,9 @@ noinline def layoutThoriumDrillAtLocation()
 end;
 
 remote def findDrillLocation(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity)
+    searchFinished = false;
     findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity);
+    searchFinished = true;
 end;
 
 remote def layoutThoriumDrill(x, y, unit, limit)
