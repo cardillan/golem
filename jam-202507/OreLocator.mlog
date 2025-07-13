@@ -129,32 +129,32 @@ set :findDrillLocationLocal:capacity 0
 set :findDrillLocationLocal:dy :findDrillLocationLocal:capacity
 set :findDrillLocationLocal:dx :findDrillLocationLocal:dy
 set .mapSpots :findDrillLocationLocal:dx
-op sub *tmp83 @mapw :findDrillLocationLocal:x
-op sub *tmp84 @maph :findDrillLocationLocal:y
-op max *tmp85 :findDrillLocationLocal:x :findDrillLocationLocal:y
-op max *tmp85 *tmp85 *tmp83
-op max *tmp85 *tmp85 *tmp84
-set :findDrillLocationLocal:distanceLimit *tmp85
+op sub *tmp48 @mapw :findDrillLocationLocal:x
+op sub *tmp49 @maph :findDrillLocationLocal:y
+op max *tmp50 :findDrillLocationLocal:x :findDrillLocationLocal:y
+op max *tmp50 *tmp50 *tmp48
+op max *tmp50 *tmp50 *tmp49
+set :findDrillLocationLocal:distanceLimit *tmp50
 set .mapAction "Locating ore..."
 set .angle 0
 set .mapProgress 0
-ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp88 0
-jump 145 notEqual *tmp88 false
+ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp53 0
+jump 145 notEqual *tmp53 false
 ucontrol approach :findDrillLocationLocal:x :findDrillLocationLocal:y 5.5 0 0
-ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp88 0
-jump 142 equal *tmp88 false
-op div *tmp91 *tmp85 3.8197185279121366
-op pow .mapTotal *tmp91 2
+ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp53 0
+jump 142 equal *tmp53 false
+op div *tmp56 *tmp50 3.8197185279121366
+op pow .mapTotal *tmp56 2
 set :findDrillLocationLocal:oreX 0
 set :findDrillLocationLocal:oreY 0
 set :findDrillLocationLocal:best -1
 set :findDrillLocationLocal:bestX :findDrillLocationLocal:x
 set :findDrillLocationLocal:bestY :findDrillLocationLocal:y
-op sub *tmp93 :findDrillLocationLocal:limit :findDrillLocationLocal:capacity
-op mul :findDrillLocationLocal:maxDistance *tmp93 .attenuationRate
+op sub *tmp58 :findDrillLocationLocal:limit :findDrillLocationLocal:capacity
+op mul :findDrillLocationLocal:maxDistance *tmp58 .attenuationRate
 op min :findDrillLocationLocal:distanceLimit :findDrillLocationLocal:distanceLimit :findDrillLocationLocal:maxDistance
-op div *tmp96 :findDrillLocationLocal:distanceLimit 3.8197185279121366
-op pow .mapTotal *tmp96 2
+op div *tmp61 :findDrillLocationLocal:distanceLimit 3.8197185279121366
+op pow .mapTotal *tmp61 2
 set :locateOreAway:x :findDrillLocationLocal:oreX
 set :locateOreAway:y :findDrillLocationLocal:oreY
 op mul :locateOreAway:distance 3.8197185279121366 .angle
@@ -162,121 +162,121 @@ set :locateOreAway:lastX -1
 set :locateOreAway:lastY -1
 op max .angle .angle @pi
 op mul .mapProgress .angle .angle
-op sub *tmp107 @mapw 5
-op sub *tmp114 @maph 5
+op sub *tmp72 @mapw 5
+op sub *tmp79 @maph 5
 jump 230 greaterThanEq :locateOreAway:distance :findDrillLocationLocal:distanceLimit
 op div :locateOreAway:a .angle @degToRad
-op sin *tmp104 :locateOreAway:a 0
-op mul *tmp105 *tmp104 :locateOreAway:distance
-op add *tmp106 .coreX *tmp105
-op max *tmp109 *tmp106 5
-op min *tmp108 *tmp109 *tmp107
-op cos *tmp111 :locateOreAway:a 0
-op mul *tmp112 *tmp111 :locateOreAway:distance
-op add *tmp113 .coreY *tmp112
-op max *tmp116 *tmp113 5
-op min *tmp115 *tmp116 *tmp114
-ucontrol within *tmp108 *tmp115 5 *tmp118 0
-jump 183 notEqual *tmp118 false
-ucontrol approach *tmp108 *tmp115 4.5 0 0
-ucontrol within *tmp108 *tmp115 5 *tmp118 0
-jump 180 equal *tmp118 false
-op div *tmp121 3.8197185279121366 :locateOreAway:distance
-op add .angle .angle *tmp121
+op sin *tmp69 :locateOreAway:a 0
+op mul *tmp70 *tmp69 :locateOreAway:distance
+op add *tmp71 .coreX *tmp70
+op max *tmp74 *tmp71 5
+op min *tmp73 *tmp74 *tmp72
+op cos *tmp76 :locateOreAway:a 0
+op mul *tmp77 *tmp76 :locateOreAway:distance
+op add *tmp78 .coreY *tmp77
+op max *tmp81 *tmp78 5
+op min *tmp80 *tmp81 *tmp79
+ucontrol within *tmp73 *tmp80 5 *tmp83 0
+jump 183 notEqual *tmp83 false
+ucontrol approach *tmp73 *tmp80 4.5 0 0
+ucontrol within *tmp73 *tmp80 5 *tmp83 0
+jump 180 equal *tmp83 false
+op div *tmp86 3.8197185279121366 :locateOreAway:distance
+op add .angle .angle *tmp86
 op mul .mapProgress .angle .angle
 op mul :locateOreAway:distance 3.8197185279121366 .angle
-ulocate ore core true :findDrillLocationLocal:item :locateOreAway:x :locateOreAway:y *tmp124 0
-jump 191 notEqual *tmp124 false
-set *tmp98 false
+ulocate ore core true :findDrillLocationLocal:item :locateOreAway:x :locateOreAway:y *tmp89 0
+jump 191 notEqual *tmp89 false
+set *tmp63 false
 jump 231 always 0 0
-op sub *tmp128 :locateOreAway:x .coreX
-op abs *tmp129 *tmp128 0
-op sub *tmp130 :locateOreAway:y .coreY
-op abs *tmp131 *tmp130 0
-op max :locateOreAway:coreDist *tmp129 *tmp131
-op sub *tmp133 :locateOreAway:x *tmp108
-op sub *tmp134 :locateOreAway:y *tmp115
-op len :locateOreAway:unitDist *tmp133 *tmp134
+op sub *tmp93 :locateOreAway:x .coreX
+op abs *tmp94 *tmp93 0
+op sub *tmp95 :locateOreAway:y .coreY
+op abs *tmp96 *tmp95 0
+op max :locateOreAway:coreDist *tmp94 *tmp96
+op sub *tmp98 :locateOreAway:x *tmp73
+op sub *tmp99 :locateOreAway:y *tmp80
+op len :locateOreAway:unitDist *tmp98 *tmp99
 jump 201 notEqual :locateOreAway:lastX :locateOreAway:x
 jump 229 equal :locateOreAway:lastY :locateOreAway:y
 jump 229 lessThan :locateOreAway:coreDist 7
 jump 229 greaterThanEq :locateOreAway:unitDist :locateOreAway:distance
 set :locateOreAway:lastX :locateOreAway:x
 set :locateOreAway:lastY :locateOreAway:y
-set *tmp145 .locations
+set *tmp110 .locations
 set :visited:i .locationsStart
-jump 221 greaterThanEq .locationsStart *tmp145
+jump 221 greaterThanEq .locationsStart *tmp110
 op mul :visited:index 4 :visited:i
-op add *tmp147 :visited:index 2
-read :visited:lx bank1 *tmp147
-op add *tmp150 :visited:index 3
-read :visited:ly bank1 *tmp150
-op sub *tmp153 :locateOreAway:x :visited:lx
-op sub *tmp154 :locateOreAway:y :visited:ly
-op len *tmp155 *tmp153 *tmp154
-jump 219 greaterThanEq *tmp155 7
-set *tmp144 true
+op add *tmp112 :visited:index 2
+read :visited:lx bank1 *tmp112
+op add *tmp115 :visited:index 3
+read :visited:ly bank1 *tmp115
+op sub *tmp118 :locateOreAway:x :visited:lx
+op sub *tmp119 :locateOreAway:y :visited:ly
+op len *tmp120 *tmp118 *tmp119
+jump 219 greaterThanEq *tmp120 7
+set *tmp109 true
 jump 222 always 0 0
 op add :visited:i :visited:i 1
-jump 208 lessThan :visited:i *tmp145
-set *tmp144 false
-jump 229 notEqual *tmp144 false
-op div *tmp160 2 .angle
-op add .angle .angle *tmp160
+jump 208 lessThan :visited:i *tmp110
+set *tmp109 false
+jump 229 notEqual *tmp109 false
+op div *tmp125 2 .angle
+op add .angle .angle *tmp125
 op mul .mapProgress .angle .angle
 printflush message1
-set *tmp98 true
+set *tmp63 true
 jump 231 always 0 0
 jump 167 lessThan :locateOreAway:distance :findDrillLocationLocal:distanceLimit
-set *tmp98 false
+set *tmp63 false
 set :findDrillLocationLocal:oreX :locateOreAway:x
 set :findDrillLocationLocal:oreY :locateOreAway:y
-jump 236 notEqual *tmp98 false
+jump 236 notEqual *tmp63 false
 op greaterThan :findDrillLocationLocal*retval :findDrillLocationLocal:capacity 0
 set @counter :findDrillLocationLocal*retaddr
 jump 238 lessThan :findDrillLocationLocal:limit 1000
 op add .mapSpots .mapSpots 1
-ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp170 0
-jump 243 notEqual *tmp170 false
+ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp135 0
+jump 243 notEqual *tmp135 false
 ucontrol approach :locateOreAway:x :locateOreAway:y 5.5 0 0
-ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp170 0
-jump 240 equal *tmp170 false
+ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp135 0
+jump 240 equal *tmp135 false
 set :findDrillLocationLocal:last 0
 set :findBestPosition:x :findDrillLocationLocal:oreX
 set :findBestPosition:y :findDrillLocationLocal:oreY
 set :findBestPosition:ore :findDrillLocationLocal:ore
 set :findBestPosition:size :findDrillLocationLocal:size
-op sub *tmp174 :findDrillLocationLocal:oreY 2
+op sub *tmp139 :findDrillLocationLocal:oreY 2
 op sub :spotValue:x :findDrillLocationLocal:oreX 2
-set :spotValue:y *tmp174
+set :spotValue:y *tmp139
 set :spotValue:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue:x :spotValue:y type building floor
 select value equal floor :spotValue:ore 0.00392156862745098 0
 sensor solid type @solid
 select :spotValue:result notEqual solid false 0.09803921568627451 value
 op sub :spotValue.1:x :findDrillLocationLocal:oreX 1
-set :spotValue.1:y *tmp174
+set :spotValue.1:y *tmp139
 set :spotValue.1:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue.1:x :spotValue.1:y type building floor
 select value equal floor :spotValue.1:ore 0.00392156862745098 0
 sensor solid type @solid
 select :spotValue.1:result notEqual solid false 0.09803921568627451 value
 set :spotValue.2:x :findDrillLocationLocal:oreX
-set :spotValue.2:y *tmp174
+set :spotValue.2:y *tmp139
 set :spotValue.2:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue.2:x :spotValue.2:y type building floor
 select value equal floor :spotValue.2:ore 0.00392156862745098 0
 sensor solid type @solid
 select :spotValue.2:result notEqual solid false 0.09803921568627451 value
 op add :spotValue.3:x :findDrillLocationLocal:oreX 1
-set :spotValue.3:y *tmp174
+set :spotValue.3:y *tmp139
 set :spotValue.3:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue.3:x :spotValue.3:y type building floor
 select value equal floor :spotValue.3:ore 0.00392156862745098 0
 sensor solid type @solid
 select :spotValue.3:result notEqual solid false 0.09803921568627451 value
 op add :spotValue.4:x :findDrillLocationLocal:oreX 2
-set :spotValue.4:y *tmp174
+set :spotValue.4:y *tmp139
 set :spotValue.4:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue.4:x :spotValue.4:y type building floor
 select value equal floor :spotValue.4:ore 0.00392156862745098 0
@@ -298,14 +298,14 @@ op add *tmp24 *tmp23 :spotValue.4:result
 packcolor :findBestPosition:y1 *tmp20 *tmp22 *tmp24 0
 jump 326 always 0 0
 op sub :spotValue.5:x :findDrillLocationLocal:oreX 3
-set :spotValue.5:y *tmp174
+set :spotValue.5:y *tmp139
 set :spotValue.5:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue.5:x :spotValue.5:y type building floor
 select value equal floor :spotValue.5:ore 0.00392156862745098 0
 sensor solid type @solid
 select :spotValue.5:result notEqual solid false 0.09803921568627451 value
 op add :spotValue.6:x :findDrillLocationLocal:oreX 3
-set :spotValue.6:y *tmp174
+set :spotValue.6:y *tmp139
 set :spotValue.6:ore :findDrillLocationLocal:ore
 ucontrol getBlock :spotValue.6:x :spotValue.6:y type building floor
 select value equal floor :spotValue.6:ore 0.00392156862745098 0
@@ -324,9 +324,9 @@ op min *tmp41 0.09803921568627451 *tmp40
 op add *tmp44 *tmp39 :spotValue.6:result
 op min *tmp45 0.09803921568627451 *tmp44
 packcolor :findBestPosition:y1 *tmp33 *tmp37 *tmp41 *tmp45
-op sub *tmp176 :findDrillLocationLocal:oreY 1
+op sub *tmp141 :findDrillLocationLocal:oreY 1
 set :computeRowValues:x :findDrillLocationLocal:oreX
-set :computeRowValues:y *tmp176
+set :computeRowValues:y *tmp141
 set :computeRowValues:ore :findDrillLocationLocal:ore
 set :computeRowValues:size :findDrillLocationLocal:size
 set :computeRowValues*retaddr 333
@@ -339,17 +339,17 @@ set :computeRowValues:size :findBestPosition:size
 set :computeRowValues*retaddr 340
 jump 45 always 0 0
 set :findBestPosition:y3 :computeRowValues*retval
-op add *tmp180 :findBestPosition:y 1
+op add *tmp145 :findBestPosition:y 1
 set :computeRowValues:x :findBestPosition:x
-set :computeRowValues:y *tmp180
+set :computeRowValues:y *tmp145
 set :computeRowValues:ore :findBestPosition:ore
 set :computeRowValues:size :findBestPosition:size
 set :computeRowValues*retaddr 348
 jump 45 always 0 0
 set :findBestPosition:y4 :computeRowValues*retval
-op add *tmp182 :findBestPosition:y 2
+op add *tmp147 :findBestPosition:y 2
 set :computeRowValues:x :findBestPosition:x
-set :computeRowValues:y *tmp182
+set :computeRowValues:y *tmp147
 set :computeRowValues:ore :findBestPosition:ore
 set :computeRowValues:size :findBestPosition:size
 set :computeRowValues*retaddr 356
@@ -449,11 +449,11 @@ set :findDrillLocationLocal:diffY 1.5
 set :findBestPosition:best :updateRowPositions2x2.3:col4
 jump 612 always 0 0
 jump 505 notEqual :findBestPosition:size 3
-op add *tmp256 :findBestPosition:y2 :findBestPosition:y3
-op add :findBestPosition:row1.1 :findBestPosition:y1 *tmp256
-op add :findBestPosition:row2.1 *tmp256 :findBestPosition:y4
-op add *tmp260 :findBestPosition:y3 :findBestPosition:y4
-op add :findBestPosition:row3.1 *tmp260 :computeRowValues*retval
+op add *tmp221 :findBestPosition:y2 :findBestPosition:y3
+op add :findBestPosition:row1.1 :findBestPosition:y1 *tmp221
+op add :findBestPosition:row2.1 *tmp221 :findBestPosition:y4
+op add *tmp225 :findBestPosition:y3 :findBestPosition:y4
+op add :findBestPosition:row3.1 *tmp225 :computeRowValues*retval
 unpackcolor :updateRowPositions3x3:col1 :updateRowPositions3x3:col2 :updateRowPositions3x3:col3 0 :findBestPosition:row1.1
 jump 462 greaterThanEq :updateRowPositions3x3:col1 0.0784313725490196
 jump 462 lessThanEq :updateRowPositions3x3:col1 0
@@ -503,29 +503,29 @@ set :findDrillLocationLocal:diffX 1
 set :findDrillLocationLocal:diffY 1
 set :findBestPosition:best :updateRowPositions3x3.2:col3
 jump 612 always 0 0
-op sub *tmp301 :findBestPosition:y 3
+op sub *tmp266 :findBestPosition:y 3
 set :computeRowValues:x :findBestPosition:x
-set :computeRowValues:y *tmp301
+set :computeRowValues:y *tmp266
 set :computeRowValues:ore :findBestPosition:ore
 set :computeRowValues:size :findBestPosition:size
 set :computeRowValues*retaddr 512
 jump 45 always 0 0
 set :findBestPosition:y0 :computeRowValues*retval
-op add *tmp303 :findBestPosition:y 3
+op add *tmp268 :findBestPosition:y 3
 set :computeRowValues:x :findBestPosition:x
-set :computeRowValues:y *tmp303
+set :computeRowValues:y *tmp268
 set :computeRowValues:ore :findBestPosition:ore
 set :computeRowValues:size :findBestPosition:size
 set :computeRowValues*retaddr 520
 jump 45 always 0 0
-op add *tmp305 :findBestPosition:y1 :findBestPosition:y2
-op add *tmp306 *tmp305 :findBestPosition:y3
-op add :findBestPosition:row1.2 :findBestPosition:y0 *tmp306
-op add :findBestPosition:row2.2 *tmp306 :findBestPosition:y4
-op add *tmp311 :findBestPosition:y3 :findBestPosition:y4
-op add *tmp312 *tmp311 :findBestPosition:y5
-op add :findBestPosition:row3.2 :findBestPosition:y2 *tmp312
-op add :findBestPosition:row4.1 *tmp312 :computeRowValues*retval
+op add *tmp270 :findBestPosition:y1 :findBestPosition:y2
+op add *tmp271 *tmp270 :findBestPosition:y3
+op add :findBestPosition:row1.2 :findBestPosition:y0 *tmp271
+op add :findBestPosition:row2.2 *tmp271 :findBestPosition:y4
+op add *tmp276 :findBestPosition:y3 :findBestPosition:y4
+op add *tmp277 *tmp276 :findBestPosition:y5
+op add :findBestPosition:row3.2 :findBestPosition:y2 *tmp277
+op add :findBestPosition:row4.1 *tmp277 :computeRowValues*retval
 unpackcolor :updateRowPositions4x4:col1 :updateRowPositions4x4:col2 :updateRowPositions4x4:col3 :updateRowPositions4x4:col4 :findBestPosition:row1.2
 jump 534 greaterThanEq :updateRowPositions4x4:col1 0.0784313725490196
 jump 534 lessThanEq :updateRowPositions4x4:col1 :findBestPosition:best
@@ -610,19 +610,19 @@ jump 612 lessThanEq :updateRowPositions4x4.3:col4 :findBestPosition:best
 set :findDrillLocationLocal:diffX 1.5
 set :findDrillLocationLocal:diffY 1.5
 set :findBestPosition:best :updateRowPositions4x4.3:col4
-op mul *tmp173 :findBestPosition:best 255
-jump 633 lessThanEq *tmp173 :findDrillLocationLocal:capacity
+op mul *tmp138 :findBestPosition:best 255
+jump 633 lessThanEq *tmp138 :findDrillLocationLocal:capacity
 op add :findDrillLocationLocal:dx :findDrillLocationLocal:oreX :findDrillLocationLocal:diffX
 op add :findDrillLocationLocal:dy :findDrillLocationLocal:oreY :findDrillLocationLocal:diffY
-set :findDrillLocationLocal:capacity *tmp173
+set :findDrillLocationLocal:capacity *tmp138
 jump 619 greaterThanEq :findDrillLocationLocal:limit 1000
-set .mapSpots *tmp173
+set .mapSpots *tmp138
 jump 633 lessThan :findDrillLocationLocal:capacity :findDrillLocationLocal:limit
 op add .count .count 1
-sensor *tmp392 :findDrillLocationLocal:item @id
-write *tmp392 bank1 .count
+sensor *tmp357 :findDrillLocationLocal:item @id
+write *tmp357 bank1 .count
 op add .count .count 1
-write *tmp173 bank1 .count
+write *tmp138 bank1 .count
 op add .count .count 1
 write :findDrillLocationLocal:dx bank1 .count
 op add .count .count 1
@@ -631,30 +631,30 @@ op add .locations .locations 1
 ucontrol unbind 0 0 0 0 0
 set :findDrillLocationLocal*retval true
 set @counter :findDrillLocationLocal*retaddr
-jump 637 lessThanEq *tmp173 :findDrillLocationLocal:best
+jump 637 lessThanEq *tmp138 :findDrillLocationLocal:best
 op add :findDrillLocationLocal:bestX :findDrillLocationLocal:oreX :findDrillLocationLocal:diffX
 op add :findDrillLocationLocal:bestY :findDrillLocationLocal:oreY :findDrillLocationLocal:diffY
-set :findDrillLocationLocal:best *tmp173
-jump 653 lessThanEq *tmp173 :findDrillLocationLocal:last
-set :findDrillLocationLocal:last *tmp173
+set :findDrillLocationLocal:best *tmp138
+jump 653 lessThanEq *tmp138 :findDrillLocationLocal:last
+set :findDrillLocationLocal:last *tmp138
 op mul :round:x :findDrillLocationLocal:diffX 1.1
-op add *tmp408 :round:x 0.5
-op floor *tmp407 *tmp408 0
-op add :findDrillLocationLocal:oreX :findDrillLocationLocal:oreX *tmp407
+op add *tmp373 :round:x 0.5
+op floor *tmp372 *tmp373 0
+op add :findDrillLocationLocal:oreX :findDrillLocationLocal:oreX *tmp372
 op mul :round.1:x :findDrillLocationLocal:diffY 1.1
-op add *tmp412 :round.1:x 0.5
-op floor *tmp411 *tmp412 0
-op add :findDrillLocationLocal:oreY :findDrillLocationLocal:oreY *tmp411
-op sub *tmp414 :findDrillLocationLocal:oreX .coreX
-op abs *tmp415 *tmp414 0
-op sub *tmp416 :findDrillLocationLocal:oreY .coreY
-op abs *tmp417 *tmp416 0
-op min *tmp418 *tmp415 *tmp417
-jump 244 greaterThanEq *tmp418 7
+op add *tmp377 :round.1:x 0.5
+op floor *tmp376 *tmp377 0
+op add :findDrillLocationLocal:oreY :findDrillLocationLocal:oreY *tmp376
+op sub *tmp379 :findDrillLocationLocal:oreX .coreX
+op abs *tmp380 *tmp379 0
+op sub *tmp381 :findDrillLocationLocal:oreY .coreY
+op abs *tmp382 *tmp381 0
+op min *tmp383 *tmp380 *tmp382
+jump 244 greaterThanEq *tmp383 7
 jump 149 lessThan :findDrillLocationLocal:best 0
 op add .count .count 1
-sensor *tmp425 :findDrillLocationLocal:item @id
-write *tmp425 bank1 .count
+sensor *tmp390 :findDrillLocationLocal:item @id
+write *tmp390 bank1 .count
 op add .count .count 1
 write :findDrillLocationLocal:best bank1 .count
 op add .count .count 1
@@ -663,22 +663,22 @@ op add .count .count 1
 write :findDrillLocationLocal:bestY bank1 .count
 op add .locations .locations 1
 jump 149 always 0 0
-ucontrol within :createTerrainMask:x :createTerrainMask:y 6 *tmp435 0
-jump 670 notEqual *tmp435 false
+ucontrol within :createTerrainMask:x :createTerrainMask:y 6 *tmp400 0
+jump 670 notEqual *tmp400 false
 ucontrol approach :createTerrainMask:x :createTerrainMask:y 5.5 0 0
-ucontrol within :createTerrainMask:x :createTerrainMask:y 6 *tmp435 0
-jump 667 equal *tmp435 false
+ucontrol within :createTerrainMask:x :createTerrainMask:y 6 *tmp400 0
+jump 667 equal *tmp400 false
 set :createTerrainMask:result 0
 set :createTerrainMask:r 3
 set :createTerrainMask:c 3
-op add *tmp440 :createTerrainMask:y :createTerrainMask:r
-op shl *tmp438 :createTerrainMask:result 1
+op add *tmp405 :createTerrainMask:y :createTerrainMask:r
+op shl *tmp403 :createTerrainMask:result 1
 op add :isBlocked:x :createTerrainMask:x :createTerrainMask:c
-set :isBlocked:y *tmp440
+set :isBlocked:y *tmp405
 ucontrol getBlock :isBlocked:x :isBlocked:y type building floor
-select type equal type @boulder @air type
-select :isBlocked:result equal type @air 0 1
-op or :createTerrainMask:result *tmp438 :isBlocked:result
+sensor solid type @solid
+select :isBlocked:result notEqual solid false 1 0
+op or :createTerrainMask:result *tmp403 :isBlocked:result
 op sub :createTerrainMask:c :createTerrainMask:c 1
 jump 674 greaterThanEq :createTerrainMask:c -3
 op sub :createTerrainMask:r :createTerrainMask:r 1
@@ -687,24 +687,24 @@ set :createTerrainMask*retval :createTerrainMask:result
 set @counter :createTerrainMask*retaddr
 set :findPossiblePlacement:y -3
 jump 709 greaterThan :findPossiblePlacement:y 3
-op add *tmp443 :findPossiblePlacement:y 3
-op mul *tmp444 7 *tmp443
-op shl :findPossiblePlacement:mask :findPossiblePlacement:placementMask *tmp444
+op add *tmp408 :findPossiblePlacement:y 3
+op mul *tmp409 7 *tmp408
+op shl :findPossiblePlacement:mask :findPossiblePlacement:placementMask *tmp409
 set :findPossiblePlacement:x -3
 jump 705 greaterThan :findPossiblePlacement:x 3
-op and *tmp446 :findPossiblePlacement:terrainMask :findPossiblePlacement:mask
-jump 700 notEqual *tmp446 0
-op mul *tmp449 :findPossiblePlacement:y 7
-op add *tmp450 24 *tmp449
-op add :findPossiblePlacement*retval *tmp450 :findPossiblePlacement:x
+op and *tmp411 :findPossiblePlacement:terrainMask :findPossiblePlacement:mask
+jump 700 notEqual *tmp411 0
+op mul *tmp414 :findPossiblePlacement:y 7
+op add *tmp415 24 *tmp414
+op add :findPossiblePlacement*retval *tmp415 :findPossiblePlacement:x
 set @counter :findPossiblePlacement*retaddr
-op sub *tmp452 3 :findPossiblePlacement:width
-jump 705 greaterThan :findPossiblePlacement:x *tmp452
+op sub *tmp417 3 :findPossiblePlacement:width
+jump 705 greaterThan :findPossiblePlacement:x *tmp417
 op shl :findPossiblePlacement:mask :findPossiblePlacement:mask 1
 op add :findPossiblePlacement:x :findPossiblePlacement:x 1
 jump 694 lessThanEq :findPossiblePlacement:x 3
-op sub *tmp455 3 :findPossiblePlacement:height
-jump 709 greaterThan :findPossiblePlacement:y *tmp455
+op sub *tmp420 3 :findPossiblePlacement:height
+jump 709 greaterThan :findPossiblePlacement:y *tmp420
 op add :findPossiblePlacement:y :findPossiblePlacement:y 1
 jump 689 lessThanEq :findPossiblePlacement:y 3
 set :findPossiblePlacement*retval -1
@@ -719,15 +719,15 @@ jump 731 lessThan :findPossiblePlacement*retval 0
 jump 721 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
-op add *tmp463 :tryPlaceGenerator:centerX 0.5
-op add .water2X *tmp463 :findPossiblePlacement:x
-op add *tmp465 :tryPlaceGenerator:centerY 0.5
-op add .water2Y *tmp465 :findPossiblePlacement:y
-op add .generatorX *tmp463 :findPossiblePlacement:x
-op add *tmp469 :tryPlaceGenerator:centerY 2.5
-op add .generatorY *tmp469 :findPossiblePlacement:y
-op shl *tmp471 :tryPlaceGenerator:generatorVertical :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp471
+op add *tmp428 :tryPlaceGenerator:centerX 0.5
+op add .water2X *tmp428 :findPossiblePlacement:x
+op add *tmp430 :tryPlaceGenerator:centerY 0.5
+op add .water2Y *tmp430 :findPossiblePlacement:y
+op add .generatorX *tmp428 :findPossiblePlacement:x
+op add *tmp434 :tryPlaceGenerator:centerY 2.5
+op add .generatorY *tmp434 :findPossiblePlacement:y
+op shl *tmp436 :tryPlaceGenerator:generatorVertical :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp436
 jump 749 always 0 0
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask :tryPlaceGenerator:generatorHorizontal
@@ -738,15 +738,15 @@ jump 687 always 0 0
 jump 740 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
-op add *tmp475 :tryPlaceGenerator:centerX 0.5
-op add .water2X *tmp475 :findPossiblePlacement:x
-op add *tmp477 :tryPlaceGenerator:centerY 0.5
-op add .water2Y *tmp477 :findPossiblePlacement:y
-op add *tmp479 :tryPlaceGenerator:centerX 2.5
-op add .generatorX *tmp479 :findPossiblePlacement:x
-op add .generatorY *tmp477 :findPossiblePlacement:y
-op shl *tmp483 :tryPlaceGenerator:generatorHorizontal :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp483
+op add *tmp440 :tryPlaceGenerator:centerX 0.5
+op add .water2X *tmp440 :findPossiblePlacement:x
+op add *tmp442 :tryPlaceGenerator:centerY 0.5
+op add .water2Y *tmp442 :findPossiblePlacement:y
+op add *tmp444 :tryPlaceGenerator:centerX 2.5
+op add .generatorX *tmp444 :findPossiblePlacement:x
+op add .generatorY *tmp442 :findPossiblePlacement:y
+op shl *tmp448 :tryPlaceGenerator:generatorHorizontal :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp448
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
@@ -758,8 +758,8 @@ set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
 op add .nodeX :tryPlaceGenerator:centerX :findPossiblePlacement:x
 op add .nodeY :tryPlaceGenerator:centerY :findPossiblePlacement:y
-op shl *tmp489 1 :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp489
+op shl *tmp454 1 :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp454
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
@@ -771,8 +771,8 @@ set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
 op add .panelX :tryPlaceGenerator:centerX :findPossiblePlacement:x
 op add .panelY :tryPlaceGenerator:centerY :findPossiblePlacement:y
-op shl *tmp495 1 :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp495
+op shl *tmp460 1 :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp460
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
@@ -808,13 +808,13 @@ set :findPossiblePlacement:height 2
 set :findPossiblePlacement*retaddr 809
 jump 687 always 0 0
 jump 817 lessThan :findPossiblePlacement*retval 0
-op add *tmp540 .drillX 0.5
-op add .water1X *tmp540 :findPossiblePlacement:x
-op add *tmp542 .drillY 0.5
-op add .water1Y *tmp542 :findPossiblePlacement:y
-op shl *tmp544 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
-op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp544
-op or :layoutThoriumDrillAtLocation:cornersMask :layoutThoriumDrillAtLocation:cornersMask *tmp544
+op add *tmp505 .drillX 0.5
+op add .water1X *tmp505 :findPossiblePlacement:x
+op add *tmp507 .drillY 0.5
+op add .water1Y *tmp507 :findPossiblePlacement:y
+op shl *tmp509 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
+op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp509
+op or :layoutThoriumDrillAtLocation:cornersMask :layoutThoriumDrillAtLocation:cornersMask *tmp509
 set :findPossiblePlacement:terrainMask :layoutThoriumDrillAtLocation:cornersMask
 set :findPossiblePlacement:placementMask :layoutThoriumDrillAtLocation:mask2x2
 set :findPossiblePlacement:width 2
@@ -822,12 +822,12 @@ set :findPossiblePlacement:height 2
 set :findPossiblePlacement*retaddr 823
 jump 687 always 0 0
 jump 830 lessThan :findPossiblePlacement*retval 0
-op add *tmp549 .drillX 0.5
-op add .containerX *tmp549 :findPossiblePlacement:x
-op add *tmp551 .drillY 0.5
-op add .containerY *tmp551 :findPossiblePlacement:y
-op shl *tmp553 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
-op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp553
+op add *tmp514 .drillX 0.5
+op add .containerX *tmp514 :findPossiblePlacement:x
+op add *tmp516 .drillY 0.5
+op add .containerY *tmp516 :findPossiblePlacement:y
+op shl *tmp518 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
+op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp518
 set :layoutThoriumDrillAtLocation:generatorHorizontal 1935
 set :layoutThoriumDrillAtLocation:generatorVertical 6340995
 set :tryPlaceGenerator:centerX .drillX
@@ -842,19 +842,19 @@ set :layoutThoriumDrillAtLocation*retval true
 set @counter :layoutThoriumDrillAtLocation*retaddr
 set :layoutThoriumDrillAtLocation:sx 3
 set :layoutThoriumDrillAtLocation:sy 3
-set *tmp568 846
+set *tmp533 846
 jump 857 always 0 0
 set :layoutThoriumDrillAtLocation:sx 3
 set :layoutThoriumDrillAtLocation:sy -3
-set *tmp568 850
+set *tmp533 850
 jump 857 always 0 0
 set :layoutThoriumDrillAtLocation:sx -3
 set :layoutThoriumDrillAtLocation:sy 3
-set *tmp568 854
+set *tmp533 854
 jump 857 always 0 0
 set :layoutThoriumDrillAtLocation:sx -3
 set :layoutThoriumDrillAtLocation:sy -3
-set *tmp568 908
+set *tmp533 908
 op sub :layoutThoriumDrillAtLocation:newX .drillX :layoutThoriumDrillAtLocation:sx
 op sub :layoutThoriumDrillAtLocation:newY .drillY :layoutThoriumDrillAtLocation:sy
 set :createTerrainMask:x :layoutThoriumDrillAtLocation:newX
@@ -862,41 +862,41 @@ set :createTerrainMask:y :layoutThoriumDrillAtLocation:newY
 set :createTerrainMask*retaddr 863
 jump 665 always 0 0
 set :shiftMask:mask :layoutThoriumDrillAtLocation:terrainMask
-op abs *tmp573 :layoutThoriumDrillAtLocation:sx 0
-op greaterThan *tmp574 *tmp573 6
-op abs *tmp575 :layoutThoriumDrillAtLocation:sy 0
-op greaterThan *tmp576 *tmp575 6
-op or *tmp577 *tmp574 *tmp576
-jump 872 equal *tmp577 false
-set *tmp572 0
+op abs *tmp538 :layoutThoriumDrillAtLocation:sx 0
+op greaterThan *tmp539 *tmp538 6
+op abs *tmp540 :layoutThoriumDrillAtLocation:sy 0
+op greaterThan *tmp541 *tmp540 6
+op or *tmp542 *tmp539 *tmp541
+jump 872 equal *tmp542 false
+set *tmp537 0
 jump 894 always 0 0
-op mul *tmp579 7 :layoutThoriumDrillAtLocation:sy
-op add :shiftMask:shift :layoutThoriumDrillAtLocation:sx *tmp579
+op mul *tmp544 7 :layoutThoriumDrillAtLocation:sy
+op add :shiftMask:shift :layoutThoriumDrillAtLocation:sx *tmp544
 jump 879 lessThanEq :shiftMask:shift 0
 op shr :shiftMask:clearMask 562949953421311 :shiftMask:shift
-op and *tmp584 :layoutThoriumDrillAtLocation:terrainMask :shiftMask:clearMask
-op shl :shiftMask:mask *tmp584 :shiftMask:shift
+op and *tmp549 :layoutThoriumDrillAtLocation:terrainMask :shiftMask:clearMask
+op shl :shiftMask:mask *tmp549 :shiftMask:shift
 jump 881 always 0 0
-op sub *tmp586 0 :shiftMask:shift
-op shr :shiftMask:mask :layoutThoriumDrillAtLocation:terrainMask *tmp586
+op sub *tmp551 0 :shiftMask:shift
+op shr :shiftMask:mask :layoutThoriumDrillAtLocation:terrainMask *tmp551
 jump 893 equal :layoutThoriumDrillAtLocation:sx 0
-op sub *tmp590 7 *tmp573
-op shr :shiftMask:keep 0b1111111 *tmp590
+op sub *tmp555 7 *tmp538
+op shr :shiftMask:keep 0b1111111 *tmp555
 jump 886 lessThanEq :layoutThoriumDrillAtLocation:sx 0
-op shl :shiftMask:keep :shiftMask:keep *tmp590
-op shl *tmp596 :shiftMask:keep 7
-op or :shiftMask:keep :shiftMask:keep *tmp596
-op shl *tmp597 :shiftMask:keep 14
-op or :shiftMask:keep :shiftMask:keep *tmp597
-op shl *tmp598 :shiftMask:keep 21
-op or :shiftMask:keep :shiftMask:keep *tmp598
+op shl :shiftMask:keep :shiftMask:keep *tmp555
+op shl *tmp561 :shiftMask:keep 7
+op or :shiftMask:keep :shiftMask:keep *tmp561
+op shl *tmp562 :shiftMask:keep 14
+op or :shiftMask:keep :shiftMask:keep *tmp562
+op shl *tmp563 :shiftMask:keep 21
+op or :shiftMask:keep :shiftMask:keep *tmp563
 op and :shiftMask:mask :shiftMask:mask :shiftMask:keep
-set *tmp572 :shiftMask:mask
-op or :layoutThoriumDrillAtLocation:combinedMask :createTerrainMask*retval *tmp572
-op sub *tmp600 .drillX :layoutThoriumDrillAtLocation:sx
-op sub *tmp601 .drillY :layoutThoriumDrillAtLocation:sy
-set :tryPlaceGenerator:centerX *tmp600
-set :tryPlaceGenerator:centerY *tmp601
+set *tmp537 :shiftMask:mask
+op or :layoutThoriumDrillAtLocation:combinedMask :createTerrainMask*retval *tmp537
+op sub *tmp565 .drillX :layoutThoriumDrillAtLocation:sx
+op sub *tmp566 .drillY :layoutThoriumDrillAtLocation:sy
+set :tryPlaceGenerator:centerX *tmp565
+set :tryPlaceGenerator:centerY *tmp566
 set :tryPlaceGenerator:terrainMask :layoutThoriumDrillAtLocation:combinedMask
 set :tryPlaceGenerator:generatorHorizontal :layoutThoriumDrillAtLocation:generatorHorizontal
 set :tryPlaceGenerator:generatorVertical :layoutThoriumDrillAtLocation:generatorVertical
@@ -905,7 +905,7 @@ jump 711 always 0 0
 jump 907 equal :tryPlaceGenerator*retval false
 set :layoutThoriumDrillAtLocation*retval true
 set @counter :layoutThoriumDrillAtLocation*retaddr
-set @counter *tmp568
+set @counter *tmp533
 set :layoutThoriumDrillAtLocation*retval true
 set @counter :layoutThoriumDrillAtLocation*retaddr
 set .searchFinished false

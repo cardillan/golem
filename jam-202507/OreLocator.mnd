@@ -279,48 +279,7 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
     return false;
 end;
 
-var angle, cornerDistance, x0, y0, x1, y1;
-
-void trace(ore, x, y)
-    do
-        move(x, y);
-
-        mapProgress = cornerDistance - len(x - @unit.@x, y - @unit.@y);
-
-        var oreX, oreY;
-        if ulocate(:ore, ore, out oreX, out oreY) then
-            x0 = min(x0, oreX);
-            y0 = min(y0, oreY);
-            x1 = max(x1, oreX);
-            y1 = max(y1, oreY);
-        end;
-    while !within(x, y, 5);
-end;
-
-def findMaxOreDistance(ore)
-    mapAction = "Scanning map...";
-    mapProgress = 0;
-    mapTotal = 2 * (@mapw + @maph);
-
-    cornerDistance = 0;
-    x0 = @mapw;
-    y0 = @maph;
-    x1 = 0;
-    y1 = 0;
-
-    moveTo(0, 0);
-    cornerDistance += @mapw; trace(ore, @mapw, 0);
-    cornerDistance += @maph; trace(ore, @mapw, @maph);
-    cornerDistance += @mapw; trace(ore, 0, @maph);
-    cornerDistance += @maph; trace(ore, 0, 0);
-
-    var d0 = len(coreX - x0, coreY - y0);
-    var d1 = len(coreX - x0, coreY - y1);
-    var d2 = len(coreX - x1, coreY - y0);
-    var d3 = len(coreX - x1, coreY - y1);
-
-    return max(d0, d1, d2, d3);
-end;
+var angle;
 
 // Tries to find the best location for given ore, using the given unit.
 // x, y: core coordinates
@@ -467,13 +426,18 @@ end;
 //end;
 
 def isBlocked(x, y)
+//    if getBlock(x + 1, y) != null then return 1; end;
+//    if getBlock(x - 1, y) != null then return 1; end;
+//    if getBlock(x, y + 1) != null then return 1; end;
+//    if getBlock(x, y - 1) != null then return 1; end;
+//
     var result;
     // Written in pure mlog for speed.
     // Will be rewritten to Mindcode when native support for select gets implemented.
     mlog(in x, in y, out result) {
         ucontrol getBlock x y type building floor
-        select type equal type @boulder @air type
-        select result equal type @air 0 1
+        sensor solid type @solid
+        select result notEqual solid false 1 0
     }
     result;
 end;
@@ -757,8 +721,8 @@ remote void stopLocation()
     unbind();
 end;
 
-// DEBUG
-
+//// DEBUG
+//
 //noinline void printMask(text, mask)
 //    println(text);
 //    for var r in 0 ... 7 descending do
