@@ -2,8 +2,8 @@ jump 6 always 0 0
 jump 13 always 0 0
 draw triangle bank1 processor1 .ERROR .ERROR_BLOCK_NEW .ERROR_BLOCK_OLD .ERROR_X
 draw triangle .ERROR_Y .builder .core .coreX .coreY :buildBlockAt:block
-draw triangle :buildBlockAt:building :buildBlockAt:config :buildBlockAt:fullBuildSupport :buildBlockAt:rotation :buildBlockAt:type :buildBlockAt:x
-draw triangle :buildBlockAt:y :log:encodedId 0 0 0 0
+draw triangle :buildBlockAt:building :buildBlockAt:coal :buildBlockAt:config :buildBlockAt:fullBuildSupport :buildBlockAt:rotation :buildBlockAt:success
+draw triangle :buildBlockAt:type :buildBlockAt:x :buildBlockAt:y :log:encodedId 0 0
 ubind @poly
 set .builder @unit
 ulocate building core false @copper .coreX .coreY 0 .core
@@ -20,42 +20,48 @@ ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlock
 jump 29 equal :buildBlockAt:building null
 jump 23 notEqual :buildBlockAt:type :buildBlockAt:block
 set :buildBlockAt*retval :buildBlockAt:building
-jump 59 always 0 0
+jump 65 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW :buildBlockAt:block
 set .ERROR_BLOCK_OLD :buildBlockAt:type
 set .ERROR_X :buildBlockAt:x
 set .ERROR_Y :buildBlockAt:y
 stop
-sensor *tmp16 .core @coal
-op greaterThan :buildBlockAt:fullBuildSupport *tmp16 200
+sensor :buildBlockAt:coal .core @coal
+op greaterThan :buildBlockAt:fullBuildSupport :buildBlockAt:coal 200
 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
 wait 0.25
-jump 39 equal :buildBlockAt:fullBuildSupport false
-control enabled processor1 false 0 0 0
-ubind @poly
-jump 39 equal @unit .builder
-ucontrol approach :buildBlockAt:x :buildBlockAt:y 6 0 0
-ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+set :buildBlockAt:success false
 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAt:type :buildBlockAt:building 0
-jump 47 notEqual :buildBlockAt:building null
+op equal *tmp20 :buildBlockAt:building null
+op equal *tmp21 :buildBlockAt:success false
+op land *tmp22 *tmp20 *tmp21
+jump 46 equal *tmp22 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW :buildBlockAt:block
 set .ERROR_BLOCK_OLD "unknown"
 set .ERROR_X :buildBlockAt:x
 set .ERROR_Y :buildBlockAt:y
 stop
-jump 33 notEqual :buildBlockAt:type :buildBlockAt:block
+jump 47 always 0 0
+set :buildBlockAt:success true
+jump 53 equal :buildBlockAt:fullBuildSupport false
+control enabled processor1 false 0 0 0
+ubind @poly
+jump 53 equal @unit .builder
+ucontrol approach :buildBlockAt:x :buildBlockAt:y 6 0 0
+ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
+jump 34 notEqual :buildBlockAt:type :buildBlockAt:block
 control enabled processor1 true 0 0 0
 ubind .builder
 sensor :log:encodedId :buildBlockAt:block @id
 read *tmp0 bank1 511
-op sub *tmp29 *tmp0 1
-write *tmp29 bank1 511
-op idiv *tmp33 @second 0.001
-op mul *tmp34 *tmp33 1000
-op add *tmp35 :log:encodedId *tmp34
-write *tmp35 bank1 *tmp29
+op sub *tmp31 *tmp0 1
+write *tmp31 bank1 511
+op idiv *tmp35 @second 0.001
+op mul *tmp36 *tmp35 1000
+op add *tmp37 :log:encodedId *tmp36
+write *tmp37 bank1 *tmp31
 set :buildBlockAt*retval :buildBlockAt:building
 set :buildBlockAt*finished true
 jump 11 always 0 0

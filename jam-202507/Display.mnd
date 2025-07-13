@@ -3,11 +3,9 @@
 //#set function-inlining = none;
 #set sort-variables;
 
-param TIME_COMPRESS = 8;
-
 module Display;
 
-linked display1, switch1, message1, bank1, processor1;
+linked display1, switch1, message1, bank1, processor1, timer = processor2;
 
 // Processor1 is the ore locator
 // We're reading and displaying search progress
@@ -47,7 +45,11 @@ remote var
     displayMonos = 0,
     displayFlares = 0,
     displayPolys = 1,
-    displayMegas = 0;
+    displayMegas = 0,
+    flareTarget = 0,
+    monoTarget = 0,
+    polyTarget = 0,
+    megaTarget = 0;
 
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
@@ -111,11 +113,16 @@ inline void drawHeader()
         image(HEADER_X, HEADER1_Y - 24, @hydrogen, 32, 360 - (@tick / 2) % 360);
     end;
 
-    var t = floor(@second * TIME_COMPRESS);
+    var tt = @second;
+    var t = floor(timer.read("time") / 120);
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "", s);
-    drawText(170, 172, @topRight, "");
+
+    var ratio = round(10 * t / tt);
+    print(" (x", ratio \ 10, ".", ratio % 10);
+
+    drawText(170, 172, @topRight, ")");
 
     count = titaniumDrill.@titanium;
     if count then
@@ -151,32 +158,32 @@ inline void drawMaterials()
             targetFactoryLead = 15;
             targetFactorySilicon = 30;
             materialCount = 2;
-            unitCount1 = displayMonos + 1;
-            unitTotal1 = "/8";
+            unitCount1 = displayMonos;
+            unitTotal1 = monoTarget;
             unit1 = displayNextUnit;
             unit2 = unit3 = null;
         elsif displayNextUnit == @flare then
             targetFactoryLead = 0;
             targetFactorySilicon = 15;
             materialCount = 1;
-            unitCount1 = displayFlares + 1;
-            unitTotal1 = "/8";
+            unitCount1 = displayFlares;
+            unitTotal1 = flareTarget;
             unit1 = displayNextUnit;
             unit2 = unit3 = null;
         elsif displayNextUnit == @poly then
-            unitCount1 = 1;
+            unitCount1 = floor(factoryProgress);
             unitCount2 = displayPolys;
-            unitTotal1 = "/1";
-            unitTotal2 = "/8";
+            unitTotal1 = 1;
+            unitTotal2 = polyTarget;
             unit1 = @mono;
             unit2 = displayNextUnit;
             unit3 = null;
             factoryProgress = max(factoryProgress, reconstructorProgress > 0);
         elsif displayNextUnit == @mega then
-            unitCount1 = 1;
-            unitCount2 = 1;
-            unitTotal1 = "/1";
-            unitTotal2 = "/1";
+            unitCount1 = floor(factoryProgress);
+            unitCount2 = floor(reconstructorProgress);
+            unitTotal1 = 1;
+            unitTotal2 = 1;
             unit1 = @mono;
             unit2 = @poly;
             unit3 = displayNextUnit;
@@ -187,11 +194,11 @@ inline void drawMaterials()
         drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Unit factories");
 
         if factoryProgress > 0 then
-            drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, unit1, factoryProgress, 1.0, unitCount1, unitTotal1);
+            drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, unit1, factoryProgress, 1.0, unitCount1, "/", unitTotal1);
             if unit2 != null then
-                drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, unit2, reconstructorProgress, 1.0, unitCount2, unitTotal2);
+                drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, unit2, reconstructorProgress, 1.0, unitCount2, "/", unitTotal2);
                 if unit3 != null then
-                    drawItem(in 0, in HEADER2_Y - 3 * ROW_HEIGHT, 1, unit3, multiReconstructorProgress, 1.0, displayMegas + 1, "/1");
+                    drawItem(in 0, in HEADER2_Y - 3 * ROW_HEIGHT, 1, unit3, multiReconstructorProgress, 1.0, displayMegas, "/", megaTarget);
                 end;
             end;
         else
@@ -313,7 +320,7 @@ end;
 inline void displayRecord(ref x, ref y, record)
     var id = record % 1000;
     var icon = id > @blockCount ? lookup(:unit, id - @blockCount) : lookup(:block, id);
-    var t = floor(TIME_COMPRESS * record / 1000000);
+    var t = floor(record / 1000 / 120);
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "");
@@ -330,7 +337,7 @@ void displayLog(page)
 
     var logPosition = bank1[511];
     var records = (511 - logPosition);
-    var pages = (records - 1) \ 32 + 1;
+    var pages = max(1, (records - 1) \ 32 + 1);
     numPages = pages + 2;
     var start = 511 - 32 * page;
     var stop = max(logPosition, start - 32);

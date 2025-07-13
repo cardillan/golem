@@ -7,6 +7,7 @@
 module CoreController;
 
 noinit remote var
+    timer,
     core,
     display,
     bank,
@@ -23,15 +24,19 @@ noinit remote var
     multipress,
     payloadRouter,
     reconstructor,
+    unloader4,
     multiReconstructor,
+    unloader6,
 
     // Lead and/or silicone will only be sent to the Air Factory
     // if they are above these limits
     leadReserve,
     siliconReserve,
+    graphiteReserve,
 
     factoryUnit,
-    targetUnit;
+    targetUnit,
+    loopTicks;
 
 remote var
     flares = 0,
@@ -60,12 +65,14 @@ remote display var
 external bank[511] var logPosition;
 
 void log(encodedId)
-    bank[--logPosition] = encodedId + floor(@second * 1000) * 1000;
+    bank[--logPosition] = encodedId + timer.read("time") * 1000;
 end;
 
 void logUnit(unit)
     log(@blockCount + unit.@id);
 end;
+
+var factoryDone = 0;
 
 void factoryUnitFinished(unit)
     // Do not announce when the
@@ -78,6 +85,11 @@ void factoryUnitFinished(unit)
             when @mega  then displayMegas = ++megas;
         end;
         displayUnitReset = true;
+        factoryDone = 0;
+    else
+        case unit
+            when @flare, @mono then factoryDone = 1;
+        end;
     end;
 end;
 
@@ -94,9 +106,10 @@ void backgroundProcess()
     var lastProgress = 0, factoryProgress = 0;
     var lastRecoProgress = 0, reconstructorProgress = 0;
     var lastMultiProgress = 0, multiReconstructorProgress = 0;
-    var enableFactory = true;
+    var enableFactory = true, blockFactory = false;
 
     while true do
+        var ticks = @tick;
         var coreSilicon = core.@silicon;
         var coreGraphite = core.@graphite;
         smelter2.enabled = smelter.enabled = coreSilicon < smelterTarget;
@@ -121,21 +134,26 @@ void backgroundProcess()
         if flares < flareTarget then
             displayNextUnit = targetUnit = factoryUnit = @flare;
             payloadRouter.config = targetUnit;
+            blockFactory = false;
         elsif monos < monoTarget then
             displayNextUnit = targetUnit = factoryUnit = @mono;
             payloadRouter.config = targetUnit;
+            blockFactory = false;
         elsif polys < polyTarget then
-            factoryUnit = reconstructor.@payloadType == null ? @mono : null;
+            factoryUnit = factoryDone + polys < polyTarget ? @mono : null;
             displayNextUnit = targetUnit = @poly;
             reconstructor.enabled = true;
             payloadRouter.config = targetUnit;
+            blockFactory = reconstructor.@payloadCount * factoryProgress > reconstructorProgress;
         elsif megas < megaTarget then
-            factoryUnit = multiReconstructor.@payloadType == null ? @mono : null;
+            factoryUnit = factoryDone + megas < megaTarget ? @mono : null;
             displayNextUnit = targetUnit = @mega;
-            reconstructor.enabled = multiReconstructor;
+            reconstructor.enabled = multiReconstructor or reconstructorProgress < 0.75;
             payloadRouter.config = targetUnit;
+            blockFactory = false;
         else
             displayNextUnit = targetUnit = factoryUnit = null;
+            blockFactory = false;
         end;
 
         fuzzyUpdate(ref enableFactory, power, 200, 500);
@@ -145,15 +163,15 @@ void backgroundProcess()
             factory.config = @mono;
             lastProgress = 0;
         elsif lastProgress > factoryProgress + 0.1 then
-            factory.enabled = enableFactory;
+            factory.enabled = enableFactory and not blockFactory;
             factoryUnitFinished(factoryUnit);
             lastProgress = 0;
         elsif factory.config != factoryUnit then
-            factory.enabled = enableFactory;
+            factory.enabled = enableFactory and not blockFactory;
             factory.config = factoryUnit;
             lastProgress = 0;
         else
-            factory.enabled = enableFactory;
+            factory.enabled = enableFactory and not blockFactory;
             lastProgress = factoryProgress;
         end;
 
@@ -176,6 +194,8 @@ void backgroundProcess()
             continue;
         end;
 
+        unloader4.enabled = coreSilicon > siliconReserve and coreGraphite > graphiteReserve;
+
         var leadLimit = (factoryUnit == @mono) * 30;
         if factory.@lead < leadLimit and core.@lead > leadReserve then
             unloader2.config = @lead;
@@ -184,5 +204,9 @@ void backgroundProcess()
         else
             unloader2.config = @coal;
         end;
+
+        unloader6.config = multiReconstructor.@silicon >= 130 and multiReconstructor.@titanium < 80 ? @titanium : @silicon;
+
+        loopTicks = @tick - ticks;
     end;
 end;

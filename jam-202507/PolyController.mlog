@@ -1,71 +1,116 @@
 jump 4 always 0 0
 draw triangle message1 .builder .coalX .coalY .core .coreX
-draw triangle .coreY .distance :backgroundProcess:flag :findOreToMine:dist :findOreToMine:floor :findOreToMine:x
-draw triangle :findOreToMine:y 0 0 0 0 0
+draw triangle .coreY .distance .onBase .thoriumContainer .thoriumDrone .thoriumGenerator
+draw triangle :backgroundProcess:flag :findOreToMine:dist :findOreToMine:floor :findOreToMine:x :findOreToMine:y :serviceThoriumDrill:item
+set .thoriumContainer null
+set .thoriumGenerator null
 set .coalX 0
 set .coalY 0
 set .distance 1000000000
+set .onBase true
 ubind @poly
 set .builder @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 7 equal .core null
+jump 10 equal .core null
 set *signature "0:v1"
-jump 82 equal .core null
+jump 127 equal .core null
 ubind @poly
-jump 18 notEqual @unit .builder
+jump 21 notEqual @unit .builder
 print "Found builder unit.\n"
 printflush message1
-jump 13 always 0 0
+jump 16 always 0 0
+jump 24 notEqual .thoriumDrone null
+set .thoriumDrone @unit
+jump 16 always 0 0
+op equal *tmp11 @unit .thoriumDrone
+sensor *tmp12 .thoriumContainer @thorium
+op greaterThan *tmp13 *tmp12 100
+op land *tmp14 *tmp11 *tmp13
+jump 63 equal *tmp14 false
+sensor :serviceThoriumDrill:item @unit @firstItem
+jump 44 equal .onBase false
+jump 38 notEqual :serviceThoriumDrill:item @coal
+sensor *tmp20 .thoriumGenerator @x
+sensor *tmp21 .thoriumGenerator @y
+ucontrol approach *tmp20 *tmp21 6 0 0
+ucontrol itemDrop .thoriumGenerator 30 0 0 0
+set .onBase false
+jump 16 always 0 0
+ucontrol approach .coreX .coreY 6 0 0
+jump 42 notEqual :serviceThoriumDrill:item null
+ucontrol itemTake .core @coal 8 0 0
+jump 16 always 0 0
+ucontrol itemDrop .core 30 0 0 0
+jump 16 always 0 0
+jump 49 notEqual :serviceThoriumDrill:item @thorium
+ucontrol approach .coreX .coreY 6 0 0
+ucontrol itemDrop .core 30 0 0 0
+set .onBase true
+jump 16 always 0 0
+jump 55 notEqual :serviceThoriumDrill:item @coal
+sensor *tmp28 .thoriumGenerator @x
+sensor *tmp29 .thoriumGenerator @y
+ucontrol approach *tmp28 *tmp29 6 0 0
+ucontrol itemDrop .thoriumGenerator 30 0 0 0
+jump 16 always 0 0
+jump 61 notEqual :serviceThoriumDrill:item null
+sensor *tmp32 .thoriumContainer @x
+sensor *tmp33 .thoriumContainer @y
+ucontrol approach *tmp32 *tmp33 6 0 0
+ucontrol itemTake .thoriumContainer @thorium 30 0 0
+jump 16 always 0 0
+ucontrol itemDrop @air 30 0 0 0
+jump 16 always 0 0
 sensor :backgroundProcess:flag @unit @flag
 print "Unit flag: {0}\n"
 format :backgroundProcess:flag
-jump 56 notEqual :backgroundProcess:flag 0
-sensor *tmp11 @unit @firstItem
-jump 29 equal *tmp11 null
+jump 101 notEqual :backgroundProcess:flag 0
+sensor *tmp37 @unit @firstItem
+jump 74 equal *tmp37 null
 ucontrol itemDrop @air 30 0 0 0
-sensor *tmp14 @unit @firstItem
-jump 29 equal *tmp14 null
+sensor *tmp40 @unit @firstItem
+jump 74 equal *tmp40 null
 print "Holding wrong item.\n"
-jump 13 always 0 0
+jump 16 always 0 0
 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
-op sub *tmp19 :findOreToMine:x .coreX
-op sub *tmp20 :findOreToMine:y .coreY
-op len :findOreToMine:dist *tmp19 *tmp20
-jump 37 greaterThanEq :findOreToMine:dist .distance
+op sub *tmp45 :findOreToMine:x .coreX
+op sub *tmp46 :findOreToMine:y .coreY
+op len :findOreToMine:dist *tmp45 *tmp46
+jump 82 greaterThanEq :findOreToMine:dist .distance
 set .coalX :findOreToMine:x
 set .coalY :findOreToMine:y
 set .distance :findOreToMine:dist
 ucontrol approach .coalX .coalY 6 0 0
 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
-jump 46 notEqual :findOreToMine:floor @ore-coal
+jump 91 notEqual :findOreToMine:floor @ore-coal
 ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
 print "Found coal at {0}, {0}\n"
 format .coalX
 format .coalY
 ucontrol flag 2 0 0 0 0
-jump 13 always 0 0
-jump 52 equal :findOreToMine:floor null
+jump 16 always 0 0
+jump 97 equal :findOreToMine:floor null
 set .distance 1000000000
 print "Coal at {0}, {0} disappeared\n"
 format .coalX
 format .coalY
-jump 13 always 0 0
+jump 16 always 0 0
 print "Not close enough to {0}, {0}\n"
 format .coalX
 format .coalY
-jump 13 always 0 0
-jump 65 notEqual :backgroundProcess:flag 1
+jump 16 always 0 0
+jump 110 notEqual :backgroundProcess:flag 1
 print "Returning\n"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
-sensor *tmp32 @unit @firstItem
-jump 13 notEqual *tmp32 null
+sensor *tmp58 @unit @firstItem
+jump 16 notEqual *tmp58 null
 print "    Finished\n"
 ucontrol flag 0 0 0 0 0
-jump 13 always 0 0
+jump 16 always 0 0
 print "Mining"
-sensor *tmp35 @unit @firstItem
-jump 70 equal *tmp35 @coal
+sensor *tmp61 @unit @firstItem
+jump 115 equal *tmp61 @coal
 print " (dropping)"
 ucontrol itemDrop @air 30 0 0 0
 print " at {0}, "
@@ -73,14 +118,14 @@ format .coalX
 print .coalY
 ucontrol approach .coalX .coalY 6 0 0
 ucontrol mine .coalX .coalY 0 0 0
-sensor *tmp38 @unit @totalItems
-jump 80 lessThan *tmp38 30
+sensor *tmp64 @unit @totalItems
+jump 125 lessThan *tmp64 30
 print ", full"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol flag 1 0 0 0 0
 print "\n"
-jump 13 always 0 0
+jump 16 always 0 0
 wait 1e12
-jump 12 always 0 0
+jump 15 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

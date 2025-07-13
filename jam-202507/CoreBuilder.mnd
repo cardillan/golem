@@ -5,9 +5,9 @@
 #set goal = size;
 
 // Linked variables
-linked message1, bank1, processor1, processor2, processor3, processor4, processor5;
+linked message1, bank1, processor1, processor2, processor3, processor4, processor5, processor6, processor7;
 
-noinit var display, controller, flareController, oreLocator, blockBuilder;
+noinit var display, controller, flareController, polyController, oreLocator, blockBuilder;
 
 require units;
 require "Actions.mnd";
@@ -15,6 +15,7 @@ require "Display.mnd" remote display;
 require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote controller;
 require "FlareController.mnd" remote flareController;
+require "PolyController.mnd" remote polyController;
 require "BlockBuilder.mnd" remote blockBuilder;
 
 // At this point, we're only using a poly
@@ -251,6 +252,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     controller.kilnTarget = metaglass + metaglassSurplus;
     controller.leadReserve = lead + leadSurplus;
     controller.siliconReserve = silicon + sign(silicon) * 20;
+    controller.graphiteReserve = graphite + sign(graphite) * 20;
 
     while !targetMet() do
         supplyBase();
@@ -273,7 +275,7 @@ def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass
 end;
 
 def buildRemoteBlock(cfg, x, y)
-    if x >= 0 then
+    if x + y > 0 then
         var type, cu, pb, gr, si, ti, mg, th, rotation;
         unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation);
         return buildBlock(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, null);
@@ -340,7 +342,7 @@ void buildTitaniumDrill(x, y, in out count)
                 flareController.addTitaniumDrill(drill);
 
                 // Build a flare to service this drill
-                controller.flareTarget = ++count;
+                setFlareTarget(++count);
             end;
         end;
     end;
@@ -406,6 +408,9 @@ void buildThoriumDrill()
     if thoriumContainer == null then thoriumContainer = thoriumDrill; end;
     display.thoriumDrill = thoriumDrill;
     display.thoriumContainer = thoriumContainer;
+
+    polyController.thoriumGenerator = thoriumGenerator;
+    polyController.thoriumContainer = thoriumContainer;
 end;
 
 // MAIN
@@ -416,6 +421,7 @@ void buildUnits()
     display.nextBlock = null;
     controller.leadReserve = 0;
     controller.siliconReserve = 0;
+    controller.graphiteReserve = 0;
 end;
 
 begin
@@ -430,6 +436,7 @@ begin
     flareController = processor3;
     oreLocator = processor4;
     blockBuilder = processor5;
+    polyController = processor6;
 
     // PHASE 0: BASIC BLOCKS
 
@@ -445,7 +452,6 @@ begin
     titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
     unloader1 = buildBlockFromCfg(UNLOADER1);
-    controller.unloader1 = unloader1;
     buildBlockFromCfg(INVERTED_SORT2);
     buildBlockFromCfg(OVERFLOW_GATE1);
     graphiteSurplus = 100;
@@ -453,6 +459,7 @@ begin
     // Build and initialize base controller
 
     controller = buildBlockFromCfg(PROCESSOR, processor2);
+    controller.timer = processor7;
     controller.display = display;
     controller.core = core;
     controller.bank = bank1;
@@ -460,6 +467,7 @@ begin
     controller.generator = generator;
     controller.smelter = smelter;
     controller.press = press;
+    controller.unloader1 = unloader1;
 
     buildBlockFromCfg(POWER_NODE);
     controller.unloader2 = buildBlockFromCfg(UNLOADER2);
@@ -470,9 +478,8 @@ begin
 
     // PHASE 1: BUILDING UNITS
 
-    controller.flareTarget = 1;
-    controller.monoTarget = 3;
-    controller.polyTarget = 0;
+    setFlareTarget(1);
+    setMonoTarget(3);
     controller.pressTarget = 85;
     controller.smelterTarget = 150;
     controller.kilnTarget = 30;
@@ -510,7 +517,7 @@ begin
 
     // POLYS
     controller.payloadRouter = buildBlockFromCfg(PAYLOAD_ROUTER);
-    buildBlockFromCfg(UNLOADER4);
+    controller.unloader4 = buildBlockFromCfg(UNLOADER4);
     buildBlockFromCfg(UNDERFLOW_GATE);
     var reconstructor = buildBlockFromCfg(ADDITIVE_REC);
     controller.reconstructor = reconstructor;
@@ -523,22 +530,21 @@ begin
     siliconSurplus = 1000;
     metaglassSurplus = 200;
 
-    controller.polyTarget = 4;
+    setPolyTarget(6);
     controller.smelter2 = buildBlockFromCfg(SMELTER2);
     buildBlockFromCfg(UNLOADER5, @sand);
     buildUnits();
 
-    while controller.polys < 2 do
+    while controller.polys < 3 do
         supplyBase();
     end;
 
-    controller.flareTarget = 3;
+    setFlareTarget(3);
     while controller.flares < 2 do
         supplyBase();
     end;
 
-    controller.monoTarget = 8;
-    controller.polyTarget = 6;
+    setMonoTarget(8);
 
     // Build more titanium drills now
     // The base can already be fully served by monos and polys,
@@ -551,12 +557,12 @@ begin
     buildThoriumDrill();
     display.nextBlock = null;
 
-    controller.megaTarget = 1;
+    setMegaTarget(1);
     while controller.polys < 6 do
         supplyBase();
     end;
 
-    buildBlockFromCfg(UNLOADER6, @silicon);
+    controller.unloader6 = buildBlockFromCfg(UNLOADER6, @silicon);
     buildBlockFromCfg(UNDERFLOW_GATE2);
     var multiReconstructor = buildBlockFromCfg(MULTIPLICATIVE_REC);
     controller.multiReconstructor = multiReconstructor;
@@ -568,4 +574,24 @@ begin
     while true do
         supplyBase();
     end;
+end;
+
+inline void setFlareTarget(target)
+    controller.flareTarget = target;
+    display.flareTarget = target;
+end;
+
+inline void setMonoTarget(target)
+    controller.monoTarget = target;
+    display.monoTarget = target;
+end;
+
+inline void setPolyTarget(target)
+    controller.polyTarget = target;
+    display.polyTarget = target;
+end;
+
+inline void setMegaTarget(target)
+    controller.megaTarget = target;
+    display.megaTarget = target;
 end;

@@ -14,7 +14,12 @@ const CAPACITY = 30;
 const RADIUS = 6;
 
 noinit volatile var
-    builder, core, coreX, coreY;
+    builder, core, coreX, coreY,
+    thoriumDrone;
+
+remote var
+    thoriumContainer = null,
+    thoriumGenerator = null;
 
 void backgroundProcess()
     if core == null then return; end;
@@ -24,7 +29,15 @@ void backgroundProcess()
         if @unit == builder then
             println("Found builder unit.");
             printflush(message1);
+        elsif thoriumDrone == null then
+            thoriumDrone = @unit;
         else
+
+            if @unit == thoriumDrone and thoriumContainer.@thorium > max(0, thoriumContainer.@itemCapacity - 200) then
+                serviceThoriumDrill();
+                continue;
+            end;
+
             var flag = @unit.@flag;
             println("Unit flag: ", flag);
             if flag == 0 then
@@ -108,6 +121,23 @@ void returnItems()
     if @unit.@firstItem == null then
         println("    Finished");
         flag(0);
+    end;
+end;
+
+var onBase = true;
+
+void serviceThoriumDrill()
+    var item = @unit.@firstItem;
+
+    if item == @thorium then
+        approach(coreX, coreY, RADIUS);
+        itemDrop(core, CAPACITY);
+    elsif item == null then
+        // Take titanium
+        approach(thoriumContainer.@x, thoriumContainer.@y, RADIUS);
+        itemTake(thoriumContainer, @thorium, CAPACITY);
+    else
+        itemDrop(@air, CAPACITY);
     end;
 end;
 

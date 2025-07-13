@@ -6,7 +6,8 @@ module BlockController;
 
 linked
     bank1,
-    polyController = processor1;
+    polyController = processor1,
+    timer = processor2;
 
 noinit var
     core, coreX, coreY,
@@ -40,7 +41,7 @@ end;
 external bank1[511] var logPosition;
 
 inline void log(encodedId)
-    bank1[--logPosition] = encodedId + floor(@second * 1000) * 1000;
+    bank1[--logPosition] = encodedId + timer.read("time") * 1000;
 end;
 
 inline void logBlock(block)
@@ -58,11 +59,19 @@ remote def buildBlockAt(block, x, y, rotation, config)
         buildError(block, type, x, y);
     end;
 
-    var coal = core.@coal > 200;
+    var coal = core.@coal;
     var fullBuildSupport = coal > 200;
     build(x, y, block, rotation, config);
     wait(0.25);
+    var success = false;
     do
+        building = getBlock(x, y, out type);
+        if building == null and !success then
+            buildError(block, "unknown", x, y);
+        else
+            success = true;
+        end;
+
         if fullBuildSupport then
             polyController.enabled = false;     // Brutal, but effective :)
             ubind(@poly);
@@ -70,10 +79,6 @@ remote def buildBlockAt(block, x, y, rotation, config)
                 approach(x, y, RADIUS);
                 build(x, y, block, rotation, config);
             end;
-        end;
-        building = getBlock(x, y, out type);
-        if building == null then
-            buildError(block, "unknown", x, y);
         end;
     while type != block;
 
