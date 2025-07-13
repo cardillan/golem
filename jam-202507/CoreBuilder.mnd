@@ -2,10 +2,13 @@
 #set syntax = strict;
 #set sort-variables;
 //#set function-inlining = none;
-#set goal = size;
+//#set goal = size;
 
 // Linked variables
-linked message1, bank1, processor1, processor2, processor3, processor4, processor5, timer = processor6;
+linked message1, bank1, processor1, processor2, processor3, processor4, processor5,
+    timer = processor6,
+    flareController = processor7,
+    monoController = processor8;
 
 noinit var controller;
 
@@ -496,7 +499,7 @@ begin
         supplyBase();
     end;
 
-    setMonoTarget(8);
+    setMonoTarget(5);
 
     // Build more titanium drills now
     // The base can already be fully served by monos and polys,
@@ -510,7 +513,7 @@ begin
     display.nextBlock = null;
 
     setMegaTarget(1);
-    while controller.polys < 6 do
+    while controller.polys < 5 do
         supplyBase();
     end;
 
@@ -519,11 +522,12 @@ begin
     buildMultiplicativeReconstructor();
 
     buildUnits();
-//    controller.megaTarget = 8;
 
-    while true do
+    while controller.megas < 1 do
         supplyBase();
     end;
+
+    stopAll();
 end;
 
 inline void setFlareTarget(target)
@@ -544,4 +548,44 @@ end;
 inline void setMegaTarget(target)
     controller.megaTarget = target;
     display.megaTarget = target;
+end;
+
+void stopAll()
+    flareController.enabled = false;
+    monoController.enabled = false;
+    processor3.enabled = false;
+    processor4.enabled = false;
+    processor5.enabled = false;
+
+    flagUnits(@mega);
+    flagUnits(@poly);
+    flagUnits(@mono);
+    flagUnits(@flare);
+
+    while true do
+        lineUpUnits(@thisy -  6, @mega);
+        lineUpUnits(@thisy - 10, @poly);
+        lineUpUnits(@thisy - 14, @mono);
+        lineUpUnits(@thisy - 18, @flare);
+    end;
+end;
+
+void flagUnits(unit)
+    var firstUnit = ubind(unit);
+    var x = @thisx;
+    do
+        flag(x);
+        x += 4;
+        ubind(unit);
+    while @unit != firstUnit;
+end;
+
+void lineUpUnits(y, unit)
+    var firstUnit = ubind(unit);
+    do
+        var x = @unit.@flag;
+        itemDrop(@air, 1000);
+        move(x, y);
+        ubind(unit);
+    while @unit != firstUnit;
 end;

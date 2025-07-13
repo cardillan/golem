@@ -9,7 +9,9 @@ module FlareController;
 
 require units;
 
-linked message1;
+linked message1, processor1;
+
+remote processor1 titaniumDrillCount;
 
 // At this point, we're only using a flare
 const CAPACITY = 10;
@@ -60,9 +62,12 @@ void backgroundProcess()
 
     // This loops until interrupted by a remote function call
     while true do
+        var count = 0;
         for var drill in titaniumDrills; var out unit in units do
             // End of drills
             if drill == null then break; end;
+
+            count += drill.@titanium;
 
             // Matches null units as well
             if unit.@controller != @this then
@@ -72,5 +77,7 @@ void backgroundProcess()
 
             serviceDrill(drill, unit);
         end;
+
+        titaniumDrillCount = count;
     end;
 end;

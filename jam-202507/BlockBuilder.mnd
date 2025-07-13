@@ -94,7 +94,6 @@ def buildBlockAtLocal(block, x, y, rotation, config)
             polyController.enabled = false;     // Brutal, but effective :)
             ubind(@poly);
             if @unit != builder then
-                if @unit.@itemCount then itemDrop(@air, 1000); end;
                 approach(x, y, RADIUS);
                 build(x, y, block, rotation, config);
             end;
@@ -135,8 +134,8 @@ end;
 
 volatile var positive = 0, negative = 0;
 
-void buildTitaniumDrill(x, y, in out count)
-    if count < 8 then
+def buildTitaniumDrill(x, y, in out count, in out tiles)
+    if tiles < 16 then
         moveTo(x, y);
         positive = 0; negative = 0;
         titaniumDrillScore(x, y, in out positive, in out negative);
@@ -151,9 +150,14 @@ void buildTitaniumDrill(x, y, in out count)
 
                 // Build a flare to service this drill
                 setFlareTarget(++count);
+
+                tiles += positive;
+                return positive;
             end;
         end;
     end;
+
+    return 0;
 end;
 
 remote void buildTitaniumDrills(aController, current)
@@ -163,6 +167,7 @@ remote void buildTitaniumDrills(aController, current)
 
     // We know we have one drill
     var count = 1;
+    var tiles = 0;
 
     wait(1e-4);
     wait(1e-4);
@@ -175,15 +180,19 @@ remote void buildTitaniumDrills(aController, current)
                 var x = bank1[index + 2];
                 var y = bank1[index + 3];
 
-                buildTitaniumDrill(x - 1, y - 1, in out count);
-                buildTitaniumDrill(x + 1, y - 1, in out count);
-                buildTitaniumDrill(x - 1, y + 1, in out count);
-                buildTitaniumDrill(x + 1, y + 1, in out count);
+                var built = buildTitaniumDrill(x - 1, y - 1, in out count, in out tiles)
+                    + buildTitaniumDrill(x + 1, y - 1, in out count, in out tiles)
+                    + buildTitaniumDrill(x - 1, y + 1, in out count, in out tiles)
+                    + buildTitaniumDrill(x + 1, y + 1, in out count, in out tiles);
+
+                if built == 0 then
+                    built = buildTitaniumDrill(x, y, in out count, in out tiles);
+                end;
             end;
             current++;
         end;
 
-        if count >= 8 then break; end;
+        if tiles >= 16 then break; end;
     end;
 end;
 

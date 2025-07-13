@@ -448,25 +448,23 @@ inline void saveLocation(item, value, x, y)
     bank1[++count] = y;
     locations++;
 //    remark($"Locations: $locations");
-    debugPause();
+//    debugPause();
 end;
 
-inline void debugPrintSpot(text)
-    if debug then
-//        remark("Time: ", round(@second - start), " s\n");
-        var index = 4 * locationsStart;
-        for var i in locationsStart ... locations do
-            // We skipped the first index
-            var size = bank1[++index];
-            var x = bank1[++index];
-            var y = bank1[++index];
-            index++;
-//            remark($"$x, $y: $size\n");
-        end;
-        print(text);
-        printflush(message1);
-    end;
-end;
+//inline void debugPrintSpot(text)
+////    remark("Time: ", round(@second - start), " s\n");
+//    var index = 4 * locationsStart;
+//    for var i in locationsStart ... locations do
+//        // We skipped the first index
+//        var size = bank1[++index];
+//        var x = bank1[++index];
+//        var y = bank1[++index];
+//        index++;
+////        remark($"$x, $y: $size\n");
+//    end;
+//    print(text);
+//    printflush(message1);
+//end;
 
 def isBlocked(x, y)
     var result;
@@ -585,7 +583,7 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
 
         terrainMask |= (generatorVertical << shift);
 
-//        printMask("generatorShifted:", generatorVertical << shift);
+//        printMask("generatorVertical:", generatorVertical << shift);
 //        remark($"Shift: $shift, r: $r, c: $c\n");
 //        remark($"centerX: $centerX, centerY: $centerY\n");
 //        remark($"water1X: $water1X, water1Y: $water1Y\n");
@@ -594,6 +592,8 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
 //        debugPause();
     else
         shift = findPossiblePlacement(terrainMask, generatorHorizontal, 4, 2, out c, out r);
+        if shift < 0 then return false; end;
+
         water2X = centerX + 0.5 + c;
         water2Y = centerY + 0.5 + r;
         generatorX = centerX + 2.5 + c;
@@ -603,7 +603,7 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
 
         terrainMask |= (generatorHorizontal << shift);
 
-//        printMask("generatorShifted:", generatorHorizontal << shift);
+//        printMask("generatorHorizontal:", generatorHorizontal << shift);
 //        remark($"Shift: $shift, r: $r, c: $c\n");
 //        remark($"centerX: $centerX, centerY: $centerY\n");
 //        remark($"water1X: $water1X, water1Y: $water1Y\n");
@@ -666,10 +666,11 @@ noinline def layoutThoriumDrillAtLocation()
     // The extractor mask
     var mask2x2 = createFixedMatrix(0b11, 0b11);
 
-    printMask("terrainMask:", terrainMask);
-    printMask("cornersMask:", cornersMask);
-    printMask("mask2x2:", mask2x2);
-    debugStop("");
+//    printMask("terrainMask:", terrainMask);
+//    printMask("cornersMask:", cornersMask);
+//    printMask("mask2x2:", mask2x2);
+//    printflush(message1);
+//    stopProcessor();
 
     var r, c;
     var shift = findPossiblePlacement(cornersMask, mask2x2, 2, 2, out c, out r);
@@ -699,14 +700,16 @@ noinline def layoutThoriumDrillAtLocation()
 //    printMask("new terrain mask:", terrainMask);
 //    remark($"Shift: $shift, r: $r, c: $c\n");
 //    remark($"water1X: $water1X, water1Y: $water1Y\n");
-//    debugStop("");
+//    debugPause();
 
     // Try to patch in the water extractor/generator combo.
     // Both orientations
     var generatorHorizontal = createFixedMatrix(0b1111, 0b1111);
     var generatorVertical = createFixedMatrix(0b11, 0b11, 0b11, 0b11);
 
-    if tryPlaceGenerator(drillX, drillY, terrainMask, generatorHorizontal, generatorVertical) then return true; end;
+    if tryPlaceGenerator(drillX, drillY, terrainMask, generatorHorizontal, generatorVertical) then
+        return true;
+    end;
 
     // Try four more areas, each shifted by 3 in both directions
     for var sx in 3, 3, -3, -3; var sy in 3, -3, 3, -3 do
@@ -756,37 +759,22 @@ end;
 
 // DEBUG
 
-void printMask(text, mask)
-    if debugMask then
-        println(text);
-        for var r in 0 ... 7 descending do
-            for var c in 0 ... 7 do
-                print((mask & (1 << (7 * r + c))) ? "x" : "o");
-            end;
-            println();
-        end;
-    end;
-end;
-
-inline void debugStop(format, params...)
-    if debug then
-        print(format, params);
-        debugPause();
-        end();
-    end;
-end;
-
-inline void debugPause()
-    if debug then
-        printflush(message1);
-        switch1.enabled = true;
-        do while switch1.enabled;
-    end;
-end;
-
-const debug = false;
-const debugMask = false;
-
+//noinline void printMask(text, mask)
+//    println(text);
+//    for var r in 0 ... 7 descending do
+//        for var c in 0 ... 7 do
+//            print((mask & (1 << (7 * r + c))) ? "x" : "o");
+//        end;
+//        println();
+//    end;
+//end;
+//
+//inline void debugPause()
+//    printflush(message1);
+//    switch1.enabled = true;
+//    do while switch1.enabled;
+//end;
+//
 //#set remarks = active;
 //
 //begin
@@ -801,41 +789,41 @@ const debugMask = false;
 //    moveTo(x, y, 1);
 //
 //    start = @second;
-////    if true then
-//        var dx, dy, capacity;
-//        var ox = 131;
-//        var oy = 118;
-//        moveTo(ox, oy);
-//        var score = findBestPosition(ox, oy, @ore-titanium, 4, ref dx, ref dy);
-//        moveTo(x, y);
-//        println($"$score at $, $", ox + dx, oy + dy);
-//        printflush(message1);
-//        stop();
-//
-//////        findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 2, out dx, out dy, out capacity);
-//////        println($"Found $capacity at $dx, $dy.");
-//////        printflush(message1);
-//////        debugPause();
-//////        ubind(@poly);
-//////        buildAt(dx, dy, @blast-drill);
-//////        wait(1);
-//////        ubind(@flare);
+////    if false then
+////        var dx, dy, capacity;
+////        var ox = 131;
+////        var oy = 118;
+////        moveTo(ox, oy);
+////        var score = findBestPosition(ox, oy, @ore-titanium, 4, ref dx, ref dy);
+////        moveTo(x, y);
+////        println($"$score at $, $", ox + dx, oy + dy);
+////        printflush(message1);
+////        stop();
+////
+////        findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 2, out dx, out dy, out capacity);
+////        println($"Found $capacity at $dx, $dy.");
+////        printflush(message1);
+////        debugPause();
+////        ubind(@poly);
+////        buildAt(dx, dy, @blast-drill);
+////        wait(1);
+////        ubind(@flare);
 ////
 ////        //findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 1e9, out dx, out dy, out capacity);
 ////    else
-////        drillX = 129;
-////        drillY = 96;
-////        layoutThoriumDrillAtLocation();
-////
-////        buildAt(drillX, drillY, @laser-drill);
-////        buildAt(water1X, water1Y, @water-extractor);
-////        buildAt(water2X, water2Y, @water-extractor);
-////        buildAt(generatorX, generatorY, @steam-generator);
-////        buildAt(nodeX, nodeY, @power-node);
-////        buildAt(panelX, panelY, @solar-panel);
+//        drillX = 88;
+//        drillY = 103;
+//        layoutThoriumDrillAtLocation();
+//
+//        buildAt(drillX, drillY, @laser-drill);
+//        buildAt(water1X, water1Y, @water-extractor);
+//        buildAt(water2X, water2Y, @water-extractor);
+//        buildAt(generatorX, generatorY, @steam-generator);
+//        buildAt(nodeX, nodeY, @power-node);
+//        buildAt(panelX, panelY, @solar-panel);
+//        buildAt(containerX, containerY, @container);
 ////    end;
-////
-////    debugStop("Finished.");
+//    debugPause();
 //end;
 //
 //inline void buildAt(x, y, block)
