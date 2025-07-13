@@ -1,0 +1,214 @@
+#set target = 8;
+#set syntax = strict;
+//#set sort-variables;
+#set remarks = none;
+
+//#set loop-unrolling = none;
+
+module Matrices;
+
+def isSolid(x, y)
+    var result;
+    // Written in pure mlog for speed.
+    // Will be rewritten to Mindcode when native support for select gets implemented.
+    mlog(in x, in y, out result) {
+        ucontrol getBlock x y type building floor
+        sensor solid type @solid
+        select result notEqual solid false 1 0
+    }
+    result;
+end;
+
+// Creates a 7x7 terrain mask centered around x and y
+remote def createTerrainMask(unit, x, y)
+    ubind(unit);
+
+    var result = 0;
+    for var r in -3 .. 3 descending do
+        for var c in -3 .. 3 descending do
+            result = (result << 1) | isSolid(x + c, y + r);
+        end;
+    end;
+
+    return result;
+end;
+
+
+
+
+//// Creates a 7x7 block mask centered around x and y
+//remote def createBlockMask(x, y)
+//    var result = 0;
+//    for var r in -3 .. 3 descending do
+//        for var c in -3 .. 3 descending do
+//            result = (result << 1) | getBlock(x + c, y + r);
+//        end;
+//    end;
+//
+//    return result;
+//end;
+
+const ORE = 1 / 255;
+const WALL = 25 / 255;
+
+// Values >= WALL represent walls, regular values should all be less or equal to 16 / 255.
+// For 2x2 drills, the highest possible value is 4*25.
+// For 3x3 drills, the highest possible value is 9*25 (225).
+// For 4x4 drills, the highest possible value would be 16*25, which wouldn't fit in 8 bits.
+// For those, the summed column values need to be clamped, resulting in a highest possible value 4*25.
+const LIMIT = 20 / 255;
+
+inline def spotValue(x, y, ore)
+    var result;
+    // Written in pure mlog for speed.
+    // Will be rewritten to Mindcode when native support for select gets implemented.
+    mlog(in x, in y, in ore, in ORE, in WALL, out result) {
+        ucontrol getBlock x y type building floor
+        select value equal floor ore ORE 0
+        sensor solid type @solid
+        select result notEqual solid false WALL value
+    }
+    result;
+end;
+
+def computeRowValues(x, y, ore, size)
+    var x1 = spotValue(x - 2, y, ore);
+    var x2 = spotValue(x - 1, y, ore);
+    var x3 = spotValue(x + 0, y, ore);
+    var x4 = spotValue(x + 1, y, ore);
+    var x5 = spotValue(x + 2, y, ore);
+
+//    remark($"Spot values for row $y: $, $, $, $, $\n", x1 * 255, x2 * 255, x3 * 255, x4 * 255, x5 * 255);
+
+    if size == 2 then
+        // 2x2 drill
+        return packcolor(
+            x1 + x2,        // drill at x - 1.5
+            x2 + x3,        // drill at x - 0.5
+            x3 + x4,        // drill at x + 0.5
+            x4 + x5         // drill at x + 1.5
+        );
+    elsif size == 3 then
+        // 3x3 drill
+        // Using parentheses to help the optimizer
+        return packcolor(
+            x1 + (x2 + x3),   // drill at x - 1
+            (x2 + x3) + x4,   // drill at x
+            x3 + x4 + x5,   // drill at x + 1
+            0);
+    else
+        // 4x4 drill
+        // Using parentheses to help the optimizer
+        var x0 = spotValue(x - 3, y, ore);
+        var x6 = spotValue(x + 3, y, ore);
+        return packcolor(
+            min(WALL, x0 + (x1 + x2 + x3)),   // drill at x - 1.5
+            min(WALL, (x1 + x2 + x3) + x4),   // drill at x - 0.5
+            min(WALL, x2 + (x3 + x4 + x5)),   // drill at x + 0.5
+            min(WALL, (x3 + x4 + x5) + x6)    // drill at x + 1.5
+        );
+    end;
+end;
+
+inline void updatePosition(dx, dy, value, ref bestX, ref bestY, ref best)
+//    remark($"${value * 255} at $dx, $dy ($bestX, $bestY)");
+    if value < LIMIT then
+        if value > best then
+            bestX = dx;
+            bestY = dy;
+            best = value;
+//            remark(" ***");
+        end;
+    end;
+
+//    remark("\n");
+end;
+
+// Finds the best possible column position over a sum of row values
+inline void updateRowPositions2x2(dy, rowSum, ref bestX, ref bestY, ref best)
+    var col1, col2, col3, col4;
+    unpackcolor(out col1, out col2, out col3, out col4, rowSum);
+    updatePosition(-1.5, dy, col1, ref bestX, ref bestY, ref best);
+    updatePosition(-0.5, dy, col2, ref bestX, ref bestY, ref best);
+    updatePosition(+0.5, dy, col3, ref bestX, ref bestY, ref best);
+    updatePosition(+1.5, dy, col4, ref bestX, ref bestY, ref best);
+//    remark($"updateRowPositions2x2: $bestX, $bestY: ${best * 255}\n");
+end;
+
+// Finds the best possible column position over a sum of row values
+inline void updateRowPositions3x3(dy, rowSum, ref bestX, ref bestY, ref best)
+    var col1, col2, col3;
+    unpackcolor(out col1, out col2, out col3, , rowSum);
+    updatePosition(-1, dy, col1, ref bestX, ref bestY, ref best);
+    updatePosition( 0, dy, col2, ref bestX, ref bestY, ref best);
+    updatePosition(+1, dy, col3, ref bestX, ref bestY, ref best);
+//    remark($"updateRowPositions3x3: $bestX, $bestY: ${best * 255}\n");
+end;
+
+// Finds the best possible column position over a sum of row values
+inline void updateRowPositions4x4(dy, rowSum, ref bestX, ref bestY, ref best)
+    var col1, col2, col3, col4;
+    unpackcolor(out col1, out col2, out col3, out col4, rowSum);
+    updatePosition(-1.5, dy, col1, ref bestX, ref bestY, ref best);
+    updatePosition(-0.5, dy, col2, ref bestX, ref bestY, ref best);
+    updatePosition(+0.5, dy, col3, ref bestX, ref bestY, ref best);
+    updatePosition(+1.5, dy, col4, ref bestX, ref bestY, ref best);
+//    remark($"updateRowPositions4x4: $bestX, $bestY: ${best * 255}\n");
+end;
+
+remote def findBestPosition(unit, x, y, ore, size, out bestX, out bestY)
+    ubind(unit);
+
+    var y1 = computeRowValues(x, y - 2, ore, size);
+    var y2 = computeRowValues(x, y - 1, ore, size);
+    var y3 = computeRowValues(x, y + 0, ore, size);
+    var y4 = computeRowValues(x, y + 1, ore, size);
+    var y5 = computeRowValues(x, y + 2, ore, size);
+
+    var best = 0;
+    bestX = 0;
+    bestY = 0;
+
+    if size == 2 then
+        // 2x2 drill
+        var row1 = y1 + y2;         // drill at y - 1.5
+        var row2 = y2 + y3;         // drill at y - 0.5
+        var row3 = y3 + y4;         // drill at y + 0.5
+        var row4 = y4 + y5;         // drill at y + 1.5
+
+        updateRowPositions2x2(-1.5, row1, ref bestX, ref bestY, ref best);
+        updateRowPositions2x2(-0.5, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions2x2( 0.5, row3, ref bestX, ref bestY, ref best);
+        updateRowPositions2x2( 1.5, row4, ref bestX, ref bestY, ref best);
+//        remark($"findBestPosition: $bestX, $bestY: ${best * 255}\n");
+    elsif size == 3 then
+        // 3x3 drill
+        var row1 = y1 + (y2 + y3);  // drill at y - 1
+        var row2 = (y2 + y3) + y4;  // drill at y
+        var row3 = y3 + y4 + y5;    // drill at y + 1
+
+        updateRowPositions3x3(-1, row1, ref bestX, ref bestY, ref best);
+        updateRowPositions3x3( 0, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions3x3( 1, row3, ref bestX, ref bestY, ref best);
+//        remark($"findBestPosition: $bestX, $bestY: ${best * 255}\n");
+    else
+        // 4x4 drill
+        var y0 = computeRowValues(x, y - 3, ore, size);
+        var y6 = computeRowValues(x, y + 3, ore, size);
+        var row1 = y0 + (y1 + y2 + y3);     // drill at y - 1.5
+        var row2 = (y1 + y2 + y3) + y4;     // drill at y - 0.5
+        var row3 = y2 + (y3 + y4 + y5);     // drill at y + 0.5
+        var row4 = (y3 + y4 + y5) + y6;     // drill at y + 1.5
+
+        updateRowPositions4x4(-1.5, row1, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(-0.5, row2, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(+0.5, row3, ref bestX, ref bestY, ref best);
+        updateRowPositions4x4(+1.5, row4, ref bestX, ref bestY, ref best);
+//        remark($"findBestPosition: $bestX, $bestY: ${best * 255}\n");
+    end;
+
+//    debugPause();
+
+    return best * 255;
+end;
+

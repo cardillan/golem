@@ -2,61 +2,62 @@ schematic
     name = "Cardillan's entry for Skye's Jam"
     tag = "Cardillan"
 
-// First column, top-down
+// FIRST COLUMN
+
 display-switch1:
-    @switch              at ( 0,  5) disabled
-builder-processor6, blocks-processor1, display-processor2:
-    @micro-processor     at ( 1,  5) processor mlog = "op add time time 1" end
+    @switch              at ( 0,  0) disabled
+display-message1:
+    @message             at ( 1,  0) text ""
 
-builder-processor7, blocks-processor3:
-    @micro-processor     at ( 0,  4) processor
-        links flares-* end
-        mindcode = file "FlareController.mnd"
-    end
-
-builder-processor8:
-    @micro-processor     at ( 1,  4) processor mindcode = file "MonoController.mnd" end
-
-builder-processor5:
-    @micro-processor     at ( 0,  3) processor
-        links blocks-* end
-        mindcode = file "BlockBuilder.mnd"
-    end
-builder-processor3, blocks-processor2:
-    @micro-processor     at ( 1,  3) processor mindcode = file "PolyController.mnd" end
+    // Free messages for debug purposes
+    @message             at ( 0,  5) text ""
+    @message             at ( 1,  5) text ""
 
 display-bank1, builder-bank1, locator-bank1, blocks-bank1:
     @memory-bank         at ( 0,  1)
 
-builder-processor2:
-    @micro-processor     at ( 0,  0) processor
-        mindcode = file "CoreController.mnd"
-    end
-display-message1:
-    @message             at ( 1,  0) text ""
+// LOGIC PROCESSORS
 
-// Second column, top-down
+    // The main builder
+    @logic-processor     at ( 0, 3) processor links builder-* end mindcode = file "CoreBuilder.mnd" end
+
+// SECOND COLUMN
+
+locator-processor1:
+    // Matrices
+    @logic-processor     at ( 2,  0) processor mindcode = file "Matrices.mnd" end
+
+display-processor1, builder-processor4, blocks-processor5:
+    // Ore locator
+    @logic-processor     at ( 2,  2) processor links locator-* end mindcode = file "OreLocator.mnd" end
+
 builder-processor1, blocks-processor4, flares-processor1:
     // The display processor
-    @logic-processor     at ( 2,  4) processor
-        links display-* end
-        mindcode = file "Display.mnd"
-    end
+    @logic-processor     at ( 2,  4) processor links display-* end mindcode = file "Display.mnd" end
 
-    // The builder processor
-    @logic-processor     at ( 2,  2) processor
-        links builder-* end
-        mindcode = file "CoreBuilder.mnd"
-    end
+// MICROPROCESSORS
+// THIRD COLUMN
 
-    // Ore locator
-display-processor1, builder-processor4, blocks-processor5:
-    @logic-processor     at ( 2,  0) processor
-        links locator-* end
-        mindcode = file "OreLocator.mnd"
-    end
+builder-processor2:
+    // Contains code for the processor controlling the core
+    @micro-processor     at ( 4,  0) processor mindcode = file "CoreController.mnd" end
 
-// Display
+builder-processor5:
+    @micro-processor     at ( 4,  1) processor links blocks-* end mindcode = file "BlockBuilder.mnd" end
+
+builder-processor3, blocks-processor2:
+    @micro-processor     at ( 4,  2) processor mindcode = file "PolyController.mnd" end
+
+builder-processor8:
+    @micro-processor     at ( 4,  3) processor mindcode = file "MonoController.mnd" end
+
+builder-processor7, blocks-processor3:
+    @micro-processor     at ( 4,  4) processor links flares-* end mindcode = file "FlareController.mnd" end
+
+builder-processor6, blocks-processor1, display-processor2:
+    // Timer
+    @micro-processor     at ( 4,  5) processor mlog = "op add time time 1" end
+
 display-display1:
-    @large-logic-display at ( 4,  0)
+    @large-logic-display at ( 5,  0)
 end

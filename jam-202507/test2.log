@@ -1,0 +1,5152 @@
+    94 instructions before optimizations.
+     5 instructions eliminated by Temp Variables Elimination (2 iterations).
+     8 instructions eliminated by Dead Code Elimination (4 iterations).
+    17 instructions eliminated by Jump Normalization (5 iterations).
+     3 instructions eliminated by Jump Optimization (5 iterations).
+    59 instructions eliminated by Single Step Elimination (3 passes, 11 iterations).
+     1 instructions modified by Expression Optimization (3 iterations).
+     1 instructions eliminated by If Expression Optimization (3 iterations).
+   269 instructions eliminated by Data Flow Optimization (3 passes, 13 iterations).
+     1 loops improved by Loop Hoisting.
+     2 instructions eliminated by Loop Optimization (3 iterations).
+     2 loops improved by Loop Optimization.
+   454 instructions added by Loop Unrolling (5 iterations).
+     2 loops unrolled by Loop Unrolling.
+    82 instructions eliminated by Unreachable Code Elimination (2 iterations).
+   102 instructions after optimizations.
+
+Pass 1: speed optimization selection (cost limit 971):
+    Unroll loop at line 60:5                                     size   +81, benefit      350.0, efficiency      4.321
+  * Unroll loop at line 61:9                                     size   +56, benefit     8750.0, efficiency    156.250 (+50 instructions)
+
+Pass 1: speed optimization selection (cost limit 921):
+  * Unroll loop at line 60:5                                     size  +381, benefit      350.0, efficiency      0.919 (+178 instructions)
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-8 instructions):
+ 
+    23 jump *label2 equal *tmp13 false
+    24 set *tmp8 0
+    25 jump *label1 always
+-    * set *tmp14 null
+    26 jump *label3 always
+    27 label *label2
+-    * set *tmp14 null
+    28 label *label3
+    29 op mul *tmp15 7 :shiftMask:shiftY
+    30 op add *tmp16 :shiftMask:shiftX *tmp15
+ 
+    36 op and *tmp20 :shiftMask:mask :shiftMask:clearMask
+    37 op shl *tmp21 *tmp20 :shiftMask:shift
+    38 set :shiftMask:mask *tmp21
+-    * set *tmp18 :shiftMask:mask
+    39 jump *label5 always
+    40 label *label4
+    41 op sub *tmp22 0 :shiftMask:shift
+    42 op shr :shiftMask:mask :shiftMask:mask *tmp22
+-    * set *tmp18 :shiftMask:mask
+    43 label *label5
+    44 op notEqual *tmp23 :shiftMask:shiftX 0
+    45 jump *label6 equal *tmp23 false
+ 
+    49 op greaterThan *tmp27 :shiftMask:shiftX 0
+    50 jump *label8 equal *tmp27 false
+    51 op shl :shiftMask:keep :shiftMask:keep :shiftMask:shiftX
+-    * set *tmp28 :shiftMask:keep
+    52 jump *label9 always
+    53 label *label8
+-    * set *tmp28 null
+    54 label *label9
+    55 op shl *tmp29 :shiftMask:keep 7
+    56 op or :shiftMask:keep :shiftMask:keep *tmp29
+ 
+    59 op shl *tmp31 :shiftMask:keep 21
+    60 op or :shiftMask:keep :shiftMask:keep *tmp31
+    61 op and :shiftMask:mask :shiftMask:mask :shiftMask:keep
+-    * set *tmp24 :shiftMask:mask
+    62 jump *label7 always
+    63 label *label6
+-    * set *tmp24 null
+    64 label *label7
+    65 set *tmp8 :shiftMask:mask
+    66 jump *label1 always
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-5 instructions):
+ 
+     7 op shl *tmp4 :createFixedMatrix:row2 14
+     8 op or *tmp5 *tmp3 *tmp4
+     9 op shl *tmp6 :createFixedMatrix:row3 21
+-    * op or *tmp7 *tmp5 *tmp6
+-    * set *tmp0 *tmp7
++   10 op or *tmp0 *tmp5 *tmp6
+    11 label *label0
+    12 set :m *tmp0
+    13 set :m 562949953421311
+ 
+    26 label *label2
+    27 label *label3
+    28 op mul *tmp15 7 :shiftMask:shiftY
+-    * op add *tmp16 :shiftMask:shiftX *tmp15
+-    * set :shiftMask:shift *tmp16
++   29 op add :shiftMask:shift :shiftMask:shiftX *tmp15
+    30 op greaterThan *tmp17 :shiftMask:shift 0
+    31 jump *label4 equal *tmp17 false
+-    * op shr *tmp19 562949953421311 :shiftMask:shift
+-    * set :shiftMask:clearMask *tmp19
++   32 op shr :shiftMask:clearMask 562949953421311 :shiftMask:shift
+    33 op and *tmp20 :shiftMask:mask :shiftMask:clearMask
+-    * op shl *tmp21 *tmp20 :shiftMask:shift
+-    * set :shiftMask:mask *tmp21
++   34 op shl :shiftMask:mask *tmp20 :shiftMask:shift
+    35 jump *label5 always
+    36 label *label4
+    37 op sub *tmp22 0 :shiftMask:shift
+ 
+    40 op notEqual *tmp23 :shiftMask:shiftX 0
+    41 jump *label6 equal *tmp23 false
+    42 op abs *tmp25 :shiftMask:shiftX
+-    * op shr *tmp26 0b1111111 *tmp25
+-    * set :shiftMask:keep *tmp26
++   43 op shr :shiftMask:keep 0b1111111 *tmp25
+    44 op greaterThan *tmp27 :shiftMask:shiftX 0
+    45 jump *label8 equal *tmp27 false
+    46 op shl :shiftMask:keep :shiftMask:keep :shiftMask:shiftX
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-3 instructions):
+ 
+    27 label *label3
+    28 op mul *tmp15 7 :shiftMask:shiftY
+    29 op add :shiftMask:shift :shiftMask:shiftX *tmp15
+-    * op greaterThan *tmp17 :shiftMask:shift 0
+-    * jump *label4 equal *tmp17 false
++   30 jump *label4 lessThanEq :shiftMask:shift 0
+    31 op shr :shiftMask:clearMask 562949953421311 :shiftMask:shift
+    32 op and *tmp20 :shiftMask:mask :shiftMask:clearMask
+    33 op shl :shiftMask:mask *tmp20 :shiftMask:shift
+ 
+    36 op sub *tmp22 0 :shiftMask:shift
+    37 op shr :shiftMask:mask :shiftMask:mask *tmp22
+    38 label *label5
+-    * op notEqual *tmp23 :shiftMask:shiftX 0
+-    * jump *label6 equal *tmp23 false
++   39 jump *label6 equal :shiftMask:shiftX 0
+    40 op abs *tmp25 :shiftMask:shiftX
+    41 op shr :shiftMask:keep 0b1111111 *tmp25
+-    * op greaterThan *tmp27 :shiftMask:shiftX 0
+-    * jump *label8 equal *tmp27 false
++   42 jump *label8 lessThanEq :shiftMask:shiftX 0
+    43 op shl :shiftMask:keep :shiftMask:keep :shiftMask:shiftX
+    44 jump *label9 always
+    45 label *label8
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-3 instructions):
+ 
+    22 jump *label2 equal *tmp13 false
+    23 set *tmp8 0
+    24 jump *label1 always
+-    * jump *label3 always
+    25 label *label2
+    26 label *label3
+    27 op mul *tmp15 7 :shiftMask:shiftY
+ 
+    40 op shr :shiftMask:keep 0b1111111 *tmp25
+    41 jump *label8 lessThanEq :shiftMask:shiftX 0
+    42 op shl :shiftMask:keep :shiftMask:keep :shiftMask:shiftX
+-    * jump *label9 always
+    43 label *label8
+    44 label *label9
+    45 op shl *tmp29 :shiftMask:keep 7
+ 
+    49 op shl *tmp31 :shiftMask:keep 21
+    50 op or :shiftMask:keep :shiftMask:keep *tmp31
+    51 op and :shiftMask:mask :shiftMask:mask :shiftMask:keep
+-    * jump *label7 always
+    52 label *label6
+    53 label *label7
+    54 set *tmp8 :shiftMask:mask
+
+Modifications by Iterated phase, Expression Optimization, pass 1, iteration 1:
+ 
+     1 set :createFixedMatrix:row1 5
+     2 set :createFixedMatrix:row2 7
+     3 set :createFixedMatrix:row3 0
+-    * op shl *tmp1 :createFixedMatrix:row0 0
++    4 set *tmp1 :createFixedMatrix:row0
+     5 op shl *tmp2 :createFixedMatrix:row1 7
+     6 op or *tmp3 *tmp1 *tmp2
+     7 op shl *tmp4 :createFixedMatrix:row2 14
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-3 instructions):
+ 
+     1 set :createFixedMatrix:row1 5
+     2 set :createFixedMatrix:row2 7
+     3 set :createFixedMatrix:row3 0
+-    * set *tmp1 :createFixedMatrix:row0
+-    * op shl *tmp2 :createFixedMatrix:row1 7
+-    * op or *tmp3 *tmp1 *tmp2
+-    * op shl *tmp4 :createFixedMatrix:row2 14
+-    * op or *tmp5 *tmp3 *tmp4
+-    * op shl *tmp6 :createFixedMatrix:row3 21
+-    * op or *tmp0 *tmp5 *tmp6
++    4 set *tmp1 7
++    5 op shl *tmp2 5 7
++    6 op or *tmp3 :createFixedMatrix:row0 640
++    7 op shl *tmp4 7 14
++    8 op or *tmp5 *tmp3 114688
++    9 op shl *tmp6 0 21
++   10 op or *tmp0 *tmp5 0
+    11 label *label0
+-    * set :m *tmp0
+    12 set :m 562949953421311
+-    * set :shiftMask:mask :m
++   13 set :shiftMask:mask 562949953421311
+    14 set :shiftMask:shiftX -3
+    15 set :shiftMask:shiftY -3
+-    * op abs *tmp9 :shiftMask:shiftX
+-    * op greaterThan *tmp10 *tmp9 6
+-    * op abs *tmp11 :shiftMask:shiftY
+-    * op greaterThan *tmp12 *tmp11 6
+-    * op or *tmp13 *tmp10 *tmp12
+-    * jump *label2 equal *tmp13 false
+-    * set *tmp8 0
++   16 op abs *tmp9 -3
++   17 op greaterThan *tmp10 3 6
++   18 op abs *tmp11 -3
++   19 op greaterThan *tmp12 3 6
++   20 op or *tmp13 false false
++   21 jump *label2 equal 0 false
+    22 jump *label1 always
+    23 label *label2
+    24 label *label3
+-    * op mul *tmp15 7 :shiftMask:shiftY
+-    * op add :shiftMask:shift :shiftMask:shiftX *tmp15
+-    * jump *label4 lessThanEq :shiftMask:shift 0
+-    * op shr :shiftMask:clearMask 562949953421311 :shiftMask:shift
+-    * op and *tmp20 :shiftMask:mask :shiftMask:clearMask
+-    * op shl :shiftMask:mask *tmp20 :shiftMask:shift
++   25 op mul *tmp15 7 -3
++   26 op add :shiftMask:shift -3 -21
++   27 jump *label4 lessThanEq -24 0
++   28 op shr :shiftMask:clearMask 562949953421311 -24
++   29 op and *tmp20 :m 511
++   30 op shl :shiftMask:mask *tmp20 -24
+    31 jump *label5 always
+    32 label *label4
+-    * op sub *tmp22 0 :shiftMask:shift
+-    * op shr :shiftMask:mask :shiftMask:mask *tmp22
++   33 op sub *tmp22 0 -24
++   34 op shr :shiftMask:mask :m 24
+    35 label *label5
+-    * jump *label6 equal :shiftMask:shiftX 0
+-    * op abs *tmp25 :shiftMask:shiftX
+-    * op shr :shiftMask:keep 0b1111111 *tmp25
+-    * jump *label8 lessThanEq :shiftMask:shiftX 0
+-    * op shl :shiftMask:keep :shiftMask:keep :shiftMask:shiftX
++   36 jump *label6 equal -3 0
++   37 op abs *tmp25 -3
++   38 op shr :shiftMask:keep 0b1111111 3
++   39 jump *label8 lessThanEq -3 0
++   40 op shl :shiftMask:keep 15 -3
+    41 label *label8
+    42 label *label9
+-    * op shl *tmp29 :shiftMask:keep 7
+-    * op or :shiftMask:keep :shiftMask:keep *tmp29
+-    * op shl *tmp30 :shiftMask:keep 14
+-    * op or :shiftMask:keep :shiftMask:keep *tmp30
+-    * op shl *tmp31 :shiftMask:keep 21
+-    * op or :shiftMask:keep :shiftMask:keep *tmp31
+-    * op and :shiftMask:mask :shiftMask:mask :shiftMask:keep
++   43 op shl *tmp29 15 7
++   44 op or :shiftMask:keep 15 1920
++   45 op shl *tmp30 1935 14
++   46 op or :shiftMask:keep 1935 31703040
++   47 op shl *tmp31 31704975 21
++   48 op or :shiftMask:keep 31704975 66490151731200
++   49 op and :shiftMask:mask :shiftMask:mask 66490151978895
+    50 label *label6
+    51 label *label7
+    52 set *tmp8 :shiftMask:mask
+    53 jump *label1 always
+-    * set *tmp8 null
+    54 label *label1
+-    * set :drawMask:mask *tmp8
++   55 set :drawMask:mask :shiftMask:mask
+    56 draw reset
+    57 draw translate 6 6
+    58 draw clear 0 0 0
+ 
+    65 op mul *tmp32 7 :drawMask:r
+    66 op add *tmp33 *tmp32 :drawMask:c
+    67 op shl *tmp34 1 *tmp33
+-    * op and *tmp35 :drawMask:mask *tmp34
++   68 op and *tmp35 *tmp8 *tmp34
+    69 jump *label17 equal *tmp35 false
+    70 set *tmp36 %[red]
+    71 jump *label18 always
+ 
+    73 set *tmp36 %[green]
+    74 label *label18
+    75 set :drawMask:color *tmp36
+-    * draw col :drawMask:color
++   76 draw col *tmp36
+    77 op mul *tmp37 :drawMask:c 10
+    78 op mul *tmp38 :drawMask:r 10
+    79 draw rect *tmp37 *tmp38 8 8
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-29 instructions):
+     0 set :createFixedMatrix:row0 7
+-    * set :createFixedMatrix:row1 5
+-    * set :createFixedMatrix:row2 7
+-    * set :createFixedMatrix:row3 0
+-    * set *tmp1 7
+-    * op shl *tmp2 5 7
+-    * op or *tmp3 :createFixedMatrix:row0 640
+-    * op shl *tmp4 7 14
+-    * op or *tmp5 *tmp3 114688
+-    * op shl *tmp6 0 21
+-    * op or *tmp0 *tmp5 0
++    1 op or *tmp3 7 640
++    2 op or *tmp5 647 114688
++    3 op or *tmp0 115335 0
+     4 label *label0
+     5 set :m 562949953421311
+-    * set :shiftMask:mask 562949953421311
+-    * set :shiftMask:shiftX -3
+-    * set :shiftMask:shiftY -3
+-    * op abs *tmp9 -3
+-    * op greaterThan *tmp10 3 6
+-    * op abs *tmp11 -3
+-    * op greaterThan *tmp12 3 6
+-    * op or *tmp13 false false
+     6 jump *label2 equal 0 false
+     7 jump *label1 always
+     8 label *label2
+     9 label *label3
+-    * op mul *tmp15 7 -3
+-    * op add :shiftMask:shift -3 -21
+    10 jump *label4 lessThanEq -24 0
+-    * op shr :shiftMask:clearMask 562949953421311 -24
+-    * op and *tmp20 :m 511
+-    * op shl :shiftMask:mask *tmp20 -24
++   11 op and *tmp20 562949953421311 511
++   12 op shl :shiftMask:mask 511 -24
+    13 jump *label5 always
+    14 label *label4
+-    * op sub *tmp22 0 -24
+-    * op shr :shiftMask:mask :m 24
++   15 op shr :shiftMask:mask 562949953421311 24
+    16 label *label5
+    17 jump *label6 equal -3 0
+-    * op abs *tmp25 -3
+-    * op shr :shiftMask:keep 0b1111111 3
+    18 jump *label8 lessThanEq -3 0
+-    * op shl :shiftMask:keep 15 -3
+    19 label *label8
+    20 label *label9
+-    * op shl *tmp29 15 7
+-    * op or :shiftMask:keep 15 1920
+-    * op shl *tmp30 1935 14
+-    * op or :shiftMask:keep 1935 31703040
+-    * op shl *tmp31 31704975 21
+-    * op or :shiftMask:keep 31704975 66490151731200
+-    * op and :shiftMask:mask :shiftMask:mask 66490151978895
++   21 op and :shiftMask:mask 33554431 66490151978895
+    22 label *label6
+    23 label *label7
+-    * set *tmp8 :shiftMask:mask
++   24 set *tmp8 31704975
+    25 jump *label1 always
+    26 label *label1
+-    * set :drawMask:mask :shiftMask:mask
++   27 set :drawMask:mask 31704975
+    28 draw reset
+    29 draw translate 6 6
+    30 draw clear 0 0 0
+ 
+    37 op mul *tmp32 7 :drawMask:r
+    38 op add *tmp33 *tmp32 :drawMask:c
+    39 op shl *tmp34 1 *tmp33
+-    * op and *tmp35 *tmp8 *tmp34
++   40 op and *tmp35 :shiftMask:mask *tmp34
+    41 jump *label17 equal *tmp35 false
+    42 set *tmp36 %[red]
+    43 jump *label18 always
+    44 label *label17
+    45 set *tmp36 %[green]
+    46 label *label18
+-    * set :drawMask:color *tmp36
+    47 draw col *tmp36
+    48 op mul *tmp37 :drawMask:c 10
+    49 op mul *tmp38 :drawMask:r 10
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-10 instructions):
+-    * set :createFixedMatrix:row0 7
+-    * op or *tmp3 7 640
+-    * op or *tmp5 647 114688
+-    * op or *tmp0 115335 0
+     0 label *label0
+-    * set :m 562949953421311
+     1 jump *label2 equal 0 false
+     2 jump *label1 always
+     3 label *label2
+     4 label *label3
+     5 jump *label4 lessThanEq -24 0
+-    * op and *tmp20 562949953421311 511
+-    * op shl :shiftMask:mask 511 -24
+     6 jump *label5 always
+     7 label *label4
+-    * op shr :shiftMask:mask 562949953421311 24
+     8 label *label5
+     9 jump *label6 equal -3 0
+    10 jump *label8 lessThanEq -3 0
+ 
+    13 op and :shiftMask:mask 33554431 66490151978895
+    14 label *label6
+    15 label *label7
+-    * set *tmp8 31704975
+    16 jump *label1 always
+    17 label *label1
+-    * set :drawMask:mask 31704975
+    18 draw reset
+    19 draw translate 6 6
+    20 draw clear 0 0 0
+ 
+    27 op mul *tmp32 7 :drawMask:r
+    28 op add *tmp33 *tmp32 :drawMask:c
+    29 op shl *tmp34 1 *tmp33
+-    * op and *tmp35 :shiftMask:mask *tmp34
++   30 op and *tmp35 31704975 *tmp34
+    31 jump *label17 equal *tmp35 false
+    32 set *tmp36 %[red]
+    33 jump *label18 always
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 4 (-1 instructions):
+ 
+    10 jump *label8 lessThanEq -3 0
+    11 label *label8
+    12 label *label9
+-    * op and :shiftMask:mask 33554431 66490151978895
+    13 label *label6
+    14 label *label7
+    15 jump *label1 always
+
+Modifications by Iterated phase, Loop Hoisting, pass 1, iteration 1:
+ 
+    21 label *label11
+    22 jump *label13 lessThan :drawMask:r 0
+    23 set :drawMask:c 0
++   24 op mul *tmp38 :drawMask:r 10
+    25 label *label14
+    26 jump *label16 greaterThanEq :drawMask:c 7
+    27 op mul *tmp32 7 :drawMask:r
+ 
+    36 label *label18
+    37 draw col *tmp36
+    38 op mul *tmp37 :drawMask:c 10
+-    * op mul *tmp38 :drawMask:r 10
+    39 draw rect *tmp37 *tmp38 8 8
+    40 label *label15
+    41 op add :drawMask:c :drawMask:c 1
+
+Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1 (-2 instructions):
+ 
+    19 draw clear 0 0 0
+    20 op sub :drawMask:r 7 1
+    21 label *label11
+-    * jump *label13 lessThan :drawMask:r 0
++   22 label *label21
+    23 set :drawMask:c 0
+    24 op mul *tmp38 :drawMask:r 10
+    25 label *label14
+-    * jump *label16 greaterThanEq :drawMask:c 7
++   26 label *label22
+    27 op mul *tmp32 7 :drawMask:r
+    28 op add *tmp33 *tmp32 :drawMask:c
+    29 op shl *tmp34 1 *tmp33
+ 
+    39 draw rect *tmp37 *tmp38 8 8
+    40 label *label15
+    41 op add :drawMask:c :drawMask:c 1
+-    * jump *label14 always
++   42 jump *label22 lessThan :drawMask:c 7
+    43 label *label16
+    44 label *label12
+    45 op sub :drawMask:r :drawMask:r 1
+-    * jump *label11 always
++   46 jump *label21 greaterThanEq :drawMask:r 0
+    47 label *label13
+    48 drawflush display1
+    49 label *label10
+
+Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+    29 op shl *tmp34 1 *tmp33
+    30 op and *tmp35 31704975 *tmp34
+    31 jump *label17 equal *tmp35 false
+-    * set *tmp36 %[red]
++   32 draw col %[red]
+    33 jump *label18 always
+    34 label *label17
+-    * set *tmp36 %[green]
++   35 draw col %[green]
+    36 label *label18
+-    * draw col *tmp36
+    37 op mul *tmp37 :drawMask:c 10
+    38 draw rect *tmp37 *tmp38 8 8
+    39 label *label15
+
+Modifications by Unroll loop at line 61:9 (+65 instructions):
+ 
+    20 op sub :drawMask:r 7 1
+    21 label *label11
+    22 label *label21
+-    * set :drawMask:c 0
+-    * op mul *tmp38 :drawMask:r 10
+-    * label *label14
+-    * label *label22
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label17 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label18 always
+-    * label *label17
+-    * draw col %[green]
+-    * label *label18
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
+-    * label *label15
+-    * op add :drawMask:c :drawMask:c 1
+-    * jump *label22 lessThan :drawMask:c 7
+-    * label *label16
++   23 set :drawMask:c 0
++   24 op mul *tmp38 :drawMask:r 10
++   25 label *label23
++   26 label *label24
++   27 op mul *tmp32 7 :drawMask:r
++   28 op add *tmp33 *tmp32 :drawMask:c
++   29 op shl *tmp34 1 *tmp33
++   30 op and *tmp35 31704975 *tmp34
++   31 jump *label25 equal *tmp35 false
++   32 draw col %[red]
++   33 jump *label26 always
++   34 label *label25
++   35 draw col %[green]
++   36 label *label26
++   37 op mul *tmp37 :drawMask:c 10
++   38 draw rect *tmp37 *tmp38 8 8
++   39 label *label27
++   40 op add :drawMask:c :drawMask:c 1
++   41 label *label28
++   42 op mul *tmp32 7 :drawMask:r
++   43 op add *tmp33 *tmp32 :drawMask:c
++   44 op shl *tmp34 1 *tmp33
++   45 op and *tmp35 31704975 *tmp34
++   46 jump *label29 equal *tmp35 false
++   47 draw col %[red]
++   48 jump *label30 always
++   49 label *label29
++   50 draw col %[green]
++   51 label *label30
++   52 op mul *tmp37 :drawMask:c 10
++   53 draw rect *tmp37 *tmp38 8 8
++   54 label *label31
++   55 op add :drawMask:c :drawMask:c 1
++   56 label *label32
++   57 op mul *tmp32 7 :drawMask:r
++   58 op add *tmp33 *tmp32 :drawMask:c
++   59 op shl *tmp34 1 *tmp33
++   60 op and *tmp35 31704975 *tmp34
++   61 jump *label33 equal *tmp35 false
++   62 draw col %[red]
++   63 jump *label34 always
++   64 label *label33
++   65 draw col %[green]
++   66 label *label34
++   67 op mul *tmp37 :drawMask:c 10
++   68 draw rect *tmp37 *tmp38 8 8
++   69 label *label35
++   70 op add :drawMask:c :drawMask:c 1
++   71 label *label36
++   72 op mul *tmp32 7 :drawMask:r
++   73 op add *tmp33 *tmp32 :drawMask:c
++   74 op shl *tmp34 1 *tmp33
++   75 op and *tmp35 31704975 *tmp34
++   76 jump *label37 equal *tmp35 false
++   77 draw col %[red]
++   78 jump *label38 always
++   79 label *label37
++   80 draw col %[green]
++   81 label *label38
++   82 op mul *tmp37 :drawMask:c 10
++   83 draw rect *tmp37 *tmp38 8 8
++   84 label *label39
++   85 op add :drawMask:c :drawMask:c 1
++   86 label *label40
++   87 op mul *tmp32 7 :drawMask:r
++   88 op add *tmp33 *tmp32 :drawMask:c
++   89 op shl *tmp34 1 *tmp33
++   90 op and *tmp35 31704975 *tmp34
++   91 jump *label41 equal *tmp35 false
++   92 draw col %[red]
++   93 jump *label42 always
++   94 label *label41
++   95 draw col %[green]
++   96 label *label42
++   97 op mul *tmp37 :drawMask:c 10
++   98 draw rect *tmp37 *tmp38 8 8
++   99 label *label43
++  100 op add :drawMask:c :drawMask:c 1
++  101 label *label44
++  102 op mul *tmp32 7 :drawMask:r
++  103 op add *tmp33 *tmp32 :drawMask:c
++  104 op shl *tmp34 1 *tmp33
++  105 op and *tmp35 31704975 *tmp34
++  106 jump *label45 equal *tmp35 false
++  107 draw col %[red]
++  108 jump *label46 always
++  109 label *label45
++  110 draw col %[green]
++  111 label *label46
++  112 op mul *tmp37 :drawMask:c 10
++  113 draw rect *tmp37 *tmp38 8 8
++  114 label *label47
++  115 op add :drawMask:c :drawMask:c 1
++  116 label *label48
++  117 op mul *tmp32 7 :drawMask:r
++  118 op add *tmp33 *tmp32 :drawMask:c
++  119 op shl *tmp34 1 *tmp33
++  120 op and *tmp35 31704975 *tmp34
++  121 jump *label49 equal *tmp35 false
++  122 draw col %[red]
++  123 jump *label50 always
++  124 label *label49
++  125 draw col %[green]
++  126 label *label50
++  127 op mul *tmp37 :drawMask:c 10
++  128 draw rect *tmp37 *tmp38 8 8
++  129 label *label51
++  130 op add :drawMask:c :drawMask:c 1
++  131 label *label16
+   132 label *label12
+   133 op sub :drawMask:r :drawMask:r 1
+   134 jump *label21 greaterThanEq :drawMask:r 0
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    25 label *label23
+    26 label *label24
+    27 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++   28 op add *tmp33 *tmp32 0
+    29 op shl *tmp34 1 *tmp33
+    30 op and *tmp35 31704975 *tmp34
+    31 jump *label25 equal *tmp35 false
+ 
+    34 label *label25
+    35 draw col %[green]
+    36 label *label26
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++   37 op mul *tmp37 0 10
++   38 draw rect 0 *tmp38 8 8
+    39 label *label27
+-    * op add :drawMask:c :drawMask:c 1
++   40 op add :drawMask:c 0 1
+    41 label *label28
+    42 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++   43 op add *tmp33 *tmp32 1
+    44 op shl *tmp34 1 *tmp33
+    45 op and *tmp35 31704975 *tmp34
+    46 jump *label29 equal *tmp35 false
+ 
+    49 label *label29
+    50 draw col %[green]
+    51 label *label30
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++   52 op mul *tmp37 1 10
++   53 draw rect 10 *tmp38 8 8
+    54 label *label31
+-    * op add :drawMask:c :drawMask:c 1
++   55 op add :drawMask:c 1 1
+    56 label *label32
+    57 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++   58 op add *tmp33 *tmp32 2
+    59 op shl *tmp34 1 *tmp33
+    60 op and *tmp35 31704975 *tmp34
+    61 jump *label33 equal *tmp35 false
+ 
+    64 label *label33
+    65 draw col %[green]
+    66 label *label34
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++   67 op mul *tmp37 2 10
++   68 draw rect 20 *tmp38 8 8
+    69 label *label35
+-    * op add :drawMask:c :drawMask:c 1
++   70 op add :drawMask:c 2 1
+    71 label *label36
+    72 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++   73 op add *tmp33 *tmp32 3
+    74 op shl *tmp34 1 *tmp33
+    75 op and *tmp35 31704975 *tmp34
+    76 jump *label37 equal *tmp35 false
+ 
+    79 label *label37
+    80 draw col %[green]
+    81 label *label38
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++   82 op mul *tmp37 3 10
++   83 draw rect 30 *tmp38 8 8
+    84 label *label39
+-    * op add :drawMask:c :drawMask:c 1
++   85 op add :drawMask:c 3 1
+    86 label *label40
+    87 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++   88 op add *tmp33 *tmp32 4
+    89 op shl *tmp34 1 *tmp33
+    90 op and *tmp35 31704975 *tmp34
+    91 jump *label41 equal *tmp35 false
+ 
+    94 label *label41
+    95 draw col %[green]
+    96 label *label42
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++   97 op mul *tmp37 4 10
++   98 draw rect 40 *tmp38 8 8
+    99 label *label43
+-    * op add :drawMask:c :drawMask:c 1
++  100 op add :drawMask:c 4 1
+   101 label *label44
+   102 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++  103 op add *tmp33 *tmp32 5
+   104 op shl *tmp34 1 *tmp33
+   105 op and *tmp35 31704975 *tmp34
+   106 jump *label45 equal *tmp35 false
+ 
+   109 label *label45
+   110 draw col %[green]
+   111 label *label46
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++  112 op mul *tmp37 5 10
++  113 draw rect 50 *tmp38 8 8
+   114 label *label47
+-    * op add :drawMask:c :drawMask:c 1
++  115 op add :drawMask:c 5 1
+   116 label *label48
+   117 op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 :drawMask:c
++  118 op add *tmp33 *tmp32 6
+   119 op shl *tmp34 1 *tmp33
+   120 op and *tmp35 31704975 *tmp34
+   121 jump *label49 equal *tmp35 false
+ 
+   124 label *label49
+   125 draw col %[green]
+   126 label *label50
+-    * op mul *tmp37 :drawMask:c 10
+-    * draw rect *tmp37 *tmp38 8 8
++  127 op mul *tmp37 6 10
++  128 draw rect 60 *tmp38 8 8
+   129 label *label51
+-    * op add :drawMask:c :drawMask:c 1
++  130 op add :drawMask:c 6 1
+   131 label *label16
+   132 label *label12
+   133 op sub :drawMask:r :drawMask:r 1
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-15 instructions):
+ 
+    20 op sub :drawMask:r 7 1
+    21 label *label11
+    22 label *label21
+-    * set :drawMask:c 0
+    23 op mul *tmp38 :drawMask:r 10
+    24 label *label23
+    25 label *label24
+ 
+    33 label *label25
+    34 draw col %[green]
+    35 label *label26
+-    * op mul *tmp37 0 10
+    36 draw rect 0 *tmp38 8 8
+    37 label *label27
+-    * op add :drawMask:c 0 1
+    38 label *label28
+    39 op mul *tmp32 7 :drawMask:r
+    40 op add *tmp33 *tmp32 1
+ 
+    46 label *label29
+    47 draw col %[green]
+    48 label *label30
+-    * op mul *tmp37 1 10
+    49 draw rect 10 *tmp38 8 8
+    50 label *label31
+-    * op add :drawMask:c 1 1
+    51 label *label32
+    52 op mul *tmp32 7 :drawMask:r
+    53 op add *tmp33 *tmp32 2
+ 
+    59 label *label33
+    60 draw col %[green]
+    61 label *label34
+-    * op mul *tmp37 2 10
+    62 draw rect 20 *tmp38 8 8
+    63 label *label35
+-    * op add :drawMask:c 2 1
+    64 label *label36
+    65 op mul *tmp32 7 :drawMask:r
+    66 op add *tmp33 *tmp32 3
+ 
+    72 label *label37
+    73 draw col %[green]
+    74 label *label38
+-    * op mul *tmp37 3 10
+    75 draw rect 30 *tmp38 8 8
+    76 label *label39
+-    * op add :drawMask:c 3 1
+    77 label *label40
+    78 op mul *tmp32 7 :drawMask:r
+    79 op add *tmp33 *tmp32 4
+ 
+    85 label *label41
+    86 draw col %[green]
+    87 label *label42
+-    * op mul *tmp37 4 10
+    88 draw rect 40 *tmp38 8 8
+    89 label *label43
+-    * op add :drawMask:c 4 1
+    90 label *label44
+    91 op mul *tmp32 7 :drawMask:r
+    92 op add *tmp33 *tmp32 5
+ 
+    98 label *label45
+    99 draw col %[green]
+   100 label *label46
+-    * op mul *tmp37 5 10
+   101 draw rect 50 *tmp38 8 8
+   102 label *label47
+-    * op add :drawMask:c 5 1
+   103 label *label48
+   104 op mul *tmp32 7 :drawMask:r
+   105 op add *tmp33 *tmp32 6
+ 
+   111 label *label49
+   112 draw col %[green]
+   113 label *label50
+-    * op mul *tmp37 6 10
+   114 draw rect 60 *tmp38 8 8
+   115 label *label51
+-    * op add :drawMask:c 6 1
+   116 label *label16
+   117 label *label12
+   118 op sub :drawMask:r :drawMask:r 1
+
+Modifications by Unroll loop at line 60:5 (+389 instructions):
+ 
+    17 draw reset
+    18 draw translate 6 6
+    19 draw clear 0 0 0
+-    * op sub :drawMask:r 7 1
+-    * label *label11
+-    * label *label21
+-    * op mul *tmp38 :drawMask:r 10
+-    * label *label23
+-    * label *label24
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label25 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label26 always
+-    * label *label25
+-    * draw col %[green]
+-    * label *label26
+-    * draw rect 0 *tmp38 8 8
+-    * label *label27
+-    * label *label28
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label29 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label30 always
+-    * label *label29
+-    * draw col %[green]
+-    * label *label30
+-    * draw rect 10 *tmp38 8 8
+-    * label *label31
+-    * label *label32
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label33 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label34 always
+-    * label *label33
+-    * draw col %[green]
+-    * label *label34
+-    * draw rect 20 *tmp38 8 8
+-    * label *label35
+-    * label *label36
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label37 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label38 always
+-    * label *label37
+-    * draw col %[green]
+-    * label *label38
+-    * draw rect 30 *tmp38 8 8
+-    * label *label39
+-    * label *label40
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label41 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label42 always
+-    * label *label41
+-    * draw col %[green]
+-    * label *label42
+-    * draw rect 40 *tmp38 8 8
+-    * label *label43
+-    * label *label44
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label45 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label46 always
+-    * label *label45
+-    * draw col %[green]
+-    * label *label46
+-    * draw rect 50 *tmp38 8 8
+-    * label *label47
+-    * label *label48
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label49 equal *tmp35 false
+-    * draw col %[red]
+-    * jump *label50 always
+-    * label *label49
+-    * draw col %[green]
+-    * label *label50
+-    * draw rect 60 *tmp38 8 8
+-    * label *label51
+-    * label *label16
+-    * label *label12
+-    * op sub :drawMask:r :drawMask:r 1
+-    * jump *label21 greaterThanEq :drawMask:r 0
+-    * label *label13
++   20 op sub :drawMask:r 7 1
++   21 label *label52
++   22 label *label53
++   23 op mul *tmp38 :drawMask:r 10
++   24 label *label54
++   25 label *label55
++   26 op mul *tmp32 7 :drawMask:r
++   27 op add *tmp33 *tmp32 0
++   28 op shl *tmp34 1 *tmp33
++   29 op and *tmp35 31704975 *tmp34
++   30 jump *label56 equal *tmp35 false
++   31 draw col %[red]
++   32 jump *label57 always
++   33 label *label56
++   34 draw col %[green]
++   35 label *label57
++   36 draw rect 0 *tmp38 8 8
++   37 label *label58
++   38 label *label59
++   39 op mul *tmp32 7 :drawMask:r
++   40 op add *tmp33 *tmp32 1
++   41 op shl *tmp34 1 *tmp33
++   42 op and *tmp35 31704975 *tmp34
++   43 jump *label60 equal *tmp35 false
++   44 draw col %[red]
++   45 jump *label61 always
++   46 label *label60
++   47 draw col %[green]
++   48 label *label61
++   49 draw rect 10 *tmp38 8 8
++   50 label *label62
++   51 label *label63
++   52 op mul *tmp32 7 :drawMask:r
++   53 op add *tmp33 *tmp32 2
++   54 op shl *tmp34 1 *tmp33
++   55 op and *tmp35 31704975 *tmp34
++   56 jump *label64 equal *tmp35 false
++   57 draw col %[red]
++   58 jump *label65 always
++   59 label *label64
++   60 draw col %[green]
++   61 label *label65
++   62 draw rect 20 *tmp38 8 8
++   63 label *label66
++   64 label *label67
++   65 op mul *tmp32 7 :drawMask:r
++   66 op add *tmp33 *tmp32 3
++   67 op shl *tmp34 1 *tmp33
++   68 op and *tmp35 31704975 *tmp34
++   69 jump *label68 equal *tmp35 false
++   70 draw col %[red]
++   71 jump *label69 always
++   72 label *label68
++   73 draw col %[green]
++   74 label *label69
++   75 draw rect 30 *tmp38 8 8
++   76 label *label70
++   77 label *label71
++   78 op mul *tmp32 7 :drawMask:r
++   79 op add *tmp33 *tmp32 4
++   80 op shl *tmp34 1 *tmp33
++   81 op and *tmp35 31704975 *tmp34
++   82 jump *label72 equal *tmp35 false
++   83 draw col %[red]
++   84 jump *label73 always
++   85 label *label72
++   86 draw col %[green]
++   87 label *label73
++   88 draw rect 40 *tmp38 8 8
++   89 label *label74
++   90 label *label75
++   91 op mul *tmp32 7 :drawMask:r
++   92 op add *tmp33 *tmp32 5
++   93 op shl *tmp34 1 *tmp33
++   94 op and *tmp35 31704975 *tmp34
++   95 jump *label76 equal *tmp35 false
++   96 draw col %[red]
++   97 jump *label77 always
++   98 label *label76
++   99 draw col %[green]
++  100 label *label77
++  101 draw rect 50 *tmp38 8 8
++  102 label *label78
++  103 label *label79
++  104 op mul *tmp32 7 :drawMask:r
++  105 op add *tmp33 *tmp32 6
++  106 op shl *tmp34 1 *tmp33
++  107 op and *tmp35 31704975 *tmp34
++  108 jump *label80 equal *tmp35 false
++  109 draw col %[red]
++  110 jump *label81 always
++  111 label *label80
++  112 draw col %[green]
++  113 label *label81
++  114 draw rect 60 *tmp38 8 8
++  115 label *label82
++  116 label *label83
++  117 label *label84
++  118 op sub :drawMask:r :drawMask:r 1
++  119 label *label85
++  120 op mul *tmp38 :drawMask:r 10
++  121 label *label86
++  122 label *label87
++  123 op mul *tmp32 7 :drawMask:r
++  124 op add *tmp33 *tmp32 0
++  125 op shl *tmp34 1 *tmp33
++  126 op and *tmp35 31704975 *tmp34
++  127 jump *label88 equal *tmp35 false
++  128 draw col %[red]
++  129 jump *label89 always
++  130 label *label88
++  131 draw col %[green]
++  132 label *label89
++  133 draw rect 0 *tmp38 8 8
++  134 label *label90
++  135 label *label91
++  136 op mul *tmp32 7 :drawMask:r
++  137 op add *tmp33 *tmp32 1
++  138 op shl *tmp34 1 *tmp33
++  139 op and *tmp35 31704975 *tmp34
++  140 jump *label92 equal *tmp35 false
++  141 draw col %[red]
++  142 jump *label93 always
++  143 label *label92
++  144 draw col %[green]
++  145 label *label93
++  146 draw rect 10 *tmp38 8 8
++  147 label *label94
++  148 label *label95
++  149 op mul *tmp32 7 :drawMask:r
++  150 op add *tmp33 *tmp32 2
++  151 op shl *tmp34 1 *tmp33
++  152 op and *tmp35 31704975 *tmp34
++  153 jump *label96 equal *tmp35 false
++  154 draw col %[red]
++  155 jump *label97 always
++  156 label *label96
++  157 draw col %[green]
++  158 label *label97
++  159 draw rect 20 *tmp38 8 8
++  160 label *label98
++  161 label *label99
++  162 op mul *tmp32 7 :drawMask:r
++  163 op add *tmp33 *tmp32 3
++  164 op shl *tmp34 1 *tmp33
++  165 op and *tmp35 31704975 *tmp34
++  166 jump *label100 equal *tmp35 false
++  167 draw col %[red]
++  168 jump *label101 always
++  169 label *label100
++  170 draw col %[green]
++  171 label *label101
++  172 draw rect 30 *tmp38 8 8
++  173 label *label102
++  174 label *label103
++  175 op mul *tmp32 7 :drawMask:r
++  176 op add *tmp33 *tmp32 4
++  177 op shl *tmp34 1 *tmp33
++  178 op and *tmp35 31704975 *tmp34
++  179 jump *label104 equal *tmp35 false
++  180 draw col %[red]
++  181 jump *label105 always
++  182 label *label104
++  183 draw col %[green]
++  184 label *label105
++  185 draw rect 40 *tmp38 8 8
++  186 label *label106
++  187 label *label107
++  188 op mul *tmp32 7 :drawMask:r
++  189 op add *tmp33 *tmp32 5
++  190 op shl *tmp34 1 *tmp33
++  191 op and *tmp35 31704975 *tmp34
++  192 jump *label108 equal *tmp35 false
++  193 draw col %[red]
++  194 jump *label109 always
++  195 label *label108
++  196 draw col %[green]
++  197 label *label109
++  198 draw rect 50 *tmp38 8 8
++  199 label *label110
++  200 label *label111
++  201 op mul *tmp32 7 :drawMask:r
++  202 op add *tmp33 *tmp32 6
++  203 op shl *tmp34 1 *tmp33
++  204 op and *tmp35 31704975 *tmp34
++  205 jump *label112 equal *tmp35 false
++  206 draw col %[red]
++  207 jump *label113 always
++  208 label *label112
++  209 draw col %[green]
++  210 label *label113
++  211 draw rect 60 *tmp38 8 8
++  212 label *label114
++  213 label *label115
++  214 label *label116
++  215 op sub :drawMask:r :drawMask:r 1
++  216 label *label117
++  217 op mul *tmp38 :drawMask:r 10
++  218 label *label118
++  219 label *label119
++  220 op mul *tmp32 7 :drawMask:r
++  221 op add *tmp33 *tmp32 0
++  222 op shl *tmp34 1 *tmp33
++  223 op and *tmp35 31704975 *tmp34
++  224 jump *label120 equal *tmp35 false
++  225 draw col %[red]
++  226 jump *label121 always
++  227 label *label120
++  228 draw col %[green]
++  229 label *label121
++  230 draw rect 0 *tmp38 8 8
++  231 label *label122
++  232 label *label123
++  233 op mul *tmp32 7 :drawMask:r
++  234 op add *tmp33 *tmp32 1
++  235 op shl *tmp34 1 *tmp33
++  236 op and *tmp35 31704975 *tmp34
++  237 jump *label124 equal *tmp35 false
++  238 draw col %[red]
++  239 jump *label125 always
++  240 label *label124
++  241 draw col %[green]
++  242 label *label125
++  243 draw rect 10 *tmp38 8 8
++  244 label *label126
++  245 label *label127
++  246 op mul *tmp32 7 :drawMask:r
++  247 op add *tmp33 *tmp32 2
++  248 op shl *tmp34 1 *tmp33
++  249 op and *tmp35 31704975 *tmp34
++  250 jump *label128 equal *tmp35 false
++  251 draw col %[red]
++  252 jump *label129 always
++  253 label *label128
++  254 draw col %[green]
++  255 label *label129
++  256 draw rect 20 *tmp38 8 8
++  257 label *label130
++  258 label *label131
++  259 op mul *tmp32 7 :drawMask:r
++  260 op add *tmp33 *tmp32 3
++  261 op shl *tmp34 1 *tmp33
++  262 op and *tmp35 31704975 *tmp34
++  263 jump *label132 equal *tmp35 false
++  264 draw col %[red]
++  265 jump *label133 always
++  266 label *label132
++  267 draw col %[green]
++  268 label *label133
++  269 draw rect 30 *tmp38 8 8
++  270 label *label134
++  271 label *label135
++  272 op mul *tmp32 7 :drawMask:r
++  273 op add *tmp33 *tmp32 4
++  274 op shl *tmp34 1 *tmp33
++  275 op and *tmp35 31704975 *tmp34
++  276 jump *label136 equal *tmp35 false
++  277 draw col %[red]
++  278 jump *label137 always
++  279 label *label136
++  280 draw col %[green]
++  281 label *label137
++  282 draw rect 40 *tmp38 8 8
++  283 label *label138
++  284 label *label139
++  285 op mul *tmp32 7 :drawMask:r
++  286 op add *tmp33 *tmp32 5
++  287 op shl *tmp34 1 *tmp33
++  288 op and *tmp35 31704975 *tmp34
++  289 jump *label140 equal *tmp35 false
++  290 draw col %[red]
++  291 jump *label141 always
++  292 label *label140
++  293 draw col %[green]
++  294 label *label141
++  295 draw rect 50 *tmp38 8 8
++  296 label *label142
++  297 label *label143
++  298 op mul *tmp32 7 :drawMask:r
++  299 op add *tmp33 *tmp32 6
++  300 op shl *tmp34 1 *tmp33
++  301 op and *tmp35 31704975 *tmp34
++  302 jump *label144 equal *tmp35 false
++  303 draw col %[red]
++  304 jump *label145 always
++  305 label *label144
++  306 draw col %[green]
++  307 label *label145
++  308 draw rect 60 *tmp38 8 8
++  309 label *label146
++  310 label *label147
++  311 label *label148
++  312 op sub :drawMask:r :drawMask:r 1
++  313 label *label149
++  314 op mul *tmp38 :drawMask:r 10
++  315 label *label150
++  316 label *label151
++  317 op mul *tmp32 7 :drawMask:r
++  318 op add *tmp33 *tmp32 0
++  319 op shl *tmp34 1 *tmp33
++  320 op and *tmp35 31704975 *tmp34
++  321 jump *label152 equal *tmp35 false
++  322 draw col %[red]
++  323 jump *label153 always
++  324 label *label152
++  325 draw col %[green]
++  326 label *label153
++  327 draw rect 0 *tmp38 8 8
++  328 label *label154
++  329 label *label155
++  330 op mul *tmp32 7 :drawMask:r
++  331 op add *tmp33 *tmp32 1
++  332 op shl *tmp34 1 *tmp33
++  333 op and *tmp35 31704975 *tmp34
++  334 jump *label156 equal *tmp35 false
++  335 draw col %[red]
++  336 jump *label157 always
++  337 label *label156
++  338 draw col %[green]
++  339 label *label157
++  340 draw rect 10 *tmp38 8 8
++  341 label *label158
++  342 label *label159
++  343 op mul *tmp32 7 :drawMask:r
++  344 op add *tmp33 *tmp32 2
++  345 op shl *tmp34 1 *tmp33
++  346 op and *tmp35 31704975 *tmp34
++  347 jump *label160 equal *tmp35 false
++  348 draw col %[red]
++  349 jump *label161 always
++  350 label *label160
++  351 draw col %[green]
++  352 label *label161
++  353 draw rect 20 *tmp38 8 8
++  354 label *label162
++  355 label *label163
++  356 op mul *tmp32 7 :drawMask:r
++  357 op add *tmp33 *tmp32 3
++  358 op shl *tmp34 1 *tmp33
++  359 op and *tmp35 31704975 *tmp34
++  360 jump *label164 equal *tmp35 false
++  361 draw col %[red]
++  362 jump *label165 always
++  363 label *label164
++  364 draw col %[green]
++  365 label *label165
++  366 draw rect 30 *tmp38 8 8
++  367 label *label166
++  368 label *label167
++  369 op mul *tmp32 7 :drawMask:r
++  370 op add *tmp33 *tmp32 4
++  371 op shl *tmp34 1 *tmp33
++  372 op and *tmp35 31704975 *tmp34
++  373 jump *label168 equal *tmp35 false
++  374 draw col %[red]
++  375 jump *label169 always
++  376 label *label168
++  377 draw col %[green]
++  378 label *label169
++  379 draw rect 40 *tmp38 8 8
++  380 label *label170
++  381 label *label171
++  382 op mul *tmp32 7 :drawMask:r
++  383 op add *tmp33 *tmp32 5
++  384 op shl *tmp34 1 *tmp33
++  385 op and *tmp35 31704975 *tmp34
++  386 jump *label172 equal *tmp35 false
++  387 draw col %[red]
++  388 jump *label173 always
++  389 label *label172
++  390 draw col %[green]
++  391 label *label173
++  392 draw rect 50 *tmp38 8 8
++  393 label *label174
++  394 label *label175
++  395 op mul *tmp32 7 :drawMask:r
++  396 op add *tmp33 *tmp32 6
++  397 op shl *tmp34 1 *tmp33
++  398 op and *tmp35 31704975 *tmp34
++  399 jump *label176 equal *tmp35 false
++  400 draw col %[red]
++  401 jump *label177 always
++  402 label *label176
++  403 draw col %[green]
++  404 label *label177
++  405 draw rect 60 *tmp38 8 8
++  406 label *label178
++  407 label *label179
++  408 label *label180
++  409 op sub :drawMask:r :drawMask:r 1
++  410 label *label181
++  411 op mul *tmp38 :drawMask:r 10
++  412 label *label182
++  413 label *label183
++  414 op mul *tmp32 7 :drawMask:r
++  415 op add *tmp33 *tmp32 0
++  416 op shl *tmp34 1 *tmp33
++  417 op and *tmp35 31704975 *tmp34
++  418 jump *label184 equal *tmp35 false
++  419 draw col %[red]
++  420 jump *label185 always
++  421 label *label184
++  422 draw col %[green]
++  423 label *label185
++  424 draw rect 0 *tmp38 8 8
++  425 label *label186
++  426 label *label187
++  427 op mul *tmp32 7 :drawMask:r
++  428 op add *tmp33 *tmp32 1
++  429 op shl *tmp34 1 *tmp33
++  430 op and *tmp35 31704975 *tmp34
++  431 jump *label188 equal *tmp35 false
++  432 draw col %[red]
++  433 jump *label189 always
++  434 label *label188
++  435 draw col %[green]
++  436 label *label189
++  437 draw rect 10 *tmp38 8 8
++  438 label *label190
++  439 label *label191
++  440 op mul *tmp32 7 :drawMask:r
++  441 op add *tmp33 *tmp32 2
++  442 op shl *tmp34 1 *tmp33
++  443 op and *tmp35 31704975 *tmp34
++  444 jump *label192 equal *tmp35 false
++  445 draw col %[red]
++  446 jump *label193 always
++  447 label *label192
++  448 draw col %[green]
++  449 label *label193
++  450 draw rect 20 *tmp38 8 8
++  451 label *label194
++  452 label *label195
++  453 op mul *tmp32 7 :drawMask:r
++  454 op add *tmp33 *tmp32 3
++  455 op shl *tmp34 1 *tmp33
++  456 op and *tmp35 31704975 *tmp34
++  457 jump *label196 equal *tmp35 false
++  458 draw col %[red]
++  459 jump *label197 always
++  460 label *label196
++  461 draw col %[green]
++  462 label *label197
++  463 draw rect 30 *tmp38 8 8
++  464 label *label198
++  465 label *label199
++  466 op mul *tmp32 7 :drawMask:r
++  467 op add *tmp33 *tmp32 4
++  468 op shl *tmp34 1 *tmp33
++  469 op and *tmp35 31704975 *tmp34
++  470 jump *label200 equal *tmp35 false
++  471 draw col %[red]
++  472 jump *label201 always
++  473 label *label200
++  474 draw col %[green]
++  475 label *label201
++  476 draw rect 40 *tmp38 8 8
++  477 label *label202
++  478 label *label203
++  479 op mul *tmp32 7 :drawMask:r
++  480 op add *tmp33 *tmp32 5
++  481 op shl *tmp34 1 *tmp33
++  482 op and *tmp35 31704975 *tmp34
++  483 jump *label204 equal *tmp35 false
++  484 draw col %[red]
++  485 jump *label205 always
++  486 label *label204
++  487 draw col %[green]
++  488 label *label205
++  489 draw rect 50 *tmp38 8 8
++  490 label *label206
++  491 label *label207
++  492 op mul *tmp32 7 :drawMask:r
++  493 op add *tmp33 *tmp32 6
++  494 op shl *tmp34 1 *tmp33
++  495 op and *tmp35 31704975 *tmp34
++  496 jump *label208 equal *tmp35 false
++  497 draw col %[red]
++  498 jump *label209 always
++  499 label *label208
++  500 draw col %[green]
++  501 label *label209
++  502 draw rect 60 *tmp38 8 8
++  503 label *label210
++  504 label *label211
++  505 label *label212
++  506 op sub :drawMask:r :drawMask:r 1
++  507 label *label213
++  508 op mul *tmp38 :drawMask:r 10
++  509 label *label214
++  510 label *label215
++  511 op mul *tmp32 7 :drawMask:r
++  512 op add *tmp33 *tmp32 0
++  513 op shl *tmp34 1 *tmp33
++  514 op and *tmp35 31704975 *tmp34
++  515 jump *label216 equal *tmp35 false
++  516 draw col %[red]
++  517 jump *label217 always
++  518 label *label216
++  519 draw col %[green]
++  520 label *label217
++  521 draw rect 0 *tmp38 8 8
++  522 label *label218
++  523 label *label219
++  524 op mul *tmp32 7 :drawMask:r
++  525 op add *tmp33 *tmp32 1
++  526 op shl *tmp34 1 *tmp33
++  527 op and *tmp35 31704975 *tmp34
++  528 jump *label220 equal *tmp35 false
++  529 draw col %[red]
++  530 jump *label221 always
++  531 label *label220
++  532 draw col %[green]
++  533 label *label221
++  534 draw rect 10 *tmp38 8 8
++  535 label *label222
++  536 label *label223
++  537 op mul *tmp32 7 :drawMask:r
++  538 op add *tmp33 *tmp32 2
++  539 op shl *tmp34 1 *tmp33
++  540 op and *tmp35 31704975 *tmp34
++  541 jump *label224 equal *tmp35 false
++  542 draw col %[red]
++  543 jump *label225 always
++  544 label *label224
++  545 draw col %[green]
++  546 label *label225
++  547 draw rect 20 *tmp38 8 8
++  548 label *label226
++  549 label *label227
++  550 op mul *tmp32 7 :drawMask:r
++  551 op add *tmp33 *tmp32 3
++  552 op shl *tmp34 1 *tmp33
++  553 op and *tmp35 31704975 *tmp34
++  554 jump *label228 equal *tmp35 false
++  555 draw col %[red]
++  556 jump *label229 always
++  557 label *label228
++  558 draw col %[green]
++  559 label *label229
++  560 draw rect 30 *tmp38 8 8
++  561 label *label230
++  562 label *label231
++  563 op mul *tmp32 7 :drawMask:r
++  564 op add *tmp33 *tmp32 4
++  565 op shl *tmp34 1 *tmp33
++  566 op and *tmp35 31704975 *tmp34
++  567 jump *label232 equal *tmp35 false
++  568 draw col %[red]
++  569 jump *label233 always
++  570 label *label232
++  571 draw col %[green]
++  572 label *label233
++  573 draw rect 40 *tmp38 8 8
++  574 label *label234
++  575 label *label235
++  576 op mul *tmp32 7 :drawMask:r
++  577 op add *tmp33 *tmp32 5
++  578 op shl *tmp34 1 *tmp33
++  579 op and *tmp35 31704975 *tmp34
++  580 jump *label236 equal *tmp35 false
++  581 draw col %[red]
++  582 jump *label237 always
++  583 label *label236
++  584 draw col %[green]
++  585 label *label237
++  586 draw rect 50 *tmp38 8 8
++  587 label *label238
++  588 label *label239
++  589 op mul *tmp32 7 :drawMask:r
++  590 op add *tmp33 *tmp32 6
++  591 op shl *tmp34 1 *tmp33
++  592 op and *tmp35 31704975 *tmp34
++  593 jump *label240 equal *tmp35 false
++  594 draw col %[red]
++  595 jump *label241 always
++  596 label *label240
++  597 draw col %[green]
++  598 label *label241
++  599 draw rect 60 *tmp38 8 8
++  600 label *label242
++  601 label *label243
++  602 label *label244
++  603 op sub :drawMask:r :drawMask:r 1
++  604 label *label245
++  605 op mul *tmp38 :drawMask:r 10
++  606 label *label246
++  607 label *label247
++  608 op mul *tmp32 7 :drawMask:r
++  609 op add *tmp33 *tmp32 0
++  610 op shl *tmp34 1 *tmp33
++  611 op and *tmp35 31704975 *tmp34
++  612 jump *label248 equal *tmp35 false
++  613 draw col %[red]
++  614 jump *label249 always
++  615 label *label248
++  616 draw col %[green]
++  617 label *label249
++  618 draw rect 0 *tmp38 8 8
++  619 label *label250
++  620 label *label251
++  621 op mul *tmp32 7 :drawMask:r
++  622 op add *tmp33 *tmp32 1
++  623 op shl *tmp34 1 *tmp33
++  624 op and *tmp35 31704975 *tmp34
++  625 jump *label252 equal *tmp35 false
++  626 draw col %[red]
++  627 jump *label253 always
++  628 label *label252
++  629 draw col %[green]
++  630 label *label253
++  631 draw rect 10 *tmp38 8 8
++  632 label *label254
++  633 label *label255
++  634 op mul *tmp32 7 :drawMask:r
++  635 op add *tmp33 *tmp32 2
++  636 op shl *tmp34 1 *tmp33
++  637 op and *tmp35 31704975 *tmp34
++  638 jump *label256 equal *tmp35 false
++  639 draw col %[red]
++  640 jump *label257 always
++  641 label *label256
++  642 draw col %[green]
++  643 label *label257
++  644 draw rect 20 *tmp38 8 8
++  645 label *label258
++  646 label *label259
++  647 op mul *tmp32 7 :drawMask:r
++  648 op add *tmp33 *tmp32 3
++  649 op shl *tmp34 1 *tmp33
++  650 op and *tmp35 31704975 *tmp34
++  651 jump *label260 equal *tmp35 false
++  652 draw col %[red]
++  653 jump *label261 always
++  654 label *label260
++  655 draw col %[green]
++  656 label *label261
++  657 draw rect 30 *tmp38 8 8
++  658 label *label262
++  659 label *label263
++  660 op mul *tmp32 7 :drawMask:r
++  661 op add *tmp33 *tmp32 4
++  662 op shl *tmp34 1 *tmp33
++  663 op and *tmp35 31704975 *tmp34
++  664 jump *label264 equal *tmp35 false
++  665 draw col %[red]
++  666 jump *label265 always
++  667 label *label264
++  668 draw col %[green]
++  669 label *label265
++  670 draw rect 40 *tmp38 8 8
++  671 label *label266
++  672 label *label267
++  673 op mul *tmp32 7 :drawMask:r
++  674 op add *tmp33 *tmp32 5
++  675 op shl *tmp34 1 *tmp33
++  676 op and *tmp35 31704975 *tmp34
++  677 jump *label268 equal *tmp35 false
++  678 draw col %[red]
++  679 jump *label269 always
++  680 label *label268
++  681 draw col %[green]
++  682 label *label269
++  683 draw rect 50 *tmp38 8 8
++  684 label *label270
++  685 label *label271
++  686 op mul *tmp32 7 :drawMask:r
++  687 op add *tmp33 *tmp32 6
++  688 op shl *tmp34 1 *tmp33
++  689 op and *tmp35 31704975 *tmp34
++  690 jump *label272 equal *tmp35 false
++  691 draw col %[red]
++  692 jump *label273 always
++  693 label *label272
++  694 draw col %[green]
++  695 label *label273
++  696 draw rect 60 *tmp38 8 8
++  697 label *label274
++  698 label *label275
++  699 label *label276
++  700 op sub :drawMask:r :drawMask:r 1
++  701 label *label13
+   702 drawflush display1
+   703 label *label10
+   704 end
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+    20 op sub :drawMask:r 7 1
+    21 label *label52
+    22 label *label53
+-    * op mul *tmp38 :drawMask:r 10
++   23 op mul *tmp38 6 10
+    24 label *label54
+    25 label *label55
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label56 equal *tmp35 false
++   26 op mul *tmp32 7 6
++   27 op add *tmp33 42 0
++   28 op shl *tmp34 1 42
++   29 op and *tmp35 31704975 4398046511104
++   30 jump *label56 equal 0 false
+    31 draw col %[red]
+    32 jump *label57 always
+    33 label *label56
+    34 draw col %[green]
+    35 label *label57
+-    * draw rect 0 *tmp38 8 8
++   36 draw rect 0 60 8 8
+    37 label *label58
+    38 label *label59
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label60 equal *tmp35 false
++   39 op mul *tmp32 7 6
++   40 op add *tmp33 42 1
++   41 op shl *tmp34 1 43
++   42 op and *tmp35 31704975 8796093022208
++   43 jump *label60 equal 0 false
+    44 draw col %[red]
+    45 jump *label61 always
+    46 label *label60
+    47 draw col %[green]
+    48 label *label61
+-    * draw rect 10 *tmp38 8 8
++   49 draw rect 10 60 8 8
+    50 label *label62
+    51 label *label63
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label64 equal *tmp35 false
++   52 op mul *tmp32 7 6
++   53 op add *tmp33 42 2
++   54 op shl *tmp34 1 44
++   55 op and *tmp35 31704975 17592186044416
++   56 jump *label64 equal 0 false
+    57 draw col %[red]
+    58 jump *label65 always
+    59 label *label64
+    60 draw col %[green]
+    61 label *label65
+-    * draw rect 20 *tmp38 8 8
++   62 draw rect 20 60 8 8
+    63 label *label66
+    64 label *label67
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label68 equal *tmp35 false
++   65 op mul *tmp32 7 6
++   66 op add *tmp33 42 3
++   67 op shl *tmp34 1 45
++   68 op and *tmp35 31704975 35184372088832
++   69 jump *label68 equal 0 false
+    70 draw col %[red]
+    71 jump *label69 always
+    72 label *label68
+    73 draw col %[green]
+    74 label *label69
+-    * draw rect 30 *tmp38 8 8
++   75 draw rect 30 60 8 8
+    76 label *label70
+    77 label *label71
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label72 equal *tmp35 false
++   78 op mul *tmp32 7 6
++   79 op add *tmp33 42 4
++   80 op shl *tmp34 1 46
++   81 op and *tmp35 31704975 70368744177664
++   82 jump *label72 equal 0 false
+    83 draw col %[red]
+    84 jump *label73 always
+    85 label *label72
+    86 draw col %[green]
+    87 label *label73
+-    * draw rect 40 *tmp38 8 8
++   88 draw rect 40 60 8 8
+    89 label *label74
+    90 label *label75
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label76 equal *tmp35 false
++   91 op mul *tmp32 7 6
++   92 op add *tmp33 42 5
++   93 op shl *tmp34 1 47
++   94 op and *tmp35 31704975 140737488355328
++   95 jump *label76 equal 0 false
+    96 draw col %[red]
+    97 jump *label77 always
+    98 label *label76
+    99 draw col %[green]
+   100 label *label77
+-    * draw rect 50 *tmp38 8 8
++  101 draw rect 50 60 8 8
+   102 label *label78
+   103 label *label79
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label80 equal *tmp35 false
++  104 op mul *tmp32 7 6
++  105 op add *tmp33 42 6
++  106 op shl *tmp34 1 48
++  107 op and *tmp35 31704975 281474976710656
++  108 jump *label80 equal 0 false
+   109 draw col %[red]
+   110 jump *label81 always
+   111 label *label80
+   112 draw col %[green]
+   113 label *label81
+-    * draw rect 60 *tmp38 8 8
++  114 draw rect 60 60 8 8
+   115 label *label82
+   116 label *label83
+   117 label *label84
+-    * op sub :drawMask:r :drawMask:r 1
++  118 op sub :drawMask:r 6 1
+   119 label *label85
+-    * op mul *tmp38 :drawMask:r 10
++  120 op mul *tmp38 5 10
+   121 label *label86
+   122 label *label87
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label88 equal *tmp35 false
++  123 op mul *tmp32 7 5
++  124 op add *tmp33 35 0
++  125 op shl *tmp34 1 35
++  126 op and *tmp35 31704975 34359738368
++  127 jump *label88 equal 0 false
+   128 draw col %[red]
+   129 jump *label89 always
+   130 label *label88
+   131 draw col %[green]
+   132 label *label89
+-    * draw rect 0 *tmp38 8 8
++  133 draw rect 0 50 8 8
+   134 label *label90
+   135 label *label91
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label92 equal *tmp35 false
++  136 op mul *tmp32 7 5
++  137 op add *tmp33 35 1
++  138 op shl *tmp34 1 36
++  139 op and *tmp35 31704975 68719476736
++  140 jump *label92 equal 0 false
+   141 draw col %[red]
+   142 jump *label93 always
+   143 label *label92
+   144 draw col %[green]
+   145 label *label93
+-    * draw rect 10 *tmp38 8 8
++  146 draw rect 10 50 8 8
+   147 label *label94
+   148 label *label95
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label96 equal *tmp35 false
++  149 op mul *tmp32 7 5
++  150 op add *tmp33 35 2
++  151 op shl *tmp34 1 37
++  152 op and *tmp35 31704975 137438953472
++  153 jump *label96 equal 0 false
+   154 draw col %[red]
+   155 jump *label97 always
+   156 label *label96
+   157 draw col %[green]
+   158 label *label97
+-    * draw rect 20 *tmp38 8 8
++  159 draw rect 20 50 8 8
+   160 label *label98
+   161 label *label99
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label100 equal *tmp35 false
++  162 op mul *tmp32 7 5
++  163 op add *tmp33 35 3
++  164 op shl *tmp34 1 38
++  165 op and *tmp35 31704975 274877906944
++  166 jump *label100 equal 0 false
+   167 draw col %[red]
+   168 jump *label101 always
+   169 label *label100
+   170 draw col %[green]
+   171 label *label101
+-    * draw rect 30 *tmp38 8 8
++  172 draw rect 30 50 8 8
+   173 label *label102
+   174 label *label103
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label104 equal *tmp35 false
++  175 op mul *tmp32 7 5
++  176 op add *tmp33 35 4
++  177 op shl *tmp34 1 39
++  178 op and *tmp35 31704975 549755813888
++  179 jump *label104 equal 0 false
+   180 draw col %[red]
+   181 jump *label105 always
+   182 label *label104
+   183 draw col %[green]
+   184 label *label105
+-    * draw rect 40 *tmp38 8 8
++  185 draw rect 40 50 8 8
+   186 label *label106
+   187 label *label107
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label108 equal *tmp35 false
++  188 op mul *tmp32 7 5
++  189 op add *tmp33 35 5
++  190 op shl *tmp34 1 40
++  191 op and *tmp35 31704975 1099511627776
++  192 jump *label108 equal 0 false
+   193 draw col %[red]
+   194 jump *label109 always
+   195 label *label108
+   196 draw col %[green]
+   197 label *label109
+-    * draw rect 50 *tmp38 8 8
++  198 draw rect 50 50 8 8
+   199 label *label110
+   200 label *label111
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label112 equal *tmp35 false
++  201 op mul *tmp32 7 5
++  202 op add *tmp33 35 6
++  203 op shl *tmp34 1 41
++  204 op and *tmp35 31704975 2199023255552
++  205 jump *label112 equal 0 false
+   206 draw col %[red]
+   207 jump *label113 always
+   208 label *label112
+   209 draw col %[green]
+   210 label *label113
+-    * draw rect 60 *tmp38 8 8
++  211 draw rect 60 50 8 8
+   212 label *label114
+   213 label *label115
+   214 label *label116
+-    * op sub :drawMask:r :drawMask:r 1
++  215 op sub :drawMask:r 5 1
+   216 label *label117
+-    * op mul *tmp38 :drawMask:r 10
++  217 op mul *tmp38 4 10
+   218 label *label118
+   219 label *label119
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label120 equal *tmp35 false
++  220 op mul *tmp32 7 4
++  221 op add *tmp33 28 0
++  222 op shl *tmp34 1 28
++  223 op and *tmp35 31704975 268435456
++  224 jump *label120 equal 0 false
+   225 draw col %[red]
+   226 jump *label121 always
+   227 label *label120
+   228 draw col %[green]
+   229 label *label121
+-    * draw rect 0 *tmp38 8 8
++  230 draw rect 0 40 8 8
+   231 label *label122
+   232 label *label123
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label124 equal *tmp35 false
++  233 op mul *tmp32 7 4
++  234 op add *tmp33 28 1
++  235 op shl *tmp34 1 29
++  236 op and *tmp35 31704975 536870912
++  237 jump *label124 equal 0 false
+   238 draw col %[red]
+   239 jump *label125 always
+   240 label *label124
+   241 draw col %[green]
+   242 label *label125
+-    * draw rect 10 *tmp38 8 8
++  243 draw rect 10 40 8 8
+   244 label *label126
+   245 label *label127
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label128 equal *tmp35 false
++  246 op mul *tmp32 7 4
++  247 op add *tmp33 28 2
++  248 op shl *tmp34 1 30
++  249 op and *tmp35 31704975 1073741824
++  250 jump *label128 equal 0 false
+   251 draw col %[red]
+   252 jump *label129 always
+   253 label *label128
+   254 draw col %[green]
+   255 label *label129
+-    * draw rect 20 *tmp38 8 8
++  256 draw rect 20 40 8 8
+   257 label *label130
+   258 label *label131
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label132 equal *tmp35 false
++  259 op mul *tmp32 7 4
++  260 op add *tmp33 28 3
++  261 op shl *tmp34 1 31
++  262 op and *tmp35 31704975 2147483648
++  263 jump *label132 equal 0 false
+   264 draw col %[red]
+   265 jump *label133 always
+   266 label *label132
+   267 draw col %[green]
+   268 label *label133
+-    * draw rect 30 *tmp38 8 8
++  269 draw rect 30 40 8 8
+   270 label *label134
+   271 label *label135
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label136 equal *tmp35 false
++  272 op mul *tmp32 7 4
++  273 op add *tmp33 28 4
++  274 op shl *tmp34 1 32
++  275 op and *tmp35 31704975 4294967296
++  276 jump *label136 equal 0 false
+   277 draw col %[red]
+   278 jump *label137 always
+   279 label *label136
+   280 draw col %[green]
+   281 label *label137
+-    * draw rect 40 *tmp38 8 8
++  282 draw rect 40 40 8 8
+   283 label *label138
+   284 label *label139
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label140 equal *tmp35 false
++  285 op mul *tmp32 7 4
++  286 op add *tmp33 28 5
++  287 op shl *tmp34 1 33
++  288 op and *tmp35 31704975 8589934592
++  289 jump *label140 equal 0 false
+   290 draw col %[red]
+   291 jump *label141 always
+   292 label *label140
+   293 draw col %[green]
+   294 label *label141
+-    * draw rect 50 *tmp38 8 8
++  295 draw rect 50 40 8 8
+   296 label *label142
+   297 label *label143
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label144 equal *tmp35 false
++  298 op mul *tmp32 7 4
++  299 op add *tmp33 28 6
++  300 op shl *tmp34 1 34
++  301 op and *tmp35 31704975 17179869184
++  302 jump *label144 equal 0 false
+   303 draw col %[red]
+   304 jump *label145 always
+   305 label *label144
+   306 draw col %[green]
+   307 label *label145
+-    * draw rect 60 *tmp38 8 8
++  308 draw rect 60 40 8 8
+   309 label *label146
+   310 label *label147
+   311 label *label148
+-    * op sub :drawMask:r :drawMask:r 1
++  312 op sub :drawMask:r 4 1
+   313 label *label149
+-    * op mul *tmp38 :drawMask:r 10
++  314 op mul *tmp38 3 10
+   315 label *label150
+   316 label *label151
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label152 equal *tmp35 false
++  317 op mul *tmp32 7 3
++  318 op add *tmp33 21 0
++  319 op shl *tmp34 1 21
++  320 op and *tmp35 31704975 2097152
++  321 jump *label152 equal 2097152 false
+   322 draw col %[red]
+   323 jump *label153 always
+   324 label *label152
+   325 draw col %[green]
+   326 label *label153
+-    * draw rect 0 *tmp38 8 8
++  327 draw rect 0 30 8 8
+   328 label *label154
+   329 label *label155
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label156 equal *tmp35 false
++  330 op mul *tmp32 7 3
++  331 op add *tmp33 21 1
++  332 op shl *tmp34 1 22
++  333 op and *tmp35 31704975 4194304
++  334 jump *label156 equal 4194304 false
+   335 draw col %[red]
+   336 jump *label157 always
+   337 label *label156
+   338 draw col %[green]
+   339 label *label157
+-    * draw rect 10 *tmp38 8 8
++  340 draw rect 10 30 8 8
+   341 label *label158
+   342 label *label159
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label160 equal *tmp35 false
++  343 op mul *tmp32 7 3
++  344 op add *tmp33 21 2
++  345 op shl *tmp34 1 23
++  346 op and *tmp35 31704975 8388608
++  347 jump *label160 equal 8388608 false
+   348 draw col %[red]
+   349 jump *label161 always
+   350 label *label160
+   351 draw col %[green]
+   352 label *label161
+-    * draw rect 20 *tmp38 8 8
++  353 draw rect 20 30 8 8
+   354 label *label162
+   355 label *label163
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label164 equal *tmp35 false
++  356 op mul *tmp32 7 3
++  357 op add *tmp33 21 3
++  358 op shl *tmp34 1 24
++  359 op and *tmp35 31704975 16777216
++  360 jump *label164 equal 16777216 false
+   361 draw col %[red]
+   362 jump *label165 always
+   363 label *label164
+   364 draw col %[green]
+   365 label *label165
+-    * draw rect 30 *tmp38 8 8
++  366 draw rect 30 30 8 8
+   367 label *label166
+   368 label *label167
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label168 equal *tmp35 false
++  369 op mul *tmp32 7 3
++  370 op add *tmp33 21 4
++  371 op shl *tmp34 1 25
++  372 op and *tmp35 31704975 33554432
++  373 jump *label168 equal 0 false
+   374 draw col %[red]
+   375 jump *label169 always
+   376 label *label168
+   377 draw col %[green]
+   378 label *label169
+-    * draw rect 40 *tmp38 8 8
++  379 draw rect 40 30 8 8
+   380 label *label170
+   381 label *label171
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label172 equal *tmp35 false
++  382 op mul *tmp32 7 3
++  383 op add *tmp33 21 5
++  384 op shl *tmp34 1 26
++  385 op and *tmp35 31704975 67108864
++  386 jump *label172 equal 0 false
+   387 draw col %[red]
+   388 jump *label173 always
+   389 label *label172
+   390 draw col %[green]
+   391 label *label173
+-    * draw rect 50 *tmp38 8 8
++  392 draw rect 50 30 8 8
+   393 label *label174
+   394 label *label175
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label176 equal *tmp35 false
++  395 op mul *tmp32 7 3
++  396 op add *tmp33 21 6
++  397 op shl *tmp34 1 27
++  398 op and *tmp35 31704975 134217728
++  399 jump *label176 equal 0 false
+   400 draw col %[red]
+   401 jump *label177 always
+   402 label *label176
+   403 draw col %[green]
+   404 label *label177
+-    * draw rect 60 *tmp38 8 8
++  405 draw rect 60 30 8 8
+   406 label *label178
+   407 label *label179
+   408 label *label180
+-    * op sub :drawMask:r :drawMask:r 1
++  409 op sub :drawMask:r 3 1
+   410 label *label181
+-    * op mul *tmp38 :drawMask:r 10
++  411 op mul *tmp38 2 10
+   412 label *label182
+   413 label *label183
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label184 equal *tmp35 false
++  414 op mul *tmp32 7 2
++  415 op add *tmp33 14 0
++  416 op shl *tmp34 1 14
++  417 op and *tmp35 31704975 16384
++  418 jump *label184 equal 16384 false
+   419 draw col %[red]
+   420 jump *label185 always
+   421 label *label184
+   422 draw col %[green]
+   423 label *label185
+-    * draw rect 0 *tmp38 8 8
++  424 draw rect 0 20 8 8
+   425 label *label186
+   426 label *label187
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label188 equal *tmp35 false
++  427 op mul *tmp32 7 2
++  428 op add *tmp33 14 1
++  429 op shl *tmp34 1 15
++  430 op and *tmp35 31704975 32768
++  431 jump *label188 equal 32768 false
+   432 draw col %[red]
+   433 jump *label189 always
+   434 label *label188
+   435 draw col %[green]
+   436 label *label189
+-    * draw rect 10 *tmp38 8 8
++  437 draw rect 10 20 8 8
+   438 label *label190
+   439 label *label191
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label192 equal *tmp35 false
++  440 op mul *tmp32 7 2
++  441 op add *tmp33 14 2
++  442 op shl *tmp34 1 16
++  443 op and *tmp35 31704975 65536
++  444 jump *label192 equal 65536 false
+   445 draw col %[red]
+   446 jump *label193 always
+   447 label *label192
+   448 draw col %[green]
+   449 label *label193
+-    * draw rect 20 *tmp38 8 8
++  450 draw rect 20 20 8 8
+   451 label *label194
+   452 label *label195
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label196 equal *tmp35 false
++  453 op mul *tmp32 7 2
++  454 op add *tmp33 14 3
++  455 op shl *tmp34 1 17
++  456 op and *tmp35 31704975 131072
++  457 jump *label196 equal 131072 false
+   458 draw col %[red]
+   459 jump *label197 always
+   460 label *label196
+   461 draw col %[green]
+   462 label *label197
+-    * draw rect 30 *tmp38 8 8
++  463 draw rect 30 20 8 8
+   464 label *label198
+   465 label *label199
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label200 equal *tmp35 false
++  466 op mul *tmp32 7 2
++  467 op add *tmp33 14 4
++  468 op shl *tmp34 1 18
++  469 op and *tmp35 31704975 262144
++  470 jump *label200 equal 0 false
+   471 draw col %[red]
+   472 jump *label201 always
+   473 label *label200
+   474 draw col %[green]
+   475 label *label201
+-    * draw rect 40 *tmp38 8 8
++  476 draw rect 40 20 8 8
+   477 label *label202
+   478 label *label203
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label204 equal *tmp35 false
++  479 op mul *tmp32 7 2
++  480 op add *tmp33 14 5
++  481 op shl *tmp34 1 19
++  482 op and *tmp35 31704975 524288
++  483 jump *label204 equal 0 false
+   484 draw col %[red]
+   485 jump *label205 always
+   486 label *label204
+   487 draw col %[green]
+   488 label *label205
+-    * draw rect 50 *tmp38 8 8
++  489 draw rect 50 20 8 8
+   490 label *label206
+   491 label *label207
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label208 equal *tmp35 false
++  492 op mul *tmp32 7 2
++  493 op add *tmp33 14 6
++  494 op shl *tmp34 1 20
++  495 op and *tmp35 31704975 1048576
++  496 jump *label208 equal 0 false
+   497 draw col %[red]
+   498 jump *label209 always
+   499 label *label208
+   500 draw col %[green]
+   501 label *label209
+-    * draw rect 60 *tmp38 8 8
++  502 draw rect 60 20 8 8
+   503 label *label210
+   504 label *label211
+   505 label *label212
+-    * op sub :drawMask:r :drawMask:r 1
++  506 op sub :drawMask:r 2 1
+   507 label *label213
+-    * op mul *tmp38 :drawMask:r 10
++  508 op mul *tmp38 1 10
+   509 label *label214
+   510 label *label215
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label216 equal *tmp35 false
++  511 op mul *tmp32 7 1
++  512 op add *tmp33 7 0
++  513 op shl *tmp34 1 7
++  514 op and *tmp35 31704975 128
++  515 jump *label216 equal 128 false
+   516 draw col %[red]
+   517 jump *label217 always
+   518 label *label216
+   519 draw col %[green]
+   520 label *label217
+-    * draw rect 0 *tmp38 8 8
++  521 draw rect 0 10 8 8
+   522 label *label218
+   523 label *label219
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label220 equal *tmp35 false
++  524 op mul *tmp32 7 1
++  525 op add *tmp33 7 1
++  526 op shl *tmp34 1 8
++  527 op and *tmp35 31704975 256
++  528 jump *label220 equal 256 false
+   529 draw col %[red]
+   530 jump *label221 always
+   531 label *label220
+   532 draw col %[green]
+   533 label *label221
+-    * draw rect 10 *tmp38 8 8
++  534 draw rect 10 10 8 8
+   535 label *label222
+   536 label *label223
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label224 equal *tmp35 false
++  537 op mul *tmp32 7 1
++  538 op add *tmp33 7 2
++  539 op shl *tmp34 1 9
++  540 op and *tmp35 31704975 512
++  541 jump *label224 equal 512 false
+   542 draw col %[red]
+   543 jump *label225 always
+   544 label *label224
+   545 draw col %[green]
+   546 label *label225
+-    * draw rect 20 *tmp38 8 8
++  547 draw rect 20 10 8 8
+   548 label *label226
+   549 label *label227
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label228 equal *tmp35 false
++  550 op mul *tmp32 7 1
++  551 op add *tmp33 7 3
++  552 op shl *tmp34 1 10
++  553 op and *tmp35 31704975 1024
++  554 jump *label228 equal 1024 false
+   555 draw col %[red]
+   556 jump *label229 always
+   557 label *label228
+   558 draw col %[green]
+   559 label *label229
+-    * draw rect 30 *tmp38 8 8
++  560 draw rect 30 10 8 8
+   561 label *label230
+   562 label *label231
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label232 equal *tmp35 false
++  563 op mul *tmp32 7 1
++  564 op add *tmp33 7 4
++  565 op shl *tmp34 1 11
++  566 op and *tmp35 31704975 2048
++  567 jump *label232 equal 0 false
+   568 draw col %[red]
+   569 jump *label233 always
+   570 label *label232
+   571 draw col %[green]
+   572 label *label233
+-    * draw rect 40 *tmp38 8 8
++  573 draw rect 40 10 8 8
+   574 label *label234
+   575 label *label235
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label236 equal *tmp35 false
++  576 op mul *tmp32 7 1
++  577 op add *tmp33 7 5
++  578 op shl *tmp34 1 12
++  579 op and *tmp35 31704975 4096
++  580 jump *label236 equal 0 false
+   581 draw col %[red]
+   582 jump *label237 always
+   583 label *label236
+   584 draw col %[green]
+   585 label *label237
+-    * draw rect 50 *tmp38 8 8
++  586 draw rect 50 10 8 8
+   587 label *label238
+   588 label *label239
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label240 equal *tmp35 false
++  589 op mul *tmp32 7 1
++  590 op add *tmp33 7 6
++  591 op shl *tmp34 1 13
++  592 op and *tmp35 31704975 8192
++  593 jump *label240 equal 0 false
+   594 draw col %[red]
+   595 jump *label241 always
+   596 label *label240
+   597 draw col %[green]
+   598 label *label241
+-    * draw rect 60 *tmp38 8 8
++  599 draw rect 60 10 8 8
+   600 label *label242
+   601 label *label243
+   602 label *label244
+-    * op sub :drawMask:r :drawMask:r 1
++  603 op sub :drawMask:r 1 1
+   604 label *label245
+-    * op mul *tmp38 :drawMask:r 10
++  605 op mul *tmp38 0 10
+   606 label *label246
+   607 label *label247
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 0
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label248 equal *tmp35 false
++  608 op mul *tmp32 7 0
++  609 op add *tmp33 0 0
++  610 op shl *tmp34 1 0
++  611 op and *tmp35 31704975 1
++  612 jump *label248 equal 1 false
+   613 draw col %[red]
+   614 jump *label249 always
+   615 label *label248
+   616 draw col %[green]
+   617 label *label249
+-    * draw rect 0 *tmp38 8 8
++  618 draw rect 0 0 8 8
+   619 label *label250
+   620 label *label251
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 1
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label252 equal *tmp35 false
++  621 op mul *tmp32 7 0
++  622 op add *tmp33 0 1
++  623 op shl *tmp34 1 1
++  624 op and *tmp35 31704975 2
++  625 jump *label252 equal 2 false
+   626 draw col %[red]
+   627 jump *label253 always
+   628 label *label252
+   629 draw col %[green]
+   630 label *label253
+-    * draw rect 10 *tmp38 8 8
++  631 draw rect 10 0 8 8
+   632 label *label254
+   633 label *label255
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 2
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label256 equal *tmp35 false
++  634 op mul *tmp32 7 0
++  635 op add *tmp33 0 2
++  636 op shl *tmp34 1 2
++  637 op and *tmp35 31704975 4
++  638 jump *label256 equal 4 false
+   639 draw col %[red]
+   640 jump *label257 always
+   641 label *label256
+   642 draw col %[green]
+   643 label *label257
+-    * draw rect 20 *tmp38 8 8
++  644 draw rect 20 0 8 8
+   645 label *label258
+   646 label *label259
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 3
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label260 equal *tmp35 false
++  647 op mul *tmp32 7 0
++  648 op add *tmp33 0 3
++  649 op shl *tmp34 1 3
++  650 op and *tmp35 31704975 8
++  651 jump *label260 equal 8 false
+   652 draw col %[red]
+   653 jump *label261 always
+   654 label *label260
+   655 draw col %[green]
+   656 label *label261
+-    * draw rect 30 *tmp38 8 8
++  657 draw rect 30 0 8 8
+   658 label *label262
+   659 label *label263
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 4
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label264 equal *tmp35 false
++  660 op mul *tmp32 7 0
++  661 op add *tmp33 0 4
++  662 op shl *tmp34 1 4
++  663 op and *tmp35 31704975 16
++  664 jump *label264 equal 0 false
+   665 draw col %[red]
+   666 jump *label265 always
+   667 label *label264
+   668 draw col %[green]
+   669 label *label265
+-    * draw rect 40 *tmp38 8 8
++  670 draw rect 40 0 8 8
+   671 label *label266
+   672 label *label267
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 5
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label268 equal *tmp35 false
++  673 op mul *tmp32 7 0
++  674 op add *tmp33 0 5
++  675 op shl *tmp34 1 5
++  676 op and *tmp35 31704975 32
++  677 jump *label268 equal 0 false
+   678 draw col %[red]
+   679 jump *label269 always
+   680 label *label268
+   681 draw col %[green]
+   682 label *label269
+-    * draw rect 50 *tmp38 8 8
++  683 draw rect 50 0 8 8
+   684 label *label270
+   685 label *label271
+-    * op mul *tmp32 7 :drawMask:r
+-    * op add *tmp33 *tmp32 6
+-    * op shl *tmp34 1 *tmp33
+-    * op and *tmp35 31704975 *tmp34
+-    * jump *label272 equal *tmp35 false
++  686 op mul *tmp32 7 0
++  687 op add *tmp33 0 6
++  688 op shl *tmp34 1 6
++  689 op and *tmp35 31704975 64
++  690 jump *label272 equal 0 false
+   691 draw col %[red]
+   692 jump *label273 always
+   693 label *label272
+   694 draw col %[green]
+   695 label *label273
+-    * draw rect 60 *tmp38 8 8
++  696 draw rect 60 0 8 8
+   697 label *label274
+   698 label *label275
+   699 label *label276
+-    * op sub :drawMask:r :drawMask:r 1
++  700 op sub :drawMask:r 0 1
+   701 label *label13
+   702 drawflush display1
+   703 label *label10
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-211 instructions):
+ 
+    17 draw reset
+    18 draw translate 6 6
+    19 draw clear 0 0 0
+-    * op sub :drawMask:r 7 1
+    20 label *label52
+    21 label *label53
+-    * op mul *tmp38 6 10
+    22 label *label54
+    23 label *label55
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 0
+-    * op shl *tmp34 1 42
+-    * op and *tmp35 31704975 4398046511104
+    24 jump *label56 equal 0 false
+    25 draw col %[red]
+    26 jump *label57 always
+ 
+    30 draw rect 0 60 8 8
+    31 label *label58
+    32 label *label59
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 1
+-    * op shl *tmp34 1 43
+-    * op and *tmp35 31704975 8796093022208
+    33 jump *label60 equal 0 false
+    34 draw col %[red]
+    35 jump *label61 always
+ 
+    39 draw rect 10 60 8 8
+    40 label *label62
+    41 label *label63
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 2
+-    * op shl *tmp34 1 44
+-    * op and *tmp35 31704975 17592186044416
+    42 jump *label64 equal 0 false
+    43 draw col %[red]
+    44 jump *label65 always
+ 
+    48 draw rect 20 60 8 8
+    49 label *label66
+    50 label *label67
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 3
+-    * op shl *tmp34 1 45
+-    * op and *tmp35 31704975 35184372088832
+    51 jump *label68 equal 0 false
+    52 draw col %[red]
+    53 jump *label69 always
+ 
+    57 draw rect 30 60 8 8
+    58 label *label70
+    59 label *label71
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 4
+-    * op shl *tmp34 1 46
+-    * op and *tmp35 31704975 70368744177664
+    60 jump *label72 equal 0 false
+    61 draw col %[red]
+    62 jump *label73 always
+ 
+    66 draw rect 40 60 8 8
+    67 label *label74
+    68 label *label75
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 5
+-    * op shl *tmp34 1 47
+-    * op and *tmp35 31704975 140737488355328
+    69 jump *label76 equal 0 false
+    70 draw col %[red]
+    71 jump *label77 always
+ 
+    75 draw rect 50 60 8 8
+    76 label *label78
+    77 label *label79
+-    * op mul *tmp32 7 6
+-    * op add *tmp33 42 6
+-    * op shl *tmp34 1 48
+-    * op and *tmp35 31704975 281474976710656
+    78 jump *label80 equal 0 false
+    79 draw col %[red]
+    80 jump *label81 always
+ 
+    85 label *label82
+    86 label *label83
+    87 label *label84
+-    * op sub :drawMask:r 6 1
+    88 label *label85
+-    * op mul *tmp38 5 10
+    89 label *label86
+    90 label *label87
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 0
+-    * op shl *tmp34 1 35
+-    * op and *tmp35 31704975 34359738368
+    91 jump *label88 equal 0 false
+    92 draw col %[red]
+    93 jump *label89 always
+ 
+    97 draw rect 0 50 8 8
+    98 label *label90
+    99 label *label91
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 1
+-    * op shl *tmp34 1 36
+-    * op and *tmp35 31704975 68719476736
+   100 jump *label92 equal 0 false
+   101 draw col %[red]
+   102 jump *label93 always
+ 
+   106 draw rect 10 50 8 8
+   107 label *label94
+   108 label *label95
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 2
+-    * op shl *tmp34 1 37
+-    * op and *tmp35 31704975 137438953472
+   109 jump *label96 equal 0 false
+   110 draw col %[red]
+   111 jump *label97 always
+ 
+   115 draw rect 20 50 8 8
+   116 label *label98
+   117 label *label99
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 3
+-    * op shl *tmp34 1 38
+-    * op and *tmp35 31704975 274877906944
+   118 jump *label100 equal 0 false
+   119 draw col %[red]
+   120 jump *label101 always
+ 
+   124 draw rect 30 50 8 8
+   125 label *label102
+   126 label *label103
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 4
+-    * op shl *tmp34 1 39
+-    * op and *tmp35 31704975 549755813888
+   127 jump *label104 equal 0 false
+   128 draw col %[red]
+   129 jump *label105 always
+ 
+   133 draw rect 40 50 8 8
+   134 label *label106
+   135 label *label107
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 5
+-    * op shl *tmp34 1 40
+-    * op and *tmp35 31704975 1099511627776
+   136 jump *label108 equal 0 false
+   137 draw col %[red]
+   138 jump *label109 always
+ 
+   142 draw rect 50 50 8 8
+   143 label *label110
+   144 label *label111
+-    * op mul *tmp32 7 5
+-    * op add *tmp33 35 6
+-    * op shl *tmp34 1 41
+-    * op and *tmp35 31704975 2199023255552
+   145 jump *label112 equal 0 false
+   146 draw col %[red]
+   147 jump *label113 always
+ 
+   152 label *label114
+   153 label *label115
+   154 label *label116
+-    * op sub :drawMask:r 5 1
+   155 label *label117
+-    * op mul *tmp38 4 10
+   156 label *label118
+   157 label *label119
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 0
+-    * op shl *tmp34 1 28
+-    * op and *tmp35 31704975 268435456
+   158 jump *label120 equal 0 false
+   159 draw col %[red]
+   160 jump *label121 always
+ 
+   164 draw rect 0 40 8 8
+   165 label *label122
+   166 label *label123
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 1
+-    * op shl *tmp34 1 29
+-    * op and *tmp35 31704975 536870912
+   167 jump *label124 equal 0 false
+   168 draw col %[red]
+   169 jump *label125 always
+ 
+   173 draw rect 10 40 8 8
+   174 label *label126
+   175 label *label127
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 2
+-    * op shl *tmp34 1 30
+-    * op and *tmp35 31704975 1073741824
+   176 jump *label128 equal 0 false
+   177 draw col %[red]
+   178 jump *label129 always
+ 
+   182 draw rect 20 40 8 8
+   183 label *label130
+   184 label *label131
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 3
+-    * op shl *tmp34 1 31
+-    * op and *tmp35 31704975 2147483648
+   185 jump *label132 equal 0 false
+   186 draw col %[red]
+   187 jump *label133 always
+ 
+   191 draw rect 30 40 8 8
+   192 label *label134
+   193 label *label135
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 4
+-    * op shl *tmp34 1 32
+-    * op and *tmp35 31704975 4294967296
+   194 jump *label136 equal 0 false
+   195 draw col %[red]
+   196 jump *label137 always
+ 
+   200 draw rect 40 40 8 8
+   201 label *label138
+   202 label *label139
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 5
+-    * op shl *tmp34 1 33
+-    * op and *tmp35 31704975 8589934592
+   203 jump *label140 equal 0 false
+   204 draw col %[red]
+   205 jump *label141 always
+ 
+   209 draw rect 50 40 8 8
+   210 label *label142
+   211 label *label143
+-    * op mul *tmp32 7 4
+-    * op add *tmp33 28 6
+-    * op shl *tmp34 1 34
+-    * op and *tmp35 31704975 17179869184
+   212 jump *label144 equal 0 false
+   213 draw col %[red]
+   214 jump *label145 always
+ 
+   219 label *label146
+   220 label *label147
+   221 label *label148
+-    * op sub :drawMask:r 4 1
+   222 label *label149
+-    * op mul *tmp38 3 10
+   223 label *label150
+   224 label *label151
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 0
+-    * op shl *tmp34 1 21
+-    * op and *tmp35 31704975 2097152
+   225 jump *label152 equal 2097152 false
+   226 draw col %[red]
+   227 jump *label153 always
+ 
+   231 draw rect 0 30 8 8
+   232 label *label154
+   233 label *label155
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 1
+-    * op shl *tmp34 1 22
+-    * op and *tmp35 31704975 4194304
+   234 jump *label156 equal 4194304 false
+   235 draw col %[red]
+   236 jump *label157 always
+ 
+   240 draw rect 10 30 8 8
+   241 label *label158
+   242 label *label159
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 2
+-    * op shl *tmp34 1 23
+-    * op and *tmp35 31704975 8388608
+   243 jump *label160 equal 8388608 false
+   244 draw col %[red]
+   245 jump *label161 always
+ 
+   249 draw rect 20 30 8 8
+   250 label *label162
+   251 label *label163
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 3
+-    * op shl *tmp34 1 24
+-    * op and *tmp35 31704975 16777216
+   252 jump *label164 equal 16777216 false
+   253 draw col %[red]
+   254 jump *label165 always
+ 
+   258 draw rect 30 30 8 8
+   259 label *label166
+   260 label *label167
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 4
+-    * op shl *tmp34 1 25
+-    * op and *tmp35 31704975 33554432
+   261 jump *label168 equal 0 false
+   262 draw col %[red]
+   263 jump *label169 always
+ 
+   267 draw rect 40 30 8 8
+   268 label *label170
+   269 label *label171
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 5
+-    * op shl *tmp34 1 26
+-    * op and *tmp35 31704975 67108864
+   270 jump *label172 equal 0 false
+   271 draw col %[red]
+   272 jump *label173 always
+ 
+   276 draw rect 50 30 8 8
+   277 label *label174
+   278 label *label175
+-    * op mul *tmp32 7 3
+-    * op add *tmp33 21 6
+-    * op shl *tmp34 1 27
+-    * op and *tmp35 31704975 134217728
+   279 jump *label176 equal 0 false
+   280 draw col %[red]
+   281 jump *label177 always
+ 
+   286 label *label178
+   287 label *label179
+   288 label *label180
+-    * op sub :drawMask:r 3 1
+   289 label *label181
+-    * op mul *tmp38 2 10
+   290 label *label182
+   291 label *label183
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 0
+-    * op shl *tmp34 1 14
+-    * op and *tmp35 31704975 16384
+   292 jump *label184 equal 16384 false
+   293 draw col %[red]
+   294 jump *label185 always
+ 
+   298 draw rect 0 20 8 8
+   299 label *label186
+   300 label *label187
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 1
+-    * op shl *tmp34 1 15
+-    * op and *tmp35 31704975 32768
+   301 jump *label188 equal 32768 false
+   302 draw col %[red]
+   303 jump *label189 always
+ 
+   307 draw rect 10 20 8 8
+   308 label *label190
+   309 label *label191
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 2
+-    * op shl *tmp34 1 16
+-    * op and *tmp35 31704975 65536
+   310 jump *label192 equal 65536 false
+   311 draw col %[red]
+   312 jump *label193 always
+ 
+   316 draw rect 20 20 8 8
+   317 label *label194
+   318 label *label195
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 3
+-    * op shl *tmp34 1 17
+-    * op and *tmp35 31704975 131072
+   319 jump *label196 equal 131072 false
+   320 draw col %[red]
+   321 jump *label197 always
+ 
+   325 draw rect 30 20 8 8
+   326 label *label198
+   327 label *label199
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 4
+-    * op shl *tmp34 1 18
+-    * op and *tmp35 31704975 262144
+   328 jump *label200 equal 0 false
+   329 draw col %[red]
+   330 jump *label201 always
+ 
+   334 draw rect 40 20 8 8
+   335 label *label202
+   336 label *label203
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 5
+-    * op shl *tmp34 1 19
+-    * op and *tmp35 31704975 524288
+   337 jump *label204 equal 0 false
+   338 draw col %[red]
+   339 jump *label205 always
+ 
+   343 draw rect 50 20 8 8
+   344 label *label206
+   345 label *label207
+-    * op mul *tmp32 7 2
+-    * op add *tmp33 14 6
+-    * op shl *tmp34 1 20
+-    * op and *tmp35 31704975 1048576
+   346 jump *label208 equal 0 false
+   347 draw col %[red]
+   348 jump *label209 always
+ 
+   353 label *label210
+   354 label *label211
+   355 label *label212
+-    * op sub :drawMask:r 2 1
+   356 label *label213
+-    * op mul *tmp38 1 10
+   357 label *label214
+   358 label *label215
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 0
+-    * op shl *tmp34 1 7
+-    * op and *tmp35 31704975 128
+   359 jump *label216 equal 128 false
+   360 draw col %[red]
+   361 jump *label217 always
+ 
+   365 draw rect 0 10 8 8
+   366 label *label218
+   367 label *label219
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 1
+-    * op shl *tmp34 1 8
+-    * op and *tmp35 31704975 256
+   368 jump *label220 equal 256 false
+   369 draw col %[red]
+   370 jump *label221 always
+ 
+   374 draw rect 10 10 8 8
+   375 label *label222
+   376 label *label223
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 2
+-    * op shl *tmp34 1 9
+-    * op and *tmp35 31704975 512
+   377 jump *label224 equal 512 false
+   378 draw col %[red]
+   379 jump *label225 always
+ 
+   383 draw rect 20 10 8 8
+   384 label *label226
+   385 label *label227
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 3
+-    * op shl *tmp34 1 10
+-    * op and *tmp35 31704975 1024
+   386 jump *label228 equal 1024 false
+   387 draw col %[red]
+   388 jump *label229 always
+ 
+   392 draw rect 30 10 8 8
+   393 label *label230
+   394 label *label231
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 4
+-    * op shl *tmp34 1 11
+-    * op and *tmp35 31704975 2048
+   395 jump *label232 equal 0 false
+   396 draw col %[red]
+   397 jump *label233 always
+ 
+   401 draw rect 40 10 8 8
+   402 label *label234
+   403 label *label235
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 5
+-    * op shl *tmp34 1 12
+-    * op and *tmp35 31704975 4096
+   404 jump *label236 equal 0 false
+   405 draw col %[red]
+   406 jump *label237 always
+ 
+   410 draw rect 50 10 8 8
+   411 label *label238
+   412 label *label239
+-    * op mul *tmp32 7 1
+-    * op add *tmp33 7 6
+-    * op shl *tmp34 1 13
+-    * op and *tmp35 31704975 8192
+   413 jump *label240 equal 0 false
+   414 draw col %[red]
+   415 jump *label241 always
+ 
+   420 label *label242
+   421 label *label243
+   422 label *label244
+-    * op sub :drawMask:r 1 1
+   423 label *label245
+-    * op mul *tmp38 0 10
+   424 label *label246
+   425 label *label247
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 0
+-    * op shl *tmp34 1 0
+-    * op and *tmp35 31704975 1
+   426 jump *label248 equal 1 false
+   427 draw col %[red]
+   428 jump *label249 always
+ 
+   432 draw rect 0 0 8 8
+   433 label *label250
+   434 label *label251
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 1
+-    * op shl *tmp34 1 1
+-    * op and *tmp35 31704975 2
+   435 jump *label252 equal 2 false
+   436 draw col %[red]
+   437 jump *label253 always
+ 
+   441 draw rect 10 0 8 8
+   442 label *label254
+   443 label *label255
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 2
+-    * op shl *tmp34 1 2
+-    * op and *tmp35 31704975 4
+   444 jump *label256 equal 4 false
+   445 draw col %[red]
+   446 jump *label257 always
+ 
+   450 draw rect 20 0 8 8
+   451 label *label258
+   452 label *label259
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 3
+-    * op shl *tmp34 1 3
+-    * op and *tmp35 31704975 8
+   453 jump *label260 equal 8 false
+   454 draw col %[red]
+   455 jump *label261 always
+ 
+   459 draw rect 30 0 8 8
+   460 label *label262
+   461 label *label263
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 4
+-    * op shl *tmp34 1 4
+-    * op and *tmp35 31704975 16
+   462 jump *label264 equal 0 false
+   463 draw col %[red]
+   464 jump *label265 always
+ 
+   468 draw rect 40 0 8 8
+   469 label *label266
+   470 label *label267
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 5
+-    * op shl *tmp34 1 5
+-    * op and *tmp35 31704975 32
+   471 jump *label268 equal 0 false
+   472 draw col %[red]
+   473 jump *label269 always
+ 
+   477 draw rect 50 0 8 8
+   478 label *label270
+   479 label *label271
+-    * op mul *tmp32 7 0
+-    * op add *tmp33 0 6
+-    * op shl *tmp34 1 6
+-    * op and *tmp35 31704975 64
+   480 jump *label272 equal 0 false
+   481 draw col %[red]
+   482 jump *label273 always
+ 
+   487 label *label274
+   488 label *label275
+   489 label *label276
+-    * op sub :drawMask:r 0 1
+   490 label *label13
+   491 drawflush display1
+   492 label *label10
+
+Modifications by Iterated phase, Jump Normalization, pass 2, iteration 1 (-17 instructions):
+     0 label *label0
+-    * jump *label2 equal 0 false
++    1 jump *label2 always
+     2 jump *label1 always
+     3 label *label2
+     4 label *label3
+-    * jump *label4 lessThanEq -24 0
++    5 jump *label4 always
+     6 jump *label5 always
+     7 label *label4
+     8 label *label5
+-    * jump *label6 equal -3 0
+-    * jump *label8 lessThanEq -3 0
++    9 jump *label8 always
+    10 label *label8
+    11 label *label9
+    12 label *label6
+ 
+    20 label *label53
+    21 label *label54
+    22 label *label55
+-    * jump *label56 equal 0 false
++   23 jump *label56 always
+    24 draw col %[red]
+    25 jump *label57 always
+    26 label *label56
+ 
+    29 draw rect 0 60 8 8
+    30 label *label58
+    31 label *label59
+-    * jump *label60 equal 0 false
++   32 jump *label60 always
+    33 draw col %[red]
+    34 jump *label61 always
+    35 label *label60
+ 
+    38 draw rect 10 60 8 8
+    39 label *label62
+    40 label *label63
+-    * jump *label64 equal 0 false
++   41 jump *label64 always
+    42 draw col %[red]
+    43 jump *label65 always
+    44 label *label64
+ 
+    47 draw rect 20 60 8 8
+    48 label *label66
+    49 label *label67
+-    * jump *label68 equal 0 false
++   50 jump *label68 always
+    51 draw col %[red]
+    52 jump *label69 always
+    53 label *label68
+ 
+    56 draw rect 30 60 8 8
+    57 label *label70
+    58 label *label71
+-    * jump *label72 equal 0 false
++   59 jump *label72 always
+    60 draw col %[red]
+    61 jump *label73 always
+    62 label *label72
+ 
+    65 draw rect 40 60 8 8
+    66 label *label74
+    67 label *label75
+-    * jump *label76 equal 0 false
++   68 jump *label76 always
+    69 draw col %[red]
+    70 jump *label77 always
+    71 label *label76
+ 
+    74 draw rect 50 60 8 8
+    75 label *label78
+    76 label *label79
+-    * jump *label80 equal 0 false
++   77 jump *label80 always
+    78 draw col %[red]
+    79 jump *label81 always
+    80 label *label80
+ 
+    87 label *label85
+    88 label *label86
+    89 label *label87
+-    * jump *label88 equal 0 false
++   90 jump *label88 always
+    91 draw col %[red]
+    92 jump *label89 always
+    93 label *label88
+ 
+    96 draw rect 0 50 8 8
+    97 label *label90
+    98 label *label91
+-    * jump *label92 equal 0 false
++   99 jump *label92 always
+   100 draw col %[red]
+   101 jump *label93 always
+   102 label *label92
+ 
+   105 draw rect 10 50 8 8
+   106 label *label94
+   107 label *label95
+-    * jump *label96 equal 0 false
++  108 jump *label96 always
+   109 draw col %[red]
+   110 jump *label97 always
+   111 label *label96
+ 
+   114 draw rect 20 50 8 8
+   115 label *label98
+   116 label *label99
+-    * jump *label100 equal 0 false
++  117 jump *label100 always
+   118 draw col %[red]
+   119 jump *label101 always
+   120 label *label100
+ 
+   123 draw rect 30 50 8 8
+   124 label *label102
+   125 label *label103
+-    * jump *label104 equal 0 false
++  126 jump *label104 always
+   127 draw col %[red]
+   128 jump *label105 always
+   129 label *label104
+ 
+   132 draw rect 40 50 8 8
+   133 label *label106
+   134 label *label107
+-    * jump *label108 equal 0 false
++  135 jump *label108 always
+   136 draw col %[red]
+   137 jump *label109 always
+   138 label *label108
+ 
+   141 draw rect 50 50 8 8
+   142 label *label110
+   143 label *label111
+-    * jump *label112 equal 0 false
++  144 jump *label112 always
+   145 draw col %[red]
+   146 jump *label113 always
+   147 label *label112
+ 
+   154 label *label117
+   155 label *label118
+   156 label *label119
+-    * jump *label120 equal 0 false
++  157 jump *label120 always
+   158 draw col %[red]
+   159 jump *label121 always
+   160 label *label120
+ 
+   163 draw rect 0 40 8 8
+   164 label *label122
+   165 label *label123
+-    * jump *label124 equal 0 false
++  166 jump *label124 always
+   167 draw col %[red]
+   168 jump *label125 always
+   169 label *label124
+ 
+   172 draw rect 10 40 8 8
+   173 label *label126
+   174 label *label127
+-    * jump *label128 equal 0 false
++  175 jump *label128 always
+   176 draw col %[red]
+   177 jump *label129 always
+   178 label *label128
+ 
+   181 draw rect 20 40 8 8
+   182 label *label130
+   183 label *label131
+-    * jump *label132 equal 0 false
++  184 jump *label132 always
+   185 draw col %[red]
+   186 jump *label133 always
+   187 label *label132
+ 
+   190 draw rect 30 40 8 8
+   191 label *label134
+   192 label *label135
+-    * jump *label136 equal 0 false
++  193 jump *label136 always
+   194 draw col %[red]
+   195 jump *label137 always
+   196 label *label136
+ 
+   199 draw rect 40 40 8 8
+   200 label *label138
+   201 label *label139
+-    * jump *label140 equal 0 false
++  202 jump *label140 always
+   203 draw col %[red]
+   204 jump *label141 always
+   205 label *label140
+ 
+   208 draw rect 50 40 8 8
+   209 label *label142
+   210 label *label143
+-    * jump *label144 equal 0 false
++  211 jump *label144 always
+   212 draw col %[red]
+   213 jump *label145 always
+   214 label *label144
+ 
+   221 label *label149
+   222 label *label150
+   223 label *label151
+-    * jump *label152 equal 2097152 false
+   224 draw col %[red]
+   225 jump *label153 always
+   226 label *label152
+ 
+   229 draw rect 0 30 8 8
+   230 label *label154
+   231 label *label155
+-    * jump *label156 equal 4194304 false
+   232 draw col %[red]
+   233 jump *label157 always
+   234 label *label156
+ 
+   237 draw rect 10 30 8 8
+   238 label *label158
+   239 label *label159
+-    * jump *label160 equal 8388608 false
+   240 draw col %[red]
+   241 jump *label161 always
+   242 label *label160
+ 
+   245 draw rect 20 30 8 8
+   246 label *label162
+   247 label *label163
+-    * jump *label164 equal 16777216 false
+   248 draw col %[red]
+   249 jump *label165 always
+   250 label *label164
+ 
+   253 draw rect 30 30 8 8
+   254 label *label166
+   255 label *label167
+-    * jump *label168 equal 0 false
++  256 jump *label168 always
+   257 draw col %[red]
+   258 jump *label169 always
+   259 label *label168
+ 
+   262 draw rect 40 30 8 8
+   263 label *label170
+   264 label *label171
+-    * jump *label172 equal 0 false
++  265 jump *label172 always
+   266 draw col %[red]
+   267 jump *label173 always
+   268 label *label172
+ 
+   271 draw rect 50 30 8 8
+   272 label *label174
+   273 label *label175
+-    * jump *label176 equal 0 false
++  274 jump *label176 always
+   275 draw col %[red]
+   276 jump *label177 always
+   277 label *label176
+ 
+   284 label *label181
+   285 label *label182
+   286 label *label183
+-    * jump *label184 equal 16384 false
+   287 draw col %[red]
+   288 jump *label185 always
+   289 label *label184
+ 
+   292 draw rect 0 20 8 8
+   293 label *label186
+   294 label *label187
+-    * jump *label188 equal 32768 false
+   295 draw col %[red]
+   296 jump *label189 always
+   297 label *label188
+ 
+   300 draw rect 10 20 8 8
+   301 label *label190
+   302 label *label191
+-    * jump *label192 equal 65536 false
+   303 draw col %[red]
+   304 jump *label193 always
+   305 label *label192
+ 
+   308 draw rect 20 20 8 8
+   309 label *label194
+   310 label *label195
+-    * jump *label196 equal 131072 false
+   311 draw col %[red]
+   312 jump *label197 always
+   313 label *label196
+ 
+   316 draw rect 30 20 8 8
+   317 label *label198
+   318 label *label199
+-    * jump *label200 equal 0 false
++  319 jump *label200 always
+   320 draw col %[red]
+   321 jump *label201 always
+   322 label *label200
+ 
+   325 draw rect 40 20 8 8
+   326 label *label202
+   327 label *label203
+-    * jump *label204 equal 0 false
++  328 jump *label204 always
+   329 draw col %[red]
+   330 jump *label205 always
+   331 label *label204
+ 
+   334 draw rect 50 20 8 8
+   335 label *label206
+   336 label *label207
+-    * jump *label208 equal 0 false
++  337 jump *label208 always
+   338 draw col %[red]
+   339 jump *label209 always
+   340 label *label208
+ 
+   347 label *label213
+   348 label *label214
+   349 label *label215
+-    * jump *label216 equal 128 false
+   350 draw col %[red]
+   351 jump *label217 always
+   352 label *label216
+ 
+   355 draw rect 0 10 8 8
+   356 label *label218
+   357 label *label219
+-    * jump *label220 equal 256 false
+   358 draw col %[red]
+   359 jump *label221 always
+   360 label *label220
+ 
+   363 draw rect 10 10 8 8
+   364 label *label222
+   365 label *label223
+-    * jump *label224 equal 512 false
+   366 draw col %[red]
+   367 jump *label225 always
+   368 label *label224
+ 
+   371 draw rect 20 10 8 8
+   372 label *label226
+   373 label *label227
+-    * jump *label228 equal 1024 false
+   374 draw col %[red]
+   375 jump *label229 always
+   376 label *label228
+ 
+   379 draw rect 30 10 8 8
+   380 label *label230
+   381 label *label231
+-    * jump *label232 equal 0 false
++  382 jump *label232 always
+   383 draw col %[red]
+   384 jump *label233 always
+   385 label *label232
+ 
+   388 draw rect 40 10 8 8
+   389 label *label234
+   390 label *label235
+-    * jump *label236 equal 0 false
++  391 jump *label236 always
+   392 draw col %[red]
+   393 jump *label237 always
+   394 label *label236
+ 
+   397 draw rect 50 10 8 8
+   398 label *label238
+   399 label *label239
+-    * jump *label240 equal 0 false
++  400 jump *label240 always
+   401 draw col %[red]
+   402 jump *label241 always
+   403 label *label240
+ 
+   410 label *label245
+   411 label *label246
+   412 label *label247
+-    * jump *label248 equal 1 false
+   413 draw col %[red]
+   414 jump *label249 always
+   415 label *label248
+ 
+   418 draw rect 0 0 8 8
+   419 label *label250
+   420 label *label251
+-    * jump *label252 equal 2 false
+   421 draw col %[red]
+   422 jump *label253 always
+   423 label *label252
+ 
+   426 draw rect 10 0 8 8
+   427 label *label254
+   428 label *label255
+-    * jump *label256 equal 4 false
+   429 draw col %[red]
+   430 jump *label257 always
+   431 label *label256
+ 
+   434 draw rect 20 0 8 8
+   435 label *label258
+   436 label *label259
+-    * jump *label260 equal 8 false
+   437 draw col %[red]
+   438 jump *label261 always
+   439 label *label260
+ 
+   442 draw rect 30 0 8 8
+   443 label *label262
+   444 label *label263
+-    * jump *label264 equal 0 false
++  445 jump *label264 always
+   446 draw col %[red]
+   447 jump *label265 always
+   448 label *label264
+ 
+   451 draw rect 40 0 8 8
+   452 label *label266
+   453 label *label267
+-    * jump *label268 equal 0 false
++  454 jump *label268 always
+   455 draw col %[red]
+   456 jump *label269 always
+   457 label *label268
+ 
+   460 draw rect 50 0 8 8
+   461 label *label270
+   462 label *label271
+-    * jump *label272 equal 0 false
++  463 jump *label272 always
+   464 draw col %[red]
+   465 jump *label273 always
+   466 label *label272
+
+Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-3 instructions):
+ 
+     3 label *label2
+     4 label *label3
+     5 jump *label4 always
+-    * jump *label5 always
+     6 label *label4
+     7 label *label5
+-    * jump *label8 always
+     8 label *label8
+     9 label *label9
+    10 label *label6
+    11 label *label7
+-    * jump *label1 always
+    12 label *label1
+    13 draw reset
+    14 draw translate 6 6
+
+Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 2 (-1 instructions):
+ 
+     2 jump *label1 always
+     3 label *label2
+     4 label *label3
+-    * jump *label4 always
+     5 label *label4
+     6 label *label5
+     7 label *label8
+
+Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 3 (-1 instructions):
+     0 label *label0
+     1 jump *label2 always
+-    * jump *label1 always
+     2 label *label2
+     3 label *label3
+     4 label *label4
+
+Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 4 (-1 instructions):
+     0 label *label0
+-    * jump *label2 always
+     1 label *label2
+     2 label *label3
+     3 label *label4
+
+Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
+-    * label *label0
+-    * label *label2
+-    * label *label3
+-    * label *label4
+-    * label *label5
+-    * label *label8
+-    * label *label9
+-    * label *label6
+-    * label *label7
+-    * label *label1
+     0 draw reset
+     1 draw translate 6 6
+     2 draw clear 0 0 0
+-    * label *label52
+-    * label *label53
+-    * label *label54
+-    * label *label55
+     3 jump *label56 always
+     4 draw col %[red]
+     5 jump *label57 always
+ 
+     7 draw col %[green]
+     8 label *label57
+     9 draw rect 0 60 8 8
+-    * label *label58
+-    * label *label59
+    10 jump *label60 always
+    11 draw col %[red]
+    12 jump *label61 always
+ 
+    14 draw col %[green]
+    15 label *label61
+    16 draw rect 10 60 8 8
+-    * label *label62
+-    * label *label63
+    17 jump *label64 always
+    18 draw col %[red]
+    19 jump *label65 always
+ 
+    21 draw col %[green]
+    22 label *label65
+    23 draw rect 20 60 8 8
+-    * label *label66
+-    * label *label67
+    24 jump *label68 always
+    25 draw col %[red]
+    26 jump *label69 always
+ 
+    28 draw col %[green]
+    29 label *label69
+    30 draw rect 30 60 8 8
+-    * label *label70
+-    * label *label71
+    31 jump *label72 always
+    32 draw col %[red]
+    33 jump *label73 always
+ 
+    35 draw col %[green]
+    36 label *label73
+    37 draw rect 40 60 8 8
+-    * label *label74
+-    * label *label75
+    38 jump *label76 always
+    39 draw col %[red]
+    40 jump *label77 always
+ 
+    42 draw col %[green]
+    43 label *label77
+    44 draw rect 50 60 8 8
+-    * label *label78
+-    * label *label79
+    45 jump *label80 always
+    46 draw col %[red]
+    47 jump *label81 always
+ 
+    49 draw col %[green]
+    50 label *label81
+    51 draw rect 60 60 8 8
+-    * label *label82
+-    * label *label83
+-    * label *label84
+-    * label *label85
+-    * label *label86
+-    * label *label87
+    52 jump *label88 always
+    53 draw col %[red]
+    54 jump *label89 always
+ 
+    56 draw col %[green]
+    57 label *label89
+    58 draw rect 0 50 8 8
+-    * label *label90
+-    * label *label91
+    59 jump *label92 always
+    60 draw col %[red]
+    61 jump *label93 always
+ 
+    63 draw col %[green]
+    64 label *label93
+    65 draw rect 10 50 8 8
+-    * label *label94
+-    * label *label95
+    66 jump *label96 always
+    67 draw col %[red]
+    68 jump *label97 always
+ 
+    70 draw col %[green]
+    71 label *label97
+    72 draw rect 20 50 8 8
+-    * label *label98
+-    * label *label99
+    73 jump *label100 always
+    74 draw col %[red]
+    75 jump *label101 always
+ 
+    77 draw col %[green]
+    78 label *label101
+    79 draw rect 30 50 8 8
+-    * label *label102
+-    * label *label103
+    80 jump *label104 always
+    81 draw col %[red]
+    82 jump *label105 always
+ 
+    84 draw col %[green]
+    85 label *label105
+    86 draw rect 40 50 8 8
+-    * label *label106
+-    * label *label107
+    87 jump *label108 always
+    88 draw col %[red]
+    89 jump *label109 always
+ 
+    91 draw col %[green]
+    92 label *label109
+    93 draw rect 50 50 8 8
+-    * label *label110
+-    * label *label111
+    94 jump *label112 always
+    95 draw col %[red]
+    96 jump *label113 always
+ 
+    98 draw col %[green]
+    99 label *label113
+   100 draw rect 60 50 8 8
+-    * label *label114
+-    * label *label115
+-    * label *label116
+-    * label *label117
+-    * label *label118
+-    * label *label119
+   101 jump *label120 always
+   102 draw col %[red]
+   103 jump *label121 always
+ 
+   105 draw col %[green]
+   106 label *label121
+   107 draw rect 0 40 8 8
+-    * label *label122
+-    * label *label123
+   108 jump *label124 always
+   109 draw col %[red]
+   110 jump *label125 always
+ 
+   112 draw col %[green]
+   113 label *label125
+   114 draw rect 10 40 8 8
+-    * label *label126
+-    * label *label127
+   115 jump *label128 always
+   116 draw col %[red]
+   117 jump *label129 always
+ 
+   119 draw col %[green]
+   120 label *label129
+   121 draw rect 20 40 8 8
+-    * label *label130
+-    * label *label131
+   122 jump *label132 always
+   123 draw col %[red]
+   124 jump *label133 always
+ 
+   126 draw col %[green]
+   127 label *label133
+   128 draw rect 30 40 8 8
+-    * label *label134
+-    * label *label135
+   129 jump *label136 always
+   130 draw col %[red]
+   131 jump *label137 always
+ 
+   133 draw col %[green]
+   134 label *label137
+   135 draw rect 40 40 8 8
+-    * label *label138
+-    * label *label139
+   136 jump *label140 always
+   137 draw col %[red]
+   138 jump *label141 always
+ 
+   140 draw col %[green]
+   141 label *label141
+   142 draw rect 50 40 8 8
+-    * label *label142
+-    * label *label143
+   143 jump *label144 always
+   144 draw col %[red]
+   145 jump *label145 always
+ 
+   147 draw col %[green]
+   148 label *label145
+   149 draw rect 60 40 8 8
+-    * label *label146
+-    * label *label147
+-    * label *label148
+-    * label *label149
+-    * label *label150
+-    * label *label151
+   150 draw col %[red]
+   151 jump *label153 always
+-    * label *label152
+   152 draw col %[green]
+   153 label *label153
+   154 draw rect 0 30 8 8
+-    * label *label154
+-    * label *label155
+   155 draw col %[red]
+   156 jump *label157 always
+-    * label *label156
+   157 draw col %[green]
+   158 label *label157
+   159 draw rect 10 30 8 8
+-    * label *label158
+-    * label *label159
+   160 draw col %[red]
+   161 jump *label161 always
+-    * label *label160
+   162 draw col %[green]
+   163 label *label161
+   164 draw rect 20 30 8 8
+-    * label *label162
+-    * label *label163
+   165 draw col %[red]
+   166 jump *label165 always
+-    * label *label164
+   167 draw col %[green]
+   168 label *label165
+   169 draw rect 30 30 8 8
+-    * label *label166
+-    * label *label167
+   170 jump *label168 always
+   171 draw col %[red]
+   172 jump *label169 always
+ 
+   174 draw col %[green]
+   175 label *label169
+   176 draw rect 40 30 8 8
+-    * label *label170
+-    * label *label171
+   177 jump *label172 always
+   178 draw col %[red]
+   179 jump *label173 always
+ 
+   181 draw col %[green]
+   182 label *label173
+   183 draw rect 50 30 8 8
+-    * label *label174
+-    * label *label175
+   184 jump *label176 always
+   185 draw col %[red]
+   186 jump *label177 always
+ 
+   188 draw col %[green]
+   189 label *label177
+   190 draw rect 60 30 8 8
+-    * label *label178
+-    * label *label179
+-    * label *label180
+-    * label *label181
+-    * label *label182
+-    * label *label183
+   191 draw col %[red]
+   192 jump *label185 always
+-    * label *label184
+   193 draw col %[green]
+   194 label *label185
+   195 draw rect 0 20 8 8
+-    * label *label186
+-    * label *label187
+   196 draw col %[red]
+   197 jump *label189 always
+-    * label *label188
+   198 draw col %[green]
+   199 label *label189
+   200 draw rect 10 20 8 8
+-    * label *label190
+-    * label *label191
+   201 draw col %[red]
+   202 jump *label193 always
+-    * label *label192
+   203 draw col %[green]
+   204 label *label193
+   205 draw rect 20 20 8 8
+-    * label *label194
+-    * label *label195
+   206 draw col %[red]
+   207 jump *label197 always
+-    * label *label196
+   208 draw col %[green]
+   209 label *label197
+   210 draw rect 30 20 8 8
+-    * label *label198
+-    * label *label199
+   211 jump *label200 always
+   212 draw col %[red]
+   213 jump *label201 always
+ 
+   215 draw col %[green]
+   216 label *label201
+   217 draw rect 40 20 8 8
+-    * label *label202
+-    * label *label203
+   218 jump *label204 always
+   219 draw col %[red]
+   220 jump *label205 always
+ 
+   222 draw col %[green]
+   223 label *label205
+   224 draw rect 50 20 8 8
+-    * label *label206
+-    * label *label207
+   225 jump *label208 always
+   226 draw col %[red]
+   227 jump *label209 always
+ 
+   229 draw col %[green]
+   230 label *label209
+   231 draw rect 60 20 8 8
+-    * label *label210
+-    * label *label211
+-    * label *label212
+-    * label *label213
+-    * label *label214
+-    * label *label215
+   232 draw col %[red]
+   233 jump *label217 always
+-    * label *label216
+   234 draw col %[green]
+   235 label *label217
+   236 draw rect 0 10 8 8
+-    * label *label218
+-    * label *label219
+   237 draw col %[red]
+   238 jump *label221 always
+-    * label *label220
+   239 draw col %[green]
+   240 label *label221
+   241 draw rect 10 10 8 8
+-    * label *label222
+-    * label *label223
+   242 draw col %[red]
+   243 jump *label225 always
+-    * label *label224
+   244 draw col %[green]
+   245 label *label225
+   246 draw rect 20 10 8 8
+-    * label *label226
+-    * label *label227
+   247 draw col %[red]
+   248 jump *label229 always
+-    * label *label228
+   249 draw col %[green]
+   250 label *label229
+   251 draw rect 30 10 8 8
+-    * label *label230
+-    * label *label231
+   252 jump *label232 always
+   253 draw col %[red]
+   254 jump *label233 always
+ 
+   256 draw col %[green]
+   257 label *label233
+   258 draw rect 40 10 8 8
+-    * label *label234
+-    * label *label235
+   259 jump *label236 always
+   260 draw col %[red]
+   261 jump *label237 always
+ 
+   263 draw col %[green]
+   264 label *label237
+   265 draw rect 50 10 8 8
+-    * label *label238
+-    * label *label239
+   266 jump *label240 always
+   267 draw col %[red]
+   268 jump *label241 always
+ 
+   270 draw col %[green]
+   271 label *label241
+   272 draw rect 60 10 8 8
+-    * label *label242
+-    * label *label243
+-    * label *label244
+-    * label *label245
+-    * label *label246
+-    * label *label247
+   273 draw col %[red]
+   274 jump *label249 always
+-    * label *label248
+   275 draw col %[green]
+   276 label *label249
+   277 draw rect 0 0 8 8
+-    * label *label250
+-    * label *label251
+   278 draw col %[red]
+   279 jump *label253 always
+-    * label *label252
+   280 draw col %[green]
+   281 label *label253
+   282 draw rect 10 0 8 8
+-    * label *label254
+-    * label *label255
+   283 draw col %[red]
+   284 jump *label257 always
+-    * label *label256
+   285 draw col %[green]
+   286 label *label257
+   287 draw rect 20 0 8 8
+-    * label *label258
+-    * label *label259
+   288 draw col %[red]
+   289 jump *label261 always
+-    * label *label260
+   290 draw col %[green]
+   291 label *label261
+   292 draw rect 30 0 8 8
+-    * label *label262
+-    * label *label263
+   293 jump *label264 always
+   294 draw col %[red]
+   295 jump *label265 always
+ 
+   297 draw col %[green]
+   298 label *label265
+   299 draw rect 40 0 8 8
+-    * label *label266
+-    * label *label267
+   300 jump *label268 always
+   301 draw col %[red]
+   302 jump *label269 always
+ 
+   304 draw col %[green]
+   305 label *label269
+   306 draw rect 50 0 8 8
+-    * label *label270
+-    * label *label271
+   307 jump *label272 always
+   308 draw col %[red]
+   309 jump *label273 always
+ 
+   311 draw col %[green]
+   312 label *label273
+   313 draw rect 60 0 8 8
+-    * label *label274
+-    * label *label275
+-    * label *label276
+-    * label *label13
+   314 drawflush display1
+-    * label *label10
+   315 end
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-82 instructions):
+ 
+     1 draw translate 6 6
+     2 draw clear 0 0 0
+     3 jump *label56 always
+-    * draw col %[red]
+-    * jump *label57 always
+     4 label *label56
+     5 draw col %[green]
+     6 label *label57
+     7 draw rect 0 60 8 8
+     8 jump *label60 always
+-    * draw col %[red]
+-    * jump *label61 always
+     9 label *label60
+    10 draw col %[green]
+    11 label *label61
+    12 draw rect 10 60 8 8
+    13 jump *label64 always
+-    * draw col %[red]
+-    * jump *label65 always
+    14 label *label64
+    15 draw col %[green]
+    16 label *label65
+    17 draw rect 20 60 8 8
+    18 jump *label68 always
+-    * draw col %[red]
+-    * jump *label69 always
+    19 label *label68
+    20 draw col %[green]
+    21 label *label69
+    22 draw rect 30 60 8 8
+    23 jump *label72 always
+-    * draw col %[red]
+-    * jump *label73 always
+    24 label *label72
+    25 draw col %[green]
+    26 label *label73
+    27 draw rect 40 60 8 8
+    28 jump *label76 always
+-    * draw col %[red]
+-    * jump *label77 always
+    29 label *label76
+    30 draw col %[green]
+    31 label *label77
+    32 draw rect 50 60 8 8
+    33 jump *label80 always
+-    * draw col %[red]
+-    * jump *label81 always
+    34 label *label80
+    35 draw col %[green]
+    36 label *label81
+    37 draw rect 60 60 8 8
+    38 jump *label88 always
+-    * draw col %[red]
+-    * jump *label89 always
+    39 label *label88
+    40 draw col %[green]
+    41 label *label89
+    42 draw rect 0 50 8 8
+    43 jump *label92 always
+-    * draw col %[red]
+-    * jump *label93 always
+    44 label *label92
+    45 draw col %[green]
+    46 label *label93
+    47 draw rect 10 50 8 8
+    48 jump *label96 always
+-    * draw col %[red]
+-    * jump *label97 always
+    49 label *label96
+    50 draw col %[green]
+    51 label *label97
+    52 draw rect 20 50 8 8
+    53 jump *label100 always
+-    * draw col %[red]
+-    * jump *label101 always
+    54 label *label100
+    55 draw col %[green]
+    56 label *label101
+    57 draw rect 30 50 8 8
+    58 jump *label104 always
+-    * draw col %[red]
+-    * jump *label105 always
+    59 label *label104
+    60 draw col %[green]
+    61 label *label105
+    62 draw rect 40 50 8 8
+    63 jump *label108 always
+-    * draw col %[red]
+-    * jump *label109 always
+    64 label *label108
+    65 draw col %[green]
+    66 label *label109
+    67 draw rect 50 50 8 8
+    68 jump *label112 always
+-    * draw col %[red]
+-    * jump *label113 always
+    69 label *label112
+    70 draw col %[green]
+    71 label *label113
+    72 draw rect 60 50 8 8
+    73 jump *label120 always
+-    * draw col %[red]
+-    * jump *label121 always
+    74 label *label120
+    75 draw col %[green]
+    76 label *label121
+    77 draw rect 0 40 8 8
+    78 jump *label124 always
+-    * draw col %[red]
+-    * jump *label125 always
+    79 label *label124
+    80 draw col %[green]
+    81 label *label125
+    82 draw rect 10 40 8 8
+    83 jump *label128 always
+-    * draw col %[red]
+-    * jump *label129 always
+    84 label *label128
+    85 draw col %[green]
+    86 label *label129
+    87 draw rect 20 40 8 8
+    88 jump *label132 always
+-    * draw col %[red]
+-    * jump *label133 always
+    89 label *label132
+    90 draw col %[green]
+    91 label *label133
+    92 draw rect 30 40 8 8
+    93 jump *label136 always
+-    * draw col %[red]
+-    * jump *label137 always
+    94 label *label136
+    95 draw col %[green]
+    96 label *label137
+    97 draw rect 40 40 8 8
+    98 jump *label140 always
+-    * draw col %[red]
+-    * jump *label141 always
+    99 label *label140
+   100 draw col %[green]
+   101 label *label141
+   102 draw rect 50 40 8 8
+   103 jump *label144 always
+-    * draw col %[red]
+-    * jump *label145 always
+   104 label *label144
+   105 draw col %[green]
+   106 label *label145
+   107 draw rect 60 40 8 8
+   108 draw col %[red]
+   109 jump *label153 always
+-    * draw col %[green]
+   110 label *label153
+   111 draw rect 0 30 8 8
+   112 draw col %[red]
+   113 jump *label157 always
+-    * draw col %[green]
+   114 label *label157
+   115 draw rect 10 30 8 8
+   116 draw col %[red]
+   117 jump *label161 always
+-    * draw col %[green]
+   118 label *label161
+   119 draw rect 20 30 8 8
+   120 draw col %[red]
+   121 jump *label165 always
+-    * draw col %[green]
+   122 label *label165
+   123 draw rect 30 30 8 8
+   124 jump *label168 always
+-    * draw col %[red]
+-    * jump *label169 always
+   125 label *label168
+   126 draw col %[green]
+   127 label *label169
+   128 draw rect 40 30 8 8
+   129 jump *label172 always
+-    * draw col %[red]
+-    * jump *label173 always
+   130 label *label172
+   131 draw col %[green]
+   132 label *label173
+   133 draw rect 50 30 8 8
+   134 jump *label176 always
+-    * draw col %[red]
+-    * jump *label177 always
+   135 label *label176
+   136 draw col %[green]
+   137 label *label177
+   138 draw rect 60 30 8 8
+   139 draw col %[red]
+   140 jump *label185 always
+-    * draw col %[green]
+   141 label *label185
+   142 draw rect 0 20 8 8
+   143 draw col %[red]
+   144 jump *label189 always
+-    * draw col %[green]
+   145 label *label189
+   146 draw rect 10 20 8 8
+   147 draw col %[red]
+   148 jump *label193 always
+-    * draw col %[green]
+   149 label *label193
+   150 draw rect 20 20 8 8
+   151 draw col %[red]
+   152 jump *label197 always
+-    * draw col %[green]
+   153 label *label197
+   154 draw rect 30 20 8 8
+   155 jump *label200 always
+-    * draw col %[red]
+-    * jump *label201 always
+   156 label *label200
+   157 draw col %[green]
+   158 label *label201
+   159 draw rect 40 20 8 8
+   160 jump *label204 always
+-    * draw col %[red]
+-    * jump *label205 always
+   161 label *label204
+   162 draw col %[green]
+   163 label *label205
+   164 draw rect 50 20 8 8
+   165 jump *label208 always
+-    * draw col %[red]
+-    * jump *label209 always
+   166 label *label208
+   167 draw col %[green]
+   168 label *label209
+   169 draw rect 60 20 8 8
+   170 draw col %[red]
+   171 jump *label217 always
+-    * draw col %[green]
+   172 label *label217
+   173 draw rect 0 10 8 8
+   174 draw col %[red]
+   175 jump *label221 always
+-    * draw col %[green]
+   176 label *label221
+   177 draw rect 10 10 8 8
+   178 draw col %[red]
+   179 jump *label225 always
+-    * draw col %[green]
+   180 label *label225
+   181 draw rect 20 10 8 8
+   182 draw col %[red]
+   183 jump *label229 always
+-    * draw col %[green]
+   184 label *label229
+   185 draw rect 30 10 8 8
+   186 jump *label232 always
+-    * draw col %[red]
+-    * jump *label233 always
+   187 label *label232
+   188 draw col %[green]
+   189 label *label233
+   190 draw rect 40 10 8 8
+   191 jump *label236 always
+-    * draw col %[red]
+-    * jump *label237 always
+   192 label *label236
+   193 draw col %[green]
+   194 label *label237
+   195 draw rect 50 10 8 8
+   196 jump *label240 always
+-    * draw col %[red]
+-    * jump *label241 always
+   197 label *label240
+   198 draw col %[green]
+   199 label *label241
+   200 draw rect 60 10 8 8
+   201 draw col %[red]
+   202 jump *label249 always
+-    * draw col %[green]
+   203 label *label249
+   204 draw rect 0 0 8 8
+   205 draw col %[red]
+   206 jump *label253 always
+-    * draw col %[green]
+   207 label *label253
+   208 draw rect 10 0 8 8
+   209 draw col %[red]
+   210 jump *label257 always
+-    * draw col %[green]
+   211 label *label257
+   212 draw rect 20 0 8 8
+   213 draw col %[red]
+   214 jump *label261 always
+-    * draw col %[green]
+   215 label *label261
+   216 draw rect 30 0 8 8
+   217 jump *label264 always
+-    * draw col %[red]
+-    * jump *label265 always
+   218 label *label264
+   219 draw col %[green]
+   220 label *label265
+   221 draw rect 40 0 8 8
+   222 jump *label268 always
+-    * draw col %[red]
+-    * jump *label269 always
+   223 label *label268
+   224 draw col %[green]
+   225 label *label269
+   226 draw rect 50 0 8 8
+   227 jump *label272 always
+-    * draw col %[red]
+-    * jump *label273 always
+   228 label *label272
+   229 draw col %[green]
+   230 label *label273
+
+Modifications by Jumps phase, Dead Code Elimination, pass 4, iteration 1:
+ 
+     3 jump *label56 always
+     4 label *label56
+     5 draw col %[green]
+-    * label *label57
+     6 draw rect 0 60 8 8
+     7 jump *label60 always
+     8 label *label60
+     9 draw col %[green]
+-    * label *label61
+    10 draw rect 10 60 8 8
+    11 jump *label64 always
+    12 label *label64
+    13 draw col %[green]
+-    * label *label65
+    14 draw rect 20 60 8 8
+    15 jump *label68 always
+    16 label *label68
+    17 draw col %[green]
+-    * label *label69
+    18 draw rect 30 60 8 8
+    19 jump *label72 always
+    20 label *label72
+    21 draw col %[green]
+-    * label *label73
+    22 draw rect 40 60 8 8
+    23 jump *label76 always
+    24 label *label76
+    25 draw col %[green]
+-    * label *label77
+    26 draw rect 50 60 8 8
+    27 jump *label80 always
+    28 label *label80
+    29 draw col %[green]
+-    * label *label81
+    30 draw rect 60 60 8 8
+    31 jump *label88 always
+    32 label *label88
+    33 draw col %[green]
+-    * label *label89
+    34 draw rect 0 50 8 8
+    35 jump *label92 always
+    36 label *label92
+    37 draw col %[green]
+-    * label *label93
+    38 draw rect 10 50 8 8
+    39 jump *label96 always
+    40 label *label96
+    41 draw col %[green]
+-    * label *label97
+    42 draw rect 20 50 8 8
+    43 jump *label100 always
+    44 label *label100
+    45 draw col %[green]
+-    * label *label101
+    46 draw rect 30 50 8 8
+    47 jump *label104 always
+    48 label *label104
+    49 draw col %[green]
+-    * label *label105
+    50 draw rect 40 50 8 8
+    51 jump *label108 always
+    52 label *label108
+    53 draw col %[green]
+-    * label *label109
+    54 draw rect 50 50 8 8
+    55 jump *label112 always
+    56 label *label112
+    57 draw col %[green]
+-    * label *label113
+    58 draw rect 60 50 8 8
+    59 jump *label120 always
+    60 label *label120
+    61 draw col %[green]
+-    * label *label121
+    62 draw rect 0 40 8 8
+    63 jump *label124 always
+    64 label *label124
+    65 draw col %[green]
+-    * label *label125
+    66 draw rect 10 40 8 8
+    67 jump *label128 always
+    68 label *label128
+    69 draw col %[green]
+-    * label *label129
+    70 draw rect 20 40 8 8
+    71 jump *label132 always
+    72 label *label132
+    73 draw col %[green]
+-    * label *label133
+    74 draw rect 30 40 8 8
+    75 jump *label136 always
+    76 label *label136
+    77 draw col %[green]
+-    * label *label137
+    78 draw rect 40 40 8 8
+    79 jump *label140 always
+    80 label *label140
+    81 draw col %[green]
+-    * label *label141
+    82 draw rect 50 40 8 8
+    83 jump *label144 always
+    84 label *label144
+    85 draw col %[green]
+-    * label *label145
+    86 draw rect 60 40 8 8
+    87 draw col %[red]
+    88 jump *label153 always
+ 
+   103 jump *label168 always
+   104 label *label168
+   105 draw col %[green]
+-    * label *label169
+   106 draw rect 40 30 8 8
+   107 jump *label172 always
+   108 label *label172
+   109 draw col %[green]
+-    * label *label173
+   110 draw rect 50 30 8 8
+   111 jump *label176 always
+   112 label *label176
+   113 draw col %[green]
+-    * label *label177
+   114 draw rect 60 30 8 8
+   115 draw col %[red]
+   116 jump *label185 always
+ 
+   131 jump *label200 always
+   132 label *label200
+   133 draw col %[green]
+-    * label *label201
+   134 draw rect 40 20 8 8
+   135 jump *label204 always
+   136 label *label204
+   137 draw col %[green]
+-    * label *label205
+   138 draw rect 50 20 8 8
+   139 jump *label208 always
+   140 label *label208
+   141 draw col %[green]
+-    * label *label209
+   142 draw rect 60 20 8 8
+   143 draw col %[red]
+   144 jump *label217 always
+ 
+   159 jump *label232 always
+   160 label *label232
+   161 draw col %[green]
+-    * label *label233
+   162 draw rect 40 10 8 8
+   163 jump *label236 always
+   164 label *label236
+   165 draw col %[green]
+-    * label *label237
+   166 draw rect 50 10 8 8
+   167 jump *label240 always
+   168 label *label240
+   169 draw col %[green]
+-    * label *label241
+   170 draw rect 60 10 8 8
+   171 draw col %[red]
+   172 jump *label249 always
+ 
+   187 jump *label264 always
+   188 label *label264
+   189 draw col %[green]
+-    * label *label265
+   190 draw rect 40 0 8 8
+   191 jump *label268 always
+   192 label *label268
+   193 draw col %[green]
+-    * label *label269
+   194 draw rect 50 0 8 8
+   195 jump *label272 always
+   196 label *label272
+   197 draw col %[green]
+-    * label *label273
+   198 draw rect 60 0 8 8
+   199 drawflush display1
+   200 end
+
+Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-50 instructions):
+     0 draw reset
+     1 draw translate 6 6
+     2 draw clear 0 0 0
+-    * jump *label56 always
+     3 label *label56
+     4 draw col %[green]
+     5 draw rect 0 60 8 8
+-    * jump *label60 always
+     6 label *label60
+     7 draw col %[green]
+     8 draw rect 10 60 8 8
+-    * jump *label64 always
+     9 label *label64
+    10 draw col %[green]
+    11 draw rect 20 60 8 8
+-    * jump *label68 always
+    12 label *label68
+    13 draw col %[green]
+    14 draw rect 30 60 8 8
+-    * jump *label72 always
+    15 label *label72
+    16 draw col %[green]
+    17 draw rect 40 60 8 8
+-    * jump *label76 always
+    18 label *label76
+    19 draw col %[green]
+    20 draw rect 50 60 8 8
+-    * jump *label80 always
+    21 label *label80
+    22 draw col %[green]
+    23 draw rect 60 60 8 8
+-    * jump *label88 always
+    24 label *label88
+    25 draw col %[green]
+    26 draw rect 0 50 8 8
+-    * jump *label92 always
+    27 label *label92
+    28 draw col %[green]
+    29 draw rect 10 50 8 8
+-    * jump *label96 always
+    30 label *label96
+    31 draw col %[green]
+    32 draw rect 20 50 8 8
+-    * jump *label100 always
+    33 label *label100
+    34 draw col %[green]
+    35 draw rect 30 50 8 8
+-    * jump *label104 always
+    36 label *label104
+    37 draw col %[green]
+    38 draw rect 40 50 8 8
+-    * jump *label108 always
+    39 label *label108
+    40 draw col %[green]
+    41 draw rect 50 50 8 8
+-    * jump *label112 always
+    42 label *label112
+    43 draw col %[green]
+    44 draw rect 60 50 8 8
+-    * jump *label120 always
+    45 label *label120
+    46 draw col %[green]
+    47 draw rect 0 40 8 8
+-    * jump *label124 always
+    48 label *label124
+    49 draw col %[green]
+    50 draw rect 10 40 8 8
+-    * jump *label128 always
+    51 label *label128
+    52 draw col %[green]
+    53 draw rect 20 40 8 8
+-    * jump *label132 always
+    54 label *label132
+    55 draw col %[green]
+    56 draw rect 30 40 8 8
+-    * jump *label136 always
+    57 label *label136
+    58 draw col %[green]
+    59 draw rect 40 40 8 8
+-    * jump *label140 always
+    60 label *label140
+    61 draw col %[green]
+    62 draw rect 50 40 8 8
+-    * jump *label144 always
+    63 label *label144
+    64 draw col %[green]
+    65 draw rect 60 40 8 8
+    66 draw col %[red]
+-    * jump *label153 always
+    67 label *label153
+    68 draw rect 0 30 8 8
+    69 draw col %[red]
+-    * jump *label157 always
+    70 label *label157
+    71 draw rect 10 30 8 8
+    72 draw col %[red]
+-    * jump *label161 always
+    73 label *label161
+    74 draw rect 20 30 8 8
+    75 draw col %[red]
+-    * jump *label165 always
+    76 label *label165
+    77 draw rect 30 30 8 8
+-    * jump *label168 always
+    78 label *label168
+    79 draw col %[green]
+    80 draw rect 40 30 8 8
+-    * jump *label172 always
+    81 label *label172
+    82 draw col %[green]
+    83 draw rect 50 30 8 8
+-    * jump *label176 always
+    84 label *label176
+    85 draw col %[green]
+    86 draw rect 60 30 8 8
+    87 draw col %[red]
+-    * jump *label185 always
+    88 label *label185
+    89 draw rect 0 20 8 8
+    90 draw col %[red]
+-    * jump *label189 always
+    91 label *label189
+    92 draw rect 10 20 8 8
+    93 draw col %[red]
+-    * jump *label193 always
+    94 label *label193
+    95 draw rect 20 20 8 8
+    96 draw col %[red]
+-    * jump *label197 always
+    97 label *label197
+    98 draw rect 30 20 8 8
+-    * jump *label200 always
+    99 label *label200
+   100 draw col %[green]
+   101 draw rect 40 20 8 8
+-    * jump *label204 always
+   102 label *label204
+   103 draw col %[green]
+   104 draw rect 50 20 8 8
+-    * jump *label208 always
+   105 label *label208
+   106 draw col %[green]
+   107 draw rect 60 20 8 8
+   108 draw col %[red]
+-    * jump *label217 always
+   109 label *label217
+   110 draw rect 0 10 8 8
+   111 draw col %[red]
+-    * jump *label221 always
+   112 label *label221
+   113 draw rect 10 10 8 8
+   114 draw col %[red]
+-    * jump *label225 always
+   115 label *label225
+   116 draw rect 20 10 8 8
+   117 draw col %[red]
+-    * jump *label229 always
+   118 label *label229
+   119 draw rect 30 10 8 8
+-    * jump *label232 always
+   120 label *label232
+   121 draw col %[green]
+   122 draw rect 40 10 8 8
+-    * jump *label236 always
+   123 label *label236
+   124 draw col %[green]
+   125 draw rect 50 10 8 8
+-    * jump *label240 always
+   126 label *label240
+   127 draw col %[green]
+   128 draw rect 60 10 8 8
+   129 draw col %[red]
+-    * jump *label249 always
+   130 label *label249
+   131 draw rect 0 0 8 8
+   132 draw col %[red]
+-    * jump *label253 always
+   133 label *label253
+   134 draw rect 10 0 8 8
+   135 draw col %[red]
+-    * jump *label257 always
+   136 label *label257
+   137 draw rect 20 0 8 8
+   138 draw col %[red]
+-    * jump *label261 always
+   139 label *label261
+   140 draw rect 30 0 8 8
+-    * jump *label264 always
+   141 label *label264
+   142 draw col %[green]
+   143 draw rect 40 0 8 8
+-    * jump *label268 always
+   144 label *label268
+   145 draw col %[green]
+   146 draw rect 50 0 8 8
+-    * jump *label272 always
+   147 label *label272
+   148 draw col %[green]
+   149 draw rect 60 0 8 8
+   150 drawflush display1
+-    * end
+
+Modifications by Jumps phase, Jump Normalization, pass 5, iteration 1:
+     0 draw reset
+     1 draw translate 6 6
+     2 draw clear 0 0 0
+-    * label *label56
+     3 draw col %[green]
+     4 draw rect 0 60 8 8
+-    * label *label60
+     5 draw col %[green]
+     6 draw rect 10 60 8 8
+-    * label *label64
+     7 draw col %[green]
+     8 draw rect 20 60 8 8
+-    * label *label68
+     9 draw col %[green]
+    10 draw rect 30 60 8 8
+-    * label *label72
+    11 draw col %[green]
+    12 draw rect 40 60 8 8
+-    * label *label76
+    13 draw col %[green]
+    14 draw rect 50 60 8 8
+-    * label *label80
+    15 draw col %[green]
+    16 draw rect 60 60 8 8
+-    * label *label88
+    17 draw col %[green]
+    18 draw rect 0 50 8 8
+-    * label *label92
+    19 draw col %[green]
+    20 draw rect 10 50 8 8
+-    * label *label96
+    21 draw col %[green]
+    22 draw rect 20 50 8 8
+-    * label *label100
+    23 draw col %[green]
+    24 draw rect 30 50 8 8
+-    * label *label104
+    25 draw col %[green]
+    26 draw rect 40 50 8 8
+-    * label *label108
+    27 draw col %[green]
+    28 draw rect 50 50 8 8
+-    * label *label112
+    29 draw col %[green]
+    30 draw rect 60 50 8 8
+-    * label *label120
+    31 draw col %[green]
+    32 draw rect 0 40 8 8
+-    * label *label124
+    33 draw col %[green]
+    34 draw rect 10 40 8 8
+-    * label *label128
+    35 draw col %[green]
+    36 draw rect 20 40 8 8
+-    * label *label132
+    37 draw col %[green]
+    38 draw rect 30 40 8 8
+-    * label *label136
+    39 draw col %[green]
+    40 draw rect 40 40 8 8
+-    * label *label140
+    41 draw col %[green]
+    42 draw rect 50 40 8 8
+-    * label *label144
+    43 draw col %[green]
+    44 draw rect 60 40 8 8
+    45 draw col %[red]
+-    * label *label153
+    46 draw rect 0 30 8 8
+    47 draw col %[red]
+-    * label *label157
+    48 draw rect 10 30 8 8
+    49 draw col %[red]
+-    * label *label161
+    50 draw rect 20 30 8 8
+    51 draw col %[red]
+-    * label *label165
+    52 draw rect 30 30 8 8
+-    * label *label168
+    53 draw col %[green]
+    54 draw rect 40 30 8 8
+-    * label *label172
+    55 draw col %[green]
+    56 draw rect 50 30 8 8
+-    * label *label176
+    57 draw col %[green]
+    58 draw rect 60 30 8 8
+    59 draw col %[red]
+-    * label *label185
+    60 draw rect 0 20 8 8
+    61 draw col %[red]
+-    * label *label189
+    62 draw rect 10 20 8 8
+    63 draw col %[red]
+-    * label *label193
+    64 draw rect 20 20 8 8
+    65 draw col %[red]
+-    * label *label197
+    66 draw rect 30 20 8 8
+-    * label *label200
+    67 draw col %[green]
+    68 draw rect 40 20 8 8
+-    * label *label204
+    69 draw col %[green]
+    70 draw rect 50 20 8 8
+-    * label *label208
+    71 draw col %[green]
+    72 draw rect 60 20 8 8
+    73 draw col %[red]
+-    * label *label217
+    74 draw rect 0 10 8 8
+    75 draw col %[red]
+-    * label *label221
+    76 draw rect 10 10 8 8
+    77 draw col %[red]
+-    * label *label225
+    78 draw rect 20 10 8 8
+    79 draw col %[red]
+-    * label *label229
+    80 draw rect 30 10 8 8
+-    * label *label232
+    81 draw col %[green]
+    82 draw rect 40 10 8 8
+-    * label *label236
+    83 draw col %[green]
+    84 draw rect 50 10 8 8
+-    * label *label240
+    85 draw col %[green]
+    86 draw rect 60 10 8 8
+    87 draw col %[red]
+-    * label *label249
+    88 draw rect 0 0 8 8
+    89 draw col %[red]
+-    * label *label253
+    90 draw rect 10 0 8 8
+    91 draw col %[red]
+-    * label *label257
+    92 draw rect 20 0 8 8
+    93 draw col %[red]
+-    * label *label261
+    94 draw rect 30 0 8 8
+-    * label *label264
+    95 draw col %[green]
+    96 draw rect 40 0 8 8
+-    * label *label268
+    97 draw col %[green]
+    98 draw rect 50 0 8 8
+-    * label *label272
+    99 draw col %[green]
+   100 draw rect 60 0 8 8
+   101 drawflush display1
+
+Final code before resolving virtual instructions:
+
+    0:  draw reset 0 0 0 0 0 0                                       reset();
+    1:  draw translate 6 6 0 0 0 0                                   translate(6, 6);
+    2:  draw clear 0 0 0 0 0 0                                       clear(0, 0, 0);
+    3:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+    4:  draw rect 0 60 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+    5:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+    6:  draw rect 10 60 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+    7:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+    8:  draw rect 20 60 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+    9:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   10:  draw rect 30 60 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   11:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   12:  draw rect 40 60 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   13:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   14:  draw rect 50 60 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   15:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   16:  draw rect 60 60 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   17:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   18:  draw rect 0 50 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   19:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   20:  draw rect 10 50 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   21:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   22:  draw rect 20 50 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   23:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   24:  draw rect 30 50 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   25:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   26:  draw rect 40 50 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   27:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   28:  draw rect 50 50 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   29:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   30:  draw rect 60 50 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   31:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   32:  draw rect 0 40 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   33:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   34:  draw rect 10 40 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   35:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   36:  draw rect 20 40 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   37:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   38:  draw rect 30 40 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   39:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   40:  draw rect 40 40 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   41:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   42:  draw rect 50 40 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   43:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   44:  draw rect 60 40 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   45:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   46:  draw rect 0 30 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   47:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   48:  draw rect 10 30 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   49:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   50:  draw rect 20 30 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   51:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   52:  draw rect 30 30 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   53:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   54:  draw rect 40 30 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   55:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   56:  draw rect 50 30 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   57:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   58:  draw rect 60 30 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   59:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   60:  draw rect 0 20 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   61:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   62:  draw rect 10 20 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   63:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   64:  draw rect 20 20 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   65:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   66:  draw rect 30 20 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   67:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   68:  draw rect 40 20 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   69:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   70:  draw rect 50 20 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   71:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   72:  draw rect 60 20 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   73:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   74:  draw rect 0 10 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   75:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   76:  draw rect 10 10 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   77:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   78:  draw rect 20 10 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   79:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   80:  draw rect 30 10 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   81:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   82:  draw rect 40 10 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   83:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   84:  draw rect 50 10 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   85:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   86:  draw rect 60 10 8 8 0 0                                      rect(c * 10, r * 10, 8, 8);
+   87:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   88:  draw rect 0 0 8 8 0 0                                        rect(c * 10, r * 10, 8, 8);
+   89:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   90:  draw rect 10 0 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   91:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   92:  draw rect 20 0 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   93:  draw col %[red] 0 0 0 0 0                                    var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   94:  draw rect 30 0 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   95:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   96:  draw rect 40 0 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   97:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+   98:  draw rect 50 0 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+   99:  draw col %[green] 0 0 0 0 0                                  var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+  100:  draw rect 60 0 8 8 0 0                                       rect(c * 10, r * 10, 8, 8);
+  101:  drawflush display1                                           drawflush(display1);
+
+
+Performance: parsed in 196 ms, compiled in 267 ms, optimized in 292 ms, run in 16 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: success.
+
+Program output (102 steps):
+The program didn't generate any output.

@@ -1,0 +1,76 @@
+#set target = 8;
+
+inline def createFixedMatrix(row0, row1, row2, row3, row4, row5, row6)
+    row0 << 7 * 0 |
+    row1 << 7 * 1 |
+    row2 << 7 * 2 |
+    row3 << 7 * 3 |
+    row4 << 7 * 4 |
+    row5 << 7 * 5 |
+    row6 << 7 * 6;
+end;
+
+inline def createFixedMatrix(row0, row1, row2, row3)
+    row0 << 7 * 0 |
+    row1 << 7 * 1 |
+    row2 << 7 * 2 |
+    row3 << 7 * 3;
+end;
+
+inline def createFixedMatrix(row0, row1)
+    row0 << 7 * 0 |
+    row1 << 7 * 1;
+end;
+
+// Shifts the mask in the given direction
+// Makes sure parts of the mask shifted away are properly cleared
+def shiftMask(mask, shiftX, shiftY)
+    // If shifted all the way, the mask becomes empty
+    if abs(shiftX) > 6 or abs(shiftY) > 6 then return 0; end;
+
+    var shift = shiftX + 7 * shiftY;
+    if shift > 0 then
+        // We might run into precision issues. Need to clear the top part first
+        var clearMask = ((1 << 49) - 1) >> shift;
+        mask = (mask & clearMask) << shift;
+    else
+        mask >>= -shift;
+    end;
+
+    // Need to clear columns?
+    if shiftX != 0 then
+        var keep = 0b1111111 >> abs(shiftX);        // The bits we need to keep
+        if shiftX > 0 then keep <<= shiftX; end;    // Shift to the proper side
+        keep |= keep << 7;
+        keep |= keep << 14;
+        keep |= keep << 21;
+        mask &= keep;
+    end;
+
+    return mask;
+end;
+
+
+
+void drawMask(mask)
+    reset();
+    translate(6, 6);
+//    scale(10, 10);
+    clear(0, 0, 0);
+    for var r in 0 ... 7 descending do
+        for var c in 0 ... 7 do
+            var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+            col(color);
+            rect(c * 10, r * 10, 8, 8);
+        end;
+    end;
+    drawflush(display1);
+end;
+
+
+begin
+    m = createFixedMatrix(7,5,7,0);
+    m = (1 << 49) - 1;
+    drawMask(shiftMask(m, -3, -3));
+end;
+

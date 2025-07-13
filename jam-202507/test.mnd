@@ -1,0 +1,73 @@
+#set target = 8;
+
+linked processor1;
+
+require "Matrices.mnd" remote processor1;
+
+def createBlockMaskRow(x, y)
+    var result = 0;
+    for var c in -4 .. 4 descending do
+        result = (result << 1) | getBlock(x + c, y);
+    end;
+    return result;
+end;
+
+// Creates a mask of tiles adjacent to existing blocks, horizontally or vertically
+// This map will not necessarily map tiles occupied by blocks themselves, but that should be
+// covered by the terrain mask.
+def createAdjacentMask(x, y)
+    var result = 0;
+    var row2 = createBlockMaskRow(x, y + 4);
+    var row1 = createBlockMaskRow(x, y + 3);
+
+    for var r in -4 .. 2 descending do
+        var row0 = createBlockMaskRow(x, y + r);
+        var mask = row2 | (row1 << 1) | (row1 >> 1) | row0;
+        result = (result << 7) | (mask & 0xFE);       // We're keeping one additional bit on the right
+        row2 = row1;
+        row1 = row0;
+    end;
+
+    result >> 1;
+end;
+
+def createCombinedMask(x, y);
+    async(processor1.createTerrainMask(@unit, x, y));
+    var adjacentMask = createAdjacentMask(x, y);
+    var terrainMask = await(processor1.createTerrainMask);
+    return adjacentMask;// | terrainMask;
+end;
+
+void drawMask(mask)
+    reset();
+    translate(6, 6);
+//    scale(10, 10);
+    clear(0, 0, 0);
+    for var r in 0 ... 7 descending do
+        for var c in 0 ... 7 do
+            var color = mask & (1 << (7 * r + c)) ? %[red] : %[green];
+            col(color);
+            rect(c * 10, r * 10, 8, 8);
+        end;
+    end;
+    drawflush(display1);
+end;
+
+
+param x = 85;
+param y = 100;
+
+begin
+    ubind(@poly);
+    do
+        move(x, y + 5);
+    while !within(x, y + 5, 2);
+    var start = @tick;
+    var m = createCombinedMask(x, y);
+    var finish = @tick;
+    drawMask(m);
+
+    println(m);
+    print(round(1000 * (finish - start) / 60));
+end;
+
