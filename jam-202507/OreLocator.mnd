@@ -8,6 +8,7 @@ module OreLocator;
 require math;
 
 const RADIUS =  6;
+const MIN_CORE_DIST = 10;
 
 linked bank1, message1, switch1, processor1;
 
@@ -92,7 +93,7 @@ inline def locateOreAway(ore, in out x, in out y, in distanceLimit)
 //        debugPrintSpot("");
 //        debugPause();
 
-        if coreDist >= 7 then
+        if coreDist >= MIN_CORE_DIST then
             if unitDist < distance then
                 lastX = x;
                 lastY = y;
@@ -175,10 +176,15 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
 //            remark($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY\n");
 //            debugPause();
 
+            var newX = oreX + diffX;
+            var newY = oreY + diffY;
+            var coreDist = max(abs(newX - coreX), abs(newY - coreY));
+            if coreDist <= MIN_CORE_DIST then break; end;
+
             // Global best
             if score > capacity then
-                dx = oreX + diffX;
-                dy = oreY + diffY;
+                dx = newX;
+                dy = newY;
                 capacity = score;
                 if limit < 1000 then mapSpots = score; end;
                 if capacity >= limit then
@@ -189,8 +195,8 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
             end;
 
             if score > best then
-                bestX = oreX + diffX;
-                bestY = oreY + diffY;
+                bestX = newX;
+                bestY = newY;
                 best = score;
 //                remark($"Stored best: $best, $bestX, $bestY (last $last)\n");
             end;
@@ -204,9 +210,6 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
             last = score;
             oreX += round(diffX * 1.1);    // Rounds halves to higher absolute values
             oreY += round(diffY * 1.1);
-
-            // We got too close to the core
-            if min(abs(oreX - coreX), abs(oreY - coreY)) < 7 then break; end;
         end;
 
 //        remark($"Storing best to memory: $best, $bestX, $bestY\n");
