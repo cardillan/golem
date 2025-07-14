@@ -1,7 +1,6 @@
 #set target = 8;
 #set syntax = strict;
-//#set function-inlining = none;
-#set sort-variables;
+//#set sort-variables;
 
 // At this point, we're only using a poly
 const RADIUS = 7;
@@ -12,6 +11,11 @@ linked message1;
 noinit var core, coreX, coreY;
 
 var min = 0, minOre = null;
+
+noinit volatile var
+    monoCopperTarget,
+    monoSandTarget,
+    monoLeadTarget;
 
 begin
     do
@@ -29,9 +33,9 @@ begin
         if @unit == firstItem then
             printflush(message1);
 
-            var lead = core.@lead;
-            var sand = core.@sand;
-            var copper = core.@copper;
+            var lead = core.@lead - monoLeadTarget;
+            var sand = core.@sand - monoSandTarget;
+            var copper = core.@copper - monoCopperTarget;
             min = min(lead, sand, copper);
             minOre = min == sand ? @sand : min == lead ? @lead : @copper;
             println("minOre:", minOre);

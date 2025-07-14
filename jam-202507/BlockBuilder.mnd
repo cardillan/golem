@@ -1,6 +1,6 @@
 #set target = 8;
 #set syntax = strict;
-#set sort-variables;
+//#set sort-variables;
 
 module BlockController;
 
@@ -77,8 +77,7 @@ def buildBlockAtLocal(block, x, y, rotation, config)
         buildError(block, type, x, y);
     end;
 
-    var coal = core.@coal;
-    var fullBuildSupport = coal > 200;
+    var fullBuildSupportLimit = 200;
     build(x, y, block, rotation, config);
     wait(0.25);
     var success = false;
@@ -90,7 +89,8 @@ def buildBlockAtLocal(block, x, y, rotation, config)
             success = true;
         end;
 
-        if fullBuildSupport then
+        if core.@coal >= fullBuildSupportLimit then
+            fullBuildSupportLimit = 0;          // Always
             polyController.enabled = false;     // Brutal, but effective :)
             ubind(@poly);
             if @unit != builder then

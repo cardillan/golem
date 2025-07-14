@@ -1,6 +1,6 @@
 #set target = 8;
 #set syntax = strict;
-#set sort-variables;
+//#set sort-variables;
 #set remarks = none;
 
 module OreLocator;
@@ -436,18 +436,20 @@ def createAdjacentMask(x, y)
     result >> 1;
 end;
 
-volatile var maskX, maskY;
-volatile var adjacentMask;
-volatile var terrainMask;
-volatile var lastUnshiftedMask;
-volatile var lastShiftedMask;
-volatile var lastCombinedMask;
+// For debug
+//volatile var maskX, maskY;
+//volatile var adjacentMask;
+//volatile var terrainMask;
+//volatile var lastUnshiftedMask;
+//volatile var lastShiftedMask;
+//volatile var lastCombinedMask;
 
 def createCombinedMask(x, y);
     async(processor1.createTerrainMask(@unit, x, y));
-    maskX = x; maskY = y;
-    adjacentMask = createAdjacentMask(x, y);
-    terrainMask = await(processor1.createTerrainMask);
+//    maskX = x; maskY = y;
+    // For debugging, remove the `var` and uncomment the variables
+    var adjacentMask = createAdjacentMask(x, y);
+    var terrainMask = await(processor1.createTerrainMask);
     return adjacentMask | terrainMask;
 end;
 
@@ -538,9 +540,9 @@ noinline def layoutThoriumDrillAtLocation()
         var shiftedMask = shiftMask(terrainMask, sx, sy);
         var combinedMask = newTerrainMask | shiftedMask;
 
-        lastUnshiftedMask = terrainMask;
-        lastShiftedMask = shiftedMask;
-        lastCombinedMask = combinedMask;
+//        lastUnshiftedMask = terrainMask;
+//        lastShiftedMask = shiftedMask;
+//        lastCombinedMask = combinedMask;
 
 //        printMask("shiftedMask:", shiftedMask);
 //        printMask("newTerrainMask:", newTerrainMask);

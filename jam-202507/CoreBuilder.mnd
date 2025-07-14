@@ -1,8 +1,6 @@
 #set target = 8;
 #set syntax = strict;
-#set sort-variables;
-//#set function-inlining = none;
-//#set goal = size;
+//#set sort-variables;
 
 // Linked variables
 linked message1, bank1, processor1, processor2, processor3, processor4, processor5,
@@ -16,7 +14,6 @@ var display = processor1,
     polyController = processor3,
     blockBuilder = processor5,
     oreLocator = processor4;
-
 
 require units;
 require "Actions.mnd";
@@ -62,6 +59,11 @@ var
     siliconSurplus = 20,
     metaglassSurplus = 20;
 
+remote monoController var
+    monoCopperTarget,
+    monoSandTarget,
+    monoLeadTarget;
+
 external bank1[511] logPosition = 511;
 
 // See BlockConfiguration.mnd
@@ -92,12 +94,14 @@ const PAYLOAD_ROUTER = " '%-#2#####";
 const UNLOADER4 = "*(###A<###";
 const UNDERFLOW_GATE = "X*''%######";
 const ADDITIVE_REC = "*%ë#}####";
-const BATTERY_LARGE = "l/-#U#A7###";
+const BATTERY_LARGE = "l/,#U#A7###";
 const OVERFLOW_GATE4 = "W&*'%######";
 const LASER_DRILL = "x**F#AA7###";
 const SOLAR_PANEL = "r**#-#+####";
 const CONTAINER = "**#######";
-const SMELTER2 = "%-)A<######";
+const SMELTER2 = "%.)A<######";
+const INVERTED_SORT4 = "T-*%%######";
+const INVERTED_SORT5 = "T-)%%######";
 const UNLOADER5 = "--###A<###";
 const UNLOADER6 = "+(###A<###";
 const UNDERFLOW_GATE2 = "X+''%######";
@@ -197,11 +201,17 @@ end;
 inline void supplyBase2()
     status1("Phase 2: servicing thorium drill");
 
-    supplyBlockFromCore(thoriumGenerator, @coal);
+    if core.@coal < 50 then
+        supplyBlock(thoriumGenerator, @coal);
+    else
+        supplyBlockFromCore(thoriumGenerator, @coal);
+    end;
     fetchBlock(thoriumContainer, @thorium);
 end;
 
 void supplyBase()
+    monoSandTarget = max(0, targetSilicon - core.@silicon);
+
     if thoriumContainer then
         supplyBase2();
     elsif controller.monos > 3 then
@@ -251,6 +261,9 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     controller.leadReserve = lead + leadSurplus;
     controller.siliconReserve = silicon + sign(silicon) * 20;
     controller.graphiteReserve = graphite + sign(graphite) * 20;
+
+    monoLeadTarget = targetLead;
+    monoCopperTarget = targetCopper;
 
     while !targetMet() do
         supplyBase();
@@ -468,7 +481,7 @@ begin
     //buildBlockFromCfg(WATER_EXT2);
 
     //buildBlockFromCfg(BATTERY_LARGE);
-    graphiteSurplus = 200;
+    graphiteSurplus = 150;
 
     // POLYS
     controller.payloadRouter = buildBlockFromCfg(PAYLOAD_ROUTER);
@@ -487,6 +500,8 @@ begin
 
     setPolyTarget(6);
     controller.smelter2 = buildBlockFromCfg(SMELTER2);
+    buildBlockFromCfg(INVERTED_SORT4);
+    buildBlockFromCfg(INVERTED_SORT5);
     buildBlockFromCfg(UNLOADER5, @sand);
     buildUnits();
 
@@ -499,6 +514,7 @@ begin
         supplyBase();
     end;
 
+    graphiteSurplus = 100;
     setMonoTarget(5);
 
     // Build more titanium drills now
@@ -521,6 +537,7 @@ begin
     buildBlockFromCfg(UNDERFLOW_GATE2);
     buildMultiplicativeReconstructor();
 
+    metaglassSurplus = 50;
     buildUnits();
 
     while controller.megas < 1 do
@@ -571,7 +588,11 @@ void stopAll()
 end;
 
 void flagUnits(unit)
-    var firstUnit = ubind(unit);
+    var firstUnit;
+    do
+        firstUnit = ubind(unit);
+    while firstUnit == null;
+
     var x = @thisx;
     do
         flag(x);
@@ -586,6 +607,7 @@ void lineUpUnits(y, unit)
         var x = @unit.@flag;
         itemDrop(@air, 1000);
         move(x, y);
+        if @unit.@mining then stop(); end;
         ubind(unit);
     while @unit != firstUnit;
 end;
