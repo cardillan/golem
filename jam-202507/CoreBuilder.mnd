@@ -67,47 +67,47 @@ remote monoController var
 external bank1[511] logPosition = 511;
 
 // See BlockConfiguration.mnd
-const PRESS = "#'+nA######";
-const BATTERY1 = "k*/(7######";
-const BATTERY2 = "k+/(7######";
-const GENERATOR = "m*.<2######";
-const SMELTER = "%+-A<######";
-const INVERTED_SORT1 = "T+,%%######";
-const PNEUMATIC_DRILL = "w**5#-#####";
-const UNLOADER1 = "*,###A<###";
-const INVERTED_SORT2 = "T),%%######";
-const OVERFLOW_GATE1 = "W*-'%######";
-const PROCESSOR = "®-.}U#U####";
-const POWER_NODE = "g)'%)######";
-const UNLOADER2 = "(*###A<###";
-const AIR_FACTORY = "'(_i#####&";
-const UNLOADER3 = ",)###A<###";
-const INVERTED_SORT3 = "T,*%%######";
-const KILN = "',+_AA#####";
-const WATER_EXT = "z%-AAA##A##";
-const OVERFLOW_GATE2 = "W'*'%######";
-const OVERFLOW_GATE3 = "W&*'%######";
-const STEAM_GEN = "o%+FK<A####";
-const MULTIPRESS = "$(.#U<###";
-const WATER_EXT2 = "z%/AAA##A##";
-const PAYLOAD_ROUTER = " '%-#2#####";
-const UNLOADER4 = "*(###A<###";
-const UNDERFLOW_GATE = "X*''%######";
-const ADDITIVE_REC = "*%ë#}####";
-const BATTERY_LARGE = "l/,#U#A7###";
-const OVERFLOW_GATE4 = "W&*'%######";
-const LASER_DRILL = "x**F#AA7###";
-const SOLAR_PANEL = "r**#-#+####";
-const CONTAINER = "**#######";
-const SMELTER2 = "%.)A<######";
-const INVERTED_SORT4 = "T-*%%######";
-const INVERTED_SORT5 = "T-)%%######";
-const UNLOADER5 = "--###A<###";
-const UNLOADER6 = "+(###A<###";
-const UNDERFLOW_GATE2 = "X+''%######";
-const MULTIPLICATIVE_REC = ".&#ʭ#ǥƁ#ʭ#";
+const PRESS = "#'+nA######%#";
+const BATTERY1 = "k*/(7######$$";
+const BATTERY2 = "k+/(7######$%";
+const GENERATOR = "m*.<2######$&";
+const SMELTER = "%+-A<######%'";
+const INVERTED_SORT1 = "T+,%%######$(";
+const PNEUMATIC_DRILL = "w**5#-#####%)";
+const UNLOADER1 = "*,###A<###$*";
+const INVERTED_SORT2 = "T),%%######$+";
+const OVERFLOW_GATE1 = "W*-'%######$,";
+const PROCESSOR = "®-.}U#U####$-";
+const POWER_NODE = "g)'%)######$.";
+const UNLOADER2 = "(*###A<###$/";
+const AIR_FACTORY = "'(_i#####&&0";
+const UNLOADER3 = ",)###A<###$1";
+const INVERTED_SORT3 = "T,*%%######$2";
+const KILN = "',+_AA#####%3";
+const WATER_EXT = "z%-AAA##A##%4";
+const OVERFLOW_GATE2 = "W'*'%######$5";
+const OVERFLOW_GATE3 = "W&*'%######$6";
+const STEAM_GEN = "o%+FK<A####%7";
+const MULTIPRESS = "$(.#U<###&8";
+const WATER_EXT2 = "z%/AAA##A##%9";
+const PAYLOAD_ROUTER = " '%-#2#####&:";
+const UNLOADER4 = "*(###A<###$;";
+const UNDERFLOW_GATE = "X*''%######$<";
+const ADDITIVE_REC = "*%ë#}####&=";
+const BATTERY_LARGE = "l/,#U#A7###&>";
+const OVERFLOW_GATE4 = "W&*'%######$?";
+const LASER_DRILL = "x**F#AA7###&@";
+const SOLAR_PANEL = "r**#-#+####$A";
+const CONTAINER = "**#######%B";
+const SMELTER2 = "%.)A<######%C";
+const INVERTED_SORT4 = "T-*%%######$D";
+const INVERTED_SORT5 = "T-)%%######$E";
+const UNLOADER5 = "--###A<###$F";
+const UNLOADER6 = "+(###A<###$G";
+const UNDERFLOW_GATE2 = "X+''%######$H";
+const MULTIPLICATIVE_REC = ".&#ʭ#ǥƁ#ʭ#(I";
 
-void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation)
+void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out ind)
     var index = 0;
     type = lookup(:block, char(cfg, index++) - 35);
     x = char(cfg, index++) - 35 - 7;
@@ -120,6 +120,8 @@ void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out 
     mg = char(cfg, index++) - 35;
     th = char(cfg, index++) - 35;
     rotation = char(cfg, index++) - 35;
+    var size = char(cfg, index++) - 35;
+    ind = char(cfg, index++) - 35;
     //println($"Type: $type, x: $x, y: $y, $cu, $pb, $gr, $si, $ti, $mg, $rotation");
 end;
 
@@ -272,33 +274,25 @@ end;
 
 // BUILDING OPERATIONS
 
-inline void log(encodedId)
-    bank1[--logPosition] = encodedId + floor(@second * 1000) * 1000;
-end;
-
-inline void logBlock(block)
-    log(block.@id);
-end;
-
-def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, thorium, rotation, config)
+def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, thorium, rotation, config, index)
     meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium);
-    return blockBuilder.buildBlockAt(block, x, y, rotation, config);
+    return blockBuilder.buildBlockAt(block, x, y, rotation, config, index);
 end;
 
 def buildRemoteBlock(cfg, x, y)
     if x + y > 0 then
-        var type, cu, pb, gr, si, ti, mg, th, rotation;
-        unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation);
-        return buildBlock(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, null);
+        var type, cu, pb, gr, si, ti, mg, th, rotation, index;
+        unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out index);
+        return buildBlock(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, null, index);
     end;
     return false;
 end;
 
 // Builds a block
 def buildBlockFromCfg(cfg, config)
-    var type, x, y, cu, pb, gr, si, ti, mg, th, rotation;
-    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation);
-    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config);
+    var type, x, y, cu, pb, gr, si, ti, mg, th, rotation, index;
+    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out index);
+    return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config, index);
 end;
 
 def buildBlockFromCfg(cfg)
@@ -309,12 +303,6 @@ void meetTarget(cfg)
     var type, cu, pb, gr, si, ti, mg, th;
     unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
     meetTarget(type, cu, pb, gr, si, ti, mg, th);
-end;
-
-void meetMultipleTargets(cfg, multiple)
-    var type, cu, pb, gr, si, ti, mg, th;
-    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
-    meetTarget(type, multiple * cu, multiple * pb, multiple * gr, multiple * si, multiple * ti, multiple * mg, multiple * th);
 end;
 
 def buildFirstTitaniumDrill(cfg)
@@ -353,7 +341,7 @@ void buildThoriumDrill()
 
     var result = await(oreLocator.layoutThoriumDrill);
     if !result then error("Cannot locate spot for thorium drill"); end;
-    thoriumDrill = blockBuilder.buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0);
+    thoriumDrill = blockBuilder.buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, -1);
 
     buildRemoteBlock(WATER_EXT, oreLocator.water1X, oreLocator.water1Y);
     buildRemoteBlock(WATER_EXT, oreLocator.water2X, oreLocator.water2Y);

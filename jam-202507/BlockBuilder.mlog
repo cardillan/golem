@@ -1,88 +1,87 @@
-jump 12 always 0 0
-jump 23 always 0 0
-jump 77 always 0 0
-jump 140 always 0 0
-draw triangle bank1 processor1 processor2 processor3 processor5 .ERROR
-draw triangle .ERROR_BLOCK_NEW .ERROR_BLOCK_OLD .ERROR_X .ERROR_Y .builder .core
-draw triangle .coreX .coreY .lastSpotX .lastSpotY .negative .positive
-draw triangle :buildBlockAt:block :buildBlockAt:config :buildBlockAt:rotation :buildBlockAt:x :buildBlockAt:y :buildBlockAtLocal:building
-draw triangle :buildBlockAtLocal:coal :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:success :buildBlockAtLocal:type :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y
-draw triangle :buildTitaniumDrill:count :buildTitaniumDrills:c :buildTitaniumDrills:count :buildTitaniumDrills:current :buildTitaniumDrills:drill2 :buildTitaniumDrills:drill3
-draw triangle :buildTitaniumDrills:index :buildTitaniumDrills:size :buildTitaniumDrills:x :buildTitaniumDrills:y :getFloor:floor :log:encodedId
-draw triangle :titaniumDrillScore:negative :titaniumDrillScore:positive :titaniumDrillScore:x 0 0 0
-read *tmp8 processor3 "*signature"
-jump 12 notEqual *tmp8 "2347e8b86ae8a071:v1"
+jump 4 always 0 0
+jump 15 always 0 0
+jump 76 always 0 0
+jump 137 always 0 0
+read *tmp2 processor3 "*signature"
+jump 4 notEqual *tmp2 "881dde114374c003:v1"
 ubind @poly
 set .builder @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 14 equal .core null
+jump 6 equal .core null
 set .positive 0
 set .negative 0
-set *signature "c094f7e436c775d9:v1"
+set *signature "319badb7a8e178a4:v1"
 wait 1e12
-jump 21 always 0 0
-ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp18 0
-jump 28 notEqual *tmp18 false
+jump 13 always 0 0
+ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp14 0
+jump 20 notEqual *tmp14 false
 ucontrol approach :buildBlockAt:x :buildBlockAt:y 5.5 0 0
-ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp18 0
-jump 25 equal *tmp18 false
+ucontrol within :buildBlockAt:x :buildBlockAt:y 6 *tmp14 0
+jump 17 equal *tmp14 false
 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 39 equal :buildBlockAtLocal:building null
-jump 33 notEqual :buildBlockAtLocal:type :buildBlockAt:block
+jump 31 equal :buildBlockAtLocal:building null
+jump 25 notEqual :buildBlockAtLocal:type :buildBlockAt:block
 set :buildBlockAt*retval :buildBlockAtLocal:building
-jump 75 always 0 0
+jump 74 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW :buildBlockAt:block
 set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
 set .ERROR_X :buildBlockAt:x
 set .ERROR_Y :buildBlockAt:y
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
+set :buildBlockAtLocal:fullBuildSupportLimit 200
 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
 wait 0.25
 set :buildBlockAtLocal:success false
 ucontrol getBlock :buildBlockAt:x :buildBlockAt:y :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 56 equal *tmp35 false
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 47 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW :buildBlockAt:block
 set .ERROR_BLOCK_OLD "unknown"
 set .ERROR_X :buildBlockAt:x
 set .ERROR_Y :buildBlockAt:y
 stop
-jump 57 always 0 0
+jump 48 always 0 0
 set :buildBlockAtLocal:success true
-jump 63 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 56 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
-jump 63 equal @unit .builder
+jump 56 equal @unit .builder
 ucontrol approach :buildBlockAt:x :buildBlockAt:y 6 0 0
 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
-jump 44 notEqual :buildBlockAtLocal:type :buildBlockAt:block
+jump 35 notEqual :buildBlockAtLocal:type :buildBlockAt:block
 control enabled processor2 true 0 0 0
 ubind .builder
 sensor :log:encodedId :buildBlockAt:block @id
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 :log:encodedId *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 :log:encodedId *tmp44
+write *tmp45 bank1 *tmp40
+jump 73 lessThan :buildBlockAt:index 0
+op shl *tmp48 1 :buildBlockAt:index
+read *tmp3 processor4 ".blocksBuilt"
+op or *tmp49 *tmp3 *tmp48
+write *tmp49 processor4 ".blocksBuilt"
+write :buildBlockAt:index processor4 ".recentBuildIndex"
 set :buildBlockAt*retval :buildBlockAtLocal:building
 set :buildBlockAt*finished true
-jump 21 always 0 0
-ucontrol within :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 6 *tmp18 0
-jump 82 notEqual *tmp18 false
+jump 13 always 0 0
+ucontrol within :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 6 *tmp14 0
+jump 81 notEqual *tmp14 false
 ucontrol approach :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 5.5 0 0
-ucontrol within :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 6 *tmp18 0
-jump 79 equal *tmp18 false
+ucontrol within :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 6 *tmp14 0
+jump 78 equal *tmp14 false
 ucontrol getBlock :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 93 equal :buildBlockAtLocal:building null
-jump 87 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 92 equal :buildBlockAtLocal:building null
+jump 86 notEqual :buildBlockAtLocal:type @pneumatic-drill
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
 jump 128 always 0 0
 set .ERROR "Cannot build at position"
@@ -91,244 +90,245 @@ set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
 set .ERROR_X :buildFirstTitaniumDrillAt:x
 set .ERROR_Y :buildFirstTitaniumDrillAt:y
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
+set :buildBlockAtLocal:fullBuildSupportLimit 200
 ucontrol build :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y @pneumatic-drill 0 null
 wait 0.25
 set :buildBlockAtLocal:success false
 ucontrol getBlock :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 110 equal *tmp35 false
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 108 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD "unknown"
 set .ERROR_X :buildFirstTitaniumDrillAt:x
 set .ERROR_Y :buildFirstTitaniumDrillAt:y
 stop
-jump 111 always 0 0
+jump 109 always 0 0
 set :buildBlockAtLocal:success true
-jump 117 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 117 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
 jump 117 equal @unit .builder
 ucontrol approach :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 6 0 0
 ucontrol build :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y @pneumatic-drill 0 null
-jump 98 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 96 notEqual :buildBlockAtLocal:type @pneumatic-drill
 control enabled processor2 true 0 0 0
 ubind .builder
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 84 *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 84 *tmp44
+write *tmp45 bank1 *tmp40
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrills:d1"
-write 0 processor3 ":addTitaniumDrills:d2"
-write 0 processor3 ":addTitaniumDrills:d3"
-write 0 processor3 ":addTitaniumDrills:d4"
-write false processor3 ":addTitaniumDrills*finished"
+write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
+write false processor3 ":addTitaniumDrill*finished"
 write 1 processor3 "@counter"
 wait 1e-15
-read *tmp54 processor3 ":addTitaniumDrills*finished"
-jump 134 equal *tmp54 false
+read *tmp51 processor3 ":addTitaniumDrill*finished"
+jump 131 equal *tmp51 false
 set :buildFirstTitaniumDrillAt*retval :buildBlockAtLocal*retval
 set :buildFirstTitaniumDrillAt*finished true
-jump 21 always 0 0
+jump 13 always 0 0
 set :buildTitaniumDrills:count 1
+set :buildTitaniumDrills:tiles 0
 wait 0.0001
 wait 0.0001
-read *tmp11 processor5 ".searchFinished"
-jump 790 notEqual *tmp11 false
-read *tmp12 processor5 ".locations"
-jump 787 greaterThanEq :buildTitaniumDrills:current *tmp12
+read *tmp7 processor5 ".searchFinished"
+jump 835 notEqual *tmp7 false
+read *tmp8 processor5 ".locations"
+jump 832 greaterThanEq :buildTitaniumDrills:current *tmp8
 op mul :buildTitaniumDrills:index :buildTitaniumDrills:current 4
 op add *tmp81 :buildTitaniumDrills:index 1
 read :buildTitaniumDrills:size bank1 *tmp81
-jump 784 lessThanEq :buildTitaniumDrills:size 0
-op add *tmp85 :buildTitaniumDrills:index 2
-read :buildTitaniumDrills:x bank1 *tmp85
-op add *tmp89 :buildTitaniumDrills:index 3
-read :buildTitaniumDrills:y bank1 *tmp89
-set .lastSpotX :buildTitaniumDrills:x
-set .lastSpotY :buildTitaniumDrills:y
-op sub *tmp91 :buildTitaniumDrills:x 1
-op sub *tmp92 :buildTitaniumDrills:y 1
-set :buildTitaniumDrill:count 0
-ucontrol within *tmp91 *tmp92 6 *tmp18 0
-jump 165 notEqual *tmp18 false
-ucontrol approach *tmp91 *tmp92 5.5 0 0
-ucontrol within *tmp91 *tmp92 6 *tmp18 0
-jump 162 equal *tmp18 false
+jump 829 lessThan :buildTitaniumDrills:size 3
+op add *tmp87 :buildTitaniumDrills:index 2
+read :buildTitaniumDrills:x bank1 *tmp87
+op add *tmp90 :buildTitaniumDrills:index 3
+read :buildTitaniumDrills:y bank1 *tmp90
+op sub *tmp92 :buildTitaniumDrills:x 1
+op sub *tmp93 :buildTitaniumDrills:y 1
+set :buildTitaniumDrill:count :buildTitaniumDrills:count
+set :buildTitaniumDrill:tiles :buildTitaniumDrills:tiles
+jump 288 greaterThanEq :buildTitaniumDrills:tiles 16
+ucontrol within *tmp92 *tmp93 6 *tmp14 0
+jump 163 notEqual *tmp14 false
+ucontrol approach *tmp92 *tmp93 5.5 0 0
+ucontrol within *tmp92 *tmp93 6 *tmp14 0
+jump 160 equal *tmp14 false
 set .positive 0
 set .negative 0
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp91 *tmp92 0 0 :getFloor:floor
-jump 173 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp92 *tmp93 0 0 :getFloor:floor
+jump 171 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 178 always 0 0
-jump 177 equal :getFloor:floor @ore-copper
-jump 177 equal :getFloor:floor @ore-lead
-jump 177 equal :getFloor:floor @ore-scrap
-jump 178 notEqual :getFloor:floor @ore-coal
+jump 176 always 0 0
+jump 175 equal :getFloor:floor @ore-copper
+jump 175 equal :getFloor:floor @ore-lead
+jump 175 equal :getFloor:floor @ore-scrap
+jump 176 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op sub *tmp65 :buildTitaniumDrills:y 0.5
+op sub *tmp62 :buildTitaniumDrills:y 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp91 *tmp65 0 0 :getFloor:floor
-jump 187 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp92 *tmp62 0 0 :getFloor:floor
+jump 185 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 192 always 0 0
-jump 191 equal :getFloor:floor @ore-copper
-jump 191 equal :getFloor:floor @ore-lead
-jump 191 equal :getFloor:floor @ore-scrap
-jump 192 notEqual :getFloor:floor @ore-coal
+jump 190 always 0 0
+jump 189 equal :getFloor:floor @ore-copper
+jump 189 equal :getFloor:floor @ore-lead
+jump 189 equal :getFloor:floor @ore-scrap
+jump 190 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
 op sub :titaniumDrillScore:x :buildTitaniumDrills:x 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp92 0 0 :getFloor:floor
-jump 201 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp93 0 0 :getFloor:floor
+jump 199 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 206 always 0 0
-jump 205 equal :getFloor:floor @ore-copper
-jump 205 equal :getFloor:floor @ore-lead
-jump 205 equal :getFloor:floor @ore-scrap
-jump 206 notEqual :getFloor:floor @ore-coal
+jump 204 always 0 0
+jump 203 equal :getFloor:floor @ore-copper
+jump 203 equal :getFloor:floor @ore-lead
+jump 203 equal :getFloor:floor @ore-scrap
+jump 204 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp65 0 0 :getFloor:floor
-jump 214 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp62 0 0 :getFloor:floor
+jump 212 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 219 always 0 0
-jump 218 equal :getFloor:floor @ore-copper
-jump 218 equal :getFloor:floor @ore-lead
-jump 218 equal :getFloor:floor @ore-scrap
-jump 219 notEqual :getFloor:floor @ore-coal
+jump 217 always 0 0
+jump 216 equal :getFloor:floor @ore-copper
+jump 216 equal :getFloor:floor @ore-lead
+jump 216 equal :getFloor:floor @ore-scrap
+jump 217 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op greaterThan *tmp72 .positive .negative
-op greaterThanEq *tmp73 .positive 2
-op land *tmp74 *tmp72 *tmp73
-jump 278 equal *tmp74 false
-ucontrol within *tmp91 *tmp92 6 *tmp18 0
-jump 230 notEqual *tmp18 false
-ucontrol approach *tmp91 *tmp92 5.5 0 0
-ucontrol within *tmp91 *tmp92 6 *tmp18 0
-jump 227 equal *tmp18 false
-ucontrol getBlock *tmp91 *tmp92 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 241 equal :buildBlockAtLocal:building null
-jump 235 notEqual :buildBlockAtLocal:type @pneumatic-drill
+op greaterThan *tmp69 .positive .negative
+op greaterThanEq *tmp70 .positive 2
+op land *tmp71 *tmp69 *tmp70
+jump 288 equal *tmp71 false
+ucontrol within *tmp92 *tmp93 6 *tmp14 0
+jump 228 notEqual *tmp14 false
+ucontrol approach *tmp92 *tmp93 5.5 0 0
+ucontrol within *tmp92 *tmp93 6 *tmp14 0
+jump 225 equal *tmp14 false
+ucontrol getBlock *tmp92 *tmp93 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+jump 239 equal :buildBlockAtLocal:building null
+jump 233 notEqual :buildBlockAtLocal:type @pneumatic-drill
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-jump 276 always 0 0
+jump 275 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
-set .ERROR_X *tmp91
-set .ERROR_Y *tmp92
+set .ERROR_X *tmp92
+set .ERROR_Y *tmp93
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
-ucontrol build *tmp91 *tmp92 @pneumatic-drill null 0
+set :buildBlockAtLocal:fullBuildSupportLimit 200
+ucontrol build *tmp92 *tmp93 @pneumatic-drill null 0
 wait 0.25
 set :buildBlockAtLocal:success false
-ucontrol getBlock *tmp91 *tmp92 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 258 equal *tmp35 false
+ucontrol getBlock *tmp92 *tmp93 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 255 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD "unknown"
-set .ERROR_X *tmp91
-set .ERROR_Y *tmp92
+set .ERROR_X *tmp92
+set .ERROR_Y *tmp93
 stop
-jump 259 always 0 0
+jump 256 always 0 0
 set :buildBlockAtLocal:success true
-jump 265 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 264 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
-jump 265 equal @unit .builder
-ucontrol approach *tmp91 *tmp92 6 0 0
-ucontrol build *tmp91 *tmp92 @pneumatic-drill null 0
-jump 246 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 264 equal @unit .builder
+ucontrol approach *tmp92 *tmp93 6 0 0
+ucontrol build *tmp92 *tmp93 @pneumatic-drill null 0
+jump 243 notEqual :buildBlockAtLocal:type @pneumatic-drill
 control enabled processor2 true 0 0 0
 ubind .builder
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 84 *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 84 *tmp44
+write *tmp45 bank1 *tmp40
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-op mul *tmp76 :buildBlockAtLocal*retval .positive
-set :buildTitaniumDrill:count *tmp76
-op add *tmp94 :buildTitaniumDrills:x 1
-jump 400 greaterThanEq :buildTitaniumDrill:count 32
-ucontrol within *tmp94 *tmp92 6 *tmp18 0
-jump 285 notEqual *tmp18 false
-ucontrol approach *tmp94 *tmp92 5.5 0 0
-ucontrol within *tmp94 *tmp92 6 *tmp18 0
-jump 282 equal *tmp18 false
+jump 288 equal :buildBlockAtLocal*retval null
+write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
+write false processor3 ":addTitaniumDrill*finished"
+write 1 processor3 "@counter"
+wait 1e-15
+read *tmp76 processor3 ":addTitaniumDrill*finished"
+jump 279 equal *tmp76 false
+op add :buildTitaniumDrill:count :buildTitaniumDrills:count 1
+write :buildTitaniumDrill:count :buildTitaniumDrills:aController ".flareTarget"
+write :buildTitaniumDrill:count processor4 ".flareTarget"
+op add :buildTitaniumDrill:tiles :buildTitaniumDrills:tiles .positive
+set :buildTitaniumDrill*retval .positive
+jump 290 always 0 0
+set :buildTitaniumDrill*retval 0
+jump 290 always 0 0
+set *tmp94 :buildTitaniumDrill*retval
+op add *tmp95 :buildTitaniumDrills:x 1
+jump 423 greaterThanEq :buildTitaniumDrill:tiles 16
+ucontrol within *tmp95 *tmp93 6 *tmp14 0
+jump 298 notEqual *tmp14 false
+ucontrol approach *tmp95 *tmp93 5.5 0 0
+ucontrol within *tmp95 *tmp93 6 *tmp14 0
+jump 295 equal *tmp14 false
 set .positive 0
 set .negative 0
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp94 *tmp92 0 0 :getFloor:floor
-jump 293 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp95 *tmp93 0 0 :getFloor:floor
+jump 306 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 298 always 0 0
-jump 297 equal :getFloor:floor @ore-copper
-jump 297 equal :getFloor:floor @ore-lead
-jump 297 equal :getFloor:floor @ore-scrap
-jump 298 notEqual :getFloor:floor @ore-coal
+jump 311 always 0 0
+jump 310 equal :getFloor:floor @ore-copper
+jump 310 equal :getFloor:floor @ore-lead
+jump 310 equal :getFloor:floor @ore-scrap
+jump 311 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op add *tmp65 *tmp92 0.5
+op add *tmp62 *tmp93 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp94 *tmp65 0 0 :getFloor:floor
-jump 307 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp95 *tmp62 0 0 :getFloor:floor
+jump 320 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 312 always 0 0
-jump 311 equal :getFloor:floor @ore-copper
-jump 311 equal :getFloor:floor @ore-lead
-jump 311 equal :getFloor:floor @ore-scrap
-jump 312 notEqual :getFloor:floor @ore-coal
+jump 325 always 0 0
+jump 324 equal :getFloor:floor @ore-copper
+jump 324 equal :getFloor:floor @ore-lead
+jump 324 equal :getFloor:floor @ore-scrap
+jump 325 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
 op add :titaniumDrillScore:x :buildTitaniumDrills:x 1.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp92 0 0 :getFloor:floor
-jump 321 notEqual :getFloor:floor @ore-titanium
-op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 326 always 0 0
-jump 325 equal :getFloor:floor @ore-copper
-jump 325 equal :getFloor:floor @ore-lead
-jump 325 equal :getFloor:floor @ore-scrap
-jump 326 notEqual :getFloor:floor @ore-coal
-op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
-set .positive :titaniumDrillScore:positive
-set .negative :titaniumDrillScore:negative
-set :titaniumDrillScore:positive .positive
-set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp65 0 0 :getFloor:floor
+ucontrol getBlock :titaniumDrillScore:x *tmp93 0 0 :getFloor:floor
 jump 334 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
 jump 339 always 0 0
@@ -339,350 +339,395 @@ jump 339 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op greaterThan *tmp72 .positive .negative
-op greaterThanEq *tmp73 .positive 2
-op land *tmp74 *tmp72 *tmp73
-jump 400 equal *tmp74 false
-ucontrol within *tmp94 *tmp92 6 *tmp18 0
-jump 350 notEqual *tmp18 false
-ucontrol approach *tmp94 *tmp92 5.5 0 0
-ucontrol within *tmp94 *tmp92 6 *tmp18 0
-jump 347 equal *tmp18 false
-ucontrol getBlock *tmp94 *tmp92 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 361 equal :buildBlockAtLocal:building null
-jump 355 notEqual :buildBlockAtLocal:type @pneumatic-drill
+set :titaniumDrillScore:positive .positive
+set :titaniumDrillScore:negative .negative
+ucontrol getBlock :titaniumDrillScore:x *tmp62 0 0 :getFloor:floor
+jump 347 notEqual :getFloor:floor @ore-titanium
+op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
+jump 352 always 0 0
+jump 351 equal :getFloor:floor @ore-copper
+jump 351 equal :getFloor:floor @ore-lead
+jump 351 equal :getFloor:floor @ore-scrap
+jump 352 notEqual :getFloor:floor @ore-coal
+op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
+set .positive :titaniumDrillScore:positive
+set .negative :titaniumDrillScore:negative
+op greaterThan *tmp69 .positive .negative
+op greaterThanEq *tmp70 .positive 2
+op land *tmp71 *tmp69 *tmp70
+jump 423 equal *tmp71 false
+ucontrol within *tmp95 *tmp93 6 *tmp14 0
+jump 363 notEqual *tmp14 false
+ucontrol approach *tmp95 *tmp93 5.5 0 0
+ucontrol within *tmp95 *tmp93 6 *tmp14 0
+jump 360 equal *tmp14 false
+ucontrol getBlock *tmp95 *tmp93 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+jump 374 equal :buildBlockAtLocal:building null
+jump 368 notEqual :buildBlockAtLocal:type @pneumatic-drill
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-jump 396 always 0 0
+jump 410 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
-set .ERROR_X *tmp94
-set .ERROR_Y *tmp92
+set .ERROR_X *tmp95
+set .ERROR_Y *tmp93
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
-ucontrol build *tmp94 *tmp92 @pneumatic-drill null 0
+set :buildBlockAtLocal:fullBuildSupportLimit 200
+ucontrol build *tmp95 *tmp93 @pneumatic-drill null 0
 wait 0.25
 set :buildBlockAtLocal:success false
-ucontrol getBlock *tmp94 *tmp92 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 378 equal *tmp35 false
+ucontrol getBlock *tmp95 *tmp93 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 390 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD "unknown"
-set .ERROR_X *tmp94
-set .ERROR_Y *tmp92
+set .ERROR_X *tmp95
+set .ERROR_Y *tmp93
 stop
-jump 379 always 0 0
+jump 391 always 0 0
 set :buildBlockAtLocal:success true
-jump 385 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 399 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
-jump 385 equal @unit .builder
-ucontrol approach *tmp94 *tmp92 6 0 0
-ucontrol build *tmp94 *tmp92 @pneumatic-drill null 0
-jump 366 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 399 equal @unit .builder
+ucontrol approach *tmp95 *tmp93 6 0 0
+ucontrol build *tmp95 *tmp93 @pneumatic-drill null 0
+jump 378 notEqual :buildBlockAtLocal:type @pneumatic-drill
 control enabled processor2 true 0 0 0
 ubind .builder
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 84 *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 84 *tmp44
+write *tmp45 bank1 *tmp40
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-op mul *tmp76 :buildBlockAtLocal*retval .positive
-op add :buildTitaniumDrill:count :buildTitaniumDrill:count *tmp76
-set :buildTitaniumDrill*retval :buildBlockAtLocal*retval
-jump 402 always 0 0
-set :buildTitaniumDrill*retval null
-jump 402 always 0 0
-set :buildTitaniumDrills:drill2 :buildTitaniumDrill*retval
-op add *tmp98 :buildTitaniumDrills:y 1
-jump 525 greaterThanEq :buildTitaniumDrill:count 32
-ucontrol within *tmp91 *tmp98 6 *tmp18 0
-jump 410 notEqual *tmp18 false
-ucontrol approach *tmp91 *tmp98 5.5 0 0
-ucontrol within *tmp91 *tmp98 6 *tmp18 0
-jump 407 equal *tmp18 false
+jump 423 equal :buildBlockAtLocal*retval null
+write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
+write false processor3 ":addTitaniumDrill*finished"
+write 1 processor3 "@counter"
+wait 1e-15
+read *tmp76 processor3 ":addTitaniumDrill*finished"
+jump 414 equal *tmp76 false
+op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
+write :buildTitaniumDrill:count :buildTitaniumDrills:aController ".flareTarget"
+write :buildTitaniumDrill:count processor4 ".flareTarget"
+op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
+set :buildTitaniumDrill*retval .positive
+jump 425 always 0 0
+set :buildTitaniumDrill*retval 0
+jump 425 always 0 0
+op add *tmp98 *tmp94 :buildTitaniumDrill*retval
+op add *tmp100 :buildTitaniumDrills:y 1
+jump 558 greaterThanEq :buildTitaniumDrill:tiles 16
+ucontrol within *tmp92 *tmp100 6 *tmp14 0
+jump 433 notEqual *tmp14 false
+ucontrol approach *tmp92 *tmp100 5.5 0 0
+ucontrol within *tmp92 *tmp100 6 *tmp14 0
+jump 430 equal *tmp14 false
 set .positive 0
 set .negative 0
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp91 *tmp98 0 0 :getFloor:floor
-jump 418 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp92 *tmp100 0 0 :getFloor:floor
+jump 441 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 423 always 0 0
-jump 422 equal :getFloor:floor @ore-copper
-jump 422 equal :getFloor:floor @ore-lead
-jump 422 equal :getFloor:floor @ore-scrap
-jump 423 notEqual :getFloor:floor @ore-coal
+jump 446 always 0 0
+jump 445 equal :getFloor:floor @ore-copper
+jump 445 equal :getFloor:floor @ore-lead
+jump 445 equal :getFloor:floor @ore-scrap
+jump 446 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op add *tmp65 :buildTitaniumDrills:y 1.5
+op add *tmp62 :buildTitaniumDrills:y 1.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp91 *tmp65 0 0 :getFloor:floor
-jump 432 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp92 *tmp62 0 0 :getFloor:floor
+jump 455 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 437 always 0 0
-jump 436 equal :getFloor:floor @ore-copper
-jump 436 equal :getFloor:floor @ore-lead
-jump 436 equal :getFloor:floor @ore-scrap
-jump 437 notEqual :getFloor:floor @ore-coal
+jump 460 always 0 0
+jump 459 equal :getFloor:floor @ore-copper
+jump 459 equal :getFloor:floor @ore-lead
+jump 459 equal :getFloor:floor @ore-scrap
+jump 460 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op add :titaniumDrillScore:x *tmp91 0.5
+op add :titaniumDrillScore:x *tmp92 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp98 0 0 :getFloor:floor
-jump 446 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp100 0 0 :getFloor:floor
+jump 469 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 451 always 0 0
-jump 450 equal :getFloor:floor @ore-copper
-jump 450 equal :getFloor:floor @ore-lead
-jump 450 equal :getFloor:floor @ore-scrap
-jump 451 notEqual :getFloor:floor @ore-coal
+jump 474 always 0 0
+jump 473 equal :getFloor:floor @ore-copper
+jump 473 equal :getFloor:floor @ore-lead
+jump 473 equal :getFloor:floor @ore-scrap
+jump 474 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp65 0 0 :getFloor:floor
-jump 459 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp62 0 0 :getFloor:floor
+jump 482 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 464 always 0 0
-jump 463 equal :getFloor:floor @ore-copper
-jump 463 equal :getFloor:floor @ore-lead
-jump 463 equal :getFloor:floor @ore-scrap
-jump 464 notEqual :getFloor:floor @ore-coal
+jump 487 always 0 0
+jump 486 equal :getFloor:floor @ore-copper
+jump 486 equal :getFloor:floor @ore-lead
+jump 486 equal :getFloor:floor @ore-scrap
+jump 487 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op greaterThan *tmp72 .positive .negative
-op greaterThanEq *tmp73 .positive 2
-op land *tmp74 *tmp72 *tmp73
-jump 525 equal *tmp74 false
-ucontrol within *tmp91 *tmp98 6 *tmp18 0
-jump 475 notEqual *tmp18 false
-ucontrol approach *tmp91 *tmp98 5.5 0 0
-ucontrol within *tmp91 *tmp98 6 *tmp18 0
-jump 472 equal *tmp18 false
-ucontrol getBlock *tmp91 *tmp98 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 486 equal :buildBlockAtLocal:building null
-jump 480 notEqual :buildBlockAtLocal:type @pneumatic-drill
+op greaterThan *tmp69 .positive .negative
+op greaterThanEq *tmp70 .positive 2
+op land *tmp71 *tmp69 *tmp70
+jump 558 equal *tmp71 false
+ucontrol within *tmp92 *tmp100 6 *tmp14 0
+jump 498 notEqual *tmp14 false
+ucontrol approach *tmp92 *tmp100 5.5 0 0
+ucontrol within *tmp92 *tmp100 6 *tmp14 0
+jump 495 equal *tmp14 false
+ucontrol getBlock *tmp92 *tmp100 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+jump 509 equal :buildBlockAtLocal:building null
+jump 503 notEqual :buildBlockAtLocal:type @pneumatic-drill
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-jump 521 always 0 0
+jump 545 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
-set .ERROR_X *tmp91
-set .ERROR_Y *tmp98
+set .ERROR_X *tmp92
+set .ERROR_Y *tmp100
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
-ucontrol build *tmp91 *tmp98 @pneumatic-drill null 0
+set :buildBlockAtLocal:fullBuildSupportLimit 200
+ucontrol build *tmp92 *tmp100 @pneumatic-drill null 0
 wait 0.25
 set :buildBlockAtLocal:success false
-ucontrol getBlock *tmp91 *tmp98 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 503 equal *tmp35 false
+ucontrol getBlock *tmp92 *tmp100 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 525 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD "unknown"
-set .ERROR_X *tmp91
-set .ERROR_Y *tmp98
+set .ERROR_X *tmp92
+set .ERROR_Y *tmp100
 stop
-jump 504 always 0 0
+jump 526 always 0 0
 set :buildBlockAtLocal:success true
-jump 510 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 534 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
-jump 510 equal @unit .builder
-ucontrol approach *tmp91 *tmp98 6 0 0
-ucontrol build *tmp91 *tmp98 @pneumatic-drill null 0
-jump 491 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 534 equal @unit .builder
+ucontrol approach *tmp92 *tmp100 6 0 0
+ucontrol build *tmp92 *tmp100 @pneumatic-drill null 0
+jump 513 notEqual :buildBlockAtLocal:type @pneumatic-drill
 control enabled processor2 true 0 0 0
 ubind .builder
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 84 *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 84 *tmp44
+write *tmp45 bank1 *tmp40
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-op mul *tmp76 :buildBlockAtLocal*retval .positive
-op add :buildTitaniumDrill:count :buildTitaniumDrill:count *tmp76
-set :buildTitaniumDrill*retval :buildBlockAtLocal*retval
-jump 527 always 0 0
-set :buildTitaniumDrill*retval null
-jump 527 always 0 0
-set :buildTitaniumDrills:drill3 :buildTitaniumDrill*retval
-jump 649 greaterThanEq :buildTitaniumDrill:count 32
-ucontrol within *tmp94 *tmp98 6 *tmp18 0
-jump 534 notEqual *tmp18 false
-ucontrol approach *tmp94 *tmp98 5.5 0 0
-ucontrol within *tmp94 *tmp98 6 *tmp18 0
-jump 531 equal *tmp18 false
+jump 558 equal :buildBlockAtLocal*retval null
+write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
+write false processor3 ":addTitaniumDrill*finished"
+write 1 processor3 "@counter"
+wait 1e-15
+read *tmp76 processor3 ":addTitaniumDrill*finished"
+jump 549 equal *tmp76 false
+op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
+write :buildTitaniumDrill:count :buildTitaniumDrills:aController ".flareTarget"
+write :buildTitaniumDrill:count processor4 ".flareTarget"
+op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
+set :buildTitaniumDrill*retval .positive
+jump 560 always 0 0
+set :buildTitaniumDrill*retval 0
+jump 560 always 0 0
+op add *tmp102 *tmp98 :buildTitaniumDrill*retval
+jump 692 greaterThanEq :buildTitaniumDrill:tiles 16
+ucontrol within *tmp95 *tmp100 6 *tmp14 0
+jump 567 notEqual *tmp14 false
+ucontrol approach *tmp95 *tmp100 5.5 0 0
+ucontrol within *tmp95 *tmp100 6 *tmp14 0
+jump 564 equal *tmp14 false
 set .positive 0
 set .negative 0
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp94 *tmp98 0 0 :getFloor:floor
-jump 542 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp95 *tmp100 0 0 :getFloor:floor
+jump 575 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 547 always 0 0
-jump 546 equal :getFloor:floor @ore-copper
-jump 546 equal :getFloor:floor @ore-lead
-jump 546 equal :getFloor:floor @ore-scrap
-jump 547 notEqual :getFloor:floor @ore-coal
+jump 580 always 0 0
+jump 579 equal :getFloor:floor @ore-copper
+jump 579 equal :getFloor:floor @ore-lead
+jump 579 equal :getFloor:floor @ore-scrap
+jump 580 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op add *tmp65 *tmp98 0.5
+op add *tmp62 *tmp100 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock *tmp94 *tmp65 0 0 :getFloor:floor
-jump 556 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock *tmp95 *tmp62 0 0 :getFloor:floor
+jump 589 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 561 always 0 0
-jump 560 equal :getFloor:floor @ore-copper
-jump 560 equal :getFloor:floor @ore-lead
-jump 560 equal :getFloor:floor @ore-scrap
-jump 561 notEqual :getFloor:floor @ore-coal
+jump 594 always 0 0
+jump 593 equal :getFloor:floor @ore-copper
+jump 593 equal :getFloor:floor @ore-lead
+jump 593 equal :getFloor:floor @ore-scrap
+jump 594 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op add :titaniumDrillScore:x *tmp94 0.5
+op add :titaniumDrillScore:x *tmp95 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp98 0 0 :getFloor:floor
-jump 570 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp100 0 0 :getFloor:floor
+jump 603 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 575 always 0 0
-jump 574 equal :getFloor:floor @ore-copper
-jump 574 equal :getFloor:floor @ore-lead
-jump 574 equal :getFloor:floor @ore-scrap
-jump 575 notEqual :getFloor:floor @ore-coal
+jump 608 always 0 0
+jump 607 equal :getFloor:floor @ore-copper
+jump 607 equal :getFloor:floor @ore-lead
+jump 607 equal :getFloor:floor @ore-scrap
+jump 608 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp65 0 0 :getFloor:floor
-jump 583 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp62 0 0 :getFloor:floor
+jump 616 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 588 always 0 0
-jump 587 equal :getFloor:floor @ore-copper
-jump 587 equal :getFloor:floor @ore-lead
-jump 587 equal :getFloor:floor @ore-scrap
-jump 588 notEqual :getFloor:floor @ore-coal
+jump 621 always 0 0
+jump 620 equal :getFloor:floor @ore-copper
+jump 620 equal :getFloor:floor @ore-lead
+jump 620 equal :getFloor:floor @ore-scrap
+jump 621 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op greaterThan *tmp72 .positive .negative
-op greaterThanEq *tmp73 .positive 2
-op land *tmp74 *tmp72 *tmp73
-jump 649 equal *tmp74 false
-ucontrol within *tmp94 *tmp98 6 *tmp18 0
-jump 599 notEqual *tmp18 false
-ucontrol approach *tmp94 *tmp98 5.5 0 0
-ucontrol within *tmp94 *tmp98 6 *tmp18 0
-jump 596 equal *tmp18 false
-ucontrol getBlock *tmp94 *tmp98 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 610 equal :buildBlockAtLocal:building null
-jump 604 notEqual :buildBlockAtLocal:type @pneumatic-drill
+op greaterThan *tmp69 .positive .negative
+op greaterThanEq *tmp70 .positive 2
+op land *tmp71 *tmp69 *tmp70
+jump 692 equal *tmp71 false
+ucontrol within *tmp95 *tmp100 6 *tmp14 0
+jump 632 notEqual *tmp14 false
+ucontrol approach *tmp95 *tmp100 5.5 0 0
+ucontrol within *tmp95 *tmp100 6 *tmp14 0
+jump 629 equal *tmp14 false
+ucontrol getBlock *tmp95 *tmp100 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+jump 643 equal :buildBlockAtLocal:building null
+jump 637 notEqual :buildBlockAtLocal:type @pneumatic-drill
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-jump 645 always 0 0
+jump 679 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
-set .ERROR_X *tmp94
-set .ERROR_Y *tmp98
+set .ERROR_X *tmp95
+set .ERROR_Y *tmp100
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
-ucontrol build *tmp94 *tmp98 @pneumatic-drill null 0
+set :buildBlockAtLocal:fullBuildSupportLimit 200
+ucontrol build *tmp95 *tmp100 @pneumatic-drill null 0
 wait 0.25
 set :buildBlockAtLocal:success false
-ucontrol getBlock *tmp94 *tmp98 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 627 equal *tmp35 false
+ucontrol getBlock *tmp95 *tmp100 :buildBlockAtLocal:type :buildBlockAtLocal:building 0
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 659 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD "unknown"
-set .ERROR_X *tmp94
-set .ERROR_Y *tmp98
+set .ERROR_X *tmp95
+set .ERROR_Y *tmp100
 stop
-jump 628 always 0 0
+jump 660 always 0 0
 set :buildBlockAtLocal:success true
-jump 634 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 668 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
-jump 634 equal @unit .builder
-ucontrol approach *tmp94 *tmp98 6 0 0
-ucontrol build *tmp94 *tmp98 @pneumatic-drill null 0
-jump 615 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 668 equal @unit .builder
+ucontrol approach *tmp95 *tmp100 6 0 0
+ucontrol build *tmp95 *tmp100 @pneumatic-drill null 0
+jump 647 notEqual :buildBlockAtLocal:type @pneumatic-drill
 control enabled processor2 true 0 0 0
 ubind .builder
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 84 *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 84 *tmp44
+write *tmp45 bank1 *tmp40
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-op mul *tmp76 :buildBlockAtLocal*retval .positive
-op add :buildTitaniumDrill:count :buildTitaniumDrill:count *tmp76
-set :buildTitaniumDrill*retval :buildBlockAtLocal*retval
-jump 651 always 0 0
-set :buildTitaniumDrill*retval null
-jump 651 always 0 0
-set :buildTitaniumDrills:c :buildTitaniumDrill:count
-jump 773 notEqual :buildTitaniumDrill:count 0
-jump 772 greaterThanEq :buildTitaniumDrill:count 32
-ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp18 0
-jump 659 notEqual *tmp18 false
+jump 692 equal :buildBlockAtLocal*retval null
+write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
+write false processor3 ":addTitaniumDrill*finished"
+write 1 processor3 "@counter"
+wait 1e-15
+read *tmp76 processor3 ":addTitaniumDrill*finished"
+jump 683 equal *tmp76 false
+op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
+write :buildTitaniumDrill:count :buildTitaniumDrills:aController ".flareTarget"
+write :buildTitaniumDrill:count processor4 ".flareTarget"
+op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
+set :buildTitaniumDrill*retval .positive
+jump 694 always 0 0
+set :buildTitaniumDrill*retval 0
+jump 694 always 0 0
+set :buildTitaniumDrills:count :buildTitaniumDrill:count
+set :buildTitaniumDrills:tiles :buildTitaniumDrill:tiles
+op add :buildTitaniumDrills:built *tmp102 :buildTitaniumDrill*retval
+jump 829 notEqual :buildTitaniumDrills:built 0
+jump 827 greaterThanEq :buildTitaniumDrill:tiles 16
+ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp14 0
+jump 704 notEqual *tmp14 false
 ucontrol approach :buildTitaniumDrills:x :buildTitaniumDrills:y 5.5 0 0
-ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp18 0
-jump 656 equal *tmp18 false
+ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp14 0
+jump 701 equal *tmp14 false
 set .positive 0
 set .negative 0
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
 ucontrol getBlock :buildTitaniumDrills:x :buildTitaniumDrills:y 0 0 :getFloor:floor
-jump 667 notEqual :getFloor:floor @ore-titanium
+jump 712 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 672 always 0 0
-jump 671 equal :getFloor:floor @ore-copper
-jump 671 equal :getFloor:floor @ore-lead
-jump 671 equal :getFloor:floor @ore-scrap
-jump 672 notEqual :getFloor:floor @ore-coal
+jump 717 always 0 0
+jump 716 equal :getFloor:floor @ore-copper
+jump 716 equal :getFloor:floor @ore-lead
+jump 716 equal :getFloor:floor @ore-scrap
+jump 717 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op add *tmp65 :buildTitaniumDrills:y 0.5
+op add *tmp62 :buildTitaniumDrills:y 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :buildTitaniumDrills:x *tmp65 0 0 :getFloor:floor
-jump 681 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :buildTitaniumDrills:x *tmp62 0 0 :getFloor:floor
+jump 726 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 686 always 0 0
-jump 685 equal :getFloor:floor @ore-copper
-jump 685 equal :getFloor:floor @ore-lead
-jump 685 equal :getFloor:floor @ore-scrap
-jump 686 notEqual :getFloor:floor @ore-coal
+jump 731 always 0 0
+jump 730 equal :getFloor:floor @ore-copper
+jump 730 equal :getFloor:floor @ore-lead
+jump 730 equal :getFloor:floor @ore-scrap
+jump 731 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
@@ -690,105 +735,105 @@ op add :titaniumDrillScore:x :buildTitaniumDrills:x 0.5
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
 ucontrol getBlock :titaniumDrillScore:x :buildTitaniumDrills:y 0 0 :getFloor:floor
-jump 695 notEqual :getFloor:floor @ore-titanium
+jump 740 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 700 always 0 0
-jump 699 equal :getFloor:floor @ore-copper
-jump 699 equal :getFloor:floor @ore-lead
-jump 699 equal :getFloor:floor @ore-scrap
-jump 700 notEqual :getFloor:floor @ore-coal
+jump 745 always 0 0
+jump 744 equal :getFloor:floor @ore-copper
+jump 744 equal :getFloor:floor @ore-lead
+jump 744 equal :getFloor:floor @ore-scrap
+jump 745 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
 set :titaniumDrillScore:positive .positive
 set :titaniumDrillScore:negative .negative
-ucontrol getBlock :titaniumDrillScore:x *tmp65 0 0 :getFloor:floor
-jump 708 notEqual :getFloor:floor @ore-titanium
+ucontrol getBlock :titaniumDrillScore:x *tmp62 0 0 :getFloor:floor
+jump 753 notEqual :getFloor:floor @ore-titanium
 op add :titaniumDrillScore:positive :titaniumDrillScore:positive 1
-jump 713 always 0 0
-jump 712 equal :getFloor:floor @ore-copper
-jump 712 equal :getFloor:floor @ore-lead
-jump 712 equal :getFloor:floor @ore-scrap
-jump 713 notEqual :getFloor:floor @ore-coal
+jump 758 always 0 0
+jump 757 equal :getFloor:floor @ore-copper
+jump 757 equal :getFloor:floor @ore-lead
+jump 757 equal :getFloor:floor @ore-scrap
+jump 758 notEqual :getFloor:floor @ore-coal
 op add :titaniumDrillScore:negative :titaniumDrillScore:negative 1
 set .positive :titaniumDrillScore:positive
 set .negative :titaniumDrillScore:negative
-op greaterThan *tmp72 .positive .negative
-op greaterThanEq *tmp73 .positive 2
-op land *tmp74 *tmp72 *tmp73
-jump 772 equal *tmp74 false
-ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp18 0
-jump 724 notEqual *tmp18 false
+op greaterThan *tmp69 .positive .negative
+op greaterThanEq *tmp70 .positive 2
+op land *tmp71 *tmp69 *tmp70
+jump 827 equal *tmp71 false
+ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp14 0
+jump 769 notEqual *tmp14 false
 ucontrol approach :buildTitaniumDrills:x :buildTitaniumDrills:y 5.5 0 0
-ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp18 0
-jump 721 equal *tmp18 false
+ucontrol within :buildTitaniumDrills:x :buildTitaniumDrills:y 6 *tmp14 0
+jump 766 equal *tmp14 false
 ucontrol getBlock :buildTitaniumDrills:x :buildTitaniumDrills:y :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-jump 735 equal :buildBlockAtLocal:building null
-jump 729 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 780 equal :buildBlockAtLocal:building null
+jump 774 notEqual :buildBlockAtLocal:type @pneumatic-drill
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-jump 770 always 0 0
+jump 816 always 0 0
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD :buildBlockAtLocal:type
 set .ERROR_X :buildTitaniumDrills:x
 set .ERROR_Y :buildTitaniumDrills:y
 stop
-sensor :buildBlockAtLocal:coal .core @coal
-op greaterThan :buildBlockAtLocal:fullBuildSupport :buildBlockAtLocal:coal 200
+set :buildBlockAtLocal:fullBuildSupportLimit 200
 ucontrol build :buildTitaniumDrills:x :buildTitaniumDrills:y @pneumatic-drill null 0
 wait 0.25
 set :buildBlockAtLocal:success false
 ucontrol getBlock :buildTitaniumDrills:x :buildTitaniumDrills:y :buildBlockAtLocal:type :buildBlockAtLocal:building 0
-op equal *tmp33 :buildBlockAtLocal:building null
-op equal *tmp34 :buildBlockAtLocal:success false
-op land *tmp35 *tmp33 *tmp34
-jump 752 equal *tmp35 false
+op equal *tmp27 :buildBlockAtLocal:building null
+op equal *tmp28 :buildBlockAtLocal:success false
+op land *tmp29 *tmp27 *tmp28
+jump 796 equal *tmp29 false
 set .ERROR "Cannot build at position"
 set .ERROR_BLOCK_NEW @pneumatic-drill
 set .ERROR_BLOCK_OLD "unknown"
 set .ERROR_X :buildTitaniumDrills:x
 set .ERROR_Y :buildTitaniumDrills:y
 stop
-jump 753 always 0 0
+jump 797 always 0 0
 set :buildBlockAtLocal:success true
-jump 759 equal :buildBlockAtLocal:fullBuildSupport false
+sensor *tmp31 .core @coal
+jump 805 lessThan *tmp31 :buildBlockAtLocal:fullBuildSupportLimit
+set :buildBlockAtLocal:fullBuildSupportLimit 0
 control enabled processor2 false 0 0 0
 ubind @poly
-jump 759 equal @unit .builder
+jump 805 equal @unit .builder
 ucontrol approach :buildTitaniumDrills:x :buildTitaniumDrills:y 6 0 0
 ucontrol build :buildTitaniumDrills:x :buildTitaniumDrills:y @pneumatic-drill null 0
-jump 740 notEqual :buildBlockAtLocal:type @pneumatic-drill
+jump 784 notEqual :buildBlockAtLocal:type @pneumatic-drill
 control enabled processor2 true 0 0 0
 ubind .builder
-read *tmp17 bank1 511
-op sub *tmp44 *tmp17 1
-write *tmp44 bank1 511
-read *tmp47 processor1 "time"
-op mul *tmp48 *tmp47 1000
-op add *tmp49 84 *tmp48
-write *tmp49 bank1 *tmp44
+read *tmp13 bank1 511
+op sub *tmp40 *tmp13 1
+write *tmp40 bank1 511
+read *tmp43 processor1 "time"
+op mul *tmp44 *tmp43 1000
+op add *tmp45 84 *tmp44
+write *tmp45 bank1 *tmp40
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-op mul *tmp76 :buildBlockAtLocal*retval .positive
-op add :buildTitaniumDrill:count :buildTitaniumDrill:count *tmp76
-set :buildTitaniumDrills:c :buildTitaniumDrill:count
-op add :buildTitaniumDrills:count :buildTitaniumDrills:count :buildTitaniumDrills:c
-jump 784 equal :buildTitaniumDrills:drill2 null
-write :buildTitaniumDrills:drill2 processor3 ":addTitaniumDrills:d1"
-write :buildTitaniumDrills:drill3 processor3 ":addTitaniumDrills:d2"
-write :buildTitaniumDrill*retval processor3 ":addTitaniumDrills:d3"
-write null processor3 ":addTitaniumDrills:d4"
-write false processor3 ":addTitaniumDrills*finished"
+jump 827 equal :buildBlockAtLocal*retval null
+write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
+write false processor3 ":addTitaniumDrill*finished"
 write 1 processor3 "@counter"
 wait 1e-15
-read *tmp114 processor3 ":addTitaniumDrills*finished"
-jump 781 equal *tmp114 false
+read *tmp76 processor3 ":addTitaniumDrill*finished"
+jump 820 equal *tmp76 false
+op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
+write :buildTitaniumDrill:count :buildTitaniumDrills:aController ".flareTarget"
+write :buildTitaniumDrill:count processor4 ".flareTarget"
+op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
+set :buildTitaniumDrills:count :buildTitaniumDrill:count
+set :buildTitaniumDrills:tiles :buildTitaniumDrill:tiles
 op add :buildTitaniumDrills:current :buildTitaniumDrills:current 1
-read *tmp12 processor5 ".locations"
-jump 147 lessThan :buildTitaniumDrills:current *tmp12
-jump 790 greaterThanEq :buildTitaniumDrills:count 32
-read *tmp11 processor5 ".searchFinished"
-jump 145 equal *tmp11 false
+read *tmp8 processor5 ".locations"
+jump 145 lessThan :buildTitaniumDrills:current *tmp8
+jump 835 greaterThanEq :buildTitaniumDrills:tiles 16
+read *tmp7 processor5 ".searchFinished"
+jump 143 equal *tmp7 false
 set :buildTitaniumDrills*finished true
-jump 21 always 0 0
+jump 13 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

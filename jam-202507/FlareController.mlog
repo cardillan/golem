@@ -1,1109 +1,553 @@
 # Mlog code compiled with support for symbolic labels
 # You can safely add/remove instructions, in most parts of the program
 # Pay closer attention to sections of the program manipulating @counter
-jump label_15 always 0 0
-jump label_816 always 0 0
-draw triangle processor1 .core .coreX .coreY .drills*0 .drills*1
-draw triangle .drills*10 .drills*11 .drills*12 .drills*13 .drills*14 .drills*15
-draw triangle .drills*16 .drills*17 .drills*18 .drills*19 .drills*2 .drills*20
-draw triangle .drills*21 .drills*22 .drills*23 .drills*24 .drills*25 .drills*26
-draw triangle .drills*27 .drills*28 .drills*29 .drills*3 .drills*30 .drills*31
-draw triangle .drills*32 .drills*33 .drills*34 .drills*35 .drills*36 .drills*37
-draw triangle .drills*38 .drills*39 .drills*4 .drills*5 .drills*6 .drills*7
-draw triangle .drills*8 .drills*9 .drills*w .drills*wind .spotCount .units*0
-draw triangle .units*1 .units*2 .units*3 .units*4 .units*5 .units*6
-draw triangle .units*7 .units*8 .units*9 :addTitaniumDrills:d1 :addTitaniumDrills:d2 :addTitaniumDrills:d3
-draw triangle :addTitaniumDrills:d4 :addTitaniumDrills:i :backgroundProcess:count :backgroundProcess:drill1 :backgroundProcess:drill2 :backgroundProcess:drill3
-draw triangle :backgroundProcess:drill4 :backgroundProcess:unit :findFreeUnit:first_unit :serviceSpot:drillAmount :serviceSpot:t1 :serviceSpot:t2
-draw triangle :serviceSpot:t3 :serviceSpot:t4 :serviceSpot:unitAmount 0 0 0
-label_15:
-    set .spotCount 0
-    set *signature "2347e8b86ae8a071:v1"
+jump label_2 always 0 0
+jump label_403 always 0 0
+label_2:
+    set .drills 0
+    set *signature "881dde114374c003:v1"
         # Function: void backgroundProcess()
-    label_17:
-        jump label_23 notEqual .core null
-            label_18:
+    label_4:
+        jump label_10 notEqual .core null
+            label_5:
                 ubind @flare
                 ulocate building core false @copper .coreX .coreY 0 .core
-            jump label_18 equal .core null
+            jump label_5 equal .core null
             sensor .coreX .core @x
             sensor .coreY .core @y
-    label_23:
+    label_10:
             set :backgroundProcess:count 0
+            set :backgroundProcess:drill .titaniumDrills*0
             set :backgroundProcess:unit .units*0
-            set :backgroundProcess:drill1 .drills*0
-            set :backgroundProcess:drill2 .drills*1
-            set :backgroundProcess:drill3 .drills*2
-            set :backgroundProcess:drill4 .drills*3
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_59 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            set :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_36 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_36 notEqual @unit null
-                    set *tmp14 null
-                        jump label_48 always 0 0
-                label_36:
+                jump label_22 notEqual @unit null
+                    set *tmp15 null
+                        jump label_34 always 0 0
+                label_22:
                 set :findFreeUnit:first_unit @unit
-                label_37:
-                    sensor *tmp17 @unit @controlled
-                    jump label_42 notEqual *tmp17 0
+                label_23:
+                    sensor *tmp18 @unit @controlled
+                    jump label_28 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_48 always 0 0
-                    label_42:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_45 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_34 always 0 0
+                    label_28:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_31 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_45:
+                        label_31:
                     ubind @flare
-                jump label_37 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
+                jump label_23 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_34:
+                set :backgroundProcess:unit *tmp15
+                jump label_49 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_36:
+            ubind :backgroundProcess:unit
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_42 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_49 always 0 0
+            label_42:
+                jump label_48 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_49 always 0 0
                 label_48:
-                set :backgroundProcess:unit *tmp14
-                jump label_59 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    set :backgroundProcess:count *tmp33
-                    jump label_102 always 0 0
-            label_59:
-            ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_96 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_78 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_78:
-                jump label_80 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_80:
-                jump label_82 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_82:
-                jump label_84 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_84:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_92 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_101 always 0 0
-                label_92:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_101 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_101 always 0 0
-            label_96:
-                jump label_100 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_101 always 0 0
-                label_100:
-                    ucontrol flag 1 0 0 0 0
-            label_101:
-            set :backgroundProcess:count :serviceSpot:drillAmount
-        label_102:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_49:
             set .units*0 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*1
             set :backgroundProcess:unit .units*1
-            set :backgroundProcess:drill1 .drills*4
-            set :backgroundProcess:drill2 .drills*5
-            set :backgroundProcess:drill3 .drills*6
-            set :backgroundProcess:drill4 .drills*7
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_138 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_75 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_115 notEqual @unit null
-                    set *tmp14 null
-                        jump label_127 always 0 0
-                label_115:
+                jump label_61 notEqual @unit null
+                    set *tmp15 null
+                        jump label_73 always 0 0
+                label_61:
                 set :findFreeUnit:first_unit @unit
-                label_116:
-                    sensor *tmp17 @unit @controlled
-                    jump label_121 notEqual *tmp17 0
+                label_62:
+                    sensor *tmp18 @unit @controlled
+                    jump label_67 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_127 always 0 0
-                    label_121:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_124 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_73 always 0 0
+                    label_67:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_70 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_124:
+                        label_70:
                     ubind @flare
-                jump label_116 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_127:
-                set :backgroundProcess:unit *tmp14
-                jump label_138 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_181 always 0 0
-            label_138:
+                jump label_62 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_73:
+                set :backgroundProcess:unit *tmp15
+                jump label_88 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_75:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_175 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_157 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_157:
-                jump label_159 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_159:
-                jump label_161 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_161:
-                jump label_163 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_163:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_171 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_180 always 0 0
-                label_171:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_180 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_180 always 0 0
-            label_175:
-                jump label_179 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_180 always 0 0
-                label_179:
-                    ucontrol flag 1 0 0 0 0
-            label_180:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_181:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_81 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_88 always 0 0
+            label_81:
+                jump label_87 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_88 always 0 0
+                label_87:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_88:
             set .units*1 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*2
             set :backgroundProcess:unit .units*2
-            set :backgroundProcess:drill1 .drills*8
-            set :backgroundProcess:drill2 .drills*9
-            set :backgroundProcess:drill3 .drills*10
-            set :backgroundProcess:drill4 .drills*11
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_217 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_114 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_194 notEqual @unit null
-                    set *tmp14 null
-                        jump label_206 always 0 0
-                label_194:
+                jump label_100 notEqual @unit null
+                    set *tmp15 null
+                        jump label_112 always 0 0
+                label_100:
                 set :findFreeUnit:first_unit @unit
-                label_195:
-                    sensor *tmp17 @unit @controlled
-                    jump label_200 notEqual *tmp17 0
+                label_101:
+                    sensor *tmp18 @unit @controlled
+                    jump label_106 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_206 always 0 0
-                    label_200:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_203 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_112 always 0 0
+                    label_106:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_109 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_203:
+                        label_109:
                     ubind @flare
-                jump label_195 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_206:
-                set :backgroundProcess:unit *tmp14
-                jump label_217 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_260 always 0 0
-            label_217:
+                jump label_101 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_112:
+                set :backgroundProcess:unit *tmp15
+                jump label_127 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_114:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_254 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_236 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_236:
-                jump label_238 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_238:
-                jump label_240 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_240:
-                jump label_242 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_242:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_250 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_259 always 0 0
-                label_250:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_259 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_259 always 0 0
-            label_254:
-                jump label_258 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_259 always 0 0
-                label_258:
-                    ucontrol flag 1 0 0 0 0
-            label_259:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_260:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_120 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_127 always 0 0
+            label_120:
+                jump label_126 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_127 always 0 0
+                label_126:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_127:
             set .units*2 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*3
             set :backgroundProcess:unit .units*3
-            set :backgroundProcess:drill1 .drills*12
-            set :backgroundProcess:drill2 .drills*13
-            set :backgroundProcess:drill3 .drills*14
-            set :backgroundProcess:drill4 .drills*15
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_296 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_153 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_273 notEqual @unit null
-                    set *tmp14 null
-                        jump label_285 always 0 0
-                label_273:
+                jump label_139 notEqual @unit null
+                    set *tmp15 null
+                        jump label_151 always 0 0
+                label_139:
                 set :findFreeUnit:first_unit @unit
-                label_274:
-                    sensor *tmp17 @unit @controlled
-                    jump label_279 notEqual *tmp17 0
+                label_140:
+                    sensor *tmp18 @unit @controlled
+                    jump label_145 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_285 always 0 0
-                    label_279:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_282 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_151 always 0 0
+                    label_145:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_148 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_282:
+                        label_148:
                     ubind @flare
-                jump label_274 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_285:
-                set :backgroundProcess:unit *tmp14
-                jump label_296 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_339 always 0 0
-            label_296:
+                jump label_140 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_151:
+                set :backgroundProcess:unit *tmp15
+                jump label_166 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_153:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_333 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_315 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_315:
-                jump label_317 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_317:
-                jump label_319 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_319:
-                jump label_321 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_321:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_329 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_338 always 0 0
-                label_329:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_338 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_338 always 0 0
-            label_333:
-                jump label_337 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_338 always 0 0
-                label_337:
-                    ucontrol flag 1 0 0 0 0
-            label_338:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_339:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_159 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_166 always 0 0
+            label_159:
+                jump label_165 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_166 always 0 0
+                label_165:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_166:
             set .units*3 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*4
             set :backgroundProcess:unit .units*4
-            set :backgroundProcess:drill1 .drills*16
-            set :backgroundProcess:drill2 .drills*17
-            set :backgroundProcess:drill3 .drills*18
-            set :backgroundProcess:drill4 .drills*19
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_375 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_192 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_352 notEqual @unit null
-                    set *tmp14 null
-                        jump label_364 always 0 0
-                label_352:
+                jump label_178 notEqual @unit null
+                    set *tmp15 null
+                        jump label_190 always 0 0
+                label_178:
                 set :findFreeUnit:first_unit @unit
-                label_353:
-                    sensor *tmp17 @unit @controlled
-                    jump label_358 notEqual *tmp17 0
+                label_179:
+                    sensor *tmp18 @unit @controlled
+                    jump label_184 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_364 always 0 0
-                    label_358:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_361 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_190 always 0 0
+                    label_184:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_187 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_361:
+                        label_187:
                     ubind @flare
-                jump label_353 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_364:
-                set :backgroundProcess:unit *tmp14
-                jump label_375 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_418 always 0 0
-            label_375:
+                jump label_179 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_190:
+                set :backgroundProcess:unit *tmp15
+                jump label_205 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_192:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_412 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_394 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_394:
-                jump label_396 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_396:
-                jump label_398 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_398:
-                jump label_400 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_400:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_408 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_417 always 0 0
-                label_408:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_417 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_417 always 0 0
-            label_412:
-                jump label_416 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_417 always 0 0
-                label_416:
-                    ucontrol flag 1 0 0 0 0
-            label_417:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_418:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_198 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_205 always 0 0
+            label_198:
+                jump label_204 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_205 always 0 0
+                label_204:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_205:
             set .units*4 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*5
             set :backgroundProcess:unit .units*5
-            set :backgroundProcess:drill1 .drills*20
-            set :backgroundProcess:drill2 .drills*21
-            set :backgroundProcess:drill3 .drills*22
-            set :backgroundProcess:drill4 .drills*23
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_454 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_231 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_431 notEqual @unit null
-                    set *tmp14 null
-                        jump label_443 always 0 0
-                label_431:
+                jump label_217 notEqual @unit null
+                    set *tmp15 null
+                        jump label_229 always 0 0
+                label_217:
                 set :findFreeUnit:first_unit @unit
-                label_432:
-                    sensor *tmp17 @unit @controlled
-                    jump label_437 notEqual *tmp17 0
+                label_218:
+                    sensor *tmp18 @unit @controlled
+                    jump label_223 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_443 always 0 0
-                    label_437:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_440 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_229 always 0 0
+                    label_223:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_226 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_440:
+                        label_226:
                     ubind @flare
-                jump label_432 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_443:
-                set :backgroundProcess:unit *tmp14
-                jump label_454 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_497 always 0 0
-            label_454:
+                jump label_218 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_229:
+                set :backgroundProcess:unit *tmp15
+                jump label_244 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_231:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_491 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_473 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_473:
-                jump label_475 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_475:
-                jump label_477 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_477:
-                jump label_479 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_479:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_487 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_496 always 0 0
-                label_487:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_496 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_496 always 0 0
-            label_491:
-                jump label_495 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_496 always 0 0
-                label_495:
-                    ucontrol flag 1 0 0 0 0
-            label_496:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_497:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_237 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_244 always 0 0
+            label_237:
+                jump label_243 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_244 always 0 0
+                label_243:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_244:
             set .units*5 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*6
             set :backgroundProcess:unit .units*6
-            set :backgroundProcess:drill1 .drills*24
-            set :backgroundProcess:drill2 .drills*25
-            set :backgroundProcess:drill3 .drills*26
-            set :backgroundProcess:drill4 .drills*27
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_533 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_270 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_510 notEqual @unit null
-                    set *tmp14 null
-                        jump label_522 always 0 0
-                label_510:
+                jump label_256 notEqual @unit null
+                    set *tmp15 null
+                        jump label_268 always 0 0
+                label_256:
                 set :findFreeUnit:first_unit @unit
-                label_511:
-                    sensor *tmp17 @unit @controlled
-                    jump label_516 notEqual *tmp17 0
+                label_257:
+                    sensor *tmp18 @unit @controlled
+                    jump label_262 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_522 always 0 0
-                    label_516:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_519 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_268 always 0 0
+                    label_262:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_265 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_519:
+                        label_265:
                     ubind @flare
-                jump label_511 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_522:
-                set :backgroundProcess:unit *tmp14
-                jump label_533 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_576 always 0 0
-            label_533:
+                jump label_257 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_268:
+                set :backgroundProcess:unit *tmp15
+                jump label_283 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_270:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_570 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_552 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_552:
-                jump label_554 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_554:
-                jump label_556 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_556:
-                jump label_558 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_558:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_566 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_575 always 0 0
-                label_566:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_575 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_575 always 0 0
-            label_570:
-                jump label_574 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_575 always 0 0
-                label_574:
-                    ucontrol flag 1 0 0 0 0
-            label_575:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_576:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_276 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_283 always 0 0
+            label_276:
+                jump label_282 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_283 always 0 0
+                label_282:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_283:
             set .units*6 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*7
             set :backgroundProcess:unit .units*7
-            set :backgroundProcess:drill1 .drills*28
-            set :backgroundProcess:drill2 .drills*29
-            set :backgroundProcess:drill3 .drills*30
-            set :backgroundProcess:drill4 .drills*31
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_612 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_309 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_589 notEqual @unit null
-                    set *tmp14 null
-                        jump label_601 always 0 0
-                label_589:
+                jump label_295 notEqual @unit null
+                    set *tmp15 null
+                        jump label_307 always 0 0
+                label_295:
                 set :findFreeUnit:first_unit @unit
-                label_590:
-                    sensor *tmp17 @unit @controlled
-                    jump label_595 notEqual *tmp17 0
+                label_296:
+                    sensor *tmp18 @unit @controlled
+                    jump label_301 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_601 always 0 0
-                    label_595:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_598 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_307 always 0 0
+                    label_301:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_304 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_598:
+                        label_304:
                     ubind @flare
-                jump label_590 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_601:
-                set :backgroundProcess:unit *tmp14
-                jump label_612 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_655 always 0 0
-            label_612:
+                jump label_296 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_307:
+                set :backgroundProcess:unit *tmp15
+                jump label_322 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_309:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_649 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_631 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_631:
-                jump label_633 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_633:
-                jump label_635 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_635:
-                jump label_637 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_637:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_645 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_654 always 0 0
-                label_645:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_654 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_654 always 0 0
-            label_649:
-                jump label_653 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_654 always 0 0
-                label_653:
-                    ucontrol flag 1 0 0 0 0
-            label_654:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_655:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_315 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_322 always 0 0
+            label_315:
+                jump label_321 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_322 always 0 0
+                label_321:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_322:
             set .units*7 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*8
             set :backgroundProcess:unit .units*8
-            set :backgroundProcess:drill1 .drills*32
-            set :backgroundProcess:drill2 .drills*33
-            set :backgroundProcess:drill3 .drills*34
-            set :backgroundProcess:drill4 .drills*35
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_691 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_348 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_668 notEqual @unit null
-                    set *tmp14 null
-                        jump label_680 always 0 0
-                label_668:
+                jump label_334 notEqual @unit null
+                    set *tmp15 null
+                        jump label_346 always 0 0
+                label_334:
                 set :findFreeUnit:first_unit @unit
-                label_669:
-                    sensor *tmp17 @unit @controlled
-                    jump label_674 notEqual *tmp17 0
+                label_335:
+                    sensor *tmp18 @unit @controlled
+                    jump label_340 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_680 always 0 0
-                    label_674:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_677 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_346 always 0 0
+                    label_340:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_343 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_677:
+                        label_343:
                     ubind @flare
-                jump label_669 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_680:
-                set :backgroundProcess:unit *tmp14
-                jump label_691 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_734 always 0 0
-            label_691:
+                jump label_335 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_346:
+                set :backgroundProcess:unit *tmp15
+                jump label_361 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_348:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_728 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_710 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_710:
-                jump label_712 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_712:
-                jump label_714 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_714:
-                jump label_716 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_716:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_724 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_733 always 0 0
-                label_724:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_733 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_733 always 0 0
-            label_728:
-                jump label_732 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_733 always 0 0
-                label_732:
-                    ucontrol flag 1 0 0 0 0
-            label_733:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_734:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_354 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_361 always 0 0
+            label_354:
+                jump label_360 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_361 always 0 0
+                label_360:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_361:
             set .units*8 :backgroundProcess:unit
+            set :backgroundProcess:drill .titaniumDrills*9
             set :backgroundProcess:unit .units*9
-            set :backgroundProcess:drill1 .drills*36
-            set :backgroundProcess:drill2 .drills*37
-            set :backgroundProcess:drill3 .drills*38
-            set :backgroundProcess:drill4 .drills*39
-            jump label_814 equal :backgroundProcess:drill1 null
-            sensor *tmp11 :backgroundProcess:unit @controller
-            jump label_770 equal *tmp11 @this
+            jump label_401 equal :backgroundProcess:drill null
+            sensor *tmp11 :backgroundProcess:drill @titanium
+            op add :backgroundProcess:count :backgroundProcess:count *tmp11
+            sensor *tmp12 :backgroundProcess:unit @controller
+            jump label_387 equal *tmp12 @this
                 # Function: def findFreeUnit(in unit_type, in initial_flag)
                 ubind @flare
-                jump label_747 notEqual @unit null
-                    set *tmp14 null
-                        jump label_759 always 0 0
-                label_747:
+                jump label_373 notEqual @unit null
+                    set *tmp15 null
+                        jump label_385 always 0 0
+                label_373:
                 set :findFreeUnit:first_unit @unit
-                label_748:
-                    sensor *tmp17 @unit @controlled
-                    jump label_753 notEqual *tmp17 0
+                label_374:
+                    sensor *tmp18 @unit @controlled
+                    jump label_379 notEqual *tmp18 0
                         ucontrol flag 0 0 0 0 0
-                        set *tmp14 @unit
-                            jump label_759 always 0 0
-                    label_753:
-                        sensor *tmp20 :findFreeUnit:first_unit @dead
-                        jump label_756 notEqual *tmp20 1
+                        set *tmp15 @unit
+                            jump label_385 always 0 0
+                    label_379:
+                        sensor *tmp21 :findFreeUnit:first_unit @dead
+                        jump label_382 notEqual *tmp21 1
                             set :findFreeUnit:first_unit @unit
-                        label_756:
+                        label_382:
                     ubind @flare
-                jump label_748 notEqual :findFreeUnit:first_unit @unit
-                set *tmp14 null
-                label_759:
-                set :backgroundProcess:unit *tmp14
-                jump label_770 notEqual *tmp14 null
-                    sensor *tmp27 :backgroundProcess:drill1 @titanium
-                    sensor *tmp28 :backgroundProcess:drill2 @titanium
-                    op add *tmp29 *tmp27 *tmp28
-                    sensor *tmp30 :backgroundProcess:drill3 @titanium
-                    op add *tmp31 *tmp29 *tmp30
-                    sensor *tmp32 :backgroundProcess:drill4 @titanium
-                    op add *tmp33 *tmp31 *tmp32
-                    op add :backgroundProcess:count :backgroundProcess:count *tmp33
-                    jump label_813 always 0 0
-            label_770:
+                jump label_374 notEqual :findFreeUnit:first_unit @unit
+                set *tmp15 null
+                label_385:
+                set :backgroundProcess:unit *tmp15
+                jump label_400 equal *tmp15 null
+            # Function: void serviceDrill(in drill, in unit)
+            label_387:
             ubind :backgroundProcess:unit
-            # Function: def serviceSpot(in drill1, in drill2, in drill3, in drill4)
-            sensor :serviceSpot:t1 :backgroundProcess:drill1 @titanium
-            sensor :serviceSpot:t2 :backgroundProcess:drill2 @titanium
-            sensor :serviceSpot:t3 :backgroundProcess:drill3 @titanium
-            sensor :serviceSpot:t4 :backgroundProcess:drill4 @titanium
-            op add *tmp39 :serviceSpot:t1 :serviceSpot:t2
-            op add *tmp40 *tmp39 :serviceSpot:t3
-            op add :serviceSpot:drillAmount *tmp40 :serviceSpot:t4
-            sensor :serviceSpot:unitAmount @unit @totalItems
-            sensor *tmp43 @unit @flag
-            jump label_807 notEqual *tmp43 1
-                sensor *tmp46 :backgroundProcess:drill1 @x
-                sensor *tmp47 :backgroundProcess:drill1 @y
-                ucontrol approach *tmp46 *tmp47 2 0 0
-                op max *tmp48 :serviceSpot:t1 :serviceSpot:t2
-                op max *tmp48 *tmp48 :serviceSpot:t3
-                op max *tmp48 *tmp48 :serviceSpot:t4
-                jump label_789 notEqual :serviceSpot:t1 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill1 @titanium 10 0 0
-                label_789:
-                jump label_791 notEqual :serviceSpot:t2 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill2 @titanium 10 0 0
-                label_791:
-                jump label_793 notEqual :serviceSpot:t3 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill3 @titanium 10 0 0
-                label_793:
-                jump label_795 notEqual :serviceSpot:t4 *tmp48
-                    ucontrol itemTake :backgroundProcess:drill4 @titanium 10 0 0
-                label_795:
-                op greaterThanEq *tmp57 :serviceSpot:unitAmount 10
-                op equal *tmp58 :serviceSpot:drillAmount 0
-                op or *tmp59 *tmp57 *tmp58
-                jump label_803 equal *tmp59 false
-                    ucontrol flag 2 0 0 0 0
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_812 always 0 0
-                label_803:
-                    sensor *tmp61 @unit @firstItem
-                    jump label_812 equal *tmp61 @titanium
-                        ucontrol itemDrop @air 10 0 0 0
-                jump label_812 always 0 0
-            label_807:
-                jump label_811 equal :serviceSpot:unitAmount false
-                    ucontrol approach .coreX .coreY 4 0 0
-                    ucontrol itemDrop .core 10 0 0 0
-                    jump label_812 always 0 0
-                label_811:
-                    ucontrol flag 1 0 0 0 0
-            label_812:
-            op add :backgroundProcess:count :backgroundProcess:count :serviceSpot:drillAmount
-        label_813:
+            sensor :serviceDrill:item @unit @firstItem
+            jump label_393 notEqual :serviceDrill:item @titanium
+                ucontrol approach .coreX .coreY 4 0 0
+                ucontrol itemDrop .core 10 0 0 0
+                jump label_400 always 0 0
+            label_393:
+                jump label_399 notEqual :serviceDrill:item null
+                    sensor *tmp33 :backgroundProcess:drill @x
+                    sensor *tmp34 :backgroundProcess:drill @y
+                    ucontrol approach *tmp33 *tmp34 4 0 0
+                    ucontrol itemTake :backgroundProcess:drill @titanium 10 0 0
+                    jump label_400 always 0 0
+                label_399:
+                    ucontrol itemDrop @air 10 0 0 0
+        label_400:
             set .units*9 :backgroundProcess:unit
-        label_814:
+        label_401:
             write :backgroundProcess:count processor1 ".titaniumDrillCount"
-            jump label_23 always 0 0
-    # Function: remote void addTitaniumDrills(in d1, in d2, in d3, in d4)
-label_816:
-    jump label_841 greaterThanEq .spotCount 39
-        op mul :addTitaniumDrills:i .spotCount 4
-        set *tmp68 :addTitaniumDrills:i
-        op add :addTitaniumDrills:i :addTitaniumDrills:i 1
-        set .drills*w :addTitaniumDrills:d1
-        op mul .drills*wind *tmp68 2
-        op add .drills*wret @counter 1
-        jump label_843 always 0 0
-        set *tmp71 :addTitaniumDrills:i
-        op add :addTitaniumDrills:i :addTitaniumDrills:i 1
-        set .drills*w :addTitaniumDrills:d2
-        op mul .drills*wind *tmp71 2
-        op add .drills*wret @counter 1
-        jump label_843 always 0 0
-        set *tmp74 :addTitaniumDrills:i
-        op add :addTitaniumDrills:i :addTitaniumDrills:i 1
-        set .drills*w :addTitaniumDrills:d3
-        op mul .drills*wind *tmp74 2
-        op add .drills*wret @counter 1
-        jump label_843 always 0 0
-        set .drills*w :addTitaniumDrills:d4
-        op mul .drills*wind :addTitaniumDrills:i 2
-        op add .drills*wret @counter 1
-        jump label_843 always 0 0
-        op add .spotCount .spotCount 1
-    label_841:
-    set :addTitaniumDrills*finished true
-        jump label_17 always 0 0
-label_843:
-op add @counter @counter .drills*wind
-set .drills*0 .drills*w
-set @counter .drills*wret
-set .drills*1 .drills*w
-set @counter .drills*wret
-set .drills*2 .drills*w
-set @counter .drills*wret
-set .drills*3 .drills*w
-set @counter .drills*wret
-set .drills*4 .drills*w
-set @counter .drills*wret
-set .drills*5 .drills*w
-set @counter .drills*wret
-set .drills*6 .drills*w
-set @counter .drills*wret
-set .drills*7 .drills*w
-set @counter .drills*wret
-set .drills*8 .drills*w
-set @counter .drills*wret
-set .drills*9 .drills*w
-set @counter .drills*wret
-set .drills*10 .drills*w
-set @counter .drills*wret
-set .drills*11 .drills*w
-set @counter .drills*wret
-set .drills*12 .drills*w
-set @counter .drills*wret
-set .drills*13 .drills*w
-set @counter .drills*wret
-set .drills*14 .drills*w
-set @counter .drills*wret
-set .drills*15 .drills*w
-set @counter .drills*wret
-set .drills*16 .drills*w
-set @counter .drills*wret
-set .drills*17 .drills*w
-set @counter .drills*wret
-set .drills*18 .drills*w
-set @counter .drills*wret
-set .drills*19 .drills*w
-set @counter .drills*wret
-set .drills*20 .drills*w
-set @counter .drills*wret
-set .drills*21 .drills*w
-set @counter .drills*wret
-set .drills*22 .drills*w
-set @counter .drills*wret
-set .drills*23 .drills*w
-set @counter .drills*wret
-set .drills*24 .drills*w
-set @counter .drills*wret
-set .drills*25 .drills*w
-set @counter .drills*wret
-set .drills*26 .drills*w
-set @counter .drills*wret
-set .drills*27 .drills*w
-set @counter .drills*wret
-set .drills*28 .drills*w
-set @counter .drills*wret
-set .drills*29 .drills*w
-set @counter .drills*wret
-set .drills*30 .drills*w
-set @counter .drills*wret
-set .drills*31 .drills*w
-set @counter .drills*wret
-set .drills*32 .drills*w
-set @counter .drills*wret
-set .drills*33 .drills*w
-set @counter .drills*wret
-set .drills*34 .drills*w
-set @counter .drills*wret
-set .drills*35 .drills*w
-set @counter .drills*wret
-set .drills*36 .drills*w
-set @counter .drills*wret
-set .drills*37 .drills*w
-set @counter .drills*wret
-set .drills*38 .drills*w
-set @counter .drills*wret
-set .drills*39 .drills*w
-set @counter .drills*wret
-print "Compiled by Mindcode - github.com/cardillan/mindcode"
+            jump label_10 always 0 0
+    # Function: remote void addTitaniumDrill(in drill)
+label_403:
+    jump label_426 greaterThanEq .drills 9
+        op mul *tmp40 .drills 2
+        op add @counter @counter *tmp40
+        set .titaniumDrills*0 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*1 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*2 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*3 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*4 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*5 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*6 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*7 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*8 :addTitaniumDrill:drill
+        jump label_425 always 0 0
+        set .titaniumDrills*9 :addTitaniumDrill:drill
+    label_425:
+        op add .drills .drills 1
+    label_426:
+    set :addTitaniumDrill*finished true
+        jump label_4 always 0 0
+        print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

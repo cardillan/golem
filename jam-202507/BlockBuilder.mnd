@@ -19,6 +19,8 @@ noinit var
     builder,
     controller;
 
+remote display ".blocksBuilt" var displayBlocksBuilt;
+remote display ".recentBuildIndex" var displayRecentBuildIndex;
 remote display ".flareTarget" var displayFlareTarget;
 remote controller ".flareTarget" var controllerFlareTarget;
 remote oreLocator var searchFinished, locations;
@@ -62,11 +64,15 @@ inline void log(encodedId)
     bank1[--logPosition] = encodedId + timer.read("time") * 1000;
 end;
 
-inline void logBlock(block)
+inline void logBlock(block, index)
     log(block.@id);
+    if index >= 0 then
+        displayBlocksBuilt |= (1 << index);
+        displayRecentBuildIndex = index;
+    end;
 end;
 
-def buildBlockAtLocal(block, x, y, rotation, config)
+def buildBlockAtLocal(block, x, y, rotation, config, index)
     moveTo(x, y);
 
     var type;
@@ -103,17 +109,17 @@ def buildBlockAtLocal(block, x, y, rotation, config)
     polyController.enabled = true;
     ubind(builder);
 
-    logBlock(block);
+    logBlock(block, index);
 
     return building;
 end;
 
-remote def buildBlockAt(block, x, y, rotation, config)
-    return buildBlockAtLocal(block, x, y, rotation, config);
+remote def buildBlockAt(block, x, y, rotation, config, index)
+    return buildBlockAtLocal(block, x, y, rotation, config, index);
 end;
 
 remote def buildFirstTitaniumDrillAt(x, y)
-    var drill = buildBlockAtLocal(@pneumatic-drill, x, y, 0, null);
+    var drill = buildBlockAtLocal(@pneumatic-drill, x, y, 0, null, -1);
     flareController.addTitaniumDrill(drill);
     return drill;
 end;
@@ -144,7 +150,7 @@ def buildTitaniumDrill(x, y, in out count, in out tiles)
         titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
 
         if positive > negative && positive >= 2 then
-            var drill = buildBlockAtLocal(@pneumatic-drill, x, y, null, 0);
+            var drill = buildBlockAtLocal(@pneumatic-drill, x, y, null, 0, -1);
             if drill != null then
                 flareController.addTitaniumDrill(drill);
 
