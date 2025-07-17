@@ -8,7 +8,8 @@ module OreLocator;
 require math;
 
 const RADIUS =  6;
-const MIN_CORE_DIST = 10;
+const MIN_CORE_DIST = 8;
+const BASE_SIZE = 15;
 
 linked bank1, message1, switch1, processor1;
 
@@ -30,7 +31,8 @@ noinit remote var
     containerX, containerY,
     water2X, water2Y,
     generatorX, generatorY,
-    nodeX, nodeY,
+    node1X, node1Y,
+    node2X, node2Y,
     panelX, panelY,
     batteryX, batteryY;
 
@@ -266,6 +268,8 @@ end;
 //    printflush(message1);
 //end;
 
+const FULL_MASK = (1 << 49) - 1;
+
 // Shifts the mask in the given direction
 // Makes sure parts of the mask shifted away are properly cleared
 def shiftMask(mask, shiftX, shiftY)
@@ -275,7 +279,7 @@ def shiftMask(mask, shiftX, shiftY)
     var shift = shiftX + 7 * shiftY;
     if shift > 0 then
         // We might run into precision issues. Need to clear the top part first
-        var clearMask = ((1 << 49) - 1) >> shift;
+        var clearMask = FULL_MASK >> shift;
         mask = (mask & clearMask) << shift;
     else
         mask >>= -shift;
@@ -292,6 +296,29 @@ def shiftMask(mask, shiftX, shiftY)
     end;
 
     return mask;
+end;
+
+// Excludes a square area centered at areaX, areaY with given dimensions
+// (sets the bits in the mask where the area overlaps the mask to 1).
+// The area size is expected to be greater than 7 (otherwise a simple shiftMask could be done)
+// To exclude an area with an even-sized side, place the center at half tiles (e.g. 22.5, 35,5).
+// The mask size is fixed at 7.
+noinline def excludeArea(mask, maskX, maskY, areaX, areaY, areaWidth, areaHeight)
+    // The size of x overlap
+    var overlapX = (areaWidth + 7 + 1) \ 2 - abs(maskX - areaX);
+    var overlapY = (areaHeight + 7 + 1) \ 2 - abs(maskY - areaY);
+
+    if overlapX > 0 and overlapY > 0 then
+        var blockSizeX = min(7, overlapX);
+        var blockSizeY = min(7, overlapY);
+        var blocked = createMatrixOfSize(blockSizeX, blockSizeY);
+        var shiftX = (maskX < areaX) * (7 - blockSizeX);
+        var shiftY = (maskY < areaY) * (7 - blockSizeY);
+        var shifted = shiftMask(blocked, shiftX, shiftY);
+        return mask | shifted;
+    else
+        return mask;
+    end;
 end;
 
 // Could be implemented as a loop, but this is easier on the optimizer
@@ -315,6 +342,18 @@ end;
 inline def createFixedMatrix(row0, row1)
     row0 << 7 * 0 |
     row1 << 7 * 1;
+end;
+
+// Width and height must be within 1 .. 7
+def createMatrixOfSize(width, height)
+    var row = (1 << width) - 1;
+    var matrix = row;
+    // Gets unrolled even for variable height
+    for var i in 1 ... 7 do
+        if i >= height then break; end;
+        matrix = (matrix << 7) | row;
+    end;
+    return matrix;
 end;
 
 // r and c will contain the lower-left corner of the placement mask
@@ -387,16 +426,21 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
 //        debugPause();
     end;
 
-    // If it succeeded, we assume we can squeeze in the power node and the solar panel as well
+    // What follows is the 1x1 nodes. These must not be placed in corners to ensure the power node
+    // always connects to everything in the 7x7 grid.
+    terrainMask |= createFixedMatrix(
+        0b1100011,
+        0b1000001,
+        0b0000000,
+        0b0000000,
+        0b0000000,
+        0b1000001,
+        0b1100011);
+
+    // If it succeeded, we assume we can squeeze in the battery and solar panel (if required) as well
     // TODO: maybe re-center the position around the middle of the generator combo to get more space
     //       But maybe not? If it fails, we'll try other areas around the drill
     // It's a 1x1 block, so it's mask is `1`
-    shift = findPossiblePlacement(terrainMask, 1, 1, 1, out c, out r);
-    if shift < 0 then return false; end;
-    nodeX = centerX + c;
-    nodeY = centerY + r;
-    terrainMask |= (1 << shift);
-
     shift = findPossiblePlacement(terrainMask, 1, 1, 1, out c, out r);
     if shift < 0 then return false; end;
     panelX = centerX + c;
@@ -408,6 +452,18 @@ def tryPlaceGenerator(centerX, centerY, terrainMask, generatorHorizontal, genera
     batteryX = centerX + c;
     batteryY = centerY + r;
     terrainMask |= (1 << shift);
+
+    if len(water2X - node1X, water2Y - node1Y) > 7              // 2x2 block
+        or len(generatorX - node1X, generatorY - node1Y) > 7    // 2x2 block
+        or len(panelX - node1X, panelY - node1Y) > 6
+        or len(batteryX - node1X, batteryY - node1Y) > 6
+    then
+        shift = findPossiblePlacement(terrainMask, 1, 1, 1, out c, out r);
+        if shift < 0 then return false; end;
+        node2X = centerX + c;
+        node2Y = centerY + r;
+        terrainMask |= (1 << shift);
+    end;
 
     return true;
 end;
@@ -453,7 +509,7 @@ def createCombinedMask(x, y);
     // For debugging, remove the `var` and uncomment the variables
     var adjacentMask = createAdjacentMask(x, y);
     var terrainMask = await(processor1.createTerrainMask);
-    return adjacentMask | terrainMask;
+    return excludeArea(adjacentMask | terrainMask, x, y, coreX, coreY, BASE_SIZE, BASE_SIZE);
 end;
 
 noinline def layoutThoriumDrillAtLocation()
@@ -516,6 +572,24 @@ noinline def layoutThoriumDrillAtLocation()
         // Add it to the terrain mask
         terrainMask |= (mask2x2 << shift);
     end;
+
+    // What follows is the 1x1 nodes. These must not be placed in corners to ensure the power node
+    // always connects to everything in the 7x7 grid.
+    var nodeMask = terrainMask | createFixedMatrix(
+        0b1100011,
+        0b1000001,
+        0b0000000,
+        0b0000000,
+        0b0000000,
+        0b1000001,
+        0b1100011);
+
+    // The power node. When placed within the original area, it can reach everything within the
+    shift = findPossiblePlacement(nodeMask, 1, 1, 1, out c, out r);
+    if shift < 0 then return false; end;
+    node1X = drillX + c;
+    node1Y = drillY + r;
+    terrainMask |= (1 << shift);
 
 //    printMask("new terrain mask:", terrainMask);
 //    remark($"Shift: $shift, r: $r, c: $c\n");
@@ -593,11 +667,11 @@ end;
 //    end;
 //end;
 //
-//inline void debugPause()
-//    printflush(message1);
-//    switch1.enabled = true;
-//    do while switch1.enabled;
-//end;
+inline void debugPause()
+    printflush(message1);
+    switch1.enabled = true;
+    do while switch1.enabled;
+end;
 //
 //#set remarks = active;
 //

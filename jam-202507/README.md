@@ -8,6 +8,7 @@ Prerequisites:
 
 * A single Shard core must be present on the map.
 * 13x13 area centered on the core must be empty (allow buildings to be built).
+* The terrain must not block the multiplicative reconstructor's exit. 
 * Copper, lead, coal, titanium and thorium ore, and a sand tile, must be present on the map. The titanium and thorium ore must allow a drill to be built on them, and the area around thorium must allow building required infrastructure.
 * If the Time Control mod is used, speeds higher than 8x may lead to failures (the processors do not keep up, at speeds greater than 16x it seems that even mining gets broken).
 
@@ -50,9 +51,11 @@ The map is searched until the farthest distance is reached, or until a good enou
 
 The ore search is used on three different occasions:
 
-* building the fist titanium drill,
+* building the first titanium drill,
 * building additional titanium drills,
 * building the thorium drill and a related infrastructure.
+
+The thorium ore search almost immediately follows the second search for the titanium ore. Arguably, these two search phases could be combined and some time might be saved on maps where the ore is located far away, but this would increase the code size considerably.  
 
 ### Optimal drill placement
 
@@ -92,14 +95,17 @@ The placement of these additional blocks is planned on a 7x7 grid centered on th
 * [Solid tile bitmask](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/Matrices.mnd#L25)
 * [Adjacent blocks bitmask](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L426)
 
+If the area of interest is located close to the base, possible base areas are also blocked in the bitmask based on the distance from the base and base size. 
+
 To find a position for a block, a bitmask for a block is created. To evaluate different block positions, [the block bitmask is shifted accordingly](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L322), and the resulting bitmask is compared (using binary and) to the bitmask of free tiles. The first free position found is selected.
 
 To place blocks that have to touch the side of the drill, the [drill itself and the corners of the area bitmask are explicitly blocked](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L477). This ensures these 2x2 blocks cannot be placed diagonally from the drill. Positions of these blocks are marked in the terrain bitmask by or-ing them in. 
 
-The water extractor and the steam generator are placed as a single 2x4 block, either horizontally or vertically, using the updated terrain bitmask, and then the three 1x1 blocks (battery, solar panel, and power node) are also added. If it is not possible to place all these blocks within the original 7x7 area (this may actually easily happen), four more areas, each shifted by three tiles in both x and y directions, are evaluated. The terrain needs to be scanned anew for these areas, but the already planned blocks (the drill and the two touching 2x2 blocks) are [shifted accordingly](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L271) and combined with the new terrain mask.
+The water extractor, the steam generator are placed as a single 2x4 block, either horizontally or vertically, using the updated terrain bitmask, and then the three 1x1 blocks (battery, solar panel, and power node) are also added. The 1x1 blocks must not be placed in corners or in tiles adjacent to the corners, otherwise the distance between the power node and either of the two other blocks might be too large for a connection to be made.  
 
-(Note: given the dimensions of the areas considered, the power node might not be able to connect all blocks as needed, depending on its final position. A fix will be made.)
+If it is not possible to place all these blocks within the original 7x7 area (this may actually easily happen), four more areas, each shifted by three tiles in both x and y directions, are evaluated. The terrain needs to be scanned anew for these areas, but the already planned blocks (the drill and the two touching 2x2 blocks) are [shifted accordingly](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L271) and combined with the new terrain mask. An additional power node is built when the original power node is not able to reach all powered blocks; connection is ultimately ensured via the drill.  
 
 ## Known limitations
 
-TBD.
+* If the only thorium ore is too close to the base, the logic might fail to build the drill, although a solution actually exists.
+* If the area around a thorium ore is very constrained, the logic might fail to find a solution for planning the drill infrastructure, even if one exists. In this case, no efforts for finding a new thorium location will be made.
