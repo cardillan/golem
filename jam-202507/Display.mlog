@@ -1,11 +1,13 @@
+read *tmp39 processor1 "*signature"
+jump 0 notEqual *tmp39 "3290b8c661787058:v1"
 set .core null
 set .page 0
 set .numPages 3
 set .recentBuildIndex -1
-set .displayMonos 0
-set .displayFlares 0
-set .displayPolys 1
-set .displayMegas 0
+set .monos 0
+set .flares 0
+set .polys 1
+set .megas 0
 set .flareTarget 0
 set .monoTarget 0
 set .polyTarget 0
@@ -15,38 +17,38 @@ set .pageSwitched false
 set *signature "0:v1"
 ubind @poly
 ulocate building core false @copper 0 0 0 .core
-jump 15 equal .core null
+jump 17 equal .core null
 printflush null
 drawflush null
-jump 24 equal .displayUnitReset false
+jump 26 equal .unitReset false
 set .reconstructorProgress 0
 set .factoryProgress 0
-set .displayUnitReset false
-jump 508 notEqual .page 0
-jump 49 lessThanEq .displayMegas 0
-jump 30 greaterThanEq .animation 0
+set .unitReset false
+jump 504 notEqual .page 0
+jump 51 lessThanEq .megas 0
+jump 32 greaterThanEq .animation 0
 draw color 0 0 32 80 0 0
 draw rect 0 0 176 176 0 0
-jump 32 always 0 0
+jump 34 always 0 0
 draw reset 0 0 0 0 0 0
 draw clear 0 0 32 0 0 0
 draw col %[white] 0 0 0 0 0
-op div *tmp19 .animation 30
-op min *tmp20 *tmp19 1
-op max :animate:ratio 0 *tmp20
-op sub *tmp23 1 :animate:ratio
-op mul *tmp24 *tmp23 40
-op mul *tmp25 :animate:ratio 88
-op add *tmp22 *tmp24 *tmp25
-op mul *tmp29 *tmp23 137
-op add *tmp27 *tmp29 *tmp25
-op mul *tmp34 *tmp23 32
-op mul *tmp35 :animate:ratio 168
-op add *tmp32 *tmp34 *tmp35
-draw image *tmp22 *tmp27 @mega *tmp32 0 0
+op div *tmp54 .animation 30
+op min *tmp55 *tmp54 1
+op max :animate:ratio 0 *tmp55
+op sub *tmp58 1 :animate:ratio
+op mul *tmp59 *tmp58 40
+op mul *tmp60 :animate:ratio 88
+op add *tmp57 *tmp59 *tmp60
+op mul *tmp64 *tmp58 137
+op add *tmp62 *tmp64 *tmp60
+op mul *tmp69 *tmp58 32
+op mul *tmp70 :animate:ratio 168
+op add *tmp67 *tmp69 *tmp70
+draw image *tmp57 *tmp62 @mega *tmp67 0 0
 drawflush display1
 op add .animation .animation 1
-jump 838 always 0 0
+jump 822 always 0 0
 draw reset 0 0 0 0 0 0
 draw clear 0 0 32 0 0 0
 draw col %[gold] 0 0 0 0 0
@@ -55,119 +57,115 @@ draw print 40 161 @bottom
 print "Goal"
 draw print 41 161 @bottom
 draw col %[white] 0 0 0 0 0
-op add :drawHeader:count .nextBlock .displayNextUnit
-jump 62 notEqual :drawHeader:count 2
+op add :drawHeader:count .nextBlock .nextUnit
+jump 64 notEqual :drawHeader:count 2
 draw image 25 139 .nextBlock 25 0 0
-draw image 55 139 .displayNextUnit 25 0 0
+draw image 55 139 .nextUnit 25 0 0
 jump 72 always 0 0
 jump 68 notEqual :drawHeader:count 1
-jump 66 equal .nextBlock null
-draw image 40 137 .nextBlock 32 0 0
+select *tmp80 notEqual .nextBlock null .nextBlock .nextUnit
+draw image 40 137 *tmp80 32 0 0
 jump 72 always 0 0
-draw image 40 137 .displayNextUnit 32 0 0
-jump 72 always 0 0
-op div *tmp46 @tick 2
-op mod *tmp47 *tmp46 360
-op sub *tmp48 360 *tmp47
-draw image 40 137 @hydrogen 32 *tmp48 0
+op div *tmp81 @tick 2
+op mod *tmp82 *tmp81 360
+op sub *tmp83 360 *tmp82
+draw image 40 137 @hydrogen 32 *tmp83 0
 set :drawHeader:tt @second
-read *tmp49 processor2 "time"
-op idiv :drawHeader:t *tmp49 120
+read *tmp84 processor2 "time"
+op idiv :drawHeader:t *tmp84 120
 op idiv :drawHeader:m :drawHeader:t 60
 op mod :drawHeader:s :drawHeader:t 60
-set *tmp55 ""
-jump 80 greaterThanEq :drawHeader:s 10
-set *tmp55 "0"
+select *tmp90 lessThan :drawHeader:s 10 "0" ""
 print :drawHeader:m
 print ":{0}{0} (x{0}.{0})"
-format *tmp55
+format *tmp90
 format :drawHeader:s
-op mul *tmp56 10 :drawHeader:t
-op div *tmp57 *tmp56 :drawHeader:tt
-op round :drawHeader:ratio *tmp57 0
-op idiv *tmp59 :drawHeader:ratio 10
-op mod *tmp60 :drawHeader:ratio 10
-format *tmp59
-format *tmp60
+op mul *tmp91 10 :drawHeader:t
+op div *tmp92 *tmp91 :drawHeader:tt
+op round :drawHeader:ratio *tmp92 0
+op idiv *tmp94 :drawHeader:ratio 10
+op mod *tmp95 :drawHeader:ratio 10
+format *tmp94
+format *tmp95
 draw print 170 172 @topRight
-jump 103 equal .titaniumDrill false
-sensor *tmp62 .titaniumDrill @titanium
-op max :drawHeader:count .titaniumDrillCount *tmp62
-op log10 *tmp64 :drawHeader:count 0
-op floor :drawHeader:len *tmp64 0
+jump 101 equal .titaniumDrill false
+sensor *tmp97 .titaniumDrill @titanium
+op max :drawHeader:count .titaniumDrillCount *tmp97
+op log10 *tmp99 :drawHeader:count 0
+op floor :drawHeader:len *tmp99 0
 print "x"
 print :drawHeader:count
 draw print 170 155 @topRight
-op mul *tmp67 7 :drawHeader:len
-op sub *tmp68 150 *tmp67
-draw image *tmp68 146 @titanium 12 0 0
-jump 113 equal .thoriumContainer false
+op mul *tmp102 7 :drawHeader:len
+op sub *tmp103 150 *tmp102
+draw image *tmp103 146 @titanium 12 0 0
+jump 111 equal .thoriumContainer false
 sensor :drawHeader:count .thoriumContainer @thorium
-op log10 *tmp71 :drawHeader:count 0
-op floor :drawHeader:len.1 *tmp71 0
+op log10 *tmp106 :drawHeader:count 0
+op floor :drawHeader:len.1 *tmp106 0
 print "x"
 print :drawHeader:count
 draw print 120 155 @topRight
-op mul *tmp74 7 :drawHeader:len.1
-op sub *tmp75 100 *tmp74
-draw image *tmp75 146 @thorium 12 0 0
+op mul *tmp109 7 :drawHeader:len.1
+op sub *tmp110 100 *tmp109
+draw image *tmp110 146 @thorium 12 0 0
 set :drawMaterials:y 90
-jump 253 notEqual .nextBlock null
-sensor *tmp78 .airFactory @progress
-op max .factoryProgress .factoryProgress *tmp78
-sensor *tmp80 .reconstructor @progress
-op max .reconstructorProgress .reconstructorProgress *tmp80
+jump 251 notEqual .nextBlock null
+sensor *tmp113 .airFactory @progress
+op max .factoryProgress .factoryProgress *tmp113
+sensor *tmp115 .reconstructor @progress
+op max .reconstructorProgress .reconstructorProgress *tmp115
 sensor :drawMaterials:multiReconstructorProgress .multiReconstructor @progress
-jump 130 notEqual .displayNextUnit @mono
+jump 128 notEqual .nextUnit @mono
 set :drawMaterials:targetFactoryLead 15
 set :drawMaterials:targetFactorySilicon 30
 set .materialCount 2
-set :drawMaterials:unitCount1 .displayMonos
+set :drawMaterials:unitCount1 .monos
 set :drawMaterials:unitTotal1 .monoTarget
-set :drawMaterials:unit1 .displayNextUnit
+set :drawMaterials:unit1 .nextUnit
 set :drawMaterials:unit3 null
 set :drawMaterials:unit2 null
-jump 163 always 0 0
-jump 140 notEqual .displayNextUnit @flare
+jump 161 always 0 0
+jump 138 notEqual .nextUnit @flare
 set :drawMaterials:targetFactoryLead 0
 set :drawMaterials:targetFactorySilicon 15
 set .materialCount 1
-set :drawMaterials:unitCount1 .displayFlares
+set :drawMaterials:unitCount1 .flares
 set :drawMaterials:unitTotal1 .flareTarget
-set :drawMaterials:unit1 .displayNextUnit
+set :drawMaterials:unit1 .nextUnit
 set :drawMaterials:unit3 null
 set :drawMaterials:unit2 null
-jump 163 always 0 0
-jump 151 notEqual .displayNextUnit @poly
+jump 161 always 0 0
+jump 149 notEqual .nextUnit @poly
 op floor :drawMaterials:unitCount1 .factoryProgress 0
-set :drawMaterials:unitCount2 .displayPolys
+set :drawMaterials:unitCount2 .polys
 set :drawMaterials:unitTotal1 1
 set :drawMaterials:unitTotal2 .polyTarget
 set :drawMaterials:unit1 @mono
-set :drawMaterials:unit2 .displayNextUnit
+set :drawMaterials:unit2 .nextUnit
 set :drawMaterials:unit3 null
-op greaterThan *tmp99 .reconstructorProgress 0
-op max .factoryProgress .factoryProgress *tmp99
-jump 163 always 0 0
-jump 163 notEqual .displayNextUnit @mega
+op greaterThan *tmp134 .reconstructorProgress 0
+op max .factoryProgress .factoryProgress *tmp134
+jump 161 always 0 0
+jump 161 notEqual .nextUnit @mega
 op floor :drawMaterials:unitCount1 .factoryProgress 0
 op floor :drawMaterials:unitCount2 .reconstructorProgress 0
 set :drawMaterials:unitTotal1 1
 set :drawMaterials:unitTotal2 1
 set :drawMaterials:unit1 @mono
 set :drawMaterials:unit2 @poly
-set :drawMaterials:unit3 .displayNextUnit
-op greaterThan *tmp106 .reconstructorProgress 0
-op max .factoryProgress .factoryProgress *tmp106
-op greaterThan *tmp108 :drawMaterials:multiReconstructorProgress 0
-op max .reconstructorProgress .reconstructorProgress *tmp108
+set :drawMaterials:unit3 .nextUnit
+op greaterThan *tmp141 .reconstructorProgress 0
+op max .factoryProgress .factoryProgress *tmp141
+op greaterThan *tmp143 :drawMaterials:multiReconstructorProgress 0
+op max .reconstructorProgress .reconstructorProgress *tmp143
 print "Unit factories"
 draw print 22 105 @bottomLeft
 print "Unit factories"
 draw print 23 105 @bottomLeft
-jump 219 lessThanEq .factoryProgress 0
-op mul *tmp117 122 .factoryProgress
-op min :drawItem:length 122 *tmp117
+jump 217 lessThanEq .factoryProgress 0
+op mul *tmp152 122 .factoryProgress
+op min :drawItem:length 122 *tmp152
 draw col %[white] 0 0 0 0 0
 draw image 11 95 :drawMaterials:unit1 16 0 0
 draw color 0 128 0 255 0 0
@@ -182,9 +180,9 @@ print :drawMaterials:unitCount1
 print "/"
 print :drawMaterials:unitTotal1
 draw print 171 97 @right
-jump 437 equal :drawMaterials:unit2 null
-op mul *tmp141 122 .reconstructorProgress
-op min :drawItem.1:length 122 *tmp141
+jump 435 equal :drawMaterials:unit2 null
+op mul *tmp176 122 .reconstructorProgress
+op min :drawItem.1:length 122 *tmp176
 draw col %[white] 0 0 0 0 0
 draw image 11 80 :drawMaterials:unit2 16 0 0
 draw color 0 128 0 255 0 0
@@ -199,29 +197,29 @@ print :drawMaterials:unitCount2
 print "/"
 print :drawMaterials:unitTotal2
 draw print 171 82 @right
-jump 437 equal :drawMaterials:unit3 null
-op mul *tmp165 122 :drawMaterials:multiReconstructorProgress
-op min :drawItem.2:length 122 *tmp165
+jump 435 equal :drawMaterials:unit3 null
+op mul *tmp200 122 :drawMaterials:multiReconstructorProgress
+op min :drawItem.2:length 122 *tmp200
 draw col %[white] 0 0 0 0 0
 draw image 11 65 :drawMaterials:unit3 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 60 :drawItem.2:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 60 122 10 0 0
-print .displayMegas
+print .megas
 print "/"
 print .megaTarget
 draw print 170 67 @right
-print .displayMegas
+print .megas
 print "/"
 print .megaTarget
 draw print 171 67 @right
-jump 437 always 0 0
-jump 235 lessThanEq :drawMaterials:targetFactoryLead 0
-sensor *tmp188 .airFactory @lead
-op mul *tmp193 122 *tmp188
-op div *tmp194 *tmp193 :drawMaterials:targetFactoryLead
-op min :drawItem.3:length 122 *tmp194
+jump 435 always 0 0
+jump 233 lessThanEq :drawMaterials:targetFactoryLead 0
+sensor *tmp223 .airFactory @lead
+op mul *tmp228 122 *tmp223
+op div *tmp229 *tmp228 :drawMaterials:targetFactoryLead
+op min :drawItem.3:length 122 *tmp229
 draw col %[white] 0 0 0 0 0
 draw image 11 95 @lead 16 0 0
 draw color 0 128 0 255 0 0
@@ -233,39 +231,39 @@ draw print 170 97 @right
 print :drawMaterials:targetFactoryLead
 draw print 171 97 @right
 set :drawMaterials:y 75
-jump 437 lessThanEq :drawMaterials:targetFactorySilicon 0
-sensor *tmp188 .airFactory @silicon
-op mul *tmp193 122 *tmp188
-op div *tmp194 *tmp193 :drawMaterials:targetFactorySilicon
-op min :drawItem.3:length 122 *tmp194
+jump 435 lessThanEq :drawMaterials:targetFactorySilicon 0
+sensor *tmp223 .airFactory @silicon
+op mul *tmp228 122 *tmp223
+op div *tmp229 *tmp228 :drawMaterials:targetFactorySilicon
+op min :drawItem.3:length 122 *tmp229
 draw col %[white] 0 0 0 0 0
-op add *tmp205 :drawMaterials:y 5
-draw image 11 *tmp205 @silicon 16 0 0
+op add *tmp240 :drawMaterials:y 5
+draw image 11 *tmp240 @silicon 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.3:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp207 :drawMaterials:y 7
+op add *tmp242 :drawMaterials:y 7
 print :drawMaterials:targetFactorySilicon
-draw print 170 *tmp207 @right
+draw print 170 *tmp242 @right
 print :drawMaterials:targetFactorySilicon
-draw print 171 *tmp207 @right
-jump 437 always 0 0
-op equal *tmp211 .nextBlock @titanium
-op equal *tmp212 .nextBlock @ore-titanium
-op or *tmp213 *tmp211 *tmp212
-jump 283 equal *tmp213 false
-read *tmp215 processor1 ".mapAction"
-print *tmp215
+draw print 171 *tmp242 @right
+jump 435 always 0 0
+op equal *tmp246 .nextBlock @titanium
+op equal *tmp247 .nextBlock @ore-titanium
+op or *tmp248 *tmp246 *tmp247
+jump 281 equal *tmp248 false
+read *tmp250 processor1 ".mapAction"
+print *tmp250
 draw print 22 105 @bottomLeft
-read *tmp217 processor1 ".mapAction"
-print *tmp217
+read *tmp252 processor1 ".mapAction"
+print *tmp252
 draw print 23 105 @bottomLeft
 read :drawItem.4:current processor1 ".mapProgress"
 read :drawItem.4:target processor1 ".mapTotal"
-op mul *tmp222 122 :drawItem.4:current
-op div *tmp223 *tmp222 :drawItem.4:target
-op min :drawItem.4:length 122 *tmp223
+op mul *tmp257 122 :drawItem.4:current
+op div *tmp258 *tmp257 :drawItem.4:target
+op min :drawItem.4:length 122 *tmp258
 draw col %[white] 0 0 0 0 0
 draw image 11 95 @titanium 16 0 0
 draw color 0 128 0 255 0 0
@@ -273,27 +271,27 @@ draw rect 22 90 :drawItem.4:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 90 122 10 0 0
 print "x"
-read *tmp237 processor1 ".mapSpots"
-print *tmp237
+read *tmp272 processor1 ".mapSpots"
+print *tmp272
 draw print 170 97 @right
 print "x"
-read *tmp239 processor1 ".mapSpots"
-print *tmp239
+read *tmp274 processor1 ".mapSpots"
+print *tmp274
 draw print 171 97 @right
-jump 437 always 0 0
+jump 435 always 0 0
 set .materialCount .totalTargets
 set :drawMaterials:count .materialCount
 print "Materials"
 draw print 22 105 @bottomLeft
 print "Materials"
 draw print 23 105 @bottomLeft
-jump 437 equal .materialCount false
+jump 435 equal .materialCount false
 set :drawMaterials:target.1 .targetCopper
-jump 309 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @copper
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 307 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @copper
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
 draw image 11 95 @copper 16 0 0
 draw color 0 128 0 255 0 0
@@ -306,207 +304,205 @@ print :drawMaterials:target.1
 draw print 171 97 @right
 set :drawMaterials:y 75
 op sub :drawMaterials:count .materialCount 1
-jump 437 lessThanEq :drawMaterials:count 0
+jump 435 lessThanEq :drawMaterials:count 0
 set :drawMaterials:target.1 .targetLead
-jump 331 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @lead
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 329 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @lead
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
-op add *tmp265 :drawMaterials:y 5
-draw image 11 *tmp265 @lead 16 0 0
+op add *tmp300 :drawMaterials:y 5
+draw image 11 *tmp300 @lead 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.5:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp267 :drawMaterials:y 7
+op add *tmp302 :drawMaterials:y 7
 print :drawMaterials:target.1
-draw print 170 *tmp267 @right
+draw print 170 *tmp302 @right
 print :drawMaterials:target.1
-draw print 171 *tmp267 @right
+draw print 171 *tmp302 @right
 op sub :drawItem.5:y :drawMaterials:y 15
 set :drawMaterials:y :drawItem.5:y
 op sub :drawMaterials:count :drawMaterials:count 1
-jump 437 lessThanEq :drawMaterials:count 0
+jump 435 lessThanEq :drawMaterials:count 0
 set :drawMaterials:target.1 .targetGraphite
-jump 353 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @graphite
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 351 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @graphite
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
-op add *tmp265 :drawMaterials:y 5
-draw image 11 *tmp265 @graphite 16 0 0
+op add *tmp300 :drawMaterials:y 5
+draw image 11 *tmp300 @graphite 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.5:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp267 :drawMaterials:y 7
+op add *tmp302 :drawMaterials:y 7
 print :drawMaterials:target.1
-draw print 170 *tmp267 @right
+draw print 170 *tmp302 @right
 print :drawMaterials:target.1
-draw print 171 *tmp267 @right
+draw print 171 *tmp302 @right
 op sub :drawItem.5:y :drawMaterials:y 15
 set :drawMaterials:y :drawItem.5:y
 op sub :drawMaterials:count :drawMaterials:count 1
-jump 437 lessThanEq :drawMaterials:count 0
+jump 435 lessThanEq :drawMaterials:count 0
 set :drawMaterials:target.1 .targetSilicon
-jump 375 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @silicon
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 373 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @silicon
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
-op add *tmp265 :drawMaterials:y 5
-draw image 11 *tmp265 @silicon 16 0 0
+op add *tmp300 :drawMaterials:y 5
+draw image 11 *tmp300 @silicon 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.5:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp267 :drawMaterials:y 7
+op add *tmp302 :drawMaterials:y 7
 print :drawMaterials:target.1
-draw print 170 *tmp267 @right
+draw print 170 *tmp302 @right
 print :drawMaterials:target.1
-draw print 171 *tmp267 @right
+draw print 171 *tmp302 @right
 op sub :drawItem.5:y :drawMaterials:y 15
 set :drawMaterials:y :drawItem.5:y
 op sub :drawMaterials:count :drawMaterials:count 1
-jump 437 lessThanEq :drawMaterials:count 0
+jump 435 lessThanEq :drawMaterials:count 0
 set :drawMaterials:target.1 .targetTitanium
-jump 397 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @titanium
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 395 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @titanium
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
-op add *tmp265 :drawMaterials:y 5
-draw image 11 *tmp265 @titanium 16 0 0
+op add *tmp300 :drawMaterials:y 5
+draw image 11 *tmp300 @titanium 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.5:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp267 :drawMaterials:y 7
+op add *tmp302 :drawMaterials:y 7
 print :drawMaterials:target.1
-draw print 170 *tmp267 @right
+draw print 170 *tmp302 @right
 print :drawMaterials:target.1
-draw print 171 *tmp267 @right
+draw print 171 *tmp302 @right
 op sub :drawItem.5:y :drawMaterials:y 15
 set :drawMaterials:y :drawItem.5:y
 op sub :drawMaterials:count :drawMaterials:count 1
-jump 437 lessThanEq :drawMaterials:count 0
+jump 435 lessThanEq :drawMaterials:count 0
 set :drawMaterials:target.1 .targetMetaglass
-jump 419 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @metaglass
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 417 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @metaglass
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
-op add *tmp265 :drawMaterials:y 5
-draw image 11 *tmp265 @metaglass 16 0 0
+op add *tmp300 :drawMaterials:y 5
+draw image 11 *tmp300 @metaglass 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.5:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp267 :drawMaterials:y 7
+op add *tmp302 :drawMaterials:y 7
 print :drawMaterials:target.1
-draw print 170 *tmp267 @right
+draw print 170 *tmp302 @right
 print :drawMaterials:target.1
-draw print 171 *tmp267 @right
+draw print 171 *tmp302 @right
 op sub :drawItem.5:y :drawMaterials:y 15
 set :drawMaterials:y :drawItem.5:y
 op sub :drawMaterials:count :drawMaterials:count 1
-jump 437 lessThanEq :drawMaterials:count 0
+jump 435 lessThanEq :drawMaterials:count 0
 set :drawMaterials:target.1 .targetThorium
-jump 437 lessThanEq :drawMaterials:target.1 0
-sensor *tmp248 .core @thorium
-op mul *tmp253 122 *tmp248
-op div *tmp254 *tmp253 :drawMaterials:target.1
-op min :drawItem.5:length 122 *tmp254
+jump 435 lessThanEq :drawMaterials:target.1 0
+sensor *tmp283 .core @thorium
+op mul *tmp288 122 *tmp283
+op div *tmp289 *tmp288 :drawMaterials:target.1
+op min :drawItem.5:length 122 *tmp289
 draw col %[white] 0 0 0 0 0
-op add *tmp265 :drawMaterials:y 5
-draw image 11 *tmp265 @thorium 16 0 0
+op add *tmp300 :drawMaterials:y 5
+draw image 11 *tmp300 @thorium 16 0 0
 draw color 0 128 0 255 0 0
 draw rect 22 :drawMaterials:y :drawItem.5:length 10 0 0
 draw color 0 255 0 255 0 0
 draw lineRect 22 :drawMaterials:y 122 10 0 0
-op add *tmp267 :drawMaterials:y 7
+op add *tmp302 :drawMaterials:y 7
 print :drawMaterials:target.1
-draw print 170 *tmp267 @right
+draw print 170 *tmp302 @right
 print :drawMaterials:target.1
-draw print 171 *tmp267 @right
+draw print 171 *tmp302 @right
 draw col %[white] 0 0 0 0 0
-set *tmp274 25
-jump 441 greaterThanEq .materialCount 4
-set *tmp274 40
+select *tmp309 lessThan .materialCount 4 40 25
 print "Builder"
-draw print 22 *tmp274 @bottomLeft
+draw print 22 *tmp309 @bottomLeft
 print "Builder"
-draw print 23 *tmp274 @bottomLeft
-jump 460 notEqual .transportItem null
-op sub *tmp278 *tmp274 15
+draw print 23 *tmp309 @bottomLeft
+jump 456 notEqual .transportItem null
+op sub *tmp313 *tmp309 15
 draw col %[white] 0 0 0 0 0
-op sub *tmp295 *tmp274 10
-draw image 11 *tmp295 @poly 16 0 0
+op sub *tmp330 *tmp309 10
+draw image 11 *tmp330 @poly 16 0 0
 draw color 0 128 0 255 0 0
-draw rect 22 *tmp278 0 10 0 0
+draw rect 22 *tmp313 0 10 0 0
 draw color 0 255 0 255 0 0
-draw lineRect 22 *tmp278 122 10 0 0
-op sub *tmp297 *tmp274 8
+draw lineRect 22 *tmp313 122 10 0 0
+op sub *tmp332 *tmp309 8
 print .transportTarget
-draw print 170 *tmp297 @right
+draw print 170 *tmp332 @right
 print .transportTarget
-draw print 171 *tmp297 @right
-jump 482 always 0 0
+draw print 171 *tmp332 @right
+jump 478 always 0 0
 sensor :drawUnit:unitItem @unit @firstItem
-sensor *tmp304 @unit @totalItems
-op equal *tmp305 :drawUnit:unitItem .transportItem
-op mul *tmp306 *tmp304 *tmp305
-op sub *tmp307 *tmp274 15
+sensor *tmp339 @unit @totalItems
+op equal *tmp340 :drawUnit:unitItem .transportItem
+op mul *tmp341 *tmp339 *tmp340
+op sub *tmp342 *tmp309 15
 set :drawUnit.2:item .transportItem
 set :drawItem.7:target .transportTarget
-op mul *tmp312 122 *tmp306
-op div *tmp313 *tmp312 :drawItem.7:target
-op min :drawItem.7:length 122 *tmp313
+op mul *tmp347 122 *tmp341
+op div *tmp348 *tmp347 :drawItem.7:target
+op min :drawItem.7:length 122 *tmp348
 draw col %[white] 0 0 0 0 0
-op sub *tmp324 *tmp274 10
-draw image 11 *tmp324 :drawUnit.2:item 16 0 0
+op sub *tmp359 *tmp309 10
+draw image 11 *tmp359 :drawUnit.2:item 16 0 0
 draw color 0 128 0 255 0 0
-draw rect 22 *tmp307 :drawItem.7:length 10 0 0
+draw rect 22 *tmp342 :drawItem.7:length 10 0 0
 draw color 0 255 0 255 0 0
-draw lineRect 22 *tmp307 122 10 0 0
-op sub *tmp326 *tmp274 8
+draw lineRect 22 *tmp342 122 10 0 0
+op sub *tmp361 *tmp309 8
 print .transportTarget
-draw print 170 *tmp326 @right
+draw print 170 *tmp361 @right
 print .transportTarget
-draw print 171 *tmp326 @right
+draw print 171 *tmp361 @right
 set :drawUnits:x 170
 draw col %[white] 0 0 0 0 0
-set :drawUnitCount:count .displayPolys
-jump 491 lessThanEq :drawUnitCount:count 0
+set :drawUnitCount:count .polys
+jump 487 lessThanEq :drawUnitCount:count 0
 draw image 150 127 @poly 12 0 0
 print "x"
 print :drawUnitCount:count
 draw print 170 129 @right
 op sub :drawUnits:x 170 30
-set :drawUnitCount.1:count .displayMonos
-jump 499 lessThanEq :drawUnitCount.1:count 0
-op sub *tmp337 :drawUnits:x 20
-draw image *tmp337 127 @mono 12 0 0
+set :drawUnitCount.1:count .monos
+jump 495 lessThanEq :drawUnitCount.1:count 0
+op sub *tmp372 :drawUnits:x 20
+draw image *tmp372 127 @mono 12 0 0
 print "x"
 print :drawUnitCount.1:count
 draw print :drawUnits:x 129 @right
 op sub :drawUnits:x :drawUnits:x 30
-set :drawUnitCount.2:count .displayFlares
-jump 506 lessThanEq :drawUnitCount.2:count 0
-op sub *tmp340 :drawUnits:x 20
-draw image *tmp340 127 @flare 12 0 0
+set :drawUnitCount.2:count .flares
+jump 502 lessThanEq :drawUnitCount.2:count 0
+op sub *tmp375 :drawUnits:x 20
+draw image *tmp375 127 @flare 12 0 0
 print "x"
 print :drawUnitCount.2:count
 draw print :drawUnits:x 129 @right
 drawflush display1
-jump 838 always 0 0
-jump 786 notEqual .page 1
+jump 822 always 0 0
+jump 772 notEqual .page 1
 draw reset 0 0 0 0 0 0
 draw clear 0 0 32 0 0 0
 draw col %[gold] 0 0 0 0 0
@@ -518,328 +514,316 @@ draw scale 5.866666666666666 5.866666666666666 0 0 0 0
 draw col %[white] 0 0 0 0 0
 draw image 0 0 @core-shard 6 0 0
 set :displayBaseMap:cfg "#'+nA######%#"
-set *tmp343 522
-jump 635 always 0 0
+set *tmp378 518
+jump 625 always 0 0
 set :displayBaseMap:cfg "k*/(7######$$"
-set *tmp343 525
-jump 635 always 0 0
+set *tmp378 521
+jump 625 always 0 0
 set :displayBaseMap:cfg "k+/(7######$%"
-set *tmp343 528
-jump 635 always 0 0
+set *tmp378 524
+jump 625 always 0 0
 set :displayBaseMap:cfg "m*.<2######$&"
-set *tmp343 531
-jump 635 always 0 0
+set *tmp378 527
+jump 625 always 0 0
 set :displayBaseMap:cfg "%+-A<######%'"
-set *tmp343 534
-jump 635 always 0 0
+set *tmp378 530
+jump 625 always 0 0
 set :displayBaseMap:cfg "T+,%%######$("
-set *tmp343 537
-jump 635 always 0 0
+set *tmp378 533
+jump 625 always 0 0
 set :displayBaseMap:cfg "w**5#-#####%)"
-set *tmp343 540
-jump 635 always 0 0
+set *tmp378 536
+jump 625 always 0 0
 set :displayBaseMap:cfg "*,###A<###$*"
-set *tmp343 543
-jump 635 always 0 0
+set *tmp378 539
+jump 625 always 0 0
 set :displayBaseMap:cfg "T),%%######$+"
-set *tmp343 546
-jump 635 always 0 0
+set *tmp378 542
+jump 625 always 0 0
 set :displayBaseMap:cfg "W*-'%######$,"
-set *tmp343 549
-jump 635 always 0 0
+set *tmp378 545
+jump 625 always 0 0
 set :displayBaseMap:cfg "®-.}U#U####$-"
-set *tmp343 552
-jump 635 always 0 0
+set *tmp378 548
+jump 625 always 0 0
 set :displayBaseMap:cfg "g)'%)######$."
-set *tmp343 555
-jump 635 always 0 0
+set *tmp378 551
+jump 625 always 0 0
 set :displayBaseMap:cfg "(*###A<###$/"
-set *tmp343 558
-jump 635 always 0 0
+set *tmp378 554
+jump 625 always 0 0
 set :displayBaseMap:cfg "'(_i#####&&0"
-set *tmp343 561
-jump 635 always 0 0
+set *tmp378 557
+jump 625 always 0 0
 set :displayBaseMap:cfg ",)###A<###$1"
-set *tmp343 564
-jump 635 always 0 0
+set *tmp378 560
+jump 625 always 0 0
 set :displayBaseMap:cfg "T,*%%######$2"
-set *tmp343 567
-jump 635 always 0 0
+set *tmp378 563
+jump 625 always 0 0
 set :displayBaseMap:cfg "',+_AA#####%3"
-set *tmp343 570
-jump 635 always 0 0
+set *tmp378 566
+jump 625 always 0 0
 set :displayBaseMap:cfg "z%-AAA##A##%4"
-set *tmp343 573
-jump 635 always 0 0
+set *tmp378 569
+jump 625 always 0 0
 set :displayBaseMap:cfg "W'*'%######$5"
-set *tmp343 576
-jump 635 always 0 0
+set *tmp378 572
+jump 625 always 0 0
 set :displayBaseMap:cfg "W&*'%######$6"
-set *tmp343 579
-jump 635 always 0 0
+set *tmp378 575
+jump 625 always 0 0
 set :displayBaseMap:cfg "o%+FK<A####%7"
-set *tmp343 582
-jump 635 always 0 0
+set *tmp378 578
+jump 625 always 0 0
 set :displayBaseMap:cfg "$(.#U<###&8"
-set *tmp343 585
-jump 635 always 0 0
-set :displayBaseMap:cfg "z%/AAA##A##%9"
-set *tmp343 588
-jump 635 always 0 0
-set :displayBaseMap:cfg " '%-#2#####&:"
-set *tmp343 591
-jump 635 always 0 0
-set :displayBaseMap:cfg "*(###A<###$;"
-set *tmp343 594
-jump 635 always 0 0
-set :displayBaseMap:cfg "X*''%######$<"
-set *tmp343 597
-jump 635 always 0 0
-set :displayBaseMap:cfg "*%ë#}####&="
-set *tmp343 600
-jump 635 always 0 0
-set :displayBaseMap:cfg "l/,#U#A7###&>"
-set *tmp343 603
-jump 635 always 0 0
-set :displayBaseMap:cfg "W&*'%######$?"
-set *tmp343 606
-jump 635 always 0 0
-set :displayBaseMap:cfg "x**F#AA7###&@"
-set *tmp343 609
-jump 635 always 0 0
-set :displayBaseMap:cfg "r**#-#+####$A"
-set *tmp343 612
-jump 635 always 0 0
-set :displayBaseMap:cfg "**#######%B"
-set *tmp343 615
-jump 635 always 0 0
-set :displayBaseMap:cfg "%.)A<######%C"
-set *tmp343 618
-jump 635 always 0 0
-set :displayBaseMap:cfg "T-*%%######$D"
-set *tmp343 621
-jump 635 always 0 0
-set :displayBaseMap:cfg "T-)%%######$E"
-set *tmp343 624
-jump 635 always 0 0
-set :displayBaseMap:cfg "--###A<###$F"
-set *tmp343 627
-jump 635 always 0 0
-set :displayBaseMap:cfg "+(###A<###$G"
-set *tmp343 630
-jump 635 always 0 0
-set :displayBaseMap:cfg "X+''%######$H"
-set *tmp343 633
-jump 635 always 0 0
-set :displayBaseMap:cfg ".&#ʭ#ǥƁ#ʭ#(I"
-set *tmp343 784
-read *tmp430 :displayBaseMap:cfg 0
-op sub *tmp431 *tmp430 35
-lookup block :unpackCfg:type *tmp431
-read *tmp434 :displayBaseMap:cfg 1
-op sub :unpackCfg:x *tmp434 42
-read *tmp438 :displayBaseMap:cfg 2
-op sub :unpackCfg:y *tmp438 42
-read *tmp463 :displayBaseMap:cfg 10
-op sub :unpackCfg:rotation *tmp463 35
-read *tmp466 :displayBaseMap:cfg 11
-op sub :unpackCfg:size *tmp466 35
-read *tmp469 :displayBaseMap:cfg 12
-op sub :unpackCfg:ind *tmp469 35
-op or *tmp471 :unpackCfg:x :unpackCfg:y
-jump 665 equal *tmp471 false
-op shl *tmp473 1 :unpackCfg:ind
-op and *tmp474 .blocksBuilt *tmp473
-jump 655 equal *tmp474 false
+set *tmp378 581
+jump 625 always 0 0
+set :displayBaseMap:cfg " '%-#2#####&9"
+set *tmp378 584
+jump 625 always 0 0
+set :displayBaseMap:cfg "*(###A<###$:"
+set *tmp378 587
+jump 625 always 0 0
+set :displayBaseMap:cfg "X*''%######$;"
+set *tmp378 590
+jump 625 always 0 0
+set :displayBaseMap:cfg "*%ë#}####&<"
+set *tmp378 593
+jump 625 always 0 0
+set :displayBaseMap:cfg "l/,#U#A7###&="
+set *tmp378 596
+jump 625 always 0 0
+set :displayBaseMap:cfg "x**F#AA7###&>"
+set *tmp378 599
+jump 625 always 0 0
+set :displayBaseMap:cfg "r**#-#+####$?"
+set *tmp378 602
+jump 625 always 0 0
+set :displayBaseMap:cfg "**#######%@"
+set *tmp378 605
+jump 625 always 0 0
+set :displayBaseMap:cfg "%.)A<######%A"
+set *tmp378 608
+jump 625 always 0 0
+set :displayBaseMap:cfg "T-*%%######$B"
+set *tmp378 611
+jump 625 always 0 0
+set :displayBaseMap:cfg "T-)%%######$C"
+set *tmp378 614
+jump 625 always 0 0
+set :displayBaseMap:cfg "--###A<###$D"
+set *tmp378 617
+jump 625 always 0 0
+set :displayBaseMap:cfg "+(###A<###$E"
+set *tmp378 620
+jump 625 always 0 0
+set :displayBaseMap:cfg "X+''%######$F"
+set *tmp378 623
+jump 625 always 0 0
+set :displayBaseMap:cfg ".&#ʭ#ǥƁ#ʭ#(G"
+set *tmp378 770
+read *tmp465 :displayBaseMap:cfg 0
+op sub *tmp466 *tmp465 35
+lookup block :unpackCfg:type *tmp466
+read *tmp469 :displayBaseMap:cfg 1
+op sub :unpackCfg:x *tmp469 42
+read *tmp473 :displayBaseMap:cfg 2
+op sub :unpackCfg:y *tmp473 42
+read *tmp498 :displayBaseMap:cfg 10
+op sub :unpackCfg:rotation *tmp498 35
+read *tmp501 :displayBaseMap:cfg 11
+op sub :unpackCfg:size *tmp501 35
+read *tmp504 :displayBaseMap:cfg 12
+op sub :unpackCfg:ind *tmp504 35
+op or *tmp506 :unpackCfg:x :unpackCfg:y
+jump 655 equal *tmp506 false
+op shl *tmp508 1 :unpackCfg:ind
+op and *tmp509 .blocksBuilt *tmp508
+jump 645 equal *tmp509 false
 draw col %[white] 0 0 0 0 0
-jump 656 always 0 0
+jump 646 always 0 0
 draw color 128 255 128 128 0 0
-op and *tmp476 :unpackCfg:size 1
-op sub :drawBlock:offset 1 *tmp476
-op mul *tmp478 2 :unpackCfg:x
-op add *tmp479 *tmp478 :drawBlock:offset
-op mul *tmp480 2 :unpackCfg:y
-op add *tmp481 *tmp480 :drawBlock:offset
-op mul *tmp482 2 :unpackCfg:size
-op mul *tmp483 90 :unpackCfg:rotation
-draw image *tmp479 *tmp481 :unpackCfg:type *tmp482 *tmp483 0
+op and *tmp511 :unpackCfg:size 1
+op sub :drawBlock:offset 1 *tmp511
+op mul *tmp513 2 :unpackCfg:x
+op add *tmp514 *tmp513 :drawBlock:offset
+op mul *tmp515 2 :unpackCfg:y
+op add *tmp516 *tmp515 :drawBlock:offset
+op mul *tmp517 2 :unpackCfg:size
+op mul *tmp518 90 :unpackCfg:rotation
+draw image *tmp514 *tmp516 :unpackCfg:type *tmp517 *tmp518 0
 set :displayBaseMap:i .recentBuildIndex
-jump 777 lessThan :displayBaseMap:i 0
+jump 763 lessThan :displayBaseMap:i 0
 set .recentBuildIndex -1
-op mul *tmp484 :displayBaseMap:i 2
-op add @counter *tmp484 670
+op mul *tmp915 :displayBaseMap:i 2
+op add @counter *tmp915 660
 set :drawBlock:cfg "#'+nA######%#"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "k*/(7######$$"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "k+/(7######$%"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "m*.<2######$&"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "%+-A<######%'"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "T+,%%######$("
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "w**5#-#####%)"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "*,###A<###$*"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "T),%%######$+"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "W*-'%######$,"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "®-.}U#U####$-"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "g)'%)######$."
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "(*###A<###$/"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "'(_i#####&&0"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg ",)###A<###$1"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "T,*%%######$2"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "',+_AA#####%3"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "z%-AAA##A##%4"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "W'*'%######$5"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "W&*'%######$6"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "o%+FK<A####%7"
-jump 747 always 0 0
+jump 733 always 0 0
 set :drawBlock:cfg "$(.#U<###&8"
-jump 747 always 0 0
-set :drawBlock:cfg "z%/AAA##A##%9"
-jump 747 always 0 0
-set :drawBlock:cfg " '%-#2#####&:"
-jump 747 always 0 0
-set :drawBlock:cfg "*(###A<###$;"
-jump 747 always 0 0
-set :drawBlock:cfg "X*''%######$<"
-jump 747 always 0 0
-set :drawBlock:cfg "*%ë#}####&="
-jump 747 always 0 0
-set :drawBlock:cfg "l/,#U#A7###&>"
-jump 747 always 0 0
-set :drawBlock:cfg "W&*'%######$?"
-jump 747 always 0 0
-set :drawBlock:cfg "x**F#AA7###&@"
-jump 747 always 0 0
-set :drawBlock:cfg "r**#-#+####$A"
-jump 747 always 0 0
-set :drawBlock:cfg "**#######%B"
-jump 747 always 0 0
-set :drawBlock:cfg "%.)A<######%C"
-jump 747 always 0 0
-set :drawBlock:cfg "T-*%%######$D"
-jump 747 always 0 0
-set :drawBlock:cfg "T-)%%######$E"
-jump 747 always 0 0
-set :drawBlock:cfg "--###A<###$F"
-jump 747 always 0 0
-set :drawBlock:cfg "+(###A<###$G"
-jump 747 always 0 0
-set :drawBlock:cfg "X+''%######$H"
-jump 747 always 0 0
-set :drawBlock:cfg ".&#ʭ#ǥƁ#ʭ#(I"
-read *tmp430 :drawBlock:cfg 0
-op sub *tmp431 *tmp430 35
-lookup block :unpackCfg:type *tmp431
-read *tmp434 :drawBlock:cfg 1
-op sub :unpackCfg:x *tmp434 42
-read *tmp438 :drawBlock:cfg 2
-op sub :unpackCfg:y *tmp438 42
-read *tmp463 :drawBlock:cfg 10
-op sub :unpackCfg:rotation *tmp463 35
-read *tmp466 :drawBlock:cfg 11
-op sub :unpackCfg:size *tmp466 35
-read *tmp469 :drawBlock:cfg 12
-op sub :unpackCfg:ind *tmp469 35
-op or *tmp471 :unpackCfg:x :unpackCfg:y
-jump 777 equal *tmp471 false
-op shl *tmp473 1 :unpackCfg:ind
-op and *tmp474 .blocksBuilt *tmp473
-jump 767 equal *tmp474 false
+jump 733 always 0 0
+set :drawBlock:cfg " '%-#2#####&9"
+jump 733 always 0 0
+set :drawBlock:cfg "*(###A<###$:"
+jump 733 always 0 0
+set :drawBlock:cfg "X*''%######$;"
+jump 733 always 0 0
+set :drawBlock:cfg "*%ë#}####&<"
+jump 733 always 0 0
+set :drawBlock:cfg "l/,#U#A7###&="
+jump 733 always 0 0
+set :drawBlock:cfg "x**F#AA7###&>"
+jump 733 always 0 0
+set :drawBlock:cfg "r**#-#+####$?"
+jump 733 always 0 0
+set :drawBlock:cfg "**#######%@"
+jump 733 always 0 0
+set :drawBlock:cfg "%.)A<######%A"
+jump 733 always 0 0
+set :drawBlock:cfg "T-*%%######$B"
+jump 733 always 0 0
+set :drawBlock:cfg "T-)%%######$C"
+jump 733 always 0 0
+set :drawBlock:cfg "--###A<###$D"
+jump 733 always 0 0
+set :drawBlock:cfg "+(###A<###$E"
+jump 733 always 0 0
+set :drawBlock:cfg "X+''%######$F"
+jump 733 always 0 0
+set :drawBlock:cfg ".&#ʭ#ǥƁ#ʭ#(G"
+read *tmp465 :drawBlock:cfg 0
+op sub *tmp466 *tmp465 35
+lookup block :unpackCfg:type *tmp466
+read *tmp469 :drawBlock:cfg 1
+op sub :unpackCfg:x *tmp469 42
+read *tmp473 :drawBlock:cfg 2
+op sub :unpackCfg:y *tmp473 42
+read *tmp498 :drawBlock:cfg 10
+op sub :unpackCfg:rotation *tmp498 35
+read *tmp501 :drawBlock:cfg 11
+op sub :unpackCfg:size *tmp501 35
+read *tmp504 :drawBlock:cfg 12
+op sub :unpackCfg:ind *tmp504 35
+op or *tmp506 :unpackCfg:x :unpackCfg:y
+jump 763 equal *tmp506 false
+op shl *tmp508 1 :unpackCfg:ind
+op and *tmp509 .blocksBuilt *tmp508
+jump 753 equal *tmp509 false
 draw col %[white] 0 0 0 0 0
-jump 768 always 0 0
+jump 754 always 0 0
 draw color 128 255 128 128 0 0
-op and *tmp476 :unpackCfg:size 1
-op sub :drawBlock:offset 1 *tmp476
-op mul *tmp478 2 :unpackCfg:x
-op add *tmp479 *tmp478 :drawBlock:offset
-op mul *tmp480 2 :unpackCfg:y
-op add *tmp481 *tmp480 :drawBlock:offset
-op mul *tmp482 2 :unpackCfg:size
-op mul *tmp483 90 :unpackCfg:rotation
-draw image *tmp479 *tmp481 :unpackCfg:type *tmp482 *tmp483 0
-sensor *tmp348 switch1 @enabled
-jump 781 equal *tmp348 false
+op and *tmp511 :unpackCfg:size 1
+op sub :drawBlock:offset 1 *tmp511
+op mul *tmp513 2 :unpackCfg:x
+op add *tmp514 *tmp513 :drawBlock:offset
+op mul *tmp515 2 :unpackCfg:y
+op add *tmp516 *tmp515 :drawBlock:offset
+op mul *tmp517 2 :unpackCfg:size
+op mul *tmp518 90 :unpackCfg:rotation
+draw image *tmp514 *tmp516 :unpackCfg:type *tmp517 *tmp518 0
+sensor *tmp383 switch1 @enabled
+jump 767 equal *tmp383 false
 drawflush display1
-jump 784 always 0 0
-jump 783 equal .pageSwitched false
+jump 770 always 0 0
+jump 769 equal .pageSwitched false
 drawflush display1
-set @counter *tmp343
+set @counter *tmp378
 drawflush display1
-jump 838 always 0 0
+jump 822 always 0 0
 op sub :displayLog:page .page 2
 set :displayLog:x 11
 set :displayLog:y 163
 read :displayLog:logPosition bank1 511
-op sub *tmp354 510 :displayLog:logPosition
-op idiv *tmp355 *tmp354 32
-op add *tmp356 *tmp355 1
-op max :displayLog:pages 1 *tmp356
+op sub *tmp389 510 :displayLog:logPosition
+op idiv *tmp390 *tmp389 32
+op add *tmp391 *tmp390 1
+op max :displayLog:pages 1 *tmp391
 op add .numPages :displayLog:pages 2
-op mul *tmp359 32 :displayLog:page
-op sub :displayLog:start 511 *tmp359
-op sub *tmp361 :displayLog:start 32
-op max :displayLog:stop :displayLog:logPosition *tmp361
+op mul *tmp394 32 :displayLog:page
+op sub :displayLog:start 511 *tmp394
+op sub *tmp396 :displayLog:start 32
+op max :displayLog:stop :displayLog:logPosition *tmp396
 draw col %[lightgray] 0 0 0 0 0
-op sub *tmp363 .page 1
-print *tmp363
+op sub *tmp398 .page 1
+print *tmp398
 print "/"
 print :displayLog:pages
 draw print 172 4 @bottomRight
 draw col %[white] 0 0 0 0 0
 op sub :displayLog:position :displayLog:start 1
-jump 838 lessThan :displayLog:position :displayLog:stop
+jump 822 lessThan :displayLog:position :displayLog:stop
 read :displayLog:record bank1 :displayLog:position
 op mod :displayRecord:id :displayLog:record 1000
-lookup block *tmp369 :displayRecord:id
-jump 814 lessThanEq :displayRecord:id @blockCount
-op sub *tmp370 :displayRecord:id @blockCount
-lookup unit *tmp369 *tmp370
-op div *tmp373 :displayLog:record 1000
-op idiv :displayRecord:t *tmp373 120
+lookup block *tmp404 :displayRecord:id
+jump 800 lessThanEq :displayRecord:id @blockCount
+op sub *tmp405 :displayRecord:id @blockCount
+lookup unit *tmp404 *tmp405
+op div *tmp408 :displayLog:record 1000
+op idiv :displayRecord:t *tmp408 120
 op idiv :displayRecord:m :displayRecord:t 60
 op mod :displayRecord:s :displayRecord:t 60
-set *tmp379 ""
-jump 821 greaterThanEq :displayRecord:s 10
-set *tmp379 "0"
+select *tmp414 lessThan :displayRecord:s 10 "0" ""
 print :displayRecord:m
 print ":"
-print *tmp379
-draw image :displayLog:x :displayLog:y *tmp369 14 0 0
-op add *tmp381 :displayLog:x 44
-op add *tmp382 :displayLog:y 2
+print *tmp414
+draw image :displayLog:x :displayLog:y *tmp404 14 0 0
+op add *tmp416 :displayLog:x 44
+op add *tmp417 :displayLog:y 2
 print :displayRecord:s
-draw print *tmp381 *tmp382 @right
+draw print *tmp416 *tmp417 @right
 op sub :displayLog:y :displayLog:y 15
-jump 833 greaterThanEq :displayLog:y 10
+jump 817 greaterThanEq :displayLog:y 10
 op add :displayLog:x :displayLog:x 58
 set :displayLog:y 164
 drawflush display1
-sensor *tmp385 switch1 @enabled
-jump 838 notEqual *tmp385 false
+sensor *tmp420 switch1 @enabled
+jump 822 notEqual *tmp420 false
 op sub :displayLog:position :displayLog:position 1
-jump 808 greaterThanEq :displayLog:position :displayLog:stop
-jump 842 lessThanEq .displayMegas 0
+jump 794 greaterThanEq :displayLog:position :displayLog:stop
+jump 826 lessThanEq .megas 0
 print "[gold]All done.[]\nNothing more to see here.\nGo home.\n"
 printflush message1
-jump 850 always 0 0
+jump 834 always 0 0
 print "[gold]Building {0}\n==================================[]\n{0}\n{0}{0} ({0})\n{0}\n"
 format .nextBlock
 format .status1
@@ -849,14 +833,14 @@ format .block2
 format .status3
 printflush message1
 sensor .pageSwitched switch1 @enabled
-jump 20 equal .pageSwitched false
+jump 22 equal .pageSwitched false
 control enabled switch1 false 0 0 0
-op add *tmp394 .page 1
-op mod .page *tmp394 .numPages
+op add *tmp429 .page 1
+op mod .page *tmp429 .numPages
 drawflush null
 draw reset 0 0 0 0 0 0
 draw clear 0 0 32 0 0 0
-jump 20 always 0 0
+jump 22 always 0 0
 draw triangle .thoriumDrill 0 0 0 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

@@ -2,6 +2,8 @@
 #set syntax = strict;
 //#set sort-variables;
 
+module MonoController;
+
 // At this point, we're only using a poly
 const RADIUS = 7;
 const capacity = 20;
@@ -12,12 +14,12 @@ noinit var core, coreX, coreY;
 
 var min = 0, minOre = null;
 
-noinit volatile var
-    monoCopperTarget,
-    monoSandTarget,
-    monoLeadTarget;
+noinit remote var
+    copperTarget,
+    sandTarget,
+    leadTarget;
 
-begin
+void backgroundProcess()
     do
         ubind(@mono);
     while @unit == null;
@@ -33,9 +35,9 @@ begin
         if @unit == firstItem then
             printflush(message1);
 
-            var lead = core.@lead - monoLeadTarget;
-            var sand = core.@sand - monoSandTarget;
-            var copper = core.@copper - monoCopperTarget;
+            var lead = core.@lead - leadTarget;
+            var sand = core.@sand - sandTarget;
+            var copper = core.@copper - copperTarget;
             min = min(lead, sand, copper);
             minOre = min == sand ? @sand : min == lead ? @lead : @copper;
             println("minOre:", minOre);

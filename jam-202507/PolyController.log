@@ -1,17 +1,17 @@
    214 instructions before optimizations.
-     8 instructions eliminated by Temp Variables Elimination (2 iterations).
+     8 instructions eliminated by Temp Variables Elimination (2 passes, 6 iterations).
     33 instructions eliminated by Dead Code Elimination (7 iterations).
-C:\Home\golem\jam-202507\PolyController.mnd:144:5 Variable 'onBase' is not used.
+C:\Home\golem\jam-202507\PolyController.mnd:146:5 Variable 'onBase' is not used.
      1 instructions eliminated by Jump Normalization (5 iterations).
     17 instructions eliminated by Jump Optimization (5 iterations).
-     9 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
-     1 instructions eliminated by If Expression Optimization (3 iterations).
-     1 instructions eliminated by Data Flow Optimization (4 iterations).
+     8 instructions eliminated by Single Step Elimination (6 iterations).
+     3 instructions eliminated by If Expression Optimization (4 iterations).
+     2 instructions eliminated by Data Flow Optimization (2 passes, 5 iterations).
      1 instructions eliminated by Jump Straightening (5 iterations).
-    12 instructions updated by JumpThreading.
+    12 instructions updated by Jump Threading.
      6 instructions eliminated by Unreachable Code Elimination (2 iterations).
     18 instructions eliminated by Print Merging.
-   119 instructions after optimizations.
+   117 instructions after optimizations.
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-21 instructions):
  
@@ -247,7 +247,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-8 inst
 -    * ulocate building core false @copper .coreX .coreY *tmp2 *tmp1
 -    * set .core *tmp1
 +   14 set .builder @unit
-+   15 ulocate building core false @copper .coreX .coreY 0 .core
++   15 ulocate building core false @copper .coreX .coreY *tmp2 .core
     16 label *label11
     17 op equal *tmp3 .core null
     18 jump *label10 notEqual *tmp3 false
@@ -282,11 +282,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-8 inst
     71 print :backgroundProcess:flag
     72 print "\n"
  
-    88 jump *label35 always
-    89 label *label34
-    90 label *label35
--    * ulocate ore core true @coal :findOreToMine:x :findOreToMine:y *tmp30 *tmp31
-+   91 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
+    91 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y *tmp30 *tmp31
     92 op sub *tmp32 :findOreToMine:x .coreX
     93 op sub *tmp33 :findOreToMine:y .coreY
 -    * op len *tmp34 *tmp32 *tmp33
@@ -295,15 +291,6 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-8 inst
     95 op lessThan *tmp35 :findOreToMine:dist .distance
     96 jump *label38 equal *tmp35 false
     97 set .coalX :findOreToMine:x
- 
-   102 label *label39
-   103 ucontrol approach .coalX .coalY 6
-   104 set :findOreToMine:floor null
--    * ucontrol getBlock .coalX .coalY *tmp38 *tmp37 :findOreToMine:floor
-+  105 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
-   106 op equal *tmp39 :findOreToMine:floor @ore-coal
-   107 jump *label40 equal *tmp39 false
-   108 ucontrol mine :findOreToMine:x :findOreToMine:y
  
    197 end
    198 label *label0
@@ -340,7 +327,7 @@ Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 ins
 Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-17 instructions):
  
     14 set .builder @unit
-    15 ulocate building core false @copper .coreX .coreY 0 .core
+    15 ulocate building core false @copper .coreX .coreY *tmp2 .core
     16 label *label11
 -    * op equal *tmp3 .core null
 -    * jump *label10 notEqual *tmp3 false
@@ -420,7 +407,7 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-17 ins
  
     92 ucontrol approach .coalX .coalY 6
     93 set :findOreToMine:floor null
-    94 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
+    94 ucontrol getBlock .coalX .coalY *tmp38 *tmp37 :findOreToMine:floor
 -    * op equal *tmp39 :findOreToMine:floor @ore-coal
 -    * jump *label40 equal *tmp39 false
 +   95 jump *label40 notEqual :findOreToMine:floor @ore-coal
@@ -513,7 +500,7 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
 -    * jump *label35 always
     75 label *label34
     76 label *label35
-    77 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
+    77 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y *tmp30 *tmp31
  
     82 set .coalX :findOreToMine:x
     83 set .coalY :findOreToMine:y
@@ -553,45 +540,45 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1
     86 label *label39
     87 ucontrol approach .coalX .coalY 6
 -    * set :findOreToMine:floor null
-    88 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
+    88 ucontrol getBlock .coalX .coalY *tmp38 *tmp37 :findOreToMine:floor
     89 jump *label40 notEqual :findOreToMine:floor @ore-coal
     90 ucontrol mine :findOreToMine:x :findOreToMine:y
 
-Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-1 instructions):
+Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-3 instructions):
  
    173 set .thoriumContainer :setThoriumContainer:container
    174 sensor .thoriumContainerX :setThoriumContainer:container @x
    175 sensor .thoriumContainerY :setThoriumContainer:container @y
-+  176 set .thoriumLimit 0
-   177 sensor *tmp56 .thoriumContainer @itemCapacity
+-    * sensor *tmp56 .thoriumContainer @itemCapacity
 -    * jump *label55 lessThanEq *tmp56 10
 -    * set *tmp58 100
-+  178 jump *label56 lessThanEq *tmp56 10
-+  179 set .thoriumLimit 100
-   180 jump *label56 always
+-    * jump *label56 always
 -    * label *label55
 -    * set *tmp58 0
-   181 label *label56
--    * set .thoriumLimit *tmp58
-   182 label *label54
-   183 set :setThoriumContainer*finished true
-   184 jump *label13 always
+-    * label *label56
++  176 sensor *tmp56 .thoriumContainer @itemCapacity
++  177 select *tmp58 greaterThan *tmp56 10 100 0
+   178 set .thoriumLimit *tmp58
+   179 label *label54
+   180 set :setThoriumContainer*finished true
 
-Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-1 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-1 instructions):
  
-   177 sensor *tmp56 .thoriumContainer @itemCapacity
-   178 jump *label56 lessThanEq *tmp56 10
-   179 set .thoriumLimit 100
--    * jump *label56 always
-   180 label *label56
-   181 label *label54
-   182 set :setThoriumContainer*finished true
+   174 sensor .thoriumContainerX :setThoriumContainer:container @x
+   175 sensor .thoriumContainerY :setThoriumContainer:container @y
+   176 sensor *tmp56 .thoriumContainer @itemCapacity
+-    * select *tmp58 greaterThan *tmp56 10 100 0
+-    * set .thoriumLimit *tmp58
++  177 select .thoriumLimit greaterThan *tmp56 10 100 0
+   178 label *label54
+   179 set :setThoriumContainer*finished true
+   180 jump *label13 always
 
 Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
  
     13 ubind @poly
     14 set .builder @unit
-    15 ulocate building core false @copper .coreX .coreY 0 .core
+    15 ulocate building core false @copper .coreX .coreY *tmp2 .core
 -    * label *label11
     16 jump *label10 equal .core null
 -    * label *label12
@@ -622,7 +609,7 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
 -    * label *label37
     69 label *label34
 -    * label *label35
-    70 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
+    70 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y *tmp30 *tmp31
     71 op sub *tmp32 :findOreToMine:x .coreX
     72 op sub *tmp33 :findOreToMine:y .coreY
  
@@ -631,7 +618,7 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
     78 label *label38
 -    * label *label39
     79 ucontrol approach .coalX .coalY 6
-    80 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
+    80 ucontrol getBlock .coalX .coalY *tmp38 *tmp37 :findOreToMine:floor
     81 jump *label40 notEqual :findOreToMine:floor @ore-coal
  
    123 print "\n"
@@ -668,27 +655,27 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
    155 wait 1e12
    156 jump *label13 always
  
-   164 jump *label56 lessThanEq *tmp56 10
-   165 set .thoriumLimit 100
-   166 label *label56
+   161 sensor .thoriumContainerY :setThoriumContainer:container @y
+   162 sensor *tmp56 .thoriumContainer @itemCapacity
+   163 select .thoriumLimit greaterThan *tmp56 10 100 0
 -    * label *label54
-   167 set :setThoriumContainer*finished true
-   168 jump *label13 always
-   169 end
-   170 label *label1
-   171 label *label58
+   164 set :setThoriumContainer*finished true
+   165 jump *label13 always
+   166 end
+   167 label *label1
+   168 label *label58
 -    * label *label59
-   172 jump *label58 always
+   169 jump *label58 always
 -    * label *label60
 -    * label *label57
-   173 set :pause*finished true
-   174 jump *label13 always
-   175 end
-   176 label *label2
+   170 set :pause*finished true
+   171 jump *label13 always
+   172 end
+   173 label *label2
 -    * label *label61
-   177 set :resume*finished true
-   178 jump *label13 always
-   179 end
+   174 set :resume*finished true
+   175 jump *label13 always
+   176 end
 
 Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instructions):
  
@@ -762,7 +749,7 @@ Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
 +   65 jump *label17 always
     66 label *label36
     67 label *label34
-    68 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
+    68 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y *tmp30 *tmp31
  
     85 print .coalY
     86 print "\n"
@@ -852,20 +839,49 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
    145 set .thoriumContainer :setThoriumContainer:container
    146 sensor .thoriumContainerX :setThoriumContainer:container @x
  
-   152 label *label56
-   153 set :setThoriumContainer*finished true
-   154 jump *label13 always
+   149 select .thoriumLimit greaterThan *tmp56 10 100 0
+   150 set :setThoriumContainer*finished true
+   151 jump *label13 always
 -    * end
-   155 label *label1
-   156 label *label58
-   157 jump *label58 always
+   152 label *label1
+   153 label *label58
+   154 jump *label58 always
 -    * set :pause*finished true
 -    * jump *label13 always
 -    * end
-   158 label *label2
-   159 set :resume*finished true
-   160 jump *label13 always
+   155 label *label2
+   156 set :resume*finished true
+   157 jump *label13 always
 -    * end
+
+Modifications by Final phase, Temp Variables Elimination, iteration 1:
+ 
+    12 label *label10
+    13 ubind @poly
+    14 set .builder @unit
+-    * ulocate building core false @copper .coreX .coreY *tmp2 .core
++   15 ulocate building core false @copper .coreX .coreY 0 .core
+    16 jump *label10 equal .core null
+    17 set *signature "5f95d6f938a8462e:v1"
+    18 label *label13
+ 
+    63 jump *label17 always
+    64 label *label36
+    65 label *label34
+-    * ulocate ore core true @coal :findOreToMine:x :findOreToMine:y *tmp30 *tmp31
++   66 ulocate ore core true @coal :findOreToMine:x :findOreToMine:y 0 0
+    67 op sub *tmp32 :findOreToMine:x .coreX
+    68 op sub *tmp33 :findOreToMine:y .coreY
+    69 op len :findOreToMine:dist *tmp32 *tmp33
+ 
+    73 set .distance :findOreToMine:dist
+    74 label *label38
+    75 ucontrol approach .coalX .coalY 6
+-    * ucontrol getBlock .coalX .coalY *tmp38 *tmp37 :findOreToMine:floor
++   76 ucontrol getBlock .coalX .coalY 0 0 :findOreToMine:floor
+    77 jump *label40 notEqual :findOreToMine:floor @ore-coal
+    78 ucontrol mine :findOreToMine:x :findOreToMine:y
+    79 print "Found coal at "
 
 Modifications by Final phase, Print Merging, iteration 1 (-18 instructions):
  
@@ -976,7 +992,7 @@ Final code before resolving virtual instructions:
     2:  jump *label2 always 0 0                                      ...
     3:  jump *label0 always 0 0                                      ...
         label *label9                                                ...
-    4:  set .thoriumContainer null                                   remote var
+    4:  set .thoriumContainer null                                   volatile var
     5:  set .thoriumLimit 100                                        volatile var
     6:  set .thoriumContainerX 0                                     ...
     7:  set .thoriumContainerY 0                                     ...
@@ -1101,22 +1117,19 @@ Final code before resolving virtual instructions:
   107:  set .thoriumContainer :setThoriumContainer:container         thoriumContainer = container;
   108:  sensor .thoriumContainerX :setThoriumContainer:container @x  thoriumContainerX = container.@x;
   109:  sensor .thoriumContainerY :setThoriumContainer:container @y  thoriumContainerY = container.@y;
-  110:  set .thoriumLimit 0                                          thoriumLimit = thoriumContainer.@itemCapacity > 10 ? 100 : 0;
-  111:  sensor *tmp56 .thoriumContainer @itemCapacity                ...
-  112:  jump *label56 lessThanEq *tmp56 10                           ...
-  113:  set .thoriumLimit 100                                        ...
-        label *label56                                               ...
-  114:  set :setThoriumContainer*finished true                       remote void setThoriumContainer(container)
-  115:  jump *label13 always 0 0                                     ...
+  110:  sensor *tmp56 .thoriumContainer @itemCapacity                thoriumLimit = thoriumContainer.@itemCapacity > 10 ? 100 : 0;
+  111:  select .thoriumLimit greaterThan *tmp56 10 100 0             ...
+  112:  set :setThoriumContainer*finished true                       remote void setThoriumContainer(container)
+  113:  jump *label13 always 0 0                                     ...
         label *label1                                                remote void pause();
         label *label58                                               do while true;
-  116:  jump *label58 always 0 0                                     ...
+  114:  jump *label58 always 0 0                                     ...
         label *label2                                                remote void resume()
-  117:  set :resume*finished true                                    ...
-  118:  jump *label13 always 0 0                                     ...
+  115:  set :resume*finished true                                    ...
+  116:  jump *label13 always 0 0                                     ...
 
 
-Performance: parsed in 277 ms, compiled in 367 ms, optimized in 247 ms, run in 3 ms.
+Performance: parsed in 254 ms, compiled in 297 ms, optimized in 247 ms, run in 9 ms.
 
 Compiled mlog code was sent to Mlog Watcher.
   Mlog Watcher: no processor selected.

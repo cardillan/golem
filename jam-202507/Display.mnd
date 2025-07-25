@@ -4,11 +4,13 @@
 
 module Display;
 
-linked display1, switch1, message1, bank1, processor1, timer = processor2;
+require "Common.mnd";
 
-// Processor1 is the ore locator
-// We're reading and displaying search progress
-remote processor1 var mapProgress, mapTotal, mapAction, mapSpots;
+linked display1, switch1, message1, bank1,
+    oreLocator = processor1,
+    timer = processor2;
+
+require "OreLocator.mnd" remote oreLocator;
 
 var
     core = null,
@@ -19,8 +21,8 @@ var
 noinit remote var
     nextBlock,
     blocksBuilt,
-    displayNextUnit,
-    displayUnitReset,
+    nextUnit,
+    unitReset,
     targetCopper,
     targetLead,
     targetGraphite,
@@ -44,54 +46,14 @@ noinit remote var
 
 remote var
     recentBuildIndex = -1,
-    displayMonos = 0,
-    displayFlares = 0,
-    displayPolys = 1,
-    displayMegas = 0,
+    monos = 0,
+    flares = 0,
+    polys = 1,
+    megas = 0,
     flareTarget = 0,
     monoTarget = 0,
     polyTarget = 0,
     megaTarget = 0;
-
-const PRESS = "#'+nA######%#";
-const BATTERY1 = "k*/(7######$$";
-const BATTERY2 = "k+/(7######$%";
-const GENERATOR = "m*.<2######$&";
-const SMELTER = "%+-A<######%'";
-const INVERTED_SORT1 = "T+,%%######$(";
-const PNEUMATIC_DRILL = "w**5#-#####%)";
-const UNLOADER1 = "*,###A<###$*";
-const INVERTED_SORT2 = "T),%%######$+";
-const OVERFLOW_GATE1 = "W*-'%######$,";
-const PROCESSOR = "®-.}U#U####$-";
-const POWER_NODE = "g)'%)######$.";
-const UNLOADER2 = "(*###A<###$/";
-const AIR_FACTORY = "'(_i#####&&0";
-const UNLOADER3 = ",)###A<###$1";
-const INVERTED_SORT3 = "T,*%%######$2";
-const KILN = "',+_AA#####%3";
-const WATER_EXT = "z%-AAA##A##%4";
-const OVERFLOW_GATE2 = "W'*'%######$5";
-const OVERFLOW_GATE3 = "W&*'%######$6";
-const STEAM_GEN = "o%+FK<A####%7";
-const MULTIPRESS = "$(.#U<###&8";
-const WATER_EXT2 = "z%/AAA##A##%9";
-const PAYLOAD_ROUTER = " '%-#2#####&:";
-const UNLOADER4 = "*(###A<###$;";
-const UNDERFLOW_GATE = "X*''%######$<";
-const ADDITIVE_REC = "*%ë#}####&=";
-const BATTERY_LARGE = "l/,#U#A7###&>";
-const OVERFLOW_GATE4 = "W&*'%######$?";
-const LASER_DRILL = "x**F#AA7###&@";
-const SOLAR_PANEL = "r**#-#+####$A";
-const CONTAINER = "**#######%B";
-const SMELTER2 = "%.)A<######%C";
-const INVERTED_SORT4 = "T-*%%######$D";
-const INVERTED_SORT5 = "T-)%%######$E";
-const UNLOADER5 = "--###A<###$F";
-const UNLOADER6 = "+(###A<###$G";
-const UNDERFLOW_GATE2 = "X+''%######$H";
-const MULTIPLICATIVE_REC = ".&#ʭ#ǥƁ#ʭ#(I";
 
 void unpackCfg(cfg, out type, out x, out y, out rotation, out size, out ind)
     var index = 0;
@@ -133,13 +95,11 @@ const BLOCKS[] = (
         OVERFLOW_GATE3,
         STEAM_GEN,
         MULTIPRESS,
-        WATER_EXT2,
         PAYLOAD_ROUTER,
         UNLOADER4,
         UNDERFLOW_GATE,
         ADDITIVE_REC,
         BATTERY_LARGE,
-        OVERFLOW_GATE4,
         LASER_DRILL,
         SOLAR_PANEL,
         CONTAINER,
@@ -233,12 +193,12 @@ inline void drawHeader()
     drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
 
     col(%[white]);
-    var count = nextBlock + displayNextUnit;
+    var count = nextBlock + nextUnit;
     if count == 2 then
         image(HEADER_X - 15, HEADER1_Y - 22, nextBlock, 25, 0);
-        image(HEADER_X + 15, HEADER1_Y - 22, displayNextUnit, 25, 0);
+        image(HEADER_X + 15, HEADER1_Y - 22, nextUnit, 25, 0);
     elsif count == 1 then
-        image(HEADER_X, HEADER1_Y - 24, nextBlock != null ? nextBlock : displayNextUnit, 32, 0);
+        image(HEADER_X, HEADER1_Y - 24, nextBlock != null ? nextBlock : nextUnit, 32, 0);
     else
         image(HEADER_X, HEADER1_Y - 24, @hydrogen, 32, 360 - (@tick / 2) % 360);
     end;
@@ -285,39 +245,39 @@ inline void drawMaterials()
         var unitCount1, unitCount2;
         var unitTotal1, unitTotal2;
 
-        if displayNextUnit == @mono then
+        if nextUnit == @mono then
             targetFactoryLead = 15;
             targetFactorySilicon = 30;
             materialCount = 2;
-            unitCount1 = displayMonos;
+            unitCount1 = monos;
             unitTotal1 = monoTarget;
-            unit1 = displayNextUnit;
+            unit1 = nextUnit;
             unit2 = unit3 = null;
-        elsif displayNextUnit == @flare then
+        elsif nextUnit == @flare then
             targetFactoryLead = 0;
             targetFactorySilicon = 15;
             materialCount = 1;
-            unitCount1 = displayFlares;
+            unitCount1 = flares;
             unitTotal1 = flareTarget;
-            unit1 = displayNextUnit;
+            unit1 = nextUnit;
             unit2 = unit3 = null;
-        elsif displayNextUnit == @poly then
+        elsif nextUnit == @poly then
             unitCount1 = floor(factoryProgress);
-            unitCount2 = displayPolys;
+            unitCount2 = polys;
             unitTotal1 = 1;
             unitTotal2 = polyTarget;
             unit1 = @mono;
-            unit2 = displayNextUnit;
+            unit2 = nextUnit;
             unit3 = null;
             factoryProgress = max(factoryProgress, reconstructorProgress > 0);
-        elsif displayNextUnit == @mega then
+        elsif nextUnit == @mega then
             unitCount1 = floor(factoryProgress);
             unitCount2 = floor(reconstructorProgress);
             unitTotal1 = 1;
             unitTotal2 = 1;
             unit1 = @mono;
             unit2 = @poly;
-            unit3 = displayNextUnit;
+            unit3 = nextUnit;
             factoryProgress = max(factoryProgress, reconstructorProgress > 0);
             reconstructorProgress = max(reconstructorProgress, multiReconstructorProgress > 0);
         end;
@@ -329,7 +289,7 @@ inline void drawMaterials()
             if unit2 != null then
                 drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, unit2, reconstructorProgress, 1.0, unitCount2, "/", unitTotal2);
                 if unit3 != null then
-                    drawItem(in 0, in HEADER2_Y - 3 * ROW_HEIGHT, 1, unit3, multiReconstructorProgress, 1.0, displayMegas, "/", megaTarget);
+                    drawItem(in 0, in HEADER2_Y - 3 * ROW_HEIGHT, 1, unit3, multiReconstructorProgress, 1.0, megas, "/", megaTarget);
                 end;
             end;
         else
@@ -343,8 +303,8 @@ inline void drawMaterials()
             end;
         end;
     elsif nextBlock == @titanium or nextBlock == @ore-titanium then
-        drawBold(BAR_X, HEADER2_Y, @bottomLeft, mapAction);
-        drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @titanium, mapProgress, mapTotal, "x", mapSpots);
+        drawBold(BAR_X, HEADER2_Y, @bottomLeft, oreLocator.mapAction);
+        drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @titanium, oreLocator.mapProgress, oreLocator.mapTotal, "x", oreLocator.mapSpots);
     else
         count = materialCount = totalTargets;
         drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Materials");
@@ -414,9 +374,9 @@ end;
 inline void drawUnits()
     var x = 170;
     col(%[white]);
-    drawUnitCount(@poly, displayPolys, ref x);
-    drawUnitCount(@mono, displayMonos, ref x);
-    drawUnitCount(@flare, displayFlares, ref x);
+    drawUnitCount(@poly, polys, ref x);
+    drawUnitCount(@mono, monos, ref x);
+    drawUnitCount(@flare, flares, ref x);
 end;
 
 inline void drawUnitCount(type, count, ref x)
@@ -488,7 +448,6 @@ end;
 
 //external bank1[0 ... 4] var minX, minY, maxX, maxY;
 
-remote processor1 var locations;
 var mapw = @mapw, maph = @maph;
 
 void displayOreMap()
@@ -505,7 +464,7 @@ void displayOreMap()
 
     image(coreX, coreY, @core-shard, 7 * imgSize, 0);
 
-    var index = -1, count = locations;
+    var index = -1, count = oreLocator.locations;
     for var i in 0 ... count do
         var id = bank1[++index];
         var img = id > 0 ? lookup(:item, id) : lookup(:block, -id);
@@ -587,13 +546,13 @@ void main()
     drawflush(null);
 
     while true do
-        if displayUnitReset then
+        if unitReset then
             factoryProgress = reconstructorProgress = 0;
-            displayUnitReset = false;
+            unitReset = false;
         end;
 
         if page == 0 then
-            if displayMegas > 0 then
+            if megas > 0 then
                 animate();
             else
                 updateDisplay();
@@ -605,7 +564,7 @@ void main()
             displayLog(page - 2);
         end;
 
-        if displayMegas > 0 then
+        if megas > 0 then
             println("[gold]All done.[]\nNothing more to see here.\nGo home.");
             printflush(message1);
         else

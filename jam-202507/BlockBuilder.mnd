@@ -12,18 +12,15 @@ linked
     display = processor4,
     oreLocator = processor5;
 
-require "FlareController.mnd" remote flareController;
-
 noinit var
     core, coreX, coreY,
     builder,
     controller;
 
-remote display ".blocksBuilt" var displayBlocksBuilt;
-remote display ".recentBuildIndex" var displayRecentBuildIndex;
-remote display ".flareTarget" var displayFlareTarget;
-remote controller ".flareTarget" var controllerFlareTarget;
-remote oreLocator var searchFinished, locations;
+require "Display.mnd" remote display;
+require "CoreController.mnd" remote controller;
+require "FlareController.mnd" remote flareController;
+require "OreLocator.mnd" remote oreLocator;
 
 // Initialization
 begin
@@ -67,8 +64,8 @@ end;
 inline void logBlock(block, index)
     log(block.@id);
     if index >= 0 then
-        displayBlocksBuilt |= (1 << index);
-        displayRecentBuildIndex = index;
+        display.blocksBuilt |= (1 << index);
+        display.recentBuildIndex = index;
     end;
 end;
 
@@ -178,8 +175,8 @@ remote void buildTitaniumDrills(aController, current)
     wait(1e-4);
     wait(1e-4);
 
-    while !searchFinished do
-        while current < locations do
+    while !oreLocator.searchFinished do
+        while current < oreLocator.locations do
             var index = current * 4;
             var size = bank1[index + 1];
             if size >= 3 then
@@ -203,7 +200,7 @@ remote void buildTitaniumDrills(aController, current)
 end;
 
 inline void setFlareTarget(target)
-    controllerFlareTarget = target;
-    displayFlareTarget = target;
+    controller.flareTarget = target;
+    display.flareTarget = target;
 end;
 

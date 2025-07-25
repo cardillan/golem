@@ -16,10 +16,12 @@ var display = processor1,
     oreLocator = processor4;
 
 require units;
+require "Common.mnd";
 require "Actions.mnd";
 require "Display.mnd" remote display;
 require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote controller;
+require "MonoController.mnd" remote monoController;
 require "PolyController.mnd" remote polyController;
 require "BlockBuilder.mnd" remote blockBuilder;
 
@@ -59,53 +61,7 @@ var
     siliconSurplus = 20,
     metaglassSurplus = 20;
 
-remote monoController var
-    monoCopperTarget,
-    monoSandTarget,
-    monoLeadTarget;
-
 external bank1[511] logPosition = 511;
-
-// See BlockConfiguration.mnd
-const PRESS = "#'+nA######%#";
-const BATTERY1 = "k*/(7######$$";
-const BATTERY2 = "k+/(7######$%";
-const GENERATOR = "m*.<2######$&";
-const SMELTER = "%+-A<######%'";
-const INVERTED_SORT1 = "T+,%%######$(";
-const PNEUMATIC_DRILL = "w**5#-#####%)";
-const UNLOADER1 = "*,###A<###$*";
-const INVERTED_SORT2 = "T),%%######$+";
-const OVERFLOW_GATE1 = "W*-'%######$,";
-const PROCESSOR = "®-.}U#U####$-";
-const POWER_NODE = "g)'%)######$.";
-const UNLOADER2 = "(*###A<###$/";
-const AIR_FACTORY = "'(_i#####&&0";
-const UNLOADER3 = ",)###A<###$1";
-const INVERTED_SORT3 = "T,*%%######$2";
-const KILN = "',+_AA#####%3";
-const WATER_EXT = "z%-AAA##A##%4";
-const OVERFLOW_GATE2 = "W'*'%######$5";
-const OVERFLOW_GATE3 = "W&*'%######$6";
-const STEAM_GEN = "o%+FK<A####%7";
-const MULTIPRESS = "$(.#U<###&8";
-const WATER_EXT2 = "z%/AAA##A##%9";
-const PAYLOAD_ROUTER = " '%-#2#####&:";
-const UNLOADER4 = "*(###A<###$;";
-const UNDERFLOW_GATE = "X*''%######$<";
-const ADDITIVE_REC = "*%ë#}####&=";
-const BATTERY_LARGE = "l/,#U#A7###&>";
-const OVERFLOW_GATE4 = "W&*'%######$?";
-const LASER_DRILL = "x**F#AA7###&@";
-const SOLAR_PANEL = "r**#-#+####$A";
-const CONTAINER = "**#######%B";
-const SMELTER2 = "%.)A<######%C";
-const INVERTED_SORT4 = "T-*%%######$D";
-const INVERTED_SORT5 = "T-)%%######$E";
-const UNLOADER5 = "--###A<###$F";
-const UNLOADER6 = "+(###A<###$G";
-const UNDERFLOW_GATE2 = "X+''%######$H";
-const MULTIPLICATIVE_REC = ".&#ʭ#ǥƁ#ʭ#(I";
 
 void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out ind)
     var index = 0;
@@ -212,7 +168,7 @@ inline void supplyBase2()
 end;
 
 void supplyBase()
-    monoSandTarget = max(0, targetSilicon - core.@silicon);
+    monoController.sandTarget = max(0, targetSilicon - core.@silicon);
 
     if thoriumContainer then
         supplyBase2();
@@ -264,8 +220,8 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     controller.siliconReserve = silicon + sign(silicon) * 20;
     controller.graphiteReserve = graphite + sign(graphite) * 20;
 
-    monoLeadTarget = targetLead;
-    monoCopperTarget = targetCopper;
+    monoController.leadTarget = targetLead;
+    monoController.copperTarget = targetCopper;
 
     while !targetMet() do
         supplyBase();

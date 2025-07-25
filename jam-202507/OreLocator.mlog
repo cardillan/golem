@@ -1,9 +1,9 @@
 jump 4 always 0 0
-jump 916 always 0 0
-jump 933 always 0 0
-jump 952 always 0 0
-read *tmp20 processor1 "*signature"
-jump 4 notEqual *tmp20 "385702d66f725e74:v1"
+jump 915 always 0 0
+jump 932 always 0 0
+jump 951 always 0 0
+read *tmp10 processor1 "*signature"
+jump 4 notEqual *tmp10 "385702d66f725e74:v1"
 set .attenuationRate 50
 set .locations 0
 set .count -1
@@ -18,32 +18,32 @@ set :findDrillLocationLocal:capacity 0
 set :findDrillLocationLocal:dy :findDrillLocationLocal:capacity
 set :findDrillLocationLocal:dx :findDrillLocationLocal:dy
 set .mapSpots :findDrillLocationLocal:dx
-op sub *tmp22 @mapw :findDrillLocationLocal:x
-op sub *tmp23 @maph :findDrillLocationLocal:y
-op max *tmp24 :findDrillLocationLocal:x :findDrillLocationLocal:y
-op max *tmp24 *tmp24 *tmp22
-op max *tmp24 *tmp24 *tmp23
-set :findDrillLocationLocal:distanceLimit *tmp24
+op sub *tmp12 @mapw :findDrillLocationLocal:x
+op sub *tmp13 @maph :findDrillLocationLocal:y
+op max *tmp14 :findDrillLocationLocal:x :findDrillLocationLocal:y
+op max *tmp14 *tmp14 *tmp12
+op max *tmp14 *tmp14 *tmp13
+set :findDrillLocationLocal:distanceLimit *tmp14
 set .mapAction "Locating ore..."
 set .angle 0
 set .mapProgress 0
-ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp27 0
-jump 34 notEqual *tmp27 false
+ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp17 0
+jump 34 notEqual *tmp17 false
 ucontrol approach :findDrillLocationLocal:x :findDrillLocationLocal:y 5.5 0 0
-ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp27 0
-jump 31 equal *tmp27 false
-op div *tmp30 *tmp24 3.8197185279121366
-op pow .mapTotal *tmp30 2
+ucontrol within :findDrillLocationLocal:x :findDrillLocationLocal:y 6 *tmp17 0
+jump 31 equal *tmp17 false
+op div *tmp20 *tmp14 3.8197185279121366
+op pow .mapTotal *tmp20 2
 set :findDrillLocationLocal:oreX 0
 set :findDrillLocationLocal:oreY 0
 set :findDrillLocationLocal:best -1
 set :findDrillLocationLocal:bestX :findDrillLocationLocal:x
 set :findDrillLocationLocal:bestY :findDrillLocationLocal:y
-op sub *tmp32 :findDrillLocationLocal:limit :findDrillLocationLocal:capacity
-op mul :findDrillLocationLocal:maxDistance *tmp32 .attenuationRate
+op sub *tmp22 :findDrillLocationLocal:limit :findDrillLocationLocal:capacity
+op mul :findDrillLocationLocal:maxDistance *tmp22 .attenuationRate
 op min :findDrillLocationLocal:distanceLimit :findDrillLocationLocal:distanceLimit :findDrillLocationLocal:maxDistance
-op div *tmp35 :findDrillLocationLocal:distanceLimit 3.8197185279121366
-op pow .mapTotal *tmp35 2
+op div *tmp25 :findDrillLocationLocal:distanceLimit 3.8197185279121366
+op pow .mapTotal *tmp25 2
 set :locateOreAway:x :findDrillLocationLocal:oreX
 set :locateOreAway:y :findDrillLocationLocal:oreY
 op mul :locateOreAway:distance 3.8197185279121366 .angle
@@ -51,85 +51,85 @@ set :locateOreAway:lastX -1
 set :locateOreAway:lastY -1
 op max .angle .angle @pi
 op mul .mapProgress .angle .angle
-op sub *tmp46 @mapw 5
-op sub *tmp53 @maph 5
+op sub *tmp36 @mapw 5
+op sub *tmp43 @maph 5
 jump 119 greaterThanEq :locateOreAway:distance :findDrillLocationLocal:distanceLimit
 op div :locateOreAway:a .angle @degToRad
-op sin *tmp43 :locateOreAway:a 0
-op mul *tmp44 *tmp43 :locateOreAway:distance
-op add *tmp45 :findDrillLocationLocal:x *tmp44
-op max *tmp48 *tmp45 5
-op min *tmp47 *tmp48 *tmp46
-op cos *tmp50 :locateOreAway:a 0
-op mul *tmp51 *tmp50 :locateOreAway:distance
-op add *tmp52 :findDrillLocationLocal:y *tmp51
-op max *tmp55 *tmp52 5
-op min *tmp54 *tmp55 *tmp53
-ucontrol within *tmp47 *tmp54 5 *tmp57 0
-jump 72 notEqual *tmp57 false
-ucontrol approach *tmp47 *tmp54 4.5 0 0
-ucontrol within *tmp47 *tmp54 5 *tmp57 0
-jump 69 equal *tmp57 false
-op div *tmp60 3.8197185279121366 :locateOreAway:distance
-op add .angle .angle *tmp60
+op sin *tmp33 :locateOreAway:a 0
+op mul *tmp34 *tmp33 :locateOreAway:distance
+op add *tmp35 :findDrillLocationLocal:x *tmp34
+op max *tmp38 *tmp35 5
+op min *tmp37 *tmp38 *tmp36
+op cos *tmp40 :locateOreAway:a 0
+op mul *tmp41 *tmp40 :locateOreAway:distance
+op add *tmp42 :findDrillLocationLocal:y *tmp41
+op max *tmp45 *tmp42 5
+op min *tmp44 *tmp45 *tmp43
+ucontrol within *tmp37 *tmp44 5 *tmp47 0
+jump 72 notEqual *tmp47 false
+ucontrol approach *tmp37 *tmp44 4.5 0 0
+ucontrol within *tmp37 *tmp44 5 *tmp47 0
+jump 69 equal *tmp47 false
+op div *tmp50 3.8197185279121366 :locateOreAway:distance
+op add .angle .angle *tmp50
 op mul .mapProgress .angle .angle
 op mul :locateOreAway:distance 3.8197185279121366 .angle
-ulocate ore core true :findDrillLocationLocal:item :locateOreAway:x :locateOreAway:y *tmp63 0
-jump 80 notEqual *tmp63 false
-set *tmp37 false
+ulocate ore core true :findDrillLocationLocal:item :locateOreAway:x :locateOreAway:y *tmp53 0
+jump 80 notEqual *tmp53 false
+set *tmp27 false
 jump 120 always 0 0
-op sub *tmp67 :locateOreAway:x :findDrillLocationLocal:x
-op abs *tmp68 *tmp67 0
-op sub *tmp69 :locateOreAway:y :findDrillLocationLocal:y
-op abs *tmp70 *tmp69 0
-op max :locateOreAway:coreDist *tmp68 *tmp70
-op sub *tmp72 :locateOreAway:x *tmp47
-op sub *tmp73 :locateOreAway:y *tmp54
-op len :locateOreAway:unitDist *tmp72 *tmp73
+op sub *tmp57 :locateOreAway:x :findDrillLocationLocal:x
+op abs *tmp58 *tmp57 0
+op sub *tmp59 :locateOreAway:y :findDrillLocationLocal:y
+op abs *tmp60 *tmp59 0
+op max :locateOreAway:coreDist *tmp58 *tmp60
+op sub *tmp62 :locateOreAway:x *tmp37
+op sub *tmp63 :locateOreAway:y *tmp44
+op len :locateOreAway:unitDist *tmp62 *tmp63
 jump 90 notEqual :locateOreAway:lastX :locateOreAway:x
 jump 118 equal :locateOreAway:lastY :locateOreAway:y
 jump 118 lessThan :locateOreAway:coreDist 8
 jump 118 greaterThanEq :locateOreAway:unitDist :locateOreAway:distance
 set :locateOreAway:lastX :locateOreAway:x
 set :locateOreAway:lastY :locateOreAway:y
-set *tmp84 .locations
+set *tmp74 .locations
 set :visited:i .locationsStart
-jump 110 greaterThanEq .locationsStart *tmp84
+jump 110 greaterThanEq .locationsStart *tmp74
 op mul :visited:index 4 :visited:i
-op add *tmp87 :visited:index 2
-read :visited:lx bank1 *tmp87
-op add *tmp90 :visited:index 3
-read :visited:ly bank1 *tmp90
-op sub *tmp92 :locateOreAway:x :visited:lx
-op sub *tmp93 :locateOreAway:y :visited:ly
-op len *tmp94 *tmp92 *tmp93
-jump 108 greaterThanEq *tmp94 7
-set *tmp83 true
+op add *tmp76 :visited:index 2
+read :visited:lx bank1 *tmp76
+op add *tmp80 :visited:index 3
+read :visited:ly bank1 *tmp80
+op sub *tmp82 :locateOreAway:x :visited:lx
+op sub *tmp83 :locateOreAway:y :visited:ly
+op len *tmp84 *tmp82 *tmp83
+jump 108 greaterThanEq *tmp84 7
+set *tmp73 true
 jump 111 always 0 0
 op add :visited:i :visited:i 1
-jump 97 lessThan :visited:i *tmp84
-set *tmp83 false
-jump 118 notEqual *tmp83 false
-op div *tmp99 2 .angle
-op add .angle .angle *tmp99
+jump 97 lessThan :visited:i *tmp74
+set *tmp73 false
+jump 118 notEqual *tmp73 false
+op div *tmp89 2 .angle
+op add .angle .angle *tmp89
 op mul .mapProgress .angle .angle
 printflush message1
-set *tmp37 true
+set *tmp27 true
 jump 120 always 0 0
 jump 56 lessThan :locateOreAway:distance :findDrillLocationLocal:distanceLimit
-set *tmp37 false
+set *tmp27 false
 set :findDrillLocationLocal:oreX :locateOreAway:x
 set :findDrillLocationLocal:oreY :locateOreAway:y
-jump 125 notEqual *tmp37 false
+jump 125 notEqual *tmp27 false
 op greaterThan :findDrillLocationLocal*retval :findDrillLocationLocal:capacity 0
 set @counter :findDrillLocationLocal*retaddr
 jump 127 lessThan :findDrillLocationLocal:limit 1000
 op add .mapSpots .mapSpots 1
-ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp109 0
-jump 132 notEqual *tmp109 false
+ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp99 0
+jump 132 notEqual *tmp99 false
 ucontrol approach :locateOreAway:x :locateOreAway:y 5.5 0 0
-ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp109 0
-jump 129 equal *tmp109 false
+ucontrol within :locateOreAway:x :locateOreAway:y 6 *tmp99 0
+jump 129 equal *tmp99 false
 set :findDrillLocationLocal:last 0
 write @unit processor1 ":findBestPosition:unit"
 write :findDrillLocationLocal:oreX processor1 ":findBestPosition:x"
@@ -139,29 +139,28 @@ write :findDrillLocationLocal:size processor1 ":findBestPosition:size"
 write false processor1 ":findBestPosition*finished"
 write 2 processor1 "@counter"
 wait 1e-15
-read *tmp112 processor1 ":findBestPosition*finished"
-jump 140 equal *tmp112 false
+read *tmp109 processor1 ":findBestPosition*finished"
+jump 140 equal *tmp109 false
 read :findDrillLocationLocal:diffX processor1 ":findBestPosition:bestX"
 read :findDrillLocationLocal:diffY processor1 ":findBestPosition:bestY"
 read :findDrillLocationLocal:score processor1 ":findBestPosition*retval"
 op add :findDrillLocationLocal:newX :findDrillLocationLocal:oreX :findDrillLocationLocal:diffX
 op add :findDrillLocationLocal:newY :findDrillLocationLocal:oreY :findDrillLocationLocal:diffY
-op sub *tmp116 :findDrillLocationLocal:newX :findDrillLocationLocal:x
-op abs *tmp117 *tmp116 0
-op sub *tmp118 :findDrillLocationLocal:newY :findDrillLocationLocal:y
-op abs *tmp119 *tmp118 0
-op max :findDrillLocationLocal:coreDist *tmp117 *tmp119
-jump 189 lessThanEq :findDrillLocationLocal:coreDist 8
-jump 174 lessThanEq :findDrillLocationLocal:score :findDrillLocationLocal:capacity
+op sub *tmp113 :findDrillLocationLocal:newX :findDrillLocationLocal:x
+op abs *tmp114 *tmp113 0
+op sub *tmp115 :findDrillLocationLocal:newY :findDrillLocationLocal:y
+op abs *tmp116 *tmp115 0
+op max :findDrillLocationLocal:coreDist *tmp114 *tmp116
+jump 188 lessThanEq :findDrillLocationLocal:coreDist 8
+jump 173 lessThanEq :findDrillLocationLocal:score :findDrillLocationLocal:capacity
 set :findDrillLocationLocal:dx :findDrillLocationLocal:newX
 set :findDrillLocationLocal:dy :findDrillLocationLocal:newY
 set :findDrillLocationLocal:capacity :findDrillLocationLocal:score
-jump 160 greaterThanEq :findDrillLocationLocal:limit 1000
-set .mapSpots :findDrillLocationLocal:score
-jump 174 lessThan :findDrillLocationLocal:capacity :findDrillLocationLocal:limit
+select .mapSpots lessThan :findDrillLocationLocal:limit 1000 :findDrillLocationLocal:score .mapSpots
+jump 173 lessThan :findDrillLocationLocal:capacity :findDrillLocationLocal:limit
 op add .count .count 1
-sensor *tmp131 :findDrillLocationLocal:item @id
-write *tmp131 bank1 .count
+sensor *tmp128 :findDrillLocationLocal:item @id
+write *tmp128 bank1 .count
 op add .count .count 1
 write :findDrillLocationLocal:score bank1 .count
 op add .count .count 1
@@ -172,25 +171,25 @@ op add .locations .locations 1
 ucontrol unbind 0 0 0 0 0
 set :findDrillLocationLocal*retval true
 set @counter :findDrillLocationLocal*retaddr
-jump 178 lessThanEq :findDrillLocationLocal:score :findDrillLocationLocal:best
+jump 177 lessThanEq :findDrillLocationLocal:score :findDrillLocationLocal:best
 set :findDrillLocationLocal:bestX :findDrillLocationLocal:newX
 set :findDrillLocationLocal:bestY :findDrillLocationLocal:newY
 set :findDrillLocationLocal:best :findDrillLocationLocal:score
-jump 189 lessThanEq :findDrillLocationLocal:score :findDrillLocationLocal:last
+jump 188 lessThanEq :findDrillLocationLocal:score :findDrillLocationLocal:last
 set :findDrillLocationLocal:last :findDrillLocationLocal:score
 op mul :round:x :findDrillLocationLocal:diffX 1.1
-op add *tmp145 :round:x 0.5
-op floor *tmp144 *tmp145 0
-op add :findDrillLocationLocal:oreX :findDrillLocationLocal:oreX *tmp144
+op add *tmp142 :round:x 0.5
+op floor *tmp141 *tmp142 0
+op add :findDrillLocationLocal:oreX :findDrillLocationLocal:oreX *tmp141
 op mul :round.1:x :findDrillLocationLocal:diffY 1.1
-op add *tmp149 :round.1:x 0.5
-op floor *tmp148 *tmp149 0
-op add :findDrillLocationLocal:oreY :findDrillLocationLocal:oreY *tmp148
+op add *tmp146 :round.1:x 0.5
+op floor *tmp145 *tmp146 0
+op add :findDrillLocationLocal:oreY :findDrillLocationLocal:oreY *tmp145
 jump 133 always 0 0
 jump 38 lessThan :findDrillLocationLocal:best 0
 op add .count .count 1
-sensor *tmp155 :findDrillLocationLocal:item @id
-write *tmp155 bank1 .count
+sensor *tmp152 :findDrillLocationLocal:item @id
+write *tmp152 bank1 .count
 op add .count .count 1
 write :findDrillLocationLocal:best bank1 .count
 op add .count .count 1
@@ -199,76 +198,76 @@ op add .count .count 1
 write :findDrillLocationLocal:bestY bank1 .count
 op add .locations .locations 1
 jump 38 always 0 0
-op add *tmp187 :excludeArea:areaWidth 8
-op idiv *tmp188 *tmp187 2
-op sub *tmp189 :excludeArea:maskX :excludeArea:areaX
-op abs *tmp190 *tmp189 0
-op sub :excludeArea:overlapX *tmp188 *tmp190
-op add *tmp193 :excludeArea:areaHeight 8
-op idiv *tmp194 *tmp193 2
-op sub *tmp195 :excludeArea:maskY :excludeArea:areaY
-op abs *tmp196 *tmp195 0
-op sub :excludeArea:overlapY *tmp194 *tmp196
-op greaterThan *tmp198 :excludeArea:overlapX 0
-op greaterThan *tmp199 :excludeArea:overlapY 0
-op land *tmp200 *tmp198 *tmp199
-jump 275 equal *tmp200 false
+op add *tmp184 :excludeArea:areaWidth 8
+op idiv *tmp185 *tmp184 2
+op sub *tmp186 :excludeArea:maskX :excludeArea:areaX
+op abs *tmp187 *tmp186 0
+op sub :excludeArea:overlapX *tmp185 *tmp187
+op add *tmp190 :excludeArea:areaHeight 8
+op idiv *tmp191 *tmp190 2
+op sub *tmp192 :excludeArea:maskY :excludeArea:areaY
+op abs *tmp193 *tmp192 0
+op sub :excludeArea:overlapY *tmp191 *tmp193
+op greaterThan *tmp195 :excludeArea:overlapX 0
+op greaterThan *tmp196 :excludeArea:overlapY 0
+op land *tmp197 *tmp195 *tmp196
+jump 274 equal *tmp197 false
 op min :excludeArea:blockSizeX 7 :excludeArea:overlapX
 op min :excludeArea:blockSizeY 7 :excludeArea:overlapY
-op shl *tmp205 1 :excludeArea:blockSizeX
-op sub :createMatrixOfSize:row *tmp205 1
+op shl *tmp202 1 :excludeArea:blockSizeX
+op sub :createMatrixOfSize:row *tmp202 1
 set :createMatrixOfSize:matrix :createMatrixOfSize:row
-jump 238 greaterThanEq 1 :excludeArea:blockSizeY
-op shl *tmp209 :createMatrixOfSize:row 7
-op or :createMatrixOfSize:matrix *tmp209 :createMatrixOfSize:row
-jump 238 greaterThanEq 2 :excludeArea:blockSizeY
-op shl *tmp209 :createMatrixOfSize:matrix 7
-op or :createMatrixOfSize:matrix *tmp209 :createMatrixOfSize:row
-jump 238 greaterThanEq 3 :excludeArea:blockSizeY
-op shl *tmp209 :createMatrixOfSize:matrix 7
-op or :createMatrixOfSize:matrix *tmp209 :createMatrixOfSize:row
-jump 238 greaterThanEq 4 :excludeArea:blockSizeY
-op shl *tmp209 :createMatrixOfSize:matrix 7
-op or :createMatrixOfSize:matrix *tmp209 :createMatrixOfSize:row
-jump 238 greaterThanEq 5 :excludeArea:blockSizeY
-op shl *tmp209 :createMatrixOfSize:matrix 7
-op or :createMatrixOfSize:matrix *tmp209 :createMatrixOfSize:row
-jump 238 greaterThanEq 6 :excludeArea:blockSizeY
-op shl *tmp209 :createMatrixOfSize:matrix 7
-op or :createMatrixOfSize:matrix *tmp209 :createMatrixOfSize:row
-op lessThan *tmp211 :excludeArea:maskX :excludeArea:areaX
-op sub *tmp212 7 :excludeArea:blockSizeX
-op mul :excludeArea:shiftX *tmp211 *tmp212
-op lessThan *tmp214 :excludeArea:maskY :excludeArea:areaY
-op sub *tmp215 7 :excludeArea:blockSizeY
-op mul :excludeArea:shiftY *tmp214 *tmp215
-op abs *tmp163 :excludeArea:shiftX 0
-op greaterThan *tmp164 *tmp163 6
-op abs *tmp165 :excludeArea:shiftY 0
-op greaterThan *tmp166 *tmp165 6
-op or *tmp167 *tmp164 *tmp166
-jump 252 equal *tmp167 false
+jump 237 greaterThanEq 1 :excludeArea:blockSizeY
+op shl *tmp206 :createMatrixOfSize:row 7
+op or :createMatrixOfSize:matrix *tmp206 :createMatrixOfSize:row
+jump 237 greaterThanEq 2 :excludeArea:blockSizeY
+op shl *tmp206 :createMatrixOfSize:matrix 7
+op or :createMatrixOfSize:matrix *tmp206 :createMatrixOfSize:row
+jump 237 greaterThanEq 3 :excludeArea:blockSizeY
+op shl *tmp206 :createMatrixOfSize:matrix 7
+op or :createMatrixOfSize:matrix *tmp206 :createMatrixOfSize:row
+jump 237 greaterThanEq 4 :excludeArea:blockSizeY
+op shl *tmp206 :createMatrixOfSize:matrix 7
+op or :createMatrixOfSize:matrix *tmp206 :createMatrixOfSize:row
+jump 237 greaterThanEq 5 :excludeArea:blockSizeY
+op shl *tmp206 :createMatrixOfSize:matrix 7
+op or :createMatrixOfSize:matrix *tmp206 :createMatrixOfSize:row
+jump 237 greaterThanEq 6 :excludeArea:blockSizeY
+op shl *tmp206 :createMatrixOfSize:matrix 7
+op or :createMatrixOfSize:matrix *tmp206 :createMatrixOfSize:row
+op lessThan *tmp208 :excludeArea:maskX :excludeArea:areaX
+op sub *tmp209 7 :excludeArea:blockSizeX
+op mul :excludeArea:shiftX *tmp208 *tmp209
+op lessThan *tmp211 :excludeArea:maskY :excludeArea:areaY
+op sub *tmp212 7 :excludeArea:blockSizeY
+op mul :excludeArea:shiftY *tmp211 *tmp212
+op abs *tmp160 :excludeArea:shiftX 0
+op greaterThan *tmp161 *tmp160 6
+op abs *tmp162 :excludeArea:shiftY 0
+op greaterThan *tmp163 *tmp162 6
+op or *tmp164 *tmp161 *tmp163
+jump 251 equal *tmp164 false
 set :shiftMask*retval 0
-jump 273 always 0 0
-op mul *tmp169 7 :excludeArea:shiftY
-op add :shiftMask:shift :excludeArea:shiftX *tmp169
-jump 259 lessThanEq :shiftMask:shift 0
+jump 272 always 0 0
+op mul *tmp166 7 :excludeArea:shiftY
+op add :shiftMask:shift :excludeArea:shiftX *tmp166
+jump 258 lessThanEq :shiftMask:shift 0
 op shr :shiftMask:clearMask 562949953421311 :shiftMask:shift
-op and *tmp174 :createMatrixOfSize:matrix :shiftMask:clearMask
-op shl :shiftMask:mask *tmp174 :shiftMask:shift
-jump 261 always 0 0
-op sub *tmp176 0 :shiftMask:shift
-op shr :shiftMask:mask :createMatrixOfSize:matrix *tmp176
-jump 272 equal :excludeArea:shiftX 0
-op shr :shiftMask:keep 0b1111111 *tmp163
-jump 265 lessThanEq :excludeArea:shiftX 0
+op and *tmp171 :createMatrixOfSize:matrix :shiftMask:clearMask
+op shl :shiftMask:mask *tmp171 :shiftMask:shift
+jump 260 always 0 0
+op sub *tmp173 0 :shiftMask:shift
+op shr :shiftMask:mask :createMatrixOfSize:matrix *tmp173
+jump 271 equal :excludeArea:shiftX 0
+op shr :shiftMask:keep 0b1111111 *tmp160
+jump 264 lessThanEq :excludeArea:shiftX 0
 op shl :shiftMask:keep :shiftMask:keep :excludeArea:shiftX
-op shl *tmp183 :shiftMask:keep 7
-op or :shiftMask:keep :shiftMask:keep *tmp183
-op shl *tmp184 :shiftMask:keep 14
-op or :shiftMask:keep :shiftMask:keep *tmp184
-op shl *tmp185 :shiftMask:keep 21
-op or :shiftMask:keep :shiftMask:keep *tmp185
+op shl *tmp180 :shiftMask:keep 7
+op or :shiftMask:keep :shiftMask:keep *tmp180
+op shl *tmp181 :shiftMask:keep 14
+op or :shiftMask:keep :shiftMask:keep *tmp181
+op shl *tmp182 :shiftMask:keep 21
+op or :shiftMask:keep :shiftMask:keep *tmp182
 op and :shiftMask:mask :shiftMask:mask :shiftMask:keep
 set :shiftMask*retval :shiftMask:mask
 op or :excludeArea*retval :excludeArea:mask :shiftMask*retval
@@ -276,160 +275,160 @@ set @counter :excludeArea*retaddr
 set :excludeArea*retval :excludeArea:mask
 set @counter :excludeArea*retaddr
 set :findPossiblePlacement:y -3
-jump 299 greaterThan :findPossiblePlacement:y 3
-op add *tmp218 :findPossiblePlacement:y 3
-op mul *tmp219 7 *tmp218
-op shl :findPossiblePlacement:mask :findPossiblePlacement:placementMask *tmp219
+jump 298 greaterThan :findPossiblePlacement:y 3
+op add *tmp215 :findPossiblePlacement:y 3
+op mul *tmp216 7 *tmp215
+op shl :findPossiblePlacement:mask :findPossiblePlacement:placementMask *tmp216
 set :findPossiblePlacement:x -3
-jump 295 greaterThan :findPossiblePlacement:x 3
-op and *tmp221 :findPossiblePlacement:terrainMask :findPossiblePlacement:mask
-jump 290 notEqual *tmp221 0
-op mul *tmp224 :findPossiblePlacement:y 7
-op add *tmp225 24 *tmp224
-op add :findPossiblePlacement*retval *tmp225 :findPossiblePlacement:x
+jump 294 greaterThan :findPossiblePlacement:x 3
+op and *tmp218 :findPossiblePlacement:terrainMask :findPossiblePlacement:mask
+jump 289 notEqual *tmp218 0
+op mul *tmp221 :findPossiblePlacement:y 7
+op add *tmp222 24 *tmp221
+op add :findPossiblePlacement*retval *tmp222 :findPossiblePlacement:x
 set @counter :findPossiblePlacement*retaddr
-op sub *tmp227 3 :findPossiblePlacement:width
-jump 295 greaterThan :findPossiblePlacement:x *tmp227
+op sub *tmp224 3 :findPossiblePlacement:width
+jump 294 greaterThan :findPossiblePlacement:x *tmp224
 op shl :findPossiblePlacement:mask :findPossiblePlacement:mask 1
 op add :findPossiblePlacement:x :findPossiblePlacement:x 1
-jump 284 lessThanEq :findPossiblePlacement:x 3
-op sub *tmp230 3 :findPossiblePlacement:height
-jump 299 greaterThan :findPossiblePlacement:y *tmp230
+jump 283 lessThanEq :findPossiblePlacement:x 3
+op sub *tmp227 3 :findPossiblePlacement:height
+jump 298 greaterThan :findPossiblePlacement:y *tmp227
 op add :findPossiblePlacement:y :findPossiblePlacement:y 1
-jump 279 lessThanEq :findPossiblePlacement:y 3
+jump 278 lessThanEq :findPossiblePlacement:y 3
 set :findPossiblePlacement*retval -1
 set @counter :findPossiblePlacement*retaddr
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask :tryPlaceGenerator:generatorVertical
 set :findPossiblePlacement:width 2
 set :findPossiblePlacement:height 4
-set :findPossiblePlacement*retaddr 307
-jump 277 always 0 0
-jump 321 lessThan :findPossiblePlacement*retval 0
-jump 311 greaterThanEq :findPossiblePlacement*retval 0
+set :findPossiblePlacement*retaddr 306
+jump 276 always 0 0
+jump 320 lessThan :findPossiblePlacement*retval 0
+jump 310 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
-op add *tmp238 :tryPlaceGenerator:centerX 0.5
-op add .water2X *tmp238 :findPossiblePlacement:x
-op add *tmp240 :tryPlaceGenerator:centerY 0.5
-op add .water2Y *tmp240 :findPossiblePlacement:y
-op add .generatorX *tmp238 :findPossiblePlacement:x
-op add *tmp244 :tryPlaceGenerator:centerY 2.5
-op add .generatorY *tmp244 :findPossiblePlacement:y
-op shl *tmp246 :tryPlaceGenerator:generatorVertical :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp246
-jump 339 always 0 0
+op add *tmp235 :tryPlaceGenerator:centerX 0.5
+op add .water2X *tmp235 :findPossiblePlacement:x
+op add *tmp237 :tryPlaceGenerator:centerY 0.5
+op add .water2Y *tmp237 :findPossiblePlacement:y
+op add .generatorX *tmp235 :findPossiblePlacement:x
+op add *tmp241 :tryPlaceGenerator:centerY 2.5
+op add .generatorY *tmp241 :findPossiblePlacement:y
+op shl *tmp243 :tryPlaceGenerator:generatorVertical :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp243
+jump 338 always 0 0
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask :tryPlaceGenerator:generatorHorizontal
 set :findPossiblePlacement:width 4
 set :findPossiblePlacement:height 2
-set :findPossiblePlacement*retaddr 327
-jump 277 always 0 0
-jump 330 greaterThanEq :findPossiblePlacement*retval 0
+set :findPossiblePlacement*retaddr 326
+jump 276 always 0 0
+jump 329 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
-op add *tmp250 :tryPlaceGenerator:centerX 0.5
-op add .water2X *tmp250 :findPossiblePlacement:x
-op add *tmp252 :tryPlaceGenerator:centerY 0.5
-op add .water2Y *tmp252 :findPossiblePlacement:y
-op add *tmp254 :tryPlaceGenerator:centerX 2.5
-op add .generatorX *tmp254 :findPossiblePlacement:x
-op add .generatorY *tmp252 :findPossiblePlacement:y
-op shl *tmp258 :tryPlaceGenerator:generatorHorizontal :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp258
+op add *tmp247 :tryPlaceGenerator:centerX 0.5
+op add .water2X *tmp247 :findPossiblePlacement:x
+op add *tmp249 :tryPlaceGenerator:centerY 0.5
+op add .water2Y *tmp249 :findPossiblePlacement:y
+op add *tmp251 :tryPlaceGenerator:centerX 2.5
+op add .generatorX *tmp251 :findPossiblePlacement:x
+op add .generatorY *tmp249 :findPossiblePlacement:y
+op shl *tmp255 :tryPlaceGenerator:generatorHorizontal :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp255
 op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask 437639987601635
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
 set :findPossiblePlacement:height 1
-set :findPossiblePlacement*retaddr 346
-jump 277 always 0 0
-jump 349 greaterThanEq :findPossiblePlacement*retval 0
+set :findPossiblePlacement*retaddr 345
+jump 276 always 0 0
+jump 348 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
 op add .panelX :tryPlaceGenerator:centerX :findPossiblePlacement:x
 op add .panelY :tryPlaceGenerator:centerY :findPossiblePlacement:y
-op shl *tmp278 1 :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp278
+op shl *tmp275 1 :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp275
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
 set :findPossiblePlacement:height 1
-set :findPossiblePlacement*retaddr 359
-jump 277 always 0 0
-jump 362 greaterThanEq :findPossiblePlacement*retval 0
+set :findPossiblePlacement*retaddr 358
+jump 276 always 0 0
+jump 361 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
 op add .batteryX :tryPlaceGenerator:centerX :findPossiblePlacement:x
 op add .batteryY :tryPlaceGenerator:centerY :findPossiblePlacement:y
-op shl *tmp284 1 :findPossiblePlacement*retval
-op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp284
-op sub *tmp285 .water2X .node1X
-op sub *tmp286 .water2Y .node1Y
-op len *tmp287 *tmp285 *tmp286
-op greaterThan *tmp288 *tmp287 7
-op sub *tmp289 .generatorX .node1X
-op sub *tmp290 .generatorY .node1Y
-op len *tmp291 *tmp289 *tmp290
-op greaterThan *tmp292 *tmp291 7
-op or *tmp293 *tmp288 *tmp292
-op sub *tmp294 .panelX .node1X
-op sub *tmp295 .panelY .node1Y
-op len *tmp296 *tmp294 *tmp295
-op greaterThan *tmp297 *tmp296 6
-op or *tmp298 *tmp293 *tmp297
-op sub *tmp299 .batteryX .node1X
-op sub *tmp300 .batteryY .node1Y
-op len *tmp301 *tmp299 *tmp300
-op greaterThan *tmp302 *tmp301 6
-op or *tmp303 *tmp298 *tmp302
-jump 397 equal *tmp303 false
+op shl *tmp281 1 :findPossiblePlacement*retval
+op or :tryPlaceGenerator:terrainMask :tryPlaceGenerator:terrainMask *tmp281
+op sub *tmp282 .water2X .node1X
+op sub *tmp283 .water2Y .node1Y
+op len *tmp284 *tmp282 *tmp283
+op greaterThan *tmp285 *tmp284 7
+op sub *tmp286 .generatorX .node1X
+op sub *tmp287 .generatorY .node1Y
+op len *tmp288 *tmp286 *tmp287
+op greaterThan *tmp289 *tmp288 7
+op or *tmp290 *tmp285 *tmp289
+op sub *tmp291 .panelX .node1X
+op sub *tmp292 .panelY .node1Y
+op len *tmp293 *tmp291 *tmp292
+op greaterThan *tmp294 *tmp293 6
+op or *tmp295 *tmp290 *tmp294
+op sub *tmp296 .batteryX .node1X
+op sub *tmp297 .batteryY .node1Y
+op len *tmp298 *tmp296 *tmp297
+op greaterThan *tmp299 *tmp298 6
+op or *tmp300 *tmp295 *tmp299
+jump 396 equal *tmp300 false
 set :findPossiblePlacement:terrainMask :tryPlaceGenerator:terrainMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
 set :findPossiblePlacement:height 1
-set :findPossiblePlacement*retaddr 392
-jump 277 always 0 0
-jump 395 greaterThanEq :findPossiblePlacement*retval 0
+set :findPossiblePlacement*retaddr 391
+jump 276 always 0 0
+jump 394 greaterThanEq :findPossiblePlacement*retval 0
 set :tryPlaceGenerator*retval false
 set @counter :tryPlaceGenerator*retaddr
 op add .node2X :tryPlaceGenerator:centerX :findPossiblePlacement:x
 op add .node2Y :tryPlaceGenerator:centerY :findPossiblePlacement:y
 set :tryPlaceGenerator*retval true
 set @counter :tryPlaceGenerator*retaddr
-op add *tmp312 :createBlockMaskRow:x 4
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x 3
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x 2
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x 1
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createBlockMaskRow:x :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x -1
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x -2
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x -3
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createBlockMaskRow:x -4
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow*retval *tmp311 *tmp313
+op add *tmp309 :createBlockMaskRow:x 4
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x 3
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x 2
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x 1
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createBlockMaskRow:x :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x -1
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x -2
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x -3
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createBlockMaskRow:x -4
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow*retval *tmp308 *tmp310
 set @counter :createBlockMaskRow*retaddr
 write @unit processor1 ":createTerrainMask:unit"
 write :createCombinedMask:x processor1 ":createTerrainMask:x"
@@ -438,338 +437,338 @@ write false processor1 ":createTerrainMask*finished"
 write 1 processor1 "@counter"
 set :createAdjacentMask:x :createCombinedMask:x
 set :createAdjacentMask:y :createCombinedMask:y
-op add *tmp321 :createCombinedMask:y 4
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 *tmp321 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 *tmp321 0 *tmp313 0
-op or :createAdjacentMask:row2 *tmp311 *tmp313
-op add *tmp323 :createCombinedMask:y 3
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 *tmp323 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 *tmp323 0 *tmp313 0
-op or :createAdjacentMask:row1 *tmp311 *tmp313
-op add *tmp325 :createCombinedMask:y 2
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 *tmp325 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow:result
+op add *tmp318 :createCombinedMask:y 4
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 *tmp318 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 *tmp318 0 *tmp310 0
+op or :createAdjacentMask:row2 *tmp308 *tmp310
+op add *tmp320 :createCombinedMask:y 3
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 *tmp320 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 *tmp320 0 *tmp310 0
+op or :createAdjacentMask:row1 *tmp308 *tmp310
+op add *tmp322 :createCombinedMask:y 2
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 *tmp322 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow:result
 op and :createAdjacentMask:result :createAdjacentMask:mask 0xFE
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow:result
-op add *tmp325 :createCombinedMask:y 1
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 *tmp325 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow:result
-op shl *tmp332 :createAdjacentMask:result 7
-op and *tmp333 :createAdjacentMask:mask 0xFE
-op or :createAdjacentMask:result *tmp332 *tmp333
+op add *tmp322 :createCombinedMask:y 1
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 *tmp322 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow:result
+op shl *tmp329 :createAdjacentMask:result 7
+op and *tmp330 :createAdjacentMask:mask 0xFE
+op or :createAdjacentMask:result *tmp329 *tmp330
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow:result
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 :createCombinedMask:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow:result
-op shl *tmp332 :createAdjacentMask:result 7
-op and *tmp333 :createAdjacentMask:mask 0xFE
-op or :createAdjacentMask:result *tmp332 *tmp333
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 :createCombinedMask:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow:result
+op shl *tmp329 :createAdjacentMask:result 7
+op and *tmp330 :createAdjacentMask:mask 0xFE
+op or :createAdjacentMask:result *tmp329 *tmp330
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow:result
-op add *tmp325 :createCombinedMask:y -1
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 *tmp325 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 *tmp325 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow:result
-op shl *tmp332 :createAdjacentMask:result 7
-op and *tmp333 :createAdjacentMask:mask 0xFE
-op or :createAdjacentMask:result *tmp332 *tmp333
+op add *tmp322 :createCombinedMask:y -1
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 *tmp322 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 *tmp322 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow:result
+op shl *tmp329 :createAdjacentMask:result 7
+op and *tmp330 :createAdjacentMask:mask 0xFE
+op or :createAdjacentMask:result *tmp329 *tmp330
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow:result
 op add :createBlockMaskRow:y :createCombinedMask:y -2
-op add *tmp312 :createCombinedMask:x 4
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 :createBlockMaskRow:result 0
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 3
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 2
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x 1
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-ucontrol getBlock :createCombinedMask:x :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -1
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -2
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -3
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow:result *tmp311 *tmp313
-op shl *tmp311 :createBlockMaskRow:result 1
-op add *tmp312 :createCombinedMask:x -4
-ucontrol getBlock *tmp312 :createBlockMaskRow:y 0 *tmp313 0
-op or :createBlockMaskRow*retval *tmp311 *tmp313
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow*retval
-op shl *tmp332 :createAdjacentMask:result 7
-op and *tmp333 :createAdjacentMask:mask 0xFE
-op or :createAdjacentMask:result *tmp332 *tmp333
+op add *tmp309 :createCombinedMask:x 4
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 :createBlockMaskRow:result 0
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 3
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 2
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x 1
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+ucontrol getBlock :createCombinedMask:x :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -1
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -2
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -3
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow:result *tmp308 *tmp310
+op shl *tmp308 :createBlockMaskRow:result 1
+op add *tmp309 :createCombinedMask:x -4
+ucontrol getBlock *tmp309 :createBlockMaskRow:y 0 *tmp310 0
+op or :createBlockMaskRow*retval *tmp308 *tmp310
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow*retval
+op shl *tmp329 :createAdjacentMask:result 7
+op and *tmp330 :createAdjacentMask:mask 0xFE
+op or :createAdjacentMask:result *tmp329 *tmp330
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow*retval
 op sub :createAdjacentMask:r -2 1
-op add *tmp325 :createCombinedMask:y -3
+op add *tmp322 :createCombinedMask:y -3
 set :createBlockMaskRow:x :createCombinedMask:x
-set :createBlockMaskRow:y *tmp325
-set :createBlockMaskRow*retaddr 731
-jump 399 always 0 0
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow*retval
-op shl *tmp332 :createAdjacentMask:result 7
-op and *tmp333 :createAdjacentMask:mask 0xFE
-op or :createAdjacentMask:result *tmp332 *tmp333
+set :createBlockMaskRow:y *tmp322
+set :createBlockMaskRow*retaddr 730
+jump 398 always 0 0
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow*retval
+op shl *tmp329 :createAdjacentMask:result 7
+op and *tmp330 :createAdjacentMask:mask 0xFE
+op or :createAdjacentMask:result *tmp329 *tmp330
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow*retval
 op sub :createAdjacentMask:r :createAdjacentMask:r 1
-op add *tmp325 :createAdjacentMask:y :createAdjacentMask:r
+op add *tmp322 :createAdjacentMask:y :createAdjacentMask:r
 set :createBlockMaskRow:x :createAdjacentMask:x
-set :createBlockMaskRow:y *tmp325
-set :createBlockMaskRow*retaddr 747
-jump 399 always 0 0
-op shl *tmp327 :createAdjacentMask:row1 1
-op or *tmp328 :createAdjacentMask:row2 *tmp327
-op shr *tmp329 :createAdjacentMask:row1 1
-op or *tmp330 *tmp328 *tmp329
-op or :createAdjacentMask:mask *tmp330 :createBlockMaskRow*retval
-op shl *tmp332 :createAdjacentMask:result 7
-op and *tmp333 :createAdjacentMask:mask 0xFE
-op or :createAdjacentMask:result *tmp332 *tmp333
+set :createBlockMaskRow:y *tmp322
+set :createBlockMaskRow*retaddr 746
+jump 398 always 0 0
+op shl *tmp324 :createAdjacentMask:row1 1
+op or *tmp325 :createAdjacentMask:row2 *tmp324
+op shr *tmp326 :createAdjacentMask:row1 1
+op or *tmp327 *tmp325 *tmp326
+op or :createAdjacentMask:mask *tmp327 :createBlockMaskRow*retval
+op shl *tmp329 :createAdjacentMask:result 7
+op and *tmp330 :createAdjacentMask:mask 0xFE
+op or :createAdjacentMask:result *tmp329 *tmp330
 set :createAdjacentMask:row2 :createAdjacentMask:row1
 set :createAdjacentMask:row1 :createBlockMaskRow*retval
 op sub :createAdjacentMask:r :createAdjacentMask:r 1
-op shr *tmp320 :createAdjacentMask:result 1
+op shr *tmp317 :createAdjacentMask:result 1
 wait 1e-15
-read *tmp336 processor1 ":createTerrainMask*finished"
-jump 759 equal *tmp336 false
+read *tmp333 processor1 ":createTerrainMask*finished"
+jump 758 equal *tmp333 false
 read :createCombinedMask:terrainMask processor1 ":createTerrainMask*retval"
-op or :excludeArea:mask *tmp320 :createCombinedMask:terrainMask
+op or :excludeArea:mask *tmp317 :createCombinedMask:terrainMask
 set :excludeArea:maskX :createCombinedMask:x
 set :excludeArea:maskY :createCombinedMask:y
 set :excludeArea:areaX .coreX
 set :excludeArea:areaY .coreY
 set :excludeArea:areaWidth 15
 set :excludeArea:areaHeight 15
-set :excludeArea*retaddr 772
-jump 201 always 0 0
+set :excludeArea*retaddr 771
+jump 200 always 0 0
 set :createCombinedMask*retval :excludeArea*retval
 set @counter :createCombinedMask*retaddr
 set .panelY -1
@@ -782,15 +781,15 @@ set .water1Y -1
 set .water1X -1
 set :moveTo.5:x .drillX
 set :moveTo.5:y .drillY
-ucontrol within :moveTo.5:x :moveTo.5:y 1 *tmp339 0
-jump 789 notEqual *tmp339 false
+ucontrol within :moveTo.5:x :moveTo.5:y 1 *tmp336 0
+jump 788 notEqual *tmp336 false
 ucontrol approach :moveTo.5:x :moveTo.5:y 0.5 0 0
-ucontrol within :moveTo.5:x :moveTo.5:y 1 *tmp339 0
-jump 786 equal *tmp339 false
+ucontrol within :moveTo.5:x :moveTo.5:y 1 *tmp336 0
+jump 785 equal *tmp336 false
 set :createCombinedMask:x .drillX
 set :createCombinedMask:y .drillY
-set :createCombinedMask*retaddr 793
-jump 433 always 0 0
+set :createCombinedMask*retaddr 792
+jump 432 always 0 0
 op or :layoutThoriumDrillAtLocation:terrainMask :createCombinedMask*retval 7575371776
 op or :layoutThoriumDrillAtLocation:cornersMask :layoutThoriumDrillAtLocation:terrainMask 285880598593601
 set :layoutThoriumDrillAtLocation:mask2x2 387
@@ -798,43 +797,43 @@ set :findPossiblePlacement:terrainMask :layoutThoriumDrillAtLocation:cornersMask
 set :findPossiblePlacement:placementMask 387
 set :findPossiblePlacement:width 2
 set :findPossiblePlacement:height 2
-set :findPossiblePlacement*retaddr 802
-jump 277 always 0 0
-jump 810 lessThan :findPossiblePlacement*retval 0
-op add *tmp380 .drillX 0.5
-op add .water1X *tmp380 :findPossiblePlacement:x
-op add *tmp382 .drillY 0.5
-op add .water1Y *tmp382 :findPossiblePlacement:y
-op shl *tmp384 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
-op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp384
-op or :layoutThoriumDrillAtLocation:cornersMask :layoutThoriumDrillAtLocation:cornersMask *tmp384
+set :findPossiblePlacement*retaddr 801
+jump 276 always 0 0
+jump 809 lessThan :findPossiblePlacement*retval 0
+op add *tmp377 .drillX 0.5
+op add .water1X *tmp377 :findPossiblePlacement:x
+op add *tmp379 .drillY 0.5
+op add .water1Y *tmp379 :findPossiblePlacement:y
+op shl *tmp381 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
+op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp381
+op or :layoutThoriumDrillAtLocation:cornersMask :layoutThoriumDrillAtLocation:cornersMask *tmp381
 set :findPossiblePlacement:terrainMask :layoutThoriumDrillAtLocation:cornersMask
 set :findPossiblePlacement:placementMask :layoutThoriumDrillAtLocation:mask2x2
 set :findPossiblePlacement:width 2
 set :findPossiblePlacement:height 2
-set :findPossiblePlacement*retaddr 816
-jump 277 always 0 0
-jump 823 lessThan :findPossiblePlacement*retval 0
-op add *tmp389 .drillX 0.5
-op add .containerX *tmp389 :findPossiblePlacement:x
-op add *tmp391 .drillY 0.5
-op add .containerY *tmp391 :findPossiblePlacement:y
-op shl *tmp393 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
-op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp393
+set :findPossiblePlacement*retaddr 815
+jump 276 always 0 0
+jump 822 lessThan :findPossiblePlacement*retval 0
+op add *tmp386 .drillX 0.5
+op add .containerX *tmp386 :findPossiblePlacement:x
+op add *tmp388 .drillY 0.5
+op add .containerY *tmp388 :findPossiblePlacement:y
+op shl *tmp390 :layoutThoriumDrillAtLocation:mask2x2 :findPossiblePlacement*retval
+op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp390
 op or :layoutThoriumDrillAtLocation:nodeMask :layoutThoriumDrillAtLocation:terrainMask 437639987601635
 set :findPossiblePlacement:terrainMask :layoutThoriumDrillAtLocation:nodeMask
 set :findPossiblePlacement:placementMask 1
 set :findPossiblePlacement:width 1
 set :findPossiblePlacement:height 1
-set :findPossiblePlacement*retaddr 830
-jump 277 always 0 0
-jump 833 greaterThanEq :findPossiblePlacement*retval 0
+set :findPossiblePlacement*retaddr 829
+jump 276 always 0 0
+jump 832 greaterThanEq :findPossiblePlacement*retval 0
 set :layoutThoriumDrillAtLocation*retval false
 set @counter :layoutThoriumDrillAtLocation*retaddr
 op add .node1X .drillX :findPossiblePlacement:x
 op add .node1Y .drillY :findPossiblePlacement:y
-op shl *tmp414 1 :findPossiblePlacement*retval
-op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp414
+op shl *tmp411 1 :findPossiblePlacement*retval
+op or :layoutThoriumDrillAtLocation:terrainMask :layoutThoriumDrillAtLocation:terrainMask *tmp411
 set :layoutThoriumDrillAtLocation:generatorHorizontal 1935
 set :layoutThoriumDrillAtLocation:generatorVertical 6340995
 set :tryPlaceGenerator:centerX .drillX
@@ -842,76 +841,76 @@ set :tryPlaceGenerator:centerY .drillY
 set :tryPlaceGenerator:terrainMask :layoutThoriumDrillAtLocation:terrainMask
 set :tryPlaceGenerator:generatorHorizontal 1935
 set :tryPlaceGenerator:generatorVertical 6340995
-set :tryPlaceGenerator*retaddr 846
-jump 301 always 0 0
-jump 849 equal :tryPlaceGenerator*retval false
+set :tryPlaceGenerator*retaddr 845
+jump 300 always 0 0
+jump 848 equal :tryPlaceGenerator*retval false
 set :layoutThoriumDrillAtLocation*retval true
 set @counter :layoutThoriumDrillAtLocation*retaddr
 set :layoutThoriumDrillAtLocation:sx 3
 set :layoutThoriumDrillAtLocation:sy 3
-set *tmp429 853
-jump 864 always 0 0
+set *tmp426 852
+jump 863 always 0 0
 set :layoutThoriumDrillAtLocation:sx 3
 set :layoutThoriumDrillAtLocation:sy -3
-set *tmp429 857
-jump 864 always 0 0
+set *tmp426 856
+jump 863 always 0 0
 set :layoutThoriumDrillAtLocation:sx -3
 set :layoutThoriumDrillAtLocation:sy 3
-set *tmp429 861
-jump 864 always 0 0
+set *tmp426 860
+jump 863 always 0 0
 set :layoutThoriumDrillAtLocation:sx -3
 set :layoutThoriumDrillAtLocation:sy -3
-set *tmp429 914
+set *tmp426 913
 op sub :layoutThoriumDrillAtLocation:newX .drillX :layoutThoriumDrillAtLocation:sx
 op sub :layoutThoriumDrillAtLocation:newY .drillY :layoutThoriumDrillAtLocation:sy
 set :createCombinedMask:x :layoutThoriumDrillAtLocation:newX
 set :createCombinedMask:y :layoutThoriumDrillAtLocation:newY
-set :createCombinedMask*retaddr 870
-jump 433 always 0 0
+set :createCombinedMask*retaddr 869
+jump 432 always 0 0
 set :shiftMask:mask :layoutThoriumDrillAtLocation:terrainMask
-op abs *tmp163 :layoutThoriumDrillAtLocation:sx 0
-op greaterThan *tmp164 *tmp163 6
-op abs *tmp165 :layoutThoriumDrillAtLocation:sy 0
-op greaterThan *tmp166 *tmp165 6
-op or *tmp167 *tmp164 *tmp166
-jump 879 equal *tmp167 false
+op abs *tmp160 :layoutThoriumDrillAtLocation:sx 0
+op greaterThan *tmp161 *tmp160 6
+op abs *tmp162 :layoutThoriumDrillAtLocation:sy 0
+op greaterThan *tmp163 *tmp162 6
+op or *tmp164 *tmp161 *tmp163
+jump 878 equal *tmp164 false
 set :shiftMask*retval 0
-jump 900 always 0 0
-op mul *tmp169 7 :layoutThoriumDrillAtLocation:sy
-op add :shiftMask:shift :layoutThoriumDrillAtLocation:sx *tmp169
-jump 886 lessThanEq :shiftMask:shift 0
+jump 899 always 0 0
+op mul *tmp166 7 :layoutThoriumDrillAtLocation:sy
+op add :shiftMask:shift :layoutThoriumDrillAtLocation:sx *tmp166
+jump 885 lessThanEq :shiftMask:shift 0
 op shr :shiftMask:clearMask 562949953421311 :shiftMask:shift
-op and *tmp174 :layoutThoriumDrillAtLocation:terrainMask :shiftMask:clearMask
-op shl :shiftMask:mask *tmp174 :shiftMask:shift
-jump 888 always 0 0
-op sub *tmp176 0 :shiftMask:shift
-op shr :shiftMask:mask :layoutThoriumDrillAtLocation:terrainMask *tmp176
-jump 899 equal :layoutThoriumDrillAtLocation:sx 0
-op shr :shiftMask:keep 0b1111111 *tmp163
-jump 892 lessThanEq :layoutThoriumDrillAtLocation:sx 0
+op and *tmp171 :layoutThoriumDrillAtLocation:terrainMask :shiftMask:clearMask
+op shl :shiftMask:mask *tmp171 :shiftMask:shift
+jump 887 always 0 0
+op sub *tmp173 0 :shiftMask:shift
+op shr :shiftMask:mask :layoutThoriumDrillAtLocation:terrainMask *tmp173
+jump 898 equal :layoutThoriumDrillAtLocation:sx 0
+op shr :shiftMask:keep 0b1111111 *tmp160
+jump 891 lessThanEq :layoutThoriumDrillAtLocation:sx 0
 op shl :shiftMask:keep :shiftMask:keep :layoutThoriumDrillAtLocation:sx
-op shl *tmp183 :shiftMask:keep 7
-op or :shiftMask:keep :shiftMask:keep *tmp183
-op shl *tmp184 :shiftMask:keep 14
-op or :shiftMask:keep :shiftMask:keep *tmp184
-op shl *tmp185 :shiftMask:keep 21
-op or :shiftMask:keep :shiftMask:keep *tmp185
+op shl *tmp180 :shiftMask:keep 7
+op or :shiftMask:keep :shiftMask:keep *tmp180
+op shl *tmp181 :shiftMask:keep 14
+op or :shiftMask:keep :shiftMask:keep *tmp181
+op shl *tmp182 :shiftMask:keep 21
+op or :shiftMask:keep :shiftMask:keep *tmp182
 op and :shiftMask:mask :shiftMask:mask :shiftMask:keep
 set :shiftMask*retval :shiftMask:mask
 op or :layoutThoriumDrillAtLocation:combinedMask :createCombinedMask*retval :shiftMask*retval
-op sub *tmp435 .drillX :layoutThoriumDrillAtLocation:sx
-op sub *tmp436 .drillY :layoutThoriumDrillAtLocation:sy
-set :tryPlaceGenerator:centerX *tmp435
-set :tryPlaceGenerator:centerY *tmp436
+op sub *tmp432 .drillX :layoutThoriumDrillAtLocation:sx
+op sub *tmp433 .drillY :layoutThoriumDrillAtLocation:sy
+set :tryPlaceGenerator:centerX *tmp432
+set :tryPlaceGenerator:centerY *tmp433
 set :tryPlaceGenerator:terrainMask :layoutThoriumDrillAtLocation:combinedMask
 set :tryPlaceGenerator:generatorHorizontal :layoutThoriumDrillAtLocation:generatorHorizontal
 set :tryPlaceGenerator:generatorVertical :layoutThoriumDrillAtLocation:generatorVertical
-set :tryPlaceGenerator*retaddr 910
-jump 301 always 0 0
-jump 913 equal :tryPlaceGenerator*retval false
+set :tryPlaceGenerator*retaddr 909
+jump 300 always 0 0
+jump 912 equal :tryPlaceGenerator*retval false
 set :layoutThoriumDrillAtLocation*retval true
 set @counter :layoutThoriumDrillAtLocation*retaddr
-set @counter *tmp429
+set @counter *tmp426
 set :layoutThoriumDrillAtLocation*retval true
 set @counter :layoutThoriumDrillAtLocation*retaddr
 set .searchFinished false
@@ -922,7 +921,7 @@ set :findDrillLocationLocal:item :findDrillLocation:item
 set :findDrillLocationLocal:ore :findDrillLocation:ore
 set :findDrillLocationLocal:size :findDrillLocation:size
 set :findDrillLocationLocal:limit :findDrillLocation:limit
-set :findDrillLocationLocal*retaddr 926
+set :findDrillLocationLocal*retaddr 925
 jump 12 always 0 0
 set :findDrillLocation:dx :findDrillLocationLocal:dx
 set :findDrillLocation:dy :findDrillLocationLocal:dy
@@ -938,15 +937,15 @@ set :findDrillLocationLocal:item @thorium
 set :findDrillLocationLocal:ore @ore-thorium
 set :findDrillLocationLocal:size 3
 set :findDrillLocationLocal:limit :layoutThoriumDrill:limit
-set :findDrillLocationLocal*retaddr 942
+set :findDrillLocationLocal*retaddr 941
 jump 12 always 0 0
 set .drillX :findDrillLocationLocal:dx
 set .drillY :findDrillLocationLocal:dy
-jump 947 notEqual :findDrillLocationLocal*retval false
+jump 946 notEqual :findDrillLocationLocal*retval false
 set :layoutThoriumDrill*retval false
-jump 950 always 0 0
-set :layoutThoriumDrillAtLocation*retaddr 949
-jump 774 always 0 0
+jump 949 always 0 0
+set :layoutThoriumDrillAtLocation*retaddr 948
+jump 773 always 0 0
 set :layoutThoriumDrill*retval :layoutThoriumDrillAtLocation*retval
 set :layoutThoriumDrill*finished true
 jump 10 always 0 0

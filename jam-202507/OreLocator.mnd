@@ -11,9 +11,10 @@ const RADIUS =  6;
 const MIN_CORE_DIST = 8;
 const BASE_SIZE = 15;
 
-linked bank1, message1, switch1, processor1;
+linked bank1, message1, switch1,
+    matrices = processor1;
 
-require "Matrices.mnd" remote processor1;
+require "Matrices.mnd" remote matrices;
 
 // For each attenuationRate multiple of the distance between the unit position on the spiral and the core, the
 // requested amount of ore tiles under the drill gets decreased by one (i.e. the farther the unit has to go
@@ -174,7 +175,7 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
         var last = 0;
         while true do
             var diffX, diffY;
-            var score = findBestPosition(@unit, oreX, oreY, ore, size, out diffX, out diffY);
+            var score = matrices.findBestPosition(@unit, oreX, oreY, ore, size, out diffX, out diffY);
 //            remark($"Ore at $oreX, $oreY: score $score, best $best, dx $diffX, dy $diffY\n");
 //            debugPause();
 
@@ -504,11 +505,11 @@ end;
 //volatile var lastCombinedMask;
 
 def createCombinedMask(x, y);
-    async(processor1.createTerrainMask(@unit, x, y));
+    async(matrices.createTerrainMask(@unit, x, y));
 //    maskX = x; maskY = y;
     // For debugging, remove the `var` and uncomment the variables
     var adjacentMask = createAdjacentMask(x, y);
-    var terrainMask = await(processor1.createTerrainMask);
+    var terrainMask = await(matrices.createTerrainMask);
     return excludeArea(adjacentMask | terrainMask, x, y, coreX, coreY, BASE_SIZE, BASE_SIZE);
 end;
 

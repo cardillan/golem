@@ -6,10 +6,13 @@
 
 module CoreController;
 
+noinit remote var display;
+
+require "Display.mnd" remote display;
+
 noinit remote var
     timer,
     core,
-    display,
     bank,
     press,
     unloader1,
@@ -52,16 +55,6 @@ remote var
     polyTarget = 0,
     megaTarget = 0;
 
-// Due to Mindcode restriction of requiring a single module from two places, we need to declare these
-// variables in the display processor explicitly.
-remote display var
-    displayFlares,
-    displayMonos,
-    displayPolys,
-    displayMegas,
-    displayNextUnit,
-    displayUnitReset;
-
 external bank[511] var logPosition;
 
 void log(encodedId)
@@ -79,12 +72,12 @@ void factoryUnitFinished(unit)
     if unit == targetUnit then
         logUnit(unit);
         case unit
-            when @flare then displayFlares = ++flares;
-            when @mono  then displayMonos = ++monos;
-            when @poly  then displayPolys = ++polys;
-            when @mega  then displayMegas = ++megas;
+            when @flare then display.flares = ++flares;
+            when @mono  then display.monos = ++monos;
+            when @poly  then display.polys = ++polys;
+            when @mega  then display.megas = ++megas;
         end;
-        displayUnitReset = true;
+        display.unitReset = true;
         factoryDone = 0;
     else
         case unit
@@ -132,27 +125,27 @@ void backgroundProcess()
         multiReconstructorProgress = multiReconstructor.@progress;
 
         if flares < flareTarget then
-            displayNextUnit = targetUnit = factoryUnit = @flare;
+            display.nextUnit = targetUnit = factoryUnit = @flare;
             payloadRouter.config = targetUnit;
             blockFactory = false;
         elsif monos < monoTarget then
-            displayNextUnit = targetUnit = factoryUnit = @mono;
+            display.nextUnit = targetUnit = factoryUnit = @mono;
             payloadRouter.config = targetUnit;
             blockFactory = false;
         elsif polys < polyTarget then
             factoryUnit = factoryDone + polys < polyTarget ? @mono : null;
-            displayNextUnit = targetUnit = @poly;
+            display.nextUnit = targetUnit = @poly;
             reconstructor.enabled = true;
             payloadRouter.config = targetUnit;
             blockFactory = reconstructor.@payloadCount * factoryProgress > reconstructorProgress;
         elsif megas < megaTarget then
             factoryUnit = factoryDone + megas < megaTarget ? @mono : null;
-            displayNextUnit = targetUnit = @mega;
+            display.nextUnit = targetUnit = @mega;
             reconstructor.enabled = multiReconstructor or reconstructorProgress < 0.75;
             payloadRouter.config = targetUnit;
             blockFactory = false;
         else
-            displayNextUnit = targetUnit = factoryUnit = null;
+            display.nextUnit = targetUnit = factoryUnit = null;
             blockFactory = false;
         end;
 
