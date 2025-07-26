@@ -13,7 +13,7 @@ linked
     oreLocator = processor5;
 
 noinit var
-    core, coreX, coreY,
+    core,
     builder,
     controller;
 
@@ -26,13 +26,13 @@ require "OreLocator.mnd" remote oreLocator;
 begin
     do
         builder = ubind(@poly);
-        core = ulocate(:building, :core, false, out coreX, out coreY);
+        core = ulocate(:building, :core, false);
     while core == null;
 end;
 
 const RADIUS =  6;
 
-noinit volatile var ERROR, ERROR_BLOCK_NEW, ERROR_BLOCK_OLD, ERROR_X, ERROR_Y;
+noinit remote var ERROR, ERROR_BLOCK_NEW, ERROR_BLOCK_OLD, ERROR_X, ERROR_Y;
 
 inline void buildError(new, old, x, y);
     ERROR = "Cannot build at position";
@@ -138,24 +138,26 @@ end;
 volatile var positive = 0, negative = 0;
 
 def buildTitaniumDrill(x, y, in out count, in out tiles)
-    if tiles < 16 then
-        moveTo(x, y);
-        positive = 0; negative = 0;
-        titaniumDrillScore(x, y, in out positive, in out negative);
-        titaniumDrillScore(x, y + 0.5, in out positive, in out negative);
-        titaniumDrillScore(x + 0.5, y, in out positive, in out negative);
-        titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
+    if count < 8 then
+        if tiles < 16 then
+            moveTo(x, y);
+            positive = 0; negative = 0;
+            titaniumDrillScore(x - 0.5, y - 0.5, in out positive, in out negative);
+            titaniumDrillScore(x - 0.5, y + 0.5, in out positive, in out negative);
+            titaniumDrillScore(x + 0.5, y - 0.5, in out positive, in out negative);
+            titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
 
-        if positive > negative && positive >= 2 then
-            var drill = buildBlockAtLocal(@pneumatic-drill, x, y, null, 0, -1);
-            if drill != null then
-                flareController.addTitaniumDrill(drill);
+            if positive > negative && positive >= 2 then
+                var drill = buildBlockAtLocal(@pneumatic-drill, x, y, null, 0, -1);
+                if drill != null then
+                    flareController.addTitaniumDrill(drill);
 
-                // Build a flare to service this drill
-                setFlareTarget(++count);
+                    // Build a flare to service this drill
+                    setFlareTarget(++count);
 
-                tiles += positive;
-                return positive;
+                    tiles += positive;
+                    return positive;
+                end;
             end;
         end;
     end;
@@ -196,11 +198,12 @@ remote void buildTitaniumDrills(aController, current)
         end;
 
         if tiles >= 16 then break; end;
+        if count >= 8 then break; end;
     end;
 end;
 
 inline void setFlareTarget(target)
-    controller.flareTarget = target;
-    display.flareTarget = target;
+    controller.flareTarget = min(target, 8);
+    display.flareTarget = min(target, 8);
 end;
 

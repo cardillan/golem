@@ -55,63 +55,9 @@ remote var
     polyTarget = 0,
     megaTarget = 0;
 
-void unpackCfg(cfg, out type, out x, out y, out rotation, out size, out ind)
-    var index = 0;
-    type = lookup(:block, char(cfg, index++) - 35);
-    x = char(cfg, index++) - 35 - 7;
-    y = char(cfg, index++) - 35 - 7;
-    var cu = char(cfg, index++) - 35;
-    var pb = char(cfg, index++) - 35;
-    var gr = char(cfg, index++) - 35;
-    var si = char(cfg, index++) - 35;
-    var ti = char(cfg, index++) - 35;
-    var mg = char(cfg, index++) - 35;
-    var th = char(cfg, index++) - 35;
-    rotation = char(cfg, index++) - 35;
-    size = char(cfg, index++) - 35;
-    ind = char(cfg, index++) - 35;
+void unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index)
+    unpackCfg(cfg, out type, out x, out y, , , , , , , , out rotation, out size, out index);
 end;
-
-const BLOCKS[] = (
-        PRESS,
-        BATTERY1,
-        BATTERY2,
-        GENERATOR,
-        SMELTER,
-        INVERTED_SORT1,
-        PNEUMATIC_DRILL,
-        UNLOADER1,
-        INVERTED_SORT2,
-        OVERFLOW_GATE1,
-        PROCESSOR,
-        POWER_NODE,
-        UNLOADER2,
-        AIR_FACTORY,
-        UNLOADER3,
-        INVERTED_SORT3,
-        KILN,
-        WATER_EXT,
-        OVERFLOW_GATE2,
-        OVERFLOW_GATE3,
-        STEAM_GEN,
-        MULTIPRESS,
-        PAYLOAD_ROUTER,
-        UNLOADER4,
-        UNDERFLOW_GATE,
-        ADDITIVE_REC,
-        BATTERY_LARGE,
-        LASER_DRILL,
-        SOLAR_PANEL,
-        CONTAINER,
-        SMELTER2,
-        INVERTED_SORT4,
-        INVERTED_SORT5,
-        UNLOADER5,
-        UNLOADER6,
-        UNDERFLOW_GATE2,
-        MULTIPLICATIVE_REC
-    );
-
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
@@ -234,16 +180,16 @@ end;
 noinit var factoryProgress, reconstructorProgress;
 
 inline void drawMaterials()
-    var count, targetFactoryLead, targetFactorySilicon;
-    var col = 0, y = HEADER2_Y - ROW_HEIGHT;
+    noinit var targetFactoryLead, targetFactorySilicon;
+    var count, col = 0, y = HEADER2_Y - ROW_HEIGHT;
 
     if nextBlock == null then
         factoryProgress = max(factoryProgress, airFactory.@progress);
         reconstructorProgress = max(reconstructorProgress, reconstructor.@progress);
         var multiReconstructorProgress = multiReconstructor.@progress;
-        var unit1, unit2, unit3;
-        var unitCount1, unitCount2;
-        var unitTotal1, unitTotal2;
+        noinit var unit1, unit2, unit3;
+        noinit var unitCount1, unitCount2;
+        noinit var unitTotal1, unitTotal2;
 
         if nextUnit == @mono then
             targetFactoryLead = 15;
@@ -486,15 +432,14 @@ end;
 
 void drawBlock(cfg)
     var type, x, y, rotation, size, index;
-    unpackCfg(cfg, out type, out x, out y, out rotation, out size, out index);
+    unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index);
     if x | y then
         if blocksBuilt & (1 << index) then
             col(%[white]);
         else
             color(128, 255, 128, 128);
         end;
-        var offset = 1 - (size & 1);
-        image(2 * x + offset, 2 * y + offset, type, 2 * size, 90 * rotation);
+        image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
     end;
 end;
 
@@ -551,7 +496,9 @@ void main()
             unitReset = false;
         end;
 
-        if page == 0 then
+        if page == -1 then
+            displayOreMap();
+        elsif page == 0 then
             if megas > 0 then
                 animate();
             else

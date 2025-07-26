@@ -38,6 +38,7 @@ var
     unloader1 = null,
     kiln = null,
     thoriumDrill = null,
+    thoriumBattery = null,
     thoriumContainer = null,
     thoriumGenerator = null;
 
@@ -62,24 +63,6 @@ var
     metaglassSurplus = 20;
 
 external bank1[511] logPosition = 511;
-
-void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out ind)
-    var index = 0;
-    type = lookup(:block, char(cfg, index++) - 35);
-    x = char(cfg, index++) - 35 - 7;
-    y = char(cfg, index++) - 35 - 7;
-    cu = char(cfg, index++) - 35;
-    pb = char(cfg, index++) - 35;
-    gr = char(cfg, index++) - 35;
-    si = char(cfg, index++) - 35;
-    ti = char(cfg, index++) - 35;
-    mg = char(cfg, index++) - 35;
-    th = char(cfg, index++) - 35;
-    rotation = char(cfg, index++) - 35;
-    var size = char(cfg, index++) - 35;
-    ind = char(cfg, index++) - 35;
-    //println($"Type: $type, x: $x, y: $y, $cu, $pb, $gr, $si, $ti, $mg, $rotation");
-end;
 
 // SUPPLY OPERATIONS
 
@@ -159,10 +142,12 @@ end;
 inline void supplyBase2()
     status1("Phase 2: servicing thorium drill");
 
-    if core.@coal < 50 then
-        supplyBlock(thoriumGenerator, @coal);
-    else
-        supplyBlockFromCore(thoriumGenerator, @coal);
+    if thoriumBattery.@totalPower < 2000 then
+        if core.@coal < 50 then
+            supplyBlock(thoriumGenerator, @coal);
+        else
+            supplyBlockFromCore(thoriumGenerator, @coal);
+        end;
     end;
     fetchBlock(thoriumContainer, @thorium);
 end;
@@ -238,7 +223,7 @@ end;
 def buildRemoteBlock(cfg, x, y)
     if x + y > 0 then
         var type, cu, pb, gr, si, ti, mg, th, rotation, index;
-        unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out index);
+        unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
         return buildBlock(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, null, index);
     end;
     return false;
@@ -247,7 +232,7 @@ end;
 // Builds a block
 def buildBlockFromCfg(cfg, config)
     var type, x, y, cu, pb, gr, si, ti, mg, th, rotation, index;
-    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out index);
+    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
     return buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config, index);
 end;
 
@@ -274,8 +259,6 @@ def buildFirstTitaniumDrill(cfg)
 end;
 
 void blocksBuildTitaniumDrills()
-    // Make sure to bind and flag the flare in a single tick
-    wait(1e-9);
     ubind(@flare);
 
     var current = oreLocator.locations;
@@ -305,7 +288,7 @@ void buildThoriumDrill()
     buildRemoteBlock(POWER_NODE, oreLocator.node1X, oreLocator.node1Y);
     buildRemoteBlock(POWER_NODE, oreLocator.node2X, oreLocator.node2Y);
     buildRemoteBlock(SOLAR_PANEL, oreLocator.panelX, oreLocator.panelY);
-    buildRemoteBlock(BATTERY1, oreLocator.batteryX, oreLocator.batteryY);
+    thoriumBattery = buildRemoteBlock(BATTERY1, oreLocator.batteryX, oreLocator.batteryY);
     thoriumContainer = buildRemoteBlock(CONTAINER, oreLocator.containerX, oreLocator.containerY);
     if thoriumContainer == null then thoriumContainer = thoriumDrill; end;
     display.thoriumDrill = thoriumDrill;

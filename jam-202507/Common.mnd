@@ -1,40 +1,104 @@
 module Common;
 
-// See BlockConfiguration.mnd
-const PRESS = "#'+nA######%#";
-const BATTERY1 = "k*/(7######$$";
-const BATTERY2 = "k+/(7######$%";
-const GENERATOR = "m*.<2######$&";
-const SMELTER = "%+-A<######%'";
-const INVERTED_SORT1 = "T+,%%######$(";
-const PNEUMATIC_DRILL = "w**5#-#####%)";
-const UNLOADER1 = "*,###A<###$*";
-const INVERTED_SORT2 = "T),%%######$+";
-const OVERFLOW_GATE1 = "W*-'%######$,";
-const PROCESSOR = "®-.}U#U####$-";
-const POWER_NODE = "g)'%)######$.";
-const UNLOADER2 = "(*###A<###$/";
-const AIR_FACTORY = "'(_i#####&&0";
-const UNLOADER3 = ",)###A<###$1";
-const INVERTED_SORT3 = "T,*%%######$2";
-const KILN = "',+_AA#####%3";
-const WATER_EXT = "z%-AAA##A##%4";
-const OVERFLOW_GATE2 = "W'*'%######$5";
-const OVERFLOW_GATE3 = "W&*'%######$6";
-const STEAM_GEN = "o%+FK<A####%7";
-const MULTIPRESS = "$(.#U<###&8";
-const PAYLOAD_ROUTER = " '%-#2#####&9";
-const UNLOADER4 = "*(###A<###$:";
-const UNDERFLOW_GATE = "X*''%######$;";
-const ADDITIVE_REC = "*%ë#}####&<";
-const BATTERY_LARGE = "l/,#U#A7###&=";
-const LASER_DRILL = "x**F#AA7###&>";
-const SOLAR_PANEL = "r**#-#+####$?";
-const CONTAINER = "**#######%@";
-const SMELTER2 = "%.)A<######%A";
-const INVERTED_SORT4 = "T-*%%######$B";
-const INVERTED_SORT5 = "T-)%%######$C";
-const UNLOADER5 = "--###A<###$D";
-const UNLOADER6 = "+(###A<###$E";
-const UNDERFLOW_GATE2 = "X+''%######$F";
-const MULTIPLICATIVE_REC = ".&#ʭ#ǥƁ#ʭ#(G";
+const _Common_offset = 36 + 14;
+
+def packCfg(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, size, ind)
+    encode(_Common_offset, type.@id, round(2 * x), round(2 * y), cu, pb, gr, si, ti, mg, th, rotation, size, ind);
+end;
+
+void unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, out size, out ind)
+    var index = 0;
+    type = lookup(:block, char(cfg, index++) - _Common_offset);
+    x = (char(cfg, index++) - _Common_offset) / 2;
+    y = (char(cfg, index++) - _Common_offset) / 2;
+    cu = char(cfg, index++) - _Common_offset;
+    pb = char(cfg, index++) - _Common_offset;
+    gr = char(cfg, index++) - _Common_offset;
+    si = char(cfg, index++) - _Common_offset;
+    ti = char(cfg, index++) - _Common_offset;
+    mg = char(cfg, index++) - _Common_offset;
+    th = char(cfg, index++) - _Common_offset;
+    rotation = char(cfg, index++) - _Common_offset;
+    size = char(cfg, index++) - _Common_offset;
+    ind = char(cfg, index++) - _Common_offset;
+    //println($"Type: $type, x: $x, y: $y, $cu, $pb, $gr, $si, $ti, $mg, $rotation");
+end;
+
+//                                    type,                             x,    y,  cu,  pb,  gr,  si,  ti,  mg,  th, rot, size, ind
+const PRESS                 = packCfg(@graphite-press,               -2.5, +1.5,  75,  30,   0,   0,   0,   0,   0,   0,    2,  0);
+const BATTERY1              = packCfg(@battery,                       0.0, +5.0,   5,  20,   0,   0,   0,   0,   0,   0,    1,  1);
+const BATTERY2              = packCfg(@battery,                      +1.0, +5.0,   5,  20,   0,   0,   0,   0,   0,   0,    1,  2);
+const GENERATOR             = packCfg(@combustion-generator,          0.0, +4.0,  25,  15,   0,   0,   0,   0,   0,   0,    1,  3);
+const SMELTER               = packCfg(@silicon-smelter,              +1.5, +3.5,  30,  25,   0,   0,   0,   0,   0,   0,    2,  4);
+const INVERTED_SORT1        = packCfg(@inverted-sorter,              +1.0, +2.0,   2,   2,   0,   0,   0,   0,   0,   0,    1,  5);
+const PNEUMATIC_DRILL       = packCfg(@pneumatic-drill,               0.0,  0.0,  18,   0,  10,   0,   0,   0,   0,   0,    2,  6);
+const UNLOADER1             = packCfg(@unloader,                      0.0, +2.0,   0,   0,   0,  30,  25,   0,   0,   0,    1,  7);
+const INVERTED_SORT2        = packCfg(@inverted-sorter,              -1.0, +2.0,   2,   2,   0,   0,   0,   0,   0,   0,    1,  8);
+const OVERFLOW_GATE1        = packCfg(@overflow-gate,                 0.0, +3.0,   4,   2,   0,   0,   0,   0,   0,   0,    1,  9);
+const PROCESSOR             = packCfg(@micro-processor,              +3.0, +4.0,  90,  50,   0,  50,   0,   0,   0,   0,    1, 10);
+const POWER_NODE            = packCfg(@power-node,                   -1.0, -3.0,   2,   6,   0,   0,   0,   0,   0,   0,    1, 11);
+const UNLOADER2             = packCfg(@unloader,                     -2.0,  0.0,   0,   0,   0,  30,  25,   0,   0,   0,    1, 12);
+const AIR_FACTORY           = packCfg(@air-factory,                  -3.0, -2.0,  60,  70,   0,   0,   0,   0,   0,   3,    3, 13);
+const UNLOADER3             = packCfg(@unloader,                     +2.0, -1.0,   0,   0,   0,  30,  25,   0,   0,   0,    1, 14);
+const INVERTED_SORT3        = packCfg(@inverted-sorter,              +2.0,  0.0,   2,   2,   0,   0,   0,   0,   0,   0,    1, 15);
+const KILN                  = packCfg(@kiln,                         +2.5, +1.5,  60,  30,  30,   0,   0,   0,   0,   0,    2, 16);
+const WATER_EXT             = packCfg(@water-extractor,              -4.5, +3.5,  30,  30,  30,   0,   0,  30,   0,   0,    2, 17);
+const OVERFLOW_GATE2        = packCfg(@overflow-gate,                -3.0,  0.0,   4,   2,   0,   0,   0,   0,   0,   0,    1, 18);
+const OVERFLOW_GATE3        = packCfg(@overflow-gate,                -4.0,  0.0,   4,   2,   0,   0,   0,   0,   0,   0,    1, 19);
+const STEAM_GEN             = packCfg(@steam-generator,              -4.5, +1.5,  35,  40,  25,  30,   0,   0,   0,   0,    2, 20);
+const MULTIPRESS            = packCfg(@multi-press,                  -2.0, +4.0,   0, 100,  50,  25, 100,   0,   0,   0,    3, 21);
+const PAYLOAD_ROUTER        = packCfg(@payload-router,               -3.0, -5.0,  10,   0,  15,   0,   0,   0,   0,   0,    3, 22);
+const UNLOADER4             = packCfg(@unloader,                      0.0, -2.0,   0,   0,   0,  30,  25,   0,   0,   0,    1, 23);
+const UNDERFLOW_GATE        = packCfg(@underflow-gate,                0.0, -3.0,   4,   2,   0,   0,   0,   0,   0,   0,    1, 24);
+const ADDITIVE_REC          = packCfg(@additive-reconstructor,        0.0, -5.0, 200, 120,   0,  90,   0,   0,   0,   0,    3, 25);
+const BATTERY_LARGE         = packCfg(@battery-large,                +5.0, +2.0,   0,  50,   0,  30,  20,   0,   0,   0,    3, 26);
+const LASER_DRILL           = packCfg(@laser-drill,                   0.0,  0.0,  35,   0,  30,  30,  20,   0,   0,   0,    3, 27);
+const SOLAR_PANEL           = packCfg(@solar-panel,                   0.0,  0.0,   0,  10,   0,   8,   0,   0,   0,   0,    1, 28);
+const CONTAINER             = packCfg(@container,                     0.0,  0.0,   0,   0,   0,   0, 100,   0,   0,   0,    2, 29);
+const SMELTER2              = packCfg(@silicon-smelter,              +4.5, -0.5,  30,  25,   0,   0,   0,   0,   0,   0,    2, 30);
+const INVERTED_SORT4        = packCfg(@inverted-sorter,              +3.0,  0.0,   2,   2,   0,   0,   0,   0,   0,   0,    1, 31);
+const INVERTED_SORT5        = packCfg(@inverted-sorter,              +3.0, -1.0,   2,   2,   0,   0,   0,   0,   0,   0,    1, 32);
+const UNLOADER5             = packCfg(@unloader,                     +3.0, +3.0,   0,   0,   0,  30,  25,   0,   0,   0,    1, 33);
+const UNLOADER6             = packCfg(@unloader,                      1.0, -2.0,   0,   0,   0,  30,  25,   0,   0,   0,    1, 34);
+const UNDERFLOW_GATE2       = packCfg(@underflow-gate,                1.0, -3.0,   4,   2,   0,   0,   0,   0,   0,   0,    1, 35);
+const MULTIPLICATIVE_REC    = packCfg(@multiplicative-reconstructor, +4.0, -4.0,   0, 650,   0, 450, 350,   0, 650,   0,    5, 36);
+
+const BLOCKS[] = (
+        PRESS,
+        BATTERY1,
+        BATTERY2,
+        GENERATOR,
+        SMELTER,
+        INVERTED_SORT1,
+        PNEUMATIC_DRILL,
+        UNLOADER1,
+        INVERTED_SORT2,
+        OVERFLOW_GATE1,
+        PROCESSOR,
+        POWER_NODE,
+        UNLOADER2,
+        AIR_FACTORY,
+        UNLOADER3,
+        INVERTED_SORT3,
+        KILN,
+        WATER_EXT,
+        OVERFLOW_GATE2,
+        OVERFLOW_GATE3,
+        STEAM_GEN,
+        MULTIPRESS,
+        PAYLOAD_ROUTER,
+        UNLOADER4,
+        UNDERFLOW_GATE,
+        ADDITIVE_REC,
+        BATTERY_LARGE,
+        LASER_DRILL,
+        SOLAR_PANEL,
+        CONTAINER,
+        SMELTER2,
+        INVERTED_SORT4,
+        INVERTED_SORT5,
+        UNLOADER5,
+        UNLOADER6,
+        UNDERFLOW_GATE2,
+        MULTIPLICATIVE_REC
+    );
