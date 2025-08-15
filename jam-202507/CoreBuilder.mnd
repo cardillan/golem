@@ -38,17 +38,17 @@ var
 
 noinit var
     core, coreX, coreY,
-    builder,
+    builder;
 
     // Targets to be met for the next build
-    targetCopper,
-    targetLead,
-    targetGraphite,
-    targetSilicon,
-    targetTitanium,
-    targetMetaglass,
-    targetThorium,
-    powerTarget;
+noinit mlog(@copper.@name)      var targetCopper;
+noinit mlog(@lead.@name)        var targetLead;
+noinit mlog(@graphite.@name)    var targetGraphite;
+noinit mlog(@silicon.@name)     var targetSilicon;
+noinit mlog(@titanium.@name)    var targetTitanium;
+noinit mlog(@metaglass.@name)   var targetMetaglass;
+noinit mlog(@thorium.@name)     var targetThorium;
+noinit                          var powerTarget;
 
 var
     leadSurplus = 0,
@@ -185,7 +185,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     display.targetThorium = thorium;
 
     targetCopper = copper;
-    targetLead = lead + leadSurplus + 1;
+    targetLead = lead; // + leadSurplus + 1;
     targetGraphite = graphite;
     targetSilicon = silicon;
     targetTitanium = titanium;
@@ -341,7 +341,7 @@ begin
     controller.core = core;
     controller.bank = bank1;
 
-    for var block in BLOCKS do
+    for var block in BLOCKS[0 ... 10] do
         controller.write(@this.read(block), block);
     end;
 
@@ -390,7 +390,7 @@ begin
     buildBlockFromCfg(PAYLOAD_ROUTER);
     buildBlockFromCfg(UNLOADER4);
     buildBlockFromCfg(ADDITIVE_REC);
-    buildBlockFromCfg(BATTERY_LARGE);
+    //buildBlockFromCfg(BATTERY_LARGE);
 
     buildUnits();
 
@@ -398,24 +398,23 @@ begin
     siliconSurplus = 1000;
     metaglassSurplus = 200;
 
-    setPolyTarget(5);
+    setPolyTarget(3);
     buildBlockFromCfg(SMELTER2);
     buildBlockFromCfg(INVERTED_SORT4);
     buildBlockFromCfg(INVERTED_SORT5);
-    buildBlockFromCfg(UNLOADER5, @sand);
+    //buildBlockFromCfg(UNLOADER5, @sand);
     buildUnits();
 
     while controller.polys < 3 do
         supplyBase();
     end;
 
-    setFlareTarget(3);
+    setFlareTarget(2);
     while controller.flares < 2 do
         supplyBase();
     end;
 
     graphiteSurplus = 100;
-    setMonoTarget(5);
 
     // Build more titanium drills now
     // The base can already be fully served by monos and polys,
@@ -429,7 +428,7 @@ begin
     display.nextBlock = null;
 
     setMegaTarget(1);
-    while controller.polys < 5 do
+    while controller.polys < 3 do
         supplyBase();
     end;
 
