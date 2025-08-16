@@ -2,11 +2,11 @@ jump 4 always 0 0
 jump 19 always 0 0
 jump 80 always 0 0
 jump 141 always 0 0
-read *tmp32 processor4 "*signature"
+read *tmp32 processor2 "*signature"
 jump 4 notEqual *tmp32 "0:v1"
-read *tmp55 processor3 "*signature"
+read *tmp55 processor8 "*signature"
 jump 6 notEqual *tmp55 "881dde114374c003:v1"
-read *tmp95 processor5 "*signature"
+read *tmp95 processor3 "*signature"
 jump 8 notEqual *tmp95 "3290b8c661787058:v1"
 ubind @poly
 set .builder @unit
@@ -53,13 +53,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 60 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 60 equal @unit .builder
 ucontrol approach :buildBlockAt:x :buildBlockAt:y 6 0 0
 ucontrol build :buildBlockAt:x :buildBlockAt:y :buildBlockAt:block :buildBlockAt:rotation :buildBlockAt:config
 jump 39 notEqual :buildBlockAtLocal:type :buildBlockAt:block
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 sensor :log:encodedId :buildBlockAt:block @id
 read *tmp102 bank1 511
@@ -71,10 +71,10 @@ op add *tmp134 :log:encodedId *tmp133
 write *tmp134 bank1 *tmp129
 jump 77 lessThan :buildBlockAt:index 0
 op shl *tmp137 1 :buildBlockAt:index
-read *tmp1 processor4 ".blocksBuilt"
+read *tmp1 processor2 ".blocksBuilt"
 op or *tmp138 *tmp1 *tmp137
-write *tmp138 processor4 ".blocksBuilt"
-write :buildBlockAt:index processor4 ".recentBuildIndex"
+write *tmp138 processor2 ".blocksBuilt"
+write :buildBlockAt:index processor2 ".recentBuildIndex"
 set :buildBlockAt*retval :buildBlockAtLocal:building
 set :buildBlockAt*finished true
 jump 17 always 0 0
@@ -114,13 +114,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 121 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 121 equal @unit .builder
 ucontrol approach :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y 6 0 0
 ucontrol build :buildFirstTitaniumDrillAt:x :buildFirstTitaniumDrillAt:y @pneumatic-drill 0 null
 jump 100 notEqual :buildBlockAtLocal:type @pneumatic-drill
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 read *tmp102 bank1 511
 op sub *tmp129 *tmp102 1
@@ -130,11 +130,11 @@ op mul *tmp133 *tmp132 1000
 op add *tmp134 84 *tmp133
 write *tmp134 bank1 *tmp129
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
-write false processor3 ":addTitaniumDrill*finished"
-write 1 processor3 "@counter"
+write :buildBlockAtLocal*retval processor8 ":addTitaniumDrill:drill"
+write false processor8 ":addTitaniumDrill*finished"
+write 1 processor8 "@counter"
 wait 1e-15
-read *tmp140 processor3 ":addTitaniumDrill*finished"
+read *tmp140 processor8 ":addTitaniumDrill*finished"
 jump 135 equal *tmp140 false
 set :buildFirstTitaniumDrillAt*retval :buildBlockAtLocal*retval
 set :buildFirstTitaniumDrillAt*finished true
@@ -143,9 +143,9 @@ set :buildTitaniumDrills:count 1
 set :buildTitaniumDrills:tiles 0
 wait 0.0001
 wait 0.0001
-read *tmp76 processor5 ".searchFinished"
+read *tmp76 processor3 ".searchFinished"
 jump 860 notEqual *tmp76 false
-read *tmp75 processor5 ".locations"
+read *tmp75 processor3 ".locations"
 jump 856 greaterThanEq :buildTitaniumDrills:current *tmp75
 op mul :buildTitaniumDrills:index :buildTitaniumDrills:current 4
 op add *tmp178 :buildTitaniumDrills:index 1
@@ -264,13 +264,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 271 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 271 equal @unit .builder
 ucontrol approach *tmp189 *tmp190 6 0 0
 ucontrol build *tmp189 *tmp190 @pneumatic-drill null 0
 jump 250 notEqual :buildBlockAtLocal:type @pneumatic-drill
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 read *tmp102 bank1 511
 op sub *tmp129 *tmp102 1
@@ -281,16 +281,16 @@ op add *tmp134 84 *tmp133
 write *tmp134 bank1 *tmp129
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
 jump 296 equal :buildBlockAtLocal*retval null
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
-write false processor3 ":addTitaniumDrill*finished"
-write 1 processor3 "@counter"
+write :buildBlockAtLocal*retval processor8 ":addTitaniumDrill:drill"
+write false processor8 ":addTitaniumDrill*finished"
+write 1 processor8 "@counter"
 wait 1e-15
-read *tmp171 processor3 ":addTitaniumDrill*finished"
+read *tmp171 processor8 ":addTitaniumDrill*finished"
 jump 286 equal *tmp171 false
 op add :buildTitaniumDrill:count :buildTitaniumDrills:count 1
 op min *tmp172 :buildTitaniumDrill:count 8
 write *tmp172 :buildTitaniumDrills:aController ".flareTarget"
-write *tmp172 processor4 ".flareTarget"
+write *tmp172 processor2 ".flareTarget"
 op add :buildTitaniumDrill:tiles :buildTitaniumDrills:tiles .positive
 set :buildTitaniumDrill*retval .positive
 jump 298 always 0 0
@@ -403,13 +403,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 410 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 410 equal @unit .builder
 ucontrol approach *tmp192 *tmp190 6 0 0
 ucontrol build *tmp192 *tmp190 @pneumatic-drill null 0
 jump 389 notEqual :buildBlockAtLocal:type @pneumatic-drill
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 read *tmp102 bank1 511
 op sub *tmp129 *tmp102 1
@@ -420,16 +420,16 @@ op add *tmp134 84 *tmp133
 write *tmp134 bank1 *tmp129
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
 jump 435 equal :buildBlockAtLocal*retval null
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
-write false processor3 ":addTitaniumDrill*finished"
-write 1 processor3 "@counter"
+write :buildBlockAtLocal*retval processor8 ":addTitaniumDrill:drill"
+write false processor8 ":addTitaniumDrill*finished"
+write 1 processor8 "@counter"
 wait 1e-15
-read *tmp171 processor3 ":addTitaniumDrill*finished"
+read *tmp171 processor8 ":addTitaniumDrill*finished"
 jump 425 equal *tmp171 false
 op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
 op min *tmp172 :buildTitaniumDrill:count 8
 write *tmp172 :buildTitaniumDrills:aController ".flareTarget"
-write *tmp172 processor4 ".flareTarget"
+write *tmp172 processor2 ".flareTarget"
 op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
 set :buildTitaniumDrill*retval .positive
 jump 437 always 0 0
@@ -542,13 +542,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 549 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 549 equal @unit .builder
 ucontrol approach *tmp189 *tmp197 6 0 0
 ucontrol build *tmp189 *tmp197 @pneumatic-drill null 0
 jump 528 notEqual :buildBlockAtLocal:type @pneumatic-drill
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 read *tmp102 bank1 511
 op sub *tmp129 *tmp102 1
@@ -559,16 +559,16 @@ op add *tmp134 84 *tmp133
 write *tmp134 bank1 *tmp129
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
 jump 574 equal :buildBlockAtLocal*retval null
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
-write false processor3 ":addTitaniumDrill*finished"
-write 1 processor3 "@counter"
+write :buildBlockAtLocal*retval processor8 ":addTitaniumDrill:drill"
+write false processor8 ":addTitaniumDrill*finished"
+write 1 processor8 "@counter"
 wait 1e-15
-read *tmp171 processor3 ":addTitaniumDrill*finished"
+read *tmp171 processor8 ":addTitaniumDrill*finished"
 jump 564 equal *tmp171 false
 op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
 op min *tmp172 :buildTitaniumDrill:count 8
 write *tmp172 :buildTitaniumDrills:aController ".flareTarget"
-write *tmp172 processor4 ".flareTarget"
+write *tmp172 processor2 ".flareTarget"
 op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
 set :buildTitaniumDrill*retval .positive
 jump 576 always 0 0
@@ -680,13 +680,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 687 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 687 equal @unit .builder
 ucontrol approach *tmp192 *tmp197 6 0 0
 ucontrol build *tmp192 *tmp197 @pneumatic-drill null 0
 jump 666 notEqual :buildBlockAtLocal:type @pneumatic-drill
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 read *tmp102 bank1 511
 op sub *tmp129 *tmp102 1
@@ -697,16 +697,16 @@ op add *tmp134 84 *tmp133
 write *tmp134 bank1 *tmp129
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
 jump 712 equal :buildBlockAtLocal*retval null
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
-write false processor3 ":addTitaniumDrill*finished"
-write 1 processor3 "@counter"
+write :buildBlockAtLocal*retval processor8 ":addTitaniumDrill:drill"
+write false processor8 ":addTitaniumDrill*finished"
+write 1 processor8 "@counter"
 wait 1e-15
-read *tmp171 processor3 ":addTitaniumDrill*finished"
+read *tmp171 processor8 ":addTitaniumDrill*finished"
 jump 702 equal *tmp171 false
 op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
 op min *tmp172 :buildTitaniumDrill:count 8
 write *tmp172 :buildTitaniumDrills:aController ".flareTarget"
-write *tmp172 processor4 ".flareTarget"
+write *tmp172 processor2 ".flareTarget"
 op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
 set :buildTitaniumDrill*retval .positive
 jump 714 always 0 0
@@ -821,13 +821,13 @@ set :buildBlockAtLocal:success true
 sensor *tmp120 .core @coal
 jump 828 lessThan *tmp120 :buildBlockAtLocal:fullBuildSupportLimit
 set :buildBlockAtLocal:fullBuildSupportLimit 0
-control enabled processor2 false 0 0 0
+control enabled processor6 false 0 0 0
 ubind @poly
 jump 828 equal @unit .builder
 ucontrol approach :buildTitaniumDrills:x :buildTitaniumDrills:y 6 0 0
 ucontrol build :buildTitaniumDrills:x :buildTitaniumDrills:y @pneumatic-drill null 0
 jump 807 notEqual :buildBlockAtLocal:type @pneumatic-drill
-control enabled processor2 true 0 0 0
+control enabled processor6 true 0 0 0
 ubind .builder
 read *tmp102 bank1 511
 op sub *tmp129 *tmp102 1
@@ -838,25 +838,25 @@ op add *tmp134 84 *tmp133
 write *tmp134 bank1 *tmp129
 set :buildBlockAtLocal*retval :buildBlockAtLocal:building
 jump 851 equal :buildBlockAtLocal*retval null
-write :buildBlockAtLocal*retval processor3 ":addTitaniumDrill:drill"
-write false processor3 ":addTitaniumDrill*finished"
-write 1 processor3 "@counter"
+write :buildBlockAtLocal*retval processor8 ":addTitaniumDrill:drill"
+write false processor8 ":addTitaniumDrill*finished"
+write 1 processor8 "@counter"
 wait 1e-15
-read *tmp171 processor3 ":addTitaniumDrill*finished"
+read *tmp171 processor8 ":addTitaniumDrill*finished"
 jump 843 equal *tmp171 false
 op add :buildTitaniumDrill:count :buildTitaniumDrill:count 1
 op min *tmp172 :buildTitaniumDrill:count 8
 write *tmp172 :buildTitaniumDrills:aController ".flareTarget"
-write *tmp172 processor4 ".flareTarget"
+write *tmp172 processor2 ".flareTarget"
 op add :buildTitaniumDrill:tiles :buildTitaniumDrill:tiles .positive
 set :buildTitaniumDrills:count :buildTitaniumDrill:count
 set :buildTitaniumDrills:tiles :buildTitaniumDrill:tiles
 op add :buildTitaniumDrills:current :buildTitaniumDrills:current 1
-read *tmp75 processor5 ".locations"
+read *tmp75 processor3 ".locations"
 jump 149 lessThan :buildTitaniumDrills:current *tmp75
-jump 860 greaterThanEq :buildTitaniumDrills:tiles 16
-jump 860 greaterThanEq :buildTitaniumDrills:count 8
-read *tmp76 processor5 ".searchFinished"
+jump 860 greaterThanEq :buildTitaniumDrills:tiles 14
+jump 860 greaterThanEq :buildTitaniumDrills:count 6
+read *tmp76 processor3 ".searchFinished"
 jump 147 equal *tmp76 false
 set :buildTitaniumDrills*finished true
 jump 17 always 0 0

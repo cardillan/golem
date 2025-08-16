@@ -2,20 +2,10 @@
 #set syntax = strict;
 //#set sort-variables;
 
-// Linked variables
-linked message1, bank1, processor1, processor2, processor3, processor4, processor5,
-    timer = processor6,
-    flareController = processor7,
-    monoController = processor8;
-
 noinit var controller;
 
-var display = processor1,
-    polyController = processor3,
-    blockBuilder = processor5,
-    oreLocator = processor4;
-
 require units;
+require "Links.mnd";
 require "Common.mnd";
 require "Actions.mnd";
 require "Display.mnd" remote display;
@@ -334,7 +324,7 @@ begin
 
     // Build and initialize base controller
 
-    controller = buildBlockFromCfg(PROCESSOR, processor2);
+    controller = buildBlockFromCfg(PROCESSOR, coreControllerConfig);
 
     controller.timer = timer;
     controller.display = display;
@@ -468,9 +458,9 @@ end;
 void stopAll()
     flareController.enabled = false;
     monoController.enabled = false;
-    processor3.enabled = false;
-    processor4.enabled = false;
-    processor5.enabled = false;
+    polyController.enabled = false;
+    oreLocator.enabled = false;
+    blockBuilder.enabled = false;
 
     flagUnits(@mega);
     flagUnits(@poly);

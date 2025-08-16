@@ -4,9 +4,10 @@ schematic
 
 // FIRST COLUMN
 
-display-switch1:
+switch1:
     @switch              at ( 0,  0) disabled
-display-message1:
+
+message1:
     @message             at ( 1,  0) text ""
 
     // Poly spawner
@@ -21,55 +22,106 @@ display-message1:
         """
     end
 
-display-bank1, builder-bank1, locator-bank1, blocks-bank1:
+bank1:
     @memory-bank         at ( 0,  1)
 
     // The main builder
-measurement-processor1:
-    @logic-processor     at ( 0, 3) processor links builder-* end mindcode = file "CoreBuilder.mnd" end
+processor9:
+    @logic-processor     at ( 0, 3) processor
+        links
+            bank1
+            processor1      // timer
+            processor2      // display
+            processor3      // oreLocator
+            processor5      // blockBuilder
+            processor6      // polyController
+            processor7      // monoController
+            processor8      // flareController
+            processor10     // coreControllerConfig
+        end
+        mindcode = file "CoreBuilder.mnd"
+    end
 
-builder-processor6, blocks-processor1, display-processor2, measurement-processor2:
+processor1:
     // Timer
     @micro-processor     at ( 0,  5) processor mlog = "op add time time 1" end
 
-builder-processor2:
+processor10:
     // Contains code for the processor controlling the core
     @micro-processor     at ( 1, 5) processor mindcode = file "CoreController.mnd" end
 
 // SECOND COLUMN
 
-locator-processor1:
+processor4:
     // Matrices
     @logic-processor     at ( 2,  0) processor mindcode = file "Matrices.mnd" end
 
-display-processor1, builder-processor4, blocks-processor5:
+processor3:
     // Ore locator
-    @logic-processor     at ( 2,  2) processor links locator-* end mindcode = file "OreLocator.mnd" end
+    @logic-processor     at ( 2,  2) processor
+        links
+            bank1
+            processor4      // matrices
+        end
+        mindcode = file "OreLocator.mnd"
+    end
 
-builder-processor1, blocks-processor4, flares-processor1:
+processor2:
     // The display processor
-    @logic-processor     at ( 2,  4) processor links display-* end mindcode = file "Display.mnd" end
+    @logic-processor     at ( 2,  4) processor
+        links
+            display1
+            bank1
+            bank2
+            switch1
+            message1
+            processor1      // timer
+            processor3      // oreLocator
+        end
+        mindcode = file "Display.mnd"
+    end
 
 // MICROPROCESSORS
 // THIRD COLUMN
 
-builder-processor5:
-    @micro-processor     at ( 4,  0) processor links blocks-* end mindcode = file "BlockBuilder.mnd" end
+processor5:
+    @micro-processor     at ( 4,  0) processor
+        links
+            bank1
+            processor1      // timer
+            processor2      // display
+            processor3      // oreLocator
+            processor6      // polyController
+            processor8      // flareController
+        end
+        mindcode = file "BlockBuilder.mnd"
+    end
 
-builder-processor3, blocks-processor2:
+processor6:
     @micro-processor     at ( 5,  0) processor mindcode = file "PolyController.mnd" end
 
-builder-processor8:
+processor7:
     @micro-processor     at ( 4,  1) processor mindcode = file "MonoController.mnd" end
 
-builder-processor7, blocks-processor3:
-    @micro-processor     at ( 5,  1) processor links flares-* end mindcode = file "FlareController.mnd" end
+processor8:
+    @micro-processor     at ( 5,  1) processor
+        links
+            processor2      // display
+        end
+        mindcode = file "FlareController.mnd"
+    end
 
-    @logic-processor     at ( 4,  2) processor links measurement-* end mindcode = file "Measurement.mnd" end
+    @logic-processor     at ( 4,  2) processor
+        links
+            processor1      // timer
+            processor9      // coreBuilder
+        end
+        mindcode = file "Measurement.mnd"
+    end
 
-display-bank2, measurement-bank1:
+bank2:
     @memory-bank         at ( 4,  4)
 
-display-display1:
+display1:
     @large-logic-display at ( 6,  0)
 end
