@@ -9,11 +9,8 @@ display-switch1:
 display-message1:
     @message             at ( 1,  0) text ""
 
-    // Free messages for debug purposes
-    @message             at ( 0,  5) text ""
-
     // Poly spawner
-    @world-processor     at ( 1,  5) processor mlog = """
+    @world-processor     at (-1,  5) processor mlog = """
         setrule waves false 0 0 100 100
         fetch core core @sharded 0 @conveyor
         sensor x core @x
@@ -27,10 +24,17 @@ display-message1:
 display-bank1, builder-bank1, locator-bank1, blocks-bank1:
     @memory-bank         at ( 0,  1)
 
-// LOGIC PROCESSORS
-
     // The main builder
+measurement-processor1:
     @logic-processor     at ( 0, 3) processor links builder-* end mindcode = file "CoreBuilder.mnd" end
+
+builder-processor6, blocks-processor1, display-processor2, measurement-processor2:
+    // Timer
+    @micro-processor     at ( 0,  5) processor mlog = "op add time time 1" end
+
+builder-processor2:
+    // Contains code for the processor controlling the core
+    @micro-processor     at ( 1, 5) processor mindcode = file "CoreController.mnd" end
 
 // SECOND COLUMN
 
@@ -49,26 +53,23 @@ builder-processor1, blocks-processor4, flares-processor1:
 // MICROPROCESSORS
 // THIRD COLUMN
 
-builder-processor2:
-    // Contains code for the processor controlling the core
-    @micro-processor     at ( 4,  0) processor mindcode = file "CoreController.mnd" end
-
 builder-processor5:
-    @micro-processor     at ( 4,  1) processor links blocks-* end mindcode = file "BlockBuilder.mnd" end
+    @micro-processor     at ( 4,  0) processor links blocks-* end mindcode = file "BlockBuilder.mnd" end
 
 builder-processor3, blocks-processor2:
-    @micro-processor     at ( 4,  2) processor mindcode = file "PolyController.mnd" end
+    @micro-processor     at ( 5,  0) processor mindcode = file "PolyController.mnd" end
 
 builder-processor8:
-    @micro-processor     at ( 4,  3) processor mindcode = file "MonoController.mnd" end
+    @micro-processor     at ( 4,  1) processor mindcode = file "MonoController.mnd" end
 
 builder-processor7, blocks-processor3:
-    @micro-processor     at ( 4,  4) processor links flares-* end mindcode = file "FlareController.mnd" end
+    @micro-processor     at ( 5,  1) processor links flares-* end mindcode = file "FlareController.mnd" end
 
-builder-processor6, blocks-processor1, display-processor2:
-    // Timer
-    @micro-processor     at ( 4,  5) processor mlog = "op add time time 1" end
+    @logic-processor     at ( 4,  2) processor links measurement-* end mindcode = file "Measurement.mnd" end
+
+display-bank2, measurement-bank1:
+    @memory-bank         at ( 4,  4)
 
 display-display1:
-    @large-logic-display at ( 5,  0)
+    @large-logic-display at ( 6,  0)
 end
