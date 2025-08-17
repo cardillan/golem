@@ -52,7 +52,7 @@ end;
 external bank1[511] var logPosition;
 
 inline void log(encodedId)
-    bank1[--logPosition] = encodedId + timer.read("time") * 1000;
+    bank1[--logPosition] = encodedId + TIME * 1000;
 end;
 
 inline void logBlock(block, index)
@@ -131,9 +131,12 @@ end;
 
 volatile var positive = 0, negative = 0;
 
+const MAX_TILES = 10;
+const MAX_COUNT = 6;
+
 def buildTitaniumDrill(x, y, in out count, in out tiles)
-    if count < 8 then
-        if tiles < 16 then
+    if count < MAX_COUNT then
+        if tiles < MAX_TILES then
             moveTo(x, y);
             positive = 0; negative = 0;
             titaniumDrillScore(x - 0.5, y - 0.5, in out positive, in out negative);
@@ -191,8 +194,8 @@ remote void buildTitaniumDrills(aController, current)
             current++;
         end;
 
-        if tiles >= 14 then break; end;
-        if count >= 6 then break; end;
+        if tiles >= MAX_TILES then break; end;
+        if count >= MAX_COUNT then break; end;
     end;
 end;
 

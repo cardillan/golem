@@ -1,5 +1,43 @@
+#set target = 8;
 #set syntax = strict;
 
+require math;
+require "Links.mnd";
+
+external bank2[511] cached head = 0;
+external bank2[510] cached tail = -1;
+
+const INTERVAL = 15 * 120;
+
+var nextTime = INTERVAL;
+remote coreBuilder var core;
+
 begin
-    print("Hello");
+    while true do
+        do while TIME < nextTime;
+        nextTime += INTERVAL;
+
+        var localCore = core;        // Copy remote to local
+        if localCore == null then continue; end;
+
+        var accumulator = 0;
+        for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium descending do
+            // There's no target for sand, so sand will always come out positive
+            var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
+            var actual = localCore.sensor(item);
+
+            // We're storing five bits per item, in the -8 .. 8 range
+            // In increments of ten gives true range of -80 .. 80
+
+            var measure = (actual - target) \ 10;
+            measure += measure >= 0 ? 1 : -1;
+            measure = 9 + max(min(measure, 9), -9);
+
+            accumulator = accumulator << 5 | measure;
+        end;
+
+        var newTail = tail + 1;
+        bank2[newTail] = accumulator;
+        tail = newTail;
+    end;
 end;

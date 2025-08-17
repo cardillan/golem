@@ -175,7 +175,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     display.targetThorium = thorium;
 
     targetCopper = copper;
-    targetLead = lead; // + leadSurplus + 1;
+    targetLead = lead + leadSurplus;
     targetGraphite = graphite;
     targetSilicon = silicon;
     targetTitanium = titanium;
@@ -320,7 +320,7 @@ begin
     buildBlockFromCfg(UNLOADER1);
     buildBlockFromCfg(INVERTED_SORT2);
     buildBlockFromCfg(OVERFLOW_GATE1);
-    graphiteSurplus = 100;
+    graphiteSurplus = 50;
 
     // Build and initialize base controller
 
@@ -373,26 +373,22 @@ begin
 
     buildBlockFromCfg(MULTIPRESS);
 
-    //buildBlockFromCfg(BATTERY_LARGE);
-    graphiteSurplus = 150;
-
     // POLYS
     buildBlockFromCfg(PAYLOAD_ROUTER);
     buildBlockFromCfg(UNLOADER4);
     buildBlockFromCfg(ADDITIVE_REC);
-    //buildBlockFromCfg(BATTERY_LARGE);
 
     buildUnits();
 
     // Even more stock
     siliconSurplus = 1000;
     metaglassSurplus = 200;
+    graphiteSurplus = 200;
 
     setPolyTarget(3);
     buildBlockFromCfg(SMELTER2);
     buildBlockFromCfg(INVERTED_SORT4);
     buildBlockFromCfg(INVERTED_SORT5);
-    //buildBlockFromCfg(UNLOADER5, @sand);
     buildUnits();
 
     while controller.polys < 3 do
@@ -404,8 +400,6 @@ begin
         supplyBase();
     end;
 
-    graphiteSurplus = 100;
-
     // Build more titanium drills now
     // The base can already be fully served by monos and polys,
     // the main builder no longer needs to be occupied by supplying base
@@ -414,6 +408,7 @@ begin
     blocksBuildTitaniumDrills();
     display.nextBlock = null;
 
+    graphiteSurplus = 50;
     buildThoriumDrill();
     display.nextBlock = null;
 
@@ -461,6 +456,7 @@ void stopAll()
     polyController.enabled = false;
     oreLocator.enabled = false;
     blockBuilder.enabled = false;
+    measurements.enabled = false;
 
     flagUnits(@mega);
     flagUnits(@poly);

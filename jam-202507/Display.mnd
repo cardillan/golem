@@ -12,7 +12,7 @@ var
     core = null,
     coreX = 0, coreY = 0,
     page = 0,
-    numPages = 3;
+    numPages = 4;
 
 noinit remote var
     nextBlock,
@@ -143,7 +143,7 @@ inline void drawHeader()
     end;
 
     var tt = @second;
-    var t = floor(timer.read("time") / 120);
+    var t = floor(TIME / 120);
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "", s);
@@ -368,7 +368,7 @@ void displayLog(page)
     var logPosition = bank1[511];
     var records = (511 - logPosition);
     var pages = max(1, (records - 1) \ 32 + 1);
-    numPages = pages + 2;
+    numPages = pages + 3;
     var start = 511 - 32 * page;
     var stop = max(logPosition, start - 32);
 
@@ -383,6 +383,7 @@ void displayLog(page)
         drawflush(display1);
         if switch1.enabled then break; end;
     end;
+    drawflush(display1);
 end;
 
 //external bank1[0 ... 4] var minX, minY, maxX, maxY;
@@ -460,7 +461,7 @@ void displayBaseMap()
         end;
 
         if switch1.enabled then
-            drawflush(display1);
+            clear(0, 0, 32);
             break;
         end;
         if pageSwitched then
@@ -468,6 +469,41 @@ void displayBaseMap()
         end;
     end;
     drawflush(display1);
+end;
+
+noinit var lastTail;
+
+void displayStorage()
+    var head = bank2[511];
+    var tail = bank2[510];
+
+    if pageSwitched then
+        lastTail = bank2[511];
+        col(%[white]);
+        var y = 173 - 8;
+        for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium do
+            image(10, y, item, 17, 0);
+            y -= 20;
+        end;
+        drawflush(display1);
+    end;
+
+    if lastTail > tail then return; end;
+
+    var accumulator = bank2[lastTail];
+        var x = 25 + lastTail;
+    var y = 173 - 8;
+
+    for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium do
+        var value = (accumulator & 0b11111) - 8;
+        col(value >= 0 ? %[green] : %[red]);
+        line(x, y, x, y + value);
+        y -= 20;
+        accumulator >>= 5;
+    end;
+
+    drawflush(display1);
+    lastTail++;
 end;
 
 var pageSwitched = false;
@@ -489,19 +525,19 @@ void main()
             unitReset = false;
         end;
 
-        if page == -1 then
-            displayOreMap();
-        elsif page == 0 then
+        if page == 0 then
             if megas > 0 then
                 animate();
             else
                 updateDisplay();
             end;
         elsif page == 1 then
+            displayStorage();
+        elsif page == 2 then
             //displayOreMap();
             displayBaseMap();
         else
-            displayLog(page - 2);
+            displayLog(page - 3);
         end;
 
         if megas > 0 then
