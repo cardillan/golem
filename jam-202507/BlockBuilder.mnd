@@ -70,18 +70,20 @@ def buildBlockAtLocal(block, x, y, rotation, config, index)
     var building = getBlock(x, y, out type);
     if building != null then
         // The block is already there
-        if type == block then return building; end;
-        buildError(block, type, x, y);
+        return type == block ? building : null;
+//        if type == block then return building; end;
+//        buildError(block, type, x, y);
     end;
 
-    var fullBuildSupportLimit = 200;
+    var fullBuildSupportLimit = 100;
     build(x, y, block, rotation, config);
     wait(0.25);
     var success = false;
     do
         building = getBlock(x, y, out type);
         if building == null and !success then
-            buildError(block, "unknown", x, y);
+            return null;
+            //buildError(block, "unknown", x, y);
         else
             success = true;
         end;

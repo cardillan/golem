@@ -38,6 +38,7 @@ noinit mlog(@silicon.@name)     var targetSilicon;
 noinit mlog(@titanium.@name)    var targetTitanium;
 noinit mlog(@metaglass.@name)   var targetMetaglass;
 noinit mlog(@thorium.@name)     var targetThorium;
+noinit                          var noTarget;
 noinit                          var powerTarget;
 
 var
@@ -127,13 +128,19 @@ inline void supplyBase2()
     status1("Phase 2: servicing thorium drill");
 
     if thoriumBattery.@totalPower < 2000 then
-        if core.@coal < 50 then
-            supplyBlock(thoriumGenerator, @coal);
-        else
-            supplyBlockFromCore(thoriumGenerator, @coal);
+        if thoriumGenerator.@coal == 0 then
+            if core.@coal < 50 then
+                supplyBlock(thoriumGenerator, @coal);
+            else
+                supplyBlockFromCore(thoriumGenerator, @coal);
+            end;
         end;
     end;
     fetchBlock(thoriumContainer, @thorium);
+
+    if core.@thorium > 400 then
+        setPolyTarget(4);
+    end;
 end;
 
 void supplyBase()
@@ -160,7 +167,7 @@ inline def targetMet()
     return true;
 end;
 
-void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium)
+void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
     // Update display
     var count = 0;
     for var t in copper, lead, graphite, silicon, titanium, metaglass, thorium do count += sign(t); end;
@@ -181,6 +188,7 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     targetTitanium = titanium;
     targetMetaglass = metaglass;
     targetThorium = thorium;
+    noTarget = isNoTarget;
 
     controller.pressTarget = graphite + graphiteSurplus;
     controller.smelterTarget = silicon + siliconSurplus;
@@ -195,13 +203,22 @@ void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, tho
     while !targetMet() do
         supplyBase();
     end;
+
+    if forBuild then
+        controller.buildStart();
+        while !targetMet() do
+            supplyBase();
+        end;
+    end;
 end;
 
 // BUILDING OPERATIONS
 
 def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, thorium, rotation, config, index)
-    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium);
-    return blockBuilder.buildBlockAt(block, x, y, rotation, config, index);
+    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, controller != null, false);
+    var built = blockBuilder.buildBlockAt(block, x, y, rotation, config, index);
+    async(controller.buildStop());
+    return built;
 end;
 
 def buildRemoteBlock(cfg, x, y)
@@ -231,7 +248,7 @@ end;
 void meetTarget(cfg)
     var type, cu, pb, gr, si, ti, mg, th;
     unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
-    meetTarget(type, cu, pb, gr, si, ti, mg, th);
+    meetTarget(type, cu, pb, gr, si, ti, mg, th, false, false);
 end;
 
 def buildFirstTitaniumDrill(cfg)
@@ -288,7 +305,7 @@ end;
 // MAIN
 
 void buildUnits()
-    meetTarget(0, 0, 0, 0, 0, 0, 0, 0);
+    meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
     display.totalTargets = 0;
     display.nextBlock = null;
     controller.leadReserve = 0;
@@ -320,7 +337,7 @@ begin
     buildBlockFromCfg(UNLOADER1);
     buildBlockFromCfg(INVERTED_SORT2);
     buildBlockFromCfg(OVERFLOW_GATE1);
-    graphiteSurplus = 50;
+    graphiteSurplus = 80;
 
     // Build and initialize base controller
 
@@ -337,13 +354,14 @@ begin
 
     buildBlockFromCfg(POWER_NODE);
     buildBlockFromCfg(UNLOADER2);
+    buildBlockFromCfg(OVERFLOW_GATE2);
 
     buildBlockFromCfg(AIR_FACTORY);
 
     // PHASE 1: BUILDING UNITS
 
     setFlareTarget(1);
-    setMonoTarget(3);
+    setMonoTarget(5);
     controller.pressTarget = 85;
     controller.smelterTarget = 150;
     controller.kilnTarget = 30;
@@ -368,29 +386,30 @@ begin
 
     // Steam generator
     buildBlockFromCfg(WATER_EXT);
-    buildBlockFromCfg(UNLOADER3A, @coal);
     buildBlockFromCfg(STEAM_GEN);
 
     buildBlockFromCfg(MULTIPRESS);
 
     // POLYS
-    buildBlockFromCfg(PAYLOAD_ROUTER);
     buildBlockFromCfg(UNLOADER4);
+    buildBlockFromCfg(INVERTED_SORT4);
     buildBlockFromCfg(ADDITIVE_REC);
 
     buildUnits();
 
     // Even more stock
     siliconSurplus = 1000;
-    metaglassSurplus = 200;
+    metaglassSurplus = 100;
     graphiteSurplus = 200;
 
+    setMonoTarget(2);
     setPolyTarget(3);
     buildBlockFromCfg(SMELTER2);
-    buildBlockFromCfg(INVERTED_SORT4);
     buildBlockFromCfg(INVERTED_SORT5);
+    buildBlockFromCfg(INVERTED_SORT6);
     buildUnits();
 
+    setFlareTarget(2);
     while controller.polys < 3 do
         supplyBase();
     end;
@@ -408,24 +427,34 @@ begin
     blocksBuildTitaniumDrills();
     display.nextBlock = null;
 
-    graphiteSurplus = 50;
+    graphiteSurplus = 10;
+    metaglassSurplus = 50;
+
     buildThoriumDrill();
     display.nextBlock = null;
 
-    setMegaTarget(1);
     while controller.polys < 3 do
         supplyBase();
     end;
 
-    buildBlockFromCfg(UNLOADER6, @silicon);
+    buildBlockFromCfg(UNLOADER5);
+    buildBlockFromCfg(INVERTED_SORT7);
     buildBlockFromCfg(MULTIPLICATIVE_REC);
 
-    metaglassSurplus = 50;
+    metaglassSurplus = 10;
+    setMegaTarget(1);
     buildUnits();
 
-    while controller.megas < 1 do
-        supplyBase();
-    end;
+    var tmp = controller.polys - 1;
+    controller.polyTarget = tmp;
+    controller.polys = tmp;
+    display.polys = tmp;
+    var x = multiplicative_rec.@x;
+    var y = multiplicative_rec.@y;
+    do
+        move(x, y);
+        payEnter();
+    while !controller.megas;
 
     stopAll();
 end;
@@ -451,6 +480,7 @@ inline void setMegaTarget(target)
 end;
 
 void stopAll()
+    controller.finished = true;
     flareController.enabled = false;
     monoController.enabled = false;
     polyController.enabled = false;

@@ -21,12 +21,10 @@ noinit remote var
     leadReserve,
     siliconReserve,
     graphiteReserve,
-
-    factoryUnit,
-    targetUnit,
     loopTicks;
 
 remote var
+    finished = false,
     flares = 0,
     monos = 0,
     polys= 1,
@@ -50,43 +48,74 @@ void logUnit(unit)
     log(@blockCount + unit.@id);
 end;
 
-var factoryDone = 0;
-
 void factoryUnitFinished(unit)
-    // Do not announce when the
-    if unit == targetUnit then
-        logUnit(unit);
-        case unit
-            when @flare then display.flares = ++flares;
-            when @mono  then display.monos = ++monos;
-            when @poly  then display.polys = ++polys;
-            when @mega  then display.megas = ++megas;
-        end;
-        display.unitReset = true;
-        factoryDone = 0;
-    else
-        case unit
-            when @flare, @mono then factoryDone = 1;
+    logUnit(unit);
+    case unit
+        when @flare then display.flares = ++flares;
+        when @mono  then display.monos = ++monos;
+        when @poly  then display.polys = ++polys;
+        when @mega  then display.megas = ++megas;
+    end;
+    display.unitReset = true;
+end;
+
+inline void handleAirFactory(unit, power, silicon, lead, ref lastProgress)
+    if !canConsume then
+        unloader2.config = @coal;
+        return;
+    end;
+
+    if steam_gen.@coal < 5 * steam_gen then
+        unloader2.config = @coal;
+        return;
+    end;
+
+    if power < 200 then
+        air_factory.enabled = false;
+    elsif power > 500 then
+        air_factory.enabled = true;
+    end;
+
+    air_factory.config = unit;
+
+    var factoryProgress = air_factory.@progress;
+    if lastProgress > factoryProgress then
+        factoryUnitFinished(unit);
+        lastProgress = 0;
+        unloader2.config = @coal;
+        return;
+    end;
+
+    lastProgress = factoryProgress;
+
+    if lead then
+        var leadLimit = core.@lead > 0 ? lead : 0;
+        if air_factory.@lead < leadLimit then
+            unloader2.config = @lead;
+            return;
         end;
     end;
+
+    var siliconLimit = core.@silicon > 0 ? silicon : 0;
+    unloader2.config = air_factory.@silicon < siliconLimit ? @silicon : @coal;
 end;
 
-inline def updateIfSmaller(ref value, in a, in b, in newValue)
-    mlogSafe("select", out value, "lessThan", in a, in b, in newValue, in value);
+volatile var lastProgress = 0, lastRecoProgress = 0, lastMultiProgress = 0;
+volatile var recoEntered = false;
+volatile var canConsume = true;
+
+remote void buildStart()
+    unloader2.config = @coal;
+    inverted_sort4.enabled = false;
+    canConsume = false;
 end;
 
-inline def fuzzyUpdate(ref state, in value, in limitLow, in limitHigh)
-    updateIfSmaller(ref state, value, limitLow, false);
-    updateIfSmaller(ref state, limitHigh, value, true);
+remote void buildStop()
+    canConsume = true;
 end;
 
 void backgroundProcess()
-    var lastProgress = 0, factoryProgress = 0;
-    var lastRecoProgress = 0, reconstructorProgress = 0;
-    var lastMultiProgress = 0, multiReconstructorProgress = 0;
-    var enableFactory = true, blockFactory = false;
-
-    while true do
+    while !finished do
         var ticks = @tick;
         var coreSilicon = core.@silicon;
         var coreGraphite = core.@graphite;
@@ -103,97 +132,76 @@ void backgroundProcess()
             generator.enabled = power < 800;
         end;
 
-        factoryProgress = air_factory.@progress;
-        reconstructorProgress = additive_rec.@progress;
-        multiReconstructorProgress = multiplicative_rec.@progress;
-
         if flares < flareTarget then
-            display.nextUnit = targetUnit = factoryUnit = @flare;
-            payload_router.config = targetUnit;
-            blockFactory = false;
+            display.nextUnit = @flare;
+            handleAirFactory(@flare, power, 15, 0, ref lastProgress);
         elsif monos < monoTarget then
-            display.nextUnit = targetUnit = factoryUnit = @mono;
-            payload_router.config = targetUnit;
-            blockFactory = false;
-        elsif polys < polyTarget then
-            factoryUnit = factoryDone + polys < polyTarget ? @mono : null;
-            display.nextUnit = targetUnit = @poly;
-            additive_rec.enabled = true;
-            payload_router.config = targetUnit;
-            blockFactory = additive_rec.@payloadCount * factoryProgress > reconstructorProgress;
-        elsif megas < megaTarget then
-            factoryUnit = factoryDone + megas < megaTarget ? @mono : null;
-            display.nextUnit = targetUnit = @mega;
-            additive_rec.enabled = multiplicative_rec or reconstructorProgress < 0.75;
-            payload_router.config = targetUnit;
-            blockFactory = false;
+            display.nextUnit = @mono;
+            handleAirFactory(@mono, power, 30, 15, ref lastProgress);
         else
-            display.nextUnit = targetUnit = factoryUnit = null;
-            blockFactory = false;
-        end;
-
-        fuzzyUpdate(ref enableFactory, power, 200, 500);
-
-        if factoryUnit == null then
-            air_factory.enabled = false;
-            air_factory.config = @mono;
-            lastProgress = 0;
-        elsif lastProgress > factoryProgress + 0.1 then
-            air_factory.enabled = enableFactory and not blockFactory;
-            factoryUnitFinished(factoryUnit);
-            lastProgress = 0;
-        elsif air_factory.config != factoryUnit then
-            air_factory.enabled = enableFactory and not blockFactory;
-            air_factory.config = factoryUnit;
-            lastProgress = 0;
-        else
-            air_factory.enabled = enableFactory and not blockFactory;
-            lastProgress = factoryProgress;
-        end;
-
-        if lastRecoProgress > reconstructorProgress + 0.1 then
-            factoryUnitFinished(@poly);
-            lastRecoProgress = 0;
-        else
-            lastRecoProgress = reconstructorProgress;
-        end;
-
-        if lastMultiProgress > multiReconstructorProgress + 0.1 then
-            factoryUnitFinished(@mega);
-            lastMultiProgress = 0;
-        else
-            lastMultiProgress = multiReconstructorProgress;
-        end;
-
-        if steam_gen.@coal < 5 * steam_gen then
+            air_factory.config = @flare;
             unloader2.config = @coal;
-            continue;
         end;
 
-        unloader4.enabled = coreSilicon > siliconReserve and coreGraphite > graphiteReserve;
+        if polys < polyTarget then
+            display.nextUnit = @poly;
 
-        var leadLimit = (factoryUnit == @mono) * 30;
-        if air_factory.@lead < leadLimit and core.@lead > leadReserve then
-            unloader2.config = @lead;
-        elsif coreSilicon > siliconReserve then
-            unloader2.config = @silicon;
+            var recoProgress = additive_rec.@progress;
+            if lastRecoProgress > recoProgress then
+                factoryUnitFinished(@poly);
+                recoEntered = false;
+                lastRecoProgress = 0;
+            else
+                lastRecoProgress = recoProgress;
+            end;
+
+            var s = additive_rec.@silicon;
+            var g = additive_rec.@graphite;
+            if s >= 40 and g >= 40 then
+                if not recoEntered then
+                    var x = additive_rec.@x;
+                    var y = additive_rec.@y;
+                    ubind(@mono);
+                    do
+                        move(x, y);
+                        payEnter();
+                    while !@unit.@dead;
+                    display.monos = --monos;
+                    recoEntered = true;
+                end;
+                inverted_sort4.enabled = false;
+            elsif s < 40 * (coreSilicon > siliconReserve) then
+                unloader4.config = @silicon;
+                inverted_sort4.enabled = canConsume;
+            elsif g < 40 * (coreGraphite > graphiteReserve) then
+                unloader4.config = @graphite;
+                inverted_sort4.enabled = canConsume;
+            else
+                inverted_sort4.enabled = false;
+            end;
         else
-            unloader2.config = @coal;
+            inverted_sort4.enabled = false;
         end;
 
         if multiplicative_rec then
+            var c = null;
             if multiplicative_rec.@metaglass < 40 then
-                unloader3.config = @metaglass;
-                unloader6.config = @metaglass;
+                c = @metaglass;
             elsif multiplicative_rec.@titanium < 80 then
-                unloader3.config = @titanium;
-                unloader6.config = @titanium;
+                c = @titanium;
             elsif multiplicative_rec.@silicon < 130 then
-                unloader3.config = @silicon;
-                unloader6.config = @silicon;
+                c = @silicon;
+            end;
+            unloader3.config = c;
+            unloader4.config = c;
+            unloader5.config = c;
+
+            var multiProgress = multiplicative_rec.@progress;
+            if lastMultiProgress > multiProgress then
+                factoryUnitFinished(@mega);
+                lastMultiProgress = 0;
             else
-                unloader3.config = null;
-                unloader6.config = null;
+                lastMultiProgress = multiProgress;
             end;
         end;
 
