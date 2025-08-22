@@ -36,7 +36,8 @@ remote var
     flareTarget = 0,
     monoTarget = 0,
     polyTarget = 0,
-    megaTarget = 0;
+    megaTarget = 0,
+    powerTarget = 1000;
 
 external bank[511] var logPosition;
 
@@ -70,7 +71,7 @@ inline void handleAirFactory(unit, power, silicon, lead, ref lastProgress)
         return;
     end;
 
-    if power < 200 then
+    if power < 50 then
         air_factory.enabled = false;
     elsif power > 500 then
         air_factory.enabled = true;
@@ -127,7 +128,7 @@ void backgroundProcess()
         var power = battery1.@totalPower;
         if steam_gen then
             generator.enabled = power < 10;
-            steam_gen.enabled = power < 3800;
+            steam_gen.enabled = power < powerTarget;
         else
             generator.enabled = power < 800;
         end;
@@ -194,7 +195,7 @@ void backgroundProcess()
             end;
             unloader3.config = c;
             unloader4.config = c;
-            unloader5.config = c;
+            //unloader5.config = c;
 
             var multiProgress = multiplicative_rec.@progress;
             if lastMultiProgress > multiProgress then
