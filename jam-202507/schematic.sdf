@@ -1,5 +1,5 @@
 schematic
-    name = "Cardillan's entry for Skye's Jam"
+    name = "Base Builder"
     tag = "Cardillan"
 
 // FIRST COLUMN
@@ -10,24 +10,70 @@ switch1:
 message1:
     @message             at ( 1,  0) text ""
 
-    // Poly spawner
-    @world-processor     at (-1,  5) processor mlog = """
-        setrule waves false 0 0 100 100
-        fetch core core @sharded 0 @conveyor
-        sensor x core @x
-        sensor y core @y
-        op add y y 3
-        spawn @poly x y 90 @sharded result
-        stop
-        """
+processor1:
+    // Timer
+    @micro-processor     at ( 2,  0) processor mlog = "op add time time 1" end
+
+processor10:
+    // Contains code for the processor controlling the core
+    @micro-processor     at ( 3, 0) processor mindcode = file "CoreController.mnd" end
+
+processor2:
+    // The display processor
+    @logic-processor     at ( 0,  1) processor
+        links
+            display1
+            bank1
+            bank2
+            switch1
+            message1
+            processor1      // timer
+            processor3      // oreLocator
+        end
+        mindcode = file "Display.mnd"
     end
 
-bank1:
-    @memory-bank         at ( 0,  1)
+processor11:
+    @micro-processor     at ( 2,  1) processor
+        links
+            bank2
+            processor1      // timer
+            processor9      // coreBuilder
+        end
+        mindcode = file "Measurement.mnd"
+    end
+
+processor6:
+    @micro-processor     at ( 3,  1) processor mindcode = file "PolyController.mnd" end
+
+processor7:
+    @micro-processor     at ( 2,  2) processor mindcode = file "MonoController.mnd" end
+
+processor8:
+    @micro-processor     at ( 3,  2) processor
+        links
+            processor2      // display
+        end
+        mindcode = file "FlareController.mnd"
+    end
+
+processor3:
+    // Ore locator
+    @logic-processor     at ( 0,  3) processor
+        links
+            bank1
+            processor4      // matrices
+        end
+        mindcode = file "OreLocator.mnd"
+    end
+
+processor4:
+    // Matrices
+    @logic-processor     at ( 2,  3) processor mindcode = file "Matrices.mnd" end
 
     // The main builder
 processor9:
-    @logic-processor     at ( 0, 3) processor
+    @logic-processor     at ( 0, 5) processor
         links
             bank1
             processor1      // timer
@@ -43,50 +89,8 @@ processor9:
         mindcode = file "CoreBuilder.mnd"
     end
 
-processor1:
-    // Timer
-    @micro-processor     at ( 0,  5) processor mlog = "op add time time 1" end
-
-processor10:
-    // Contains code for the processor controlling the core
-    @micro-processor     at ( 1, 5) processor mindcode = file "CoreController.mnd" end
-
-// SECOND COLUMN
-
-processor4:
-    // Matrices
-    @logic-processor     at ( 2,  0) processor mindcode = file "Matrices.mnd" end
-
-processor3:
-    // Ore locator
-    @logic-processor     at ( 2,  2) processor
-        links
-            bank1
-            processor4      // matrices
-        end
-        mindcode = file "OreLocator.mnd"
-    end
-
-processor2:
-    // The display processor
-    @logic-processor     at ( 2,  4) processor
-        links
-            display1
-            bank1
-            bank2
-            switch1
-            message1
-            processor1      // timer
-            processor3      // oreLocator
-        end
-        mindcode = file "Display.mnd"
-    end
-
-// MICROPROCESSORS
-// THIRD COLUMN
-
 processor5:
-    @micro-processor     at ( 4,  0) processor
+    @logic-processor     at ( 2,  5) processor
         links
             bank1
             processor1      // timer
@@ -98,33 +102,78 @@ processor5:
         mindcode = file "BlockBuilder.mnd"
     end
 
-processor6:
-    @micro-processor     at ( 5,  0) processor mindcode = file "PolyController.mnd" end
-
-processor7:
-    @micro-processor     at ( 4,  1) processor mindcode = file "MonoController.mnd" end
-
-processor8:
-    @micro-processor     at ( 5,  1) processor
-        links
-            processor2      // display
-        end
-        mindcode = file "FlareController.mnd"
-    end
-
-processor11:
-    @logic-processor     at ( 4,  2) processor
-        links
-            bank2
-            processor1      // timer
-            processor9      // coreBuilder
-        end
-        mindcode = file "Measurement.mnd"
-    end
+bank1:
+    @memory-bank         at ( 0,  7)
 
 bank2:
-    @memory-bank         at ( 4,  4)
+    @memory-bank         at ( 2,  7)
 
 display1:
-    @large-logic-display at ( 6,  0)
+    @tile-logic-display  at ( 4,  0)
+    @tile-logic-display  at ( 4,  1)
+    @tile-logic-display  at ( 4,  2)
+    @tile-logic-display  at ( 4,  3)
+    @tile-logic-display  at ( 4,  4)
+    @tile-logic-display  at ( 4,  5)
+    @tile-logic-display  at ( 4,  6)
+    @tile-logic-display  at ( 4,  7)
+    @tile-logic-display  at ( 4,  8)
+    @tile-logic-display  at ( 5,  0)
+    @tile-logic-display  at ( 5,  1)
+    @tile-logic-display  at ( 5,  2)
+    @tile-logic-display  at ( 5,  3)
+    @tile-logic-display  at ( 5,  4)
+    @tile-logic-display  at ( 5,  5)
+    @tile-logic-display  at ( 5,  6)
+    @tile-logic-display  at ( 5,  7)
+    @tile-logic-display  at ( 5,  8)
+    @tile-logic-display  at ( 6,  0)
+    @tile-logic-display  at ( 6,  1)
+    @tile-logic-display  at ( 6,  2)
+    @tile-logic-display  at ( 6,  3)
+    @tile-logic-display  at ( 6,  4)
+    @tile-logic-display  at ( 6,  5)
+    @tile-logic-display  at ( 6,  6)
+    @tile-logic-display  at ( 6,  7)
+    @tile-logic-display  at ( 6,  8)
+    @tile-logic-display  at ( 7,  0)
+    @tile-logic-display  at ( 7,  1)
+    @tile-logic-display  at ( 7,  2)
+    @tile-logic-display  at ( 7,  3)
+    @tile-logic-display  at ( 7,  4)
+    @tile-logic-display  at ( 7,  5)
+    @tile-logic-display  at ( 7,  6)
+    @tile-logic-display  at ( 7,  7)
+    @tile-logic-display  at ( 7,  8)
+    @tile-logic-display  at ( 8,  0)
+    @tile-logic-display  at ( 8,  1)
+    @tile-logic-display  at ( 8,  2)
+    @tile-logic-display  at ( 8,  3)
+    @tile-logic-display  at ( 8,  4)
+    @tile-logic-display  at ( 8,  5)
+    @tile-logic-display  at ( 8,  6)
+    @tile-logic-display  at ( 8,  7)
+    @tile-logic-display  at ( 8,  8)
+    @tile-logic-display  at ( 9,  0)
+    @tile-logic-display  at ( 9,  1)
+    @tile-logic-display  at ( 9,  2)
+    @tile-logic-display  at ( 9,  3)
+    @tile-logic-display  at ( 9,  4)
+    @tile-logic-display  at ( 9,  5)
+    @tile-logic-display  at ( 9,  6)
+    @tile-logic-display  at ( 9,  7)
+    @tile-logic-display  at ( 9,  8)
+
+
+    // Poly spawner
+    @world-processor     at (-1,  8) processor mlog = """
+        setrule waves false 0 0 100 100
+        fetch core core @sharded 0 @conveyor
+        sensor x core @x
+        sensor y core @y
+        op add y y 3
+        spawn @poly x y 90 @sharded result
+        stop
+        """
+    end
 end

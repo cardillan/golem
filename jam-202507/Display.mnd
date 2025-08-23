@@ -75,13 +75,11 @@ end;
 noinit var materialCount;
 
 void updateDisplay()
-    reset();
     clear(0, 0, 32);
-
     drawHeader();
+
     drawMaterials();
     drawUnit();
-    drawUnits();
     drawflush(display1);
 end;
 
@@ -96,8 +94,10 @@ const ICON_Y = +5;
 const BAR_LENGTH = 122;
 const BAR_LENGTH2 = 34;
 
-const HEADER_X = 176 / 4 - 4;
-const HEADER1_Y = 176 - 15;
+const HEADER_X = 176 / 4 - 2;
+const HEADER1_Y = 276 - 15;
+const HEADER1_Y1 = HEADER1_Y - 44;
+
 const HEADER2_Y = HEADER1_Y - 56;
 const HEADER3_Y = HEADER2_Y - 4 * ROW_HEIGHT - 5;
 const HEADER4_Y = HEADER2_Y - 5 * ROW_HEIGHT - 5;
@@ -127,7 +127,11 @@ inline void animate()
     animation++;
 end;
 
-inline void drawHeader()
+void drawHeader()
+    reset();
+    color(0, 0, 32, 255);
+    rect(0, HEADER1_Y1, 200, 300);
+
     col(%[gold]);
     drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
 
@@ -151,22 +155,36 @@ inline void drawHeader()
     var ratio = round(10 * t / tt);
     print(" (x", ratio \ 10, ".", ratio % 10);
 
-    drawText(170, 172, @topRight, ")");
+    drawText(174, 272, @topRight, ")");
 
     if titaniumDrill then
         count = max(titaniumDrillCount, titaniumDrill.@titanium);
-        var x = 170;
+        var x = 174;
         var len = floor(log10(count));
-        drawText(x, 155, @topRight, "x", count);
-        image(x - 20 - 7 * len, 146, @titanium, 12, 0);
+        drawText(x, 255, @topRight, "x", count);
+        image(x - 20 - 7 * len, 246, @titanium, 12, 0);
     end;
 
     if thoriumContainer then
         count = thoriumContainer.@thorium;
-        var x = 120;
+        var x = 124;
         var len = floor(log10(count));
-        drawText(x, 155, @topRight, "x", count);
-        image(x - 20 - 7 * len, 146, @thorium, 12, 0);
+        drawText(x, 255, @topRight, "x", count);
+        image(x - 20 - 7 * len, 246, @thorium, 12, 0);
+    end;
+
+    var x = 174;
+    col(%[white]);
+    drawUnitCount(@poly, polys, ref x);
+    drawUnitCount(@mono, monos, ref x);
+    drawUnitCount(@flare, flares, ref x);
+end;
+
+inline void drawUnitCount(type, count, ref x)
+    if count > 0 then
+        image(x - 20, HEADER1_Y - 34, type, 12, 0);
+        drawText(x, HEADER1_Y - 32, @right, "x", count);
+        x -= 30;
     end;
 end;
 
@@ -310,22 +328,6 @@ inline void drawItem(in out col, in out y, columns, item, current, target, text.
     end;
 end;
 
-inline void drawUnits()
-    var x = 170;
-    col(%[white]);
-    drawUnitCount(@poly, polys, ref x);
-    drawUnitCount(@mono, monos, ref x);
-    drawUnitCount(@flare, flares, ref x);
-end;
-
-inline void drawUnitCount(type, count, ref x)
-    if count > 0 then
-        image(x - 20, HEADER1_Y - 34, type, 12, 0);
-        drawText(x, HEADER1_Y - 32, @right, "x", count);
-        x -= 30;
-    end;
-end;
-
 void updateMessage()
     println($"[gold]Building $nextBlock");
     println("==================================[]");
@@ -335,54 +337,54 @@ void updateMessage()
     printflush(message1);
 end;
 
-inline void displayRecordAt(ref x, ref y, image, text)
-    image(x, y, image, 14, 0);
-    drawText(x + 56 - 12, y + 2, @right, text);
+const RECORDS_PER_COLUMN = 13;
+const RECORDS_PER_PAGE = 3 * RECORDS_PER_COLUMN;
+noinit var lastRecord;
 
-    y -= 15;
-    if y < 10 then
-        x += 58;
-        y = 176 - 4 - 8;
-    end;
-end;
+inline void displayRecord(record, index)
+    var col = index \ RECORDS_PER_COLUMN;
+    var row = index % RECORDS_PER_COLUMN;
+    var x = 11 + 58 * col;
+    var y = HEADER1_Y1 - 13 - 15 - 15 * row;
 
-
-inline void displayRecord(ref x, ref y, record)
     var id = record % 1000;
     var icon = id > @blockCount ? lookup(:unit, id - @blockCount) : lookup(:block, id);
     var t = floor(record / 1000 / 120);
     var m = t \ 60;
     var s = t % 60;
     print(m, ":", s < 10 ? "0" : "");
-    displayRecordAt(ref x, ref y, icon, s);
-end;
 
-inline void displayRecord2(ref x, ref y, record)
-    displayRecordAt(ref x, ref y,  @core-shard, "0:00");
+    image(x, y, icon, 14, 0);
+    drawText(x + 56 - 12, y + 2, @right, s);
 end;
 
 void displayLog(page)
-    var x = 3 + 8;
-    var y = 176 - 5 - 8;
-
     var logPosition = bank1[511];
     var records = (511 - logPosition);
-    var pages = max(1, (records - 1) \ 32 + 1);
+    var pages = max(1, (records - 1) \ RECORDS_PER_PAGE + 1);
     numPages = pages + 3;
-    var start = 511 - 32 * page;
-    var stop = max(logPosition, start - 32);
+    var start = 511 - RECORDS_PER_PAGE * page;
+    var stop = max(logPosition, start - RECORDS_PER_PAGE);
 
-    col(%[lightgray]);
-    print(page + 1, "/");
-    drawText(172, 4, @bottomRight, pages);
+    if pageSwitched then
+        clear(0, 0, 32);
+        col(%[gold]);
+        drawBold(4, HEADER1_Y1 - 11, @left, "Build records");
+        print(page + 1, "/");
+        drawText(172, HEADER1_Y1 - 11, @right, pages);
+        lastRecord = start;
+    end;
 
-    col(%[white]);
-    for var position in stop ... start descending do
+    drawHeader();
+
+    for var position in stop ... lastRecord descending do
         var record = bank1[position];
-        displayRecord(ref x, ref y, record);
+        displayRecord(record, start - position - 1);
         drawflush(display1);
         if switch1.enabled then break; end;
     end;
+
+    lastRecord = stop + 1;
     drawflush(display1);
 end;
 
@@ -424,39 +426,46 @@ void displayOreMap()
     drawflush(display1);
 end;
 
+void setupScale()
+    var size = 220;
+    reset();
+    translate(90, 105);
+    scale(size / 15 / 2, size / 15 / 2);
+end;
+
 void drawBlock(cfg)
     var type, x, y, rotation, size, index;
     unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index);
-    if x | y then
-        if blocksBuilt & (1 << index) then
-            col(%[white]);
-        else
-            color(128, 255, 128, 128);
-        end;
+    if blocksBuilt & (1 << index) then
+        col(%[white]);
+        setupScale();
+        image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
+    elsif pageSwitched then
+        color(128, 255, 128, 128);
+        setupScale();
         image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
     end;
 end;
 
 void displayBaseMap()
-    reset();
-    clear(0, 0, 32);
-    col(%[gold]);
-    drawText(172, 172, @topRight, "Base map");
+    // Sets color to white
+    drawHeader();
 
-    col(%[white]);
-    translate(176 / 2, 176 / 2);
-    scale(176 / 15 / 2, 176 / 15 / 2);
-
-    col(%[white]);
-    image(0, 0, @core-shard, 6, 0);
     if pageSwitched then
+        col(%[gold]);
+        drawBold(90, HEADER1_Y1 - 11, @center, "Base map");
+
+        col(%[white]);
+        setupScale();
+        image(0, 0, @core-shard, 6, 0);
         drawflush(display1);
     end;
 
-    //color(0, 255, 0, 128);
-
     for var cfg in BLOCKS do
+        // Sets color to white
+        drawHeader();
         drawBlock(cfg);
+
         var i = recentBuildIndex;
         if i >= 0 then
             recentBuildIndex = -1;
@@ -467,11 +476,8 @@ void displayBaseMap()
             clear(0, 0, 32);
             break;
         end;
-        if pageSwitched then
-            drawflush(display1);
-        end;
+        drawflush(display1);
     end;
-    drawflush(display1);
 end;
 
 noinit var lastTail;
