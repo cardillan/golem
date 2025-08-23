@@ -255,7 +255,7 @@ end;
 def buildFirstTitaniumDrill(cfg)
     meetTarget(cfg);
 
-    display.nextBlock = @titanium;
+    display.nextBlock = @ore-titanium;
     var dx, dy;
     var result = oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, 2, 4, out dx, out dy);
     if !result then error("Cannot locate spot for titanium drill"); end;
@@ -341,7 +341,6 @@ begin
     graphiteSurplus = 80;
 
     // Build and initialize base controller
-
     controller = buildBlockFromCfg(PROCESSOR, coreControllerConfig);
 
     controller.timer = timer;
@@ -355,7 +354,6 @@ begin
 
     buildBlockFromCfg(POWER_NODE);
     buildBlockFromCfg(UNLOADER2);
-    buildBlockFromCfg(OVERFLOW_GATE2);
     buildBlockFromCfg(OVERFLOW_GATE3);
 
     buildBlockFromCfg(AIR_FACTORY);
@@ -386,11 +384,12 @@ begin
     buildBlockFromCfg(INVERTED_SORT3);
     buildBlockFromCfg(KILN);
 
-    buildBlockFromCfg(MULTIPRESS);
-
     // Steam generator
     buildBlockFromCfg(WATER_EXT);
     buildBlockFromCfg(STEAM_GEN);
+
+    buildBlockFromCfg(MULTIPRESS);
+    graphiteSurplus = 200;
 
     buildBlockFromCfg(SMELTER2);
 
@@ -403,7 +402,6 @@ begin
     siliconSurplus = 1000;
     siliconMonoSurplus = 20;
     metaglassSurplus = 100;
-    graphiteSurplus = 200;
 
     setMonoTarget(4);
     setPolyTarget(3);
@@ -429,6 +427,7 @@ begin
     graphiteSurplus = 10;
     metaglassSurplus = 50;
 
+    display.nextBlock = @ore-thorium;
     buildThoriumDrill();
     display.nextBlock = null;
 
@@ -496,10 +495,10 @@ void stopAll()
     flagUnits(@flare);
 
     while true do
-        lineUpUnits(@thisy - 16, @mega);
-        lineUpUnits(@thisy - 20, @poly);
-        lineUpUnits(@thisy - 24, @mono);
-        lineUpUnits(@thisy - 28, @flare);
+        lineUpUnits(coreY + 6, @mega);
+        lineUpUnits(coreY + 2, @poly);
+        lineUpUnits(coreY - 2, @mono);
+        lineUpUnits(coreY - 6, @flare);
     end;
 end;
 
@@ -509,7 +508,7 @@ void flagUnits(unit)
         firstUnit = ubind(unit);
     while firstUnit == null;
 
-    var x = @thisx;
+    var x = coreX + 8;
     do
         flag(x);
         x += 4;

@@ -163,18 +163,19 @@ void supplyBlock(block, ore)
 end;
 
 void supplyBlockFromCore(target, item)
-    transportStatus(min(target.@itemCapacity, capacity), item);
+    var cap = min(target.@itemCapacity, capacity);
+    transportStatus(cap, item);
     status2("Transferring ", item, target);
     moveToEmpty(coreX, coreY);
     dropAll();
 
     do
-        itemTake(core, item, capacity);
+        itemTake(core, item, cap);
         var unitItem = @unit.@firstItem;
         if unitItem != null and unitItem != item then
             itemDrop(@air, 1000);
         end;
-     while @unit.sensor(item) < capacity and core.sensor(item);
+     while @unit.sensor(item) < cap and core.sensor(item);
 
     depositItems(target, item);
 end;

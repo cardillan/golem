@@ -105,10 +105,11 @@ inline void animate()
 
     col(%[white]);
     var ratio = max(0, min(animation / 30, 1));
-    var x = lerp(HEADER_X, 176 / 2, ratio);
-    var y = lerp(HEADER1_Y - 24, 176 / 2, ratio);
+    var x = lerp(HEADER_X, 180 / 2, ratio);
+    var y = lerp(HEADER1_Y - 24, 280 / 2 - 20, ratio);
     var size = lerp(32, 168, ratio);
     image(x, y, @mega, size, 0);
+    if ratio == 1 then drawHeader(); end;
     drawflush(display1);
     animation++;
 end;
@@ -118,83 +119,82 @@ void drawHeader()
     color(0, 0, 32, 255);
     rect(0, HEADER1_Y1, 200, 300);
 
-    if true then
-        scale(10, 10);
-        var tt = @second;
+    if megas > 0 then
+        col(%[gold]);
+        scale(3.5, 3.5);
         var t = floor(TIME / 120);
         var m = t \ 60;
         var s = t % 60;
         var zero = s < 10 ? "0" : "";
-        drawBold(9, 25, @center, m, ":", zero, s);
+        drawBold(25, 71, @center, m, ":", zero, s);
+        col(%[white]);
         reset();
-        return;
-    end;
-
-    col(%[gold]);
-    drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
-
-    col(%[white]);
-
-    if nextMultiReco then
-        image(HEADER_X, HEADER1_Y - 24, nextMultiReco, 32, 0);
     else
-        var count = nextBlock + nextFactory + nextAddReco;
-        if count == 3 then
-            image(HEADER_X - 20, HEADER1_Y - 17, nextBlock, 18, 0);
-            image(HEADER_X +  0, HEADER1_Y - 17, nextFactory, 18, 0);
-            image(HEADER_X + 20, HEADER1_Y - 17, nextAddReco, 18, 0);
-        elsif count == 2 then
-            var x = HEADER_X - 15;
-            for var goal in nextBlock, nextFactory, nextAddReco do
-                if goal != null then
-                    image(x, HEADER1_Y - 21, goal, 25, 0);
-                    x += 30;
-                end;
-            end;
-        elsif count == 1 then
-            for var goal in nextBlock, nextFactory, nextAddReco do
-                if goal != null then
-                    image(HEADER_X, HEADER1_Y - 24, goal, 32, 0);
-                    break;
-                end;
-            end;
+        col(%[gold]);
+        drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
+
+        col(%[white]);
+
+        if nextMultiReco then
+            // There can't be any other active goal now
+            image(HEADER_X, HEADER1_Y - 24, nextMultiReco, 32, 0);
         else
-            image(HEADER_X, HEADER1_Y - 24, @hydrogen, 32, 360 - (@tick / 2) % 360);
+            var count = nextBlock + nextFactory + nextAddReco;
+            if count == 3 then
+                image(HEADER_X - 20, HEADER1_Y - 17, nextBlock, 18, 0);
+                image(HEADER_X +  0, HEADER1_Y - 17, nextFactory, 18, 0);
+                image(HEADER_X + 20, HEADER1_Y - 17, nextAddReco, 18, 0);
+            elsif count == 2 then
+                var x = HEADER_X - 15;
+                for var goal in nextBlock, nextFactory, nextAddReco do
+                    if goal != null then
+                        image(x, HEADER1_Y - 21, goal, 25, 0);
+                        x += 30;
+                    end;
+                end;
+            elsif count == 1 then
+                for var goal in nextBlock, nextFactory, nextAddReco do
+                    if goal != null then
+                        image(HEADER_X, HEADER1_Y - 24, goal, 32, 0);
+                        break;
+                    end;
+                end;
+            end;
         end;
-    end;
 
-    var tt = @second;
-    var t = floor(TIME / 120);
-    var m = t \ 60;
-    var s = t % 60;
-    print(m, ":", s < 10 ? "0" : "", s);
+        var tt = @second;
+        var t = floor(TIME / 120);
+        var m = t \ 60;
+        var s = t % 60;
+        print(m, ":", s < 10 ? "0" : "", s);
 
-    var ratio = round(10 * t / tt);
-    print(" (x", ratio \ 10, ".", ratio % 10);
+        var ratio = round(10 * t / tt);
+        print(" (x", ratio \ 10, ".", ratio % 10);
 
-    drawText(174, 272, @topRight, ")");
+        drawText(174, 272, @topRight, ")");
 
-    if titaniumDrill then
-        var count = max(titaniumDrillCount, titaniumDrill.@titanium);
+        if titaniumDrill then
+            var count = max(titaniumDrillCount, titaniumDrill.@titanium);
+            var x = 174;
+            var len = floor(log10(count));
+            drawText(x, 255, @topRight, "x", count);
+            image(x - 20 - 7 * len, 246, @titanium, 12, 0);
+        end;
+
+        if thoriumContainer then
+            var count = thoriumContainer.@thorium;
+            var x = 124;
+            var len = floor(log10(count));
+            drawText(x, 255, @topRight, "x", count);
+            image(x - 20 - 7 * len, 246, @thorium, 12, 0);
+        end;
+
         var x = 174;
-        var len = floor(log10(count));
-        drawText(x, 255, @topRight, "x", count);
-        image(x - 20 - 7 * len, 246, @titanium, 12, 0);
+        col(%[white]);
+        drawUnitCount(@poly, polys, ref x);
+        drawUnitCount(@mono, monos, ref x);
+        drawUnitCount(@flare, flares, ref x);
     end;
-
-    if thoriumContainer then
-        var count = thoriumContainer.@thorium;
-        var x = 124;
-        var len = floor(log10(count));
-        drawText(x, 255, @topRight, "x", count);
-        image(x - 20 - 7 * len, 246, @thorium, 12, 0);
-    end;
-
-    var x = 174;
-    col(%[white]);
-    drawUnitCount(@poly, polys, ref x);
-    drawUnitCount(@mono, monos, ref x);
-    drawUnitCount(@flare, flares, ref x);
 end;
 
 inline void drawUnitCount(type, count, ref x)
@@ -222,9 +222,9 @@ end;
 inline void drawMaterials(ref y)
     var count, col = 0;
 
-    if nextBlock == @titanium or nextBlock == @ore-titanium then
-        drawTitleRow(in out y, @bottomLeft, oreLocator.mapAction);
-        drawItem(in 0, in out y, 1, @titanium, oreLocator.mapProgress, oreLocator.mapTotal, "x", oreLocator.mapSpots);
+    if nextBlock == @ore-thorium or nextBlock == @ore-titanium then
+        drawTitleRow(in out y, @bottomLeft, "Locating ore...");
+        drawItem(in 0, in out y, 1, nextBlock, oreLocator.mapProgress, oreLocator.mapTotal, "x", oreLocator.mapSpots);
         y -= 2 * ROW_HEIGHT + SEPARATOR_Y;
     elsif nextBlock != null then
         count = totalTargets;
@@ -280,7 +280,7 @@ inline void drawAddReco(ref y)
     if nextAddReco == null then return; end;
 
     col(%[white]);
-    drawTitleRow(in out y, @bottomLeft, "1st Reconstructor");
+    drawTitleRow(in out y, @bottomLeft, "Reconstructor");
     var progress = additive_rec.@progress;
     if progress == 0 then
         drawItem(in 0, in out y, 1, @graphite, additive_rec.@graphite, 40, 40);
@@ -298,7 +298,7 @@ inline void drawMultiReco(ref y)
 
     col(%[white]);
     y = min(y, HEADER1_Y1 - 5 * ROW_HEIGHT);
-    drawTitleRow(in out y, @bottomLeft, "2nd reconstructor");
+    drawTitleRow(in out y, @bottomLeft, "Reconstructor");
     var progress = multiplicative_rec.@progress;
     if progress == 0 then
         drawItem(in 0, in out y, 1, @metaglass, multiplicative_rec.@metaglass, 40, 40);
@@ -545,7 +545,7 @@ void displayStorage()
         col(%[white]);
         var y = START - 8;
         for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium do
-            image(10, y, item, 17, 0);
+            image(12, y, item, 15, 0);
             y -= 21;
         end;
     end;
