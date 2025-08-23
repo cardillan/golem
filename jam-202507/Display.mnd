@@ -10,15 +10,16 @@ require "OreLocator.mnd" remote oreLocator;
 
 var
     core = null,
-    coreX = 0, coreY = 0,
+//    coreX = 0, coreY = 0,
     page = 0,
     numPages = 4;
 
 noinit remote var
     nextBlock,
+    nextFactory,
+    nextAddReco,
+    nextMultiReco,
     blocksBuilt,
-    nextUnit,
-    unitReset,
     targetCopper,
     targetLead,
     targetGraphite,
@@ -42,26 +43,13 @@ remote var
     monos = 0,
     flares = 0,
     polys = 1,
-    megas = 0,
-    flareTarget = 0,
-    monoTarget = 0,
-    polyTarget = 0,
-    megaTarget = 0;
+    megas = 0;
 
 void unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index)
     unpackCfg(cfg, out type, out x, out y, , , , , , , , out rotation, out size, out index);
 end;
 
 #declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
-
-inline void drawPrint(x, y, alignment)
-    mlogText("draw", "print", in x, in y, in alignment);
-end;
-
-inline void drawBold(x, y, alignment, text...)
-    drawText(x, y, alignment, text);
-    drawText(x + 1, y, alignment, text);
-end;
 
 inline void drawText(x, y, alignment)
     drawPrint(x, y, alignment);
@@ -72,17 +60,18 @@ inline void drawText(x, y, alignment, text...)
     drawPrint(x, y, alignment);
 end;
 
-noinit var materialCount;
-
-void updateDisplay()
-    clear(0, 0, 32);
-    drawHeader();
-
-    drawMaterials();
-    drawUnit();
-    drawflush(display1);
+inline void drawBold(x, y, alignment, text...)
+    drawText(x, y, alignment, text);
+    drawText(x + 1, y, alignment, text);
 end;
 
+inline void drawTitleRow(in out y, alignment, text...)
+    drawText(BAR_X, y, alignment, text);
+    drawText(BAR_X + 1, y, alignment, text);
+    y -= ROW_HEIGHT;
+end;
+
+const SEPARATOR_Y = 5;
 const ROW_HEIGHT = 15;
 const BAR_HEIGHT = 10;
 const BAR_X = 22;
@@ -91,16 +80,13 @@ const ICON_SIZE = 16;
 const ICON_X = 11;
 const ICON_Y = +5;
 
-const BAR_LENGTH = 122;
-const BAR_LENGTH2 = 34;
+const BAR_LENGTH = 126;
+const BAR_LENGTH2 = 37;
 
 const HEADER_X = 176 / 4 - 2;
 const HEADER1_Y = 276 - 15;
 const HEADER1_Y1 = HEADER1_Y - 44;
-
-const HEADER2_Y = HEADER1_Y - 56;
-const HEADER3_Y = HEADER2_Y - 4 * ROW_HEIGHT - 5;
-const HEADER4_Y = HEADER2_Y - 5 * ROW_HEIGHT - 5;
+const HEADER2_Y = HEADER1_Y - 60;
 
 var animation = -15;
 
@@ -132,18 +118,49 @@ void drawHeader()
     color(0, 0, 32, 255);
     rect(0, HEADER1_Y1, 200, 300);
 
+    if true then
+        scale(10, 10);
+        var tt = @second;
+        var t = floor(TIME / 120);
+        var m = t \ 60;
+        var s = t % 60;
+        var zero = s < 10 ? "0" : "";
+        drawBold(9, 25, @center, m, ":", zero, s);
+        reset();
+        return;
+    end;
+
     col(%[gold]);
     drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
 
     col(%[white]);
-    var count = nextBlock + nextUnit;
-    if count == 2 then
-        image(HEADER_X - 15, HEADER1_Y - 22, nextBlock, 25, 0);
-        image(HEADER_X + 15, HEADER1_Y - 22, nextUnit, 25, 0);
-    elsif count == 1 then
-        image(HEADER_X, HEADER1_Y - 24, nextBlock != null ? nextBlock : nextUnit, 32, 0);
+
+    if nextMultiReco then
+        image(HEADER_X, HEADER1_Y - 24, nextMultiReco, 32, 0);
     else
-        image(HEADER_X, HEADER1_Y - 24, @hydrogen, 32, 360 - (@tick / 2) % 360);
+        var count = nextBlock + nextFactory + nextAddReco;
+        if count == 3 then
+            image(HEADER_X - 20, HEADER1_Y - 17, nextBlock, 18, 0);
+            image(HEADER_X +  0, HEADER1_Y - 17, nextFactory, 18, 0);
+            image(HEADER_X + 20, HEADER1_Y - 17, nextAddReco, 18, 0);
+        elsif count == 2 then
+            var x = HEADER_X - 15;
+            for var goal in nextBlock, nextFactory, nextAddReco do
+                if goal != null then
+                    image(x, HEADER1_Y - 21, goal, 25, 0);
+                    x += 30;
+                end;
+            end;
+        elsif count == 1 then
+            for var goal in nextBlock, nextFactory, nextAddReco do
+                if goal != null then
+                    image(HEADER_X, HEADER1_Y - 24, goal, 32, 0);
+                    break;
+                end;
+            end;
+        else
+            image(HEADER_X, HEADER1_Y - 24, @hydrogen, 32, 360 - (@tick / 2) % 360);
+        end;
     end;
 
     var tt = @second;
@@ -158,7 +175,7 @@ void drawHeader()
     drawText(174, 272, @topRight, ")");
 
     if titaniumDrill then
-        count = max(titaniumDrillCount, titaniumDrill.@titanium);
+        var count = max(titaniumDrillCount, titaniumDrill.@titanium);
         var x = 174;
         var len = floor(log10(count));
         drawText(x, 255, @topRight, "x", count);
@@ -166,7 +183,7 @@ void drawHeader()
     end;
 
     if thoriumContainer then
-        count = thoriumContainer.@thorium;
+        var count = thoriumContainer.@thorium;
         var x = 124;
         var len = floor(log10(count));
         drawText(x, 255, @topRight, "x", count);
@@ -188,83 +205,30 @@ inline void drawUnitCount(type, count, ref x)
     end;
 end;
 
-noinit var factoryProgress, reconstructorProgress;
+void updateDisplay()
+    clear(0, 0, 32);
+    drawHeader();
 
-inline void drawMaterials()
-    noinit var targetFactoryLead, targetFactorySilicon;
-    var count, col = 0, y = HEADER2_Y - ROW_HEIGHT;
+    var y = HEADER2_Y;
+    drawMaterials(ref y);
+    drawAirFactory(ref y);
+    drawAddReco(ref y);
+    drawMultiReco(ref y);
+    drawBuilder(ref y);
+    drawPower(ref y);
+    drawflush(display1);
+end;
 
-    if nextBlock == null then
-        factoryProgress = max(factoryProgress, air_factory.@progress);
-        reconstructorProgress = max(reconstructorProgress, additive_rec.@progress);
-        var multiReconstructorProgress = multiplicative_rec.@progress;
-        noinit var unit1, unit2, unit3;
-        noinit var unitCount1, unitCount2;
-        noinit var unitTotal1, unitTotal2;
+inline void drawMaterials(ref y)
+    var count, col = 0;
 
-        if nextUnit == @mono then
-            targetFactoryLead = 15;
-            targetFactorySilicon = 30;
-            materialCount = 2;
-            unitCount1 = monos;
-            unitTotal1 = monoTarget;
-            unit1 = nextUnit;
-            unit2 = unit3 = null;
-        elsif nextUnit == @flare then
-            targetFactoryLead = 0;
-            targetFactorySilicon = 15;
-            materialCount = 1;
-            unitCount1 = flares;
-            unitTotal1 = flareTarget;
-            unit1 = nextUnit;
-            unit2 = unit3 = null;
-        elsif nextUnit == @poly then
-            unitCount1 = floor(factoryProgress);
-            unitCount2 = polys;
-            unitTotal1 = 1;
-            unitTotal2 = polyTarget;
-            unit1 = @mono;
-            unit2 = nextUnit;
-            unit3 = null;
-            factoryProgress = max(factoryProgress, reconstructorProgress > 0);
-        elsif nextUnit == @mega then
-            unitCount1 = floor(factoryProgress);
-            unitCount2 = floor(reconstructorProgress);
-            unitTotal1 = 1;
-            unitTotal2 = 1;
-            unit1 = @mono;
-            unit2 = @poly;
-            unit3 = nextUnit;
-            factoryProgress = max(factoryProgress, reconstructorProgress > 0);
-            reconstructorProgress = max(reconstructorProgress, multiReconstructorProgress > 0);
-        end;
-
-        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Unit factories");
-
-        if factoryProgress > 0 then
-            drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, unit1, factoryProgress, 1.0, unitCount1, "/", unitTotal1);
-            if unit2 != null then
-                drawItem(in 0, in HEADER2_Y - 2 * ROW_HEIGHT, 1, unit2, reconstructorProgress, 1.0, unitCount2, "/", unitTotal2);
-                if unit3 != null then
-                    drawItem(in 0, in HEADER2_Y - 3 * ROW_HEIGHT, 1, unit3, multiReconstructorProgress, 1.0, megas, "/", megaTarget);
-                end;
-            end;
-        else
-            for var item, target in
-                @lead,    targetFactoryLead,
-                @silicon, targetFactorySilicon
-            do
-                if target > 0 then
-                    drawItem(in out col, in out y, 1, item, air_factory.sensor(item), target, target);
-                end;
-            end;
-        end;
-    elsif nextBlock == @titanium or nextBlock == @ore-titanium then
-        drawBold(BAR_X, HEADER2_Y, @bottomLeft, oreLocator.mapAction);
-        drawItem(in 0, in HEADER2_Y - ROW_HEIGHT, 1, @titanium, oreLocator.mapProgress, oreLocator.mapTotal, "x", oreLocator.mapSpots);
-    else
-        count = materialCount = totalTargets;
-        drawBold(BAR_X, HEADER2_Y, @bottomLeft, "Materials");
+    if nextBlock == @titanium or nextBlock == @ore-titanium then
+        drawTitleRow(in out y, @bottomLeft, oreLocator.mapAction);
+        drawItem(in 0, in out y, 1, @titanium, oreLocator.mapProgress, oreLocator.mapTotal, "x", oreLocator.mapSpots);
+        y -= 2 * ROW_HEIGHT + SEPARATOR_Y;
+    elsif nextBlock != null then
+        count = totalTargets;
+        drawTitleRow(in out y, @bottomLeft, "Materials");
         var columns = 1;
 
         if count then
@@ -283,20 +247,95 @@ inline void drawMaterials()
                 end;
             end;
         end;
+        if totalTargets < 3 then
+            y -= (3 - totalTargets) * ROW_HEIGHT;
+        end;
+        y -= SEPARATOR_Y;
     end;
 end;
 
-inline void drawUnit()
+inline void drawAirFactory(ref y)
+    if nextFactory == null then return; end;
+
     col(%[white]);
-    var y = materialCount < 4 ? HEADER3_Y : HEADER4_Y;
-    drawBold(BAR_X, y, @bottomLeft, "Builder");
+    drawTitleRow(in out y, @bottomLeft, "Air Factory");
+    var progress = air_factory.@progress;
+    if progress == 0 then
+        if nextFactory == @flare then
+            drawItem(in 0, in out y, 1, @silicon, air_factory.@silicon, 15, 15);
+            y -= ROW_HEIGHT;
+        else
+            drawItem(in 0, in out y, 1, @lead, air_factory.@lead, 15, 15);
+            drawItem(in 0, in out y, 1, @silicon, air_factory.@silicon, 30, 30);
+        end;
+    else
+        drawItem(in 0, in out y, 1, nextFactory, progress, 1.0, floor(100 * progress), "%");
+        y -= ROW_HEIGHT;
+    end;
+
+    y -= SEPARATOR_Y;
+end;
+
+inline void drawAddReco(ref y)
+    if nextAddReco == null then return; end;
+
+    col(%[white]);
+    drawTitleRow(in out y, @bottomLeft, "1st Reconstructor");
+    var progress = additive_rec.@progress;
+    if progress == 0 then
+        drawItem(in 0, in out y, 1, @graphite, additive_rec.@graphite, 40, 40);
+        drawItem(in 0, in out y, 1, @silicon, additive_rec.@silicon, 40, 40);
+    else
+        drawItem(in 0, in out y, 1, @poly, progress, 1.0, floor(100 * progress), "%");
+        y -= ROW_HEIGHT;
+    end;
+
+    y -= SEPARATOR_Y;
+end;
+
+inline void drawMultiReco(ref y)
+    if nextMultiReco == null then return; end;
+
+    col(%[white]);
+    y = min(y, HEADER1_Y1 - 5 * ROW_HEIGHT);
+    drawTitleRow(in out y, @bottomLeft, "2nd reconstructor");
+    var progress = multiplicative_rec.@progress;
+    if progress == 0 then
+        drawItem(in 0, in out y, 1, @metaglass, multiplicative_rec.@metaglass, 40, 40);
+        drawItem(in 0, in out y, 1, @titanium, multiplicative_rec.@titanium, 80, 80);
+        drawItem(in 0, in out y, 1, @silicon, multiplicative_rec.@silicon, 130, 130);
+    else
+        drawItem(in 0, in out y, 1, @mega, progress, 1.0, floor(100 * progress), "%");
+        y -= 2 * ROW_HEIGHT;
+    end;
+
+    y -= SEPARATOR_Y;
+end;
+
+inline void drawBuilder(ref y)
+    if @unit.@dead then return; end;
+
+    col(%[white]);
+    drawTitleRow(in out y, @bottomLeft, "Builder");
 
     if transportItem == null then
-        drawUnit(@poly, 0, in y - ROW_HEIGHT);
+        drawUnit(@poly, 0, in out y);
     else
         var unitItem = @unit.@firstItem;
-        drawUnit(transportItem, @unit.@totalItems * (unitItem == transportItem), in y - ROW_HEIGHT);
+        drawUnit(transportItem, @unit.@totalItems * (unitItem == transportItem), in out y);
     end;
+end;
+
+inline void drawPower(ref y)
+    if y < ROW_HEIGHT + SEPARATOR_Y then return; end;
+    if battery1 == null then return; end;
+
+    y = ROW_HEIGHT + SEPARATOR_Y;
+
+    col(%[white]);
+    drawTitleRow(in out y, @bottomLeft, "Power");
+    var power = battery1.@totalPower;
+    drawItemColor(%808000FF, %FFFF00FF, in 0, in out y, 1, @battery, power, 4000, floor(power * 100 / 4000), "%");
 end;
 
 inline void drawUnit(item, items, in out y)
@@ -304,8 +343,12 @@ inline void drawUnit(item, items, in out y)
 end;
 
 inline void drawItem(in out col, in out y, columns, item, current, target, text...)
+    drawItemColor(%008000FF, %00FF00FF, in out col, in out y, columns, item, current, target, text);
+end;
+
+inline void drawItemColor(color1, color2, in out col, in out y, columns, item, current, target, text...)
     var barLength = BAR_LENGTH + 176 / 2 - (columns * 176 / 2);
-    var textEnd = 170 - BAR_LENGTH + barLength;
+    var textEnd = 174 - BAR_LENGTH + barLength;
     var length = min(barLength, barLength * current / target);
 
     var iconX = ICON_X + col * 176 / 2;
@@ -315,10 +358,10 @@ inline void drawItem(in out col, in out y, columns, item, current, target, text.
     col(%[white]);
     image(iconX, y + ICON_Y, item, 16, 0);
 
-    color(0,128,0,255);
+    col(color1);
     rect(barX, y, length, BAR_HEIGHT);
 
-    color(0,255,0,255);
+    col(color2);
     lineRect(barX, y, barLength, BAR_HEIGHT);
     drawBold(textX, y + ICON_Y + 2, @right, text);
 
@@ -367,7 +410,6 @@ void displayLog(page)
     var stop = max(logPosition, start - RECORDS_PER_PAGE);
 
     if pageSwitched then
-        clear(0, 0, 32);
         col(%[gold]);
         drawBold(4, HEADER1_Y1 - 11, @left, "Build records");
         print(page + 1, "/");
@@ -390,41 +432,41 @@ end;
 
 //external bank1[0 ... 4] var minX, minY, maxX, maxY;
 
-var mapw = @mapw, maph = @maph;
+//var mapw = @mapw, maph = @maph;
 
-void displayOreMap()
-    reset();
-    clear(0, 0, 32);
-
-    col(%[gold]);
-    drawText(4, 172, @topLeft, "Map");
-
-    col(%[white]);
-    scale(176 / mapw, 176 / maph);
-    var imgSize = ceil(mapw / 176);
-    //stroke(max(width, height));
-
-    image(coreX, coreY, @core-shard, 7 * imgSize, 0);
-
-    var index = -1, count = oreLocator.locations;
-    for var i in 0 ... count do
-        var id = bank1[++index];
-        var img = id > 0 ? lookup(:item, id) : lookup(:block, -id);
-        var size = 4 + sqrt(bank1[++index]);
-        var x = bank1[++index];
-        var y = bank1[++index];
-        image(x, y, img, size * imgSize, 0);
-    end;
-
-    image(titaniumDrill.@x, titaniumDrill.@y, @pneumatic-drill, 4 * imgSize, 0);
-    image(thoriumDrill.@x, thoriumDrill.@y, @laser-drill, 5 * imgSize, 0);
-
-    reset();
-    col(%[white]);
-    drawText(175, 172, @topRight, index);
-
-    drawflush(display1);
-end;
+//void displayOreMap()
+//    reset();
+//    clear(0, 0, 32);
+//
+//    col(%[gold]);
+//    drawText(4, 172, @topLeft, "Map");
+//
+//    col(%[white]);
+//    scale(176 / mapw, 176 / maph);
+//    var imgSize = ceil(mapw / 176);
+//    //stroke(max(width, height));
+//
+//    image(coreX, coreY, @core-shard, 7 * imgSize, 0);
+//
+//    var index = -1, count = oreLocator.locations;
+//    for var i in 0 ... count do
+//        var id = bank1[++index];
+//        var img = id > 0 ? lookup(:item, id) : lookup(:block, -id);
+//        var size = 4 + sqrt(bank1[++index]);
+//        var x = bank1[++index];
+//        var y = bank1[++index];
+//        image(x, y, img, size * imgSize, 0);
+//    end;
+//
+//    image(titaniumDrill.@x, titaniumDrill.@y, @pneumatic-drill, 4 * imgSize, 0);
+//    image(thoriumDrill.@x, thoriumDrill.@y, @laser-drill, 5 * imgSize, 0);
+//
+//    reset();
+//    col(%[white]);
+//    drawText(175, 172, @topRight, index);
+//
+//    drawflush(display1);
+//end;
 
 void setupScale()
     var size = 220;
@@ -451,6 +493,7 @@ void displayBaseMap()
     // Sets color to white
     drawHeader();
 
+    var limit = 0;
     if pageSwitched then
         col(%[gold]);
         drawBold(90, HEADER1_Y1 - 11, @center, "Base map");
@@ -459,17 +502,25 @@ void displayBaseMap()
         setupScale();
         image(0, 0, @core-shard, 6, 0);
         drawflush(display1);
+        limit = 5;
     end;
 
+    var counter = 0;
     for var cfg in BLOCKS do
         // Sets color to white
-        drawHeader();
+        if counter == limit then
+            drawHeader();
+            counter = 0;
+        else
+            counter++;
+        end;
+
         drawBlock(cfg);
 
-        var i = recentBuildIndex;
-        if i >= 0 then
+        var index = recentBuildIndex;
+        if index >= 0 then
             recentBuildIndex = -1;
-            drawBlock(BLOCKS[i]);
+            drawBlock(BLOCKS[index]);
         end;
 
         if switch1.enabled then
@@ -483,31 +534,36 @@ end;
 noinit var lastTail;
 
 void displayStorage()
-    var head = bank2[511];
+    //var head = bank2[511];
     var tail = bank2[510];
+    var START = HEADER1_Y1 - 11 - 16;
 
     if pageSwitched then
         lastTail = bank2[511];
+        col(%[gold]);
+        drawBold(11, HEADER1_Y1 - 11, @left, "Resources");
         col(%[white]);
-        var y = 173 - 8;
+        var y = START - 8;
         for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium do
             image(10, y, item, 17, 0);
-            y -= 20;
+            y -= 21;
         end;
-        drawflush(display1);
     end;
+
+    drawHeader();
+    drawflush(display1);
 
     if lastTail > tail then return; end;
 
     var accumulator = bank2[lastTail];
-        var x = 25 + lastTail;
-    var y = 173 - 8;
+    var x = 25 + lastTail;
+    var y = START - 8;
 
-    for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium do
+    for var i in 0 ... 9 do
         var value = (accumulator & 0b11111) - 8;
         col(value >= 0 ? %[green] : %[red]);
         line(x, y, x, y + value);
-        y -= 20;
+        y -= 21;
         accumulator >>= 5;
     end;
 
@@ -522,31 +578,28 @@ void main()
         ubind(@poly);
         core = ulocate(:building, :core, false);
     while core == null;
-    coreX = core.@x;
-    coreY = core.@y;
+//    coreX = core.@x;
+//    coreY = core.@y;
 
     printflush(null);
     drawflush(null);
 
     while true do
-        if unitReset then
-            factoryProgress = reconstructorProgress = 0;
-            unitReset = false;
-        end;
-
-        if page == 0 then
-            if megas > 0 then
-                animate();
+        if display.@bufferSize < 200 then
+            if page == 0 then
+                if megas > 0 then
+                    animate();
+                else
+                    updateDisplay();
+                end;
+            elsif page == 1 then
+                displayStorage();
+            elsif page == 2 then
+                //displayOreMap();
+                displayBaseMap();
             else
-                updateDisplay();
+                displayLog(page - 3);
             end;
-        elsif page == 1 then
-            displayStorage();
-        elsif page == 2 then
-            //displayOreMap();
-            displayBaseMap();
-        else
-            displayLog(page - 3);
         end;
 
         if megas > 0 then

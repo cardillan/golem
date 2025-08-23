@@ -37,7 +37,7 @@ remote var
     monoTarget = 0,
     polyTarget = 0,
     megaTarget = 0,
-    powerTarget = 1000;
+    powerTarget = 1009;
 
 external bank[511] var logPosition;
 
@@ -57,7 +57,6 @@ void factoryUnitFinished(unit)
         when @poly  then display.polys = ++polys;
         when @mega  then display.megas = ++megas;
     end;
-    display.unitReset = true;
 end;
 
 inline void handleAirFactory(unit, power, silicon, lead, ref lastProgress)
@@ -71,7 +70,7 @@ inline void handleAirFactory(unit, power, silicon, lead, ref lastProgress)
         return;
     end;
 
-    if power < 50 then
+    if power < 200 then
         air_factory.enabled = false;
     elsif power > 500 then
         air_factory.enabled = true;
@@ -115,6 +114,8 @@ remote void buildStop()
     canConsume = true;
 end;
 
+var airFactoryTarget = null;
+
 void backgroundProcess()
     while !finished do
         var ticks = @tick;
@@ -127,25 +128,26 @@ void backgroundProcess()
 
         var power = battery1.@totalPower;
         if steam_gen then
-            generator.enabled = power < 10;
+            generator.enabled = power < 9;
             steam_gen.enabled = power < powerTarget;
         else
-            generator.enabled = power < 800;
+            generator.enabled = power < 809;
         end;
 
-        if flares < flareTarget then
-            display.nextUnit = @flare;
+        if flares < flareTarget and airFactoryTarget != @mono then
+            display.nextFactory = airFactoryTarget = @flare;
             handleAirFactory(@flare, power, 15, 0, ref lastProgress);
-        elsif monos < monoTarget then
-            display.nextUnit = @mono;
+        elsif monos < monoTarget and airFactoryTarget != @flare then
+            display.nextFactory = airFactoryTarget = @mono;
             handleAirFactory(@mono, power, 30, 15, ref lastProgress);
         else
+            display.nextFactory = airFactoryTarget = null;
             air_factory.config = @flare;
             unloader2.config = @coal;
         end;
 
         if polys < polyTarget then
-            display.nextUnit = @poly;
+            display.nextAddReco = @poly;
 
             var recoProgress = additive_rec.@progress;
             if lastRecoProgress > recoProgress then
@@ -181,24 +183,26 @@ void backgroundProcess()
                 inverted_sort4.enabled = false;
             end;
         else
+            display.nextAddReco = null;
             inverted_sort4.enabled = false;
         end;
 
         if multiplicative_rec then
+            display.nextMultiReco = @mega;
             var c = null;
             if multiplicative_rec.@metaglass < 40 then
                 c = @metaglass;
-            elsif multiplicative_rec.@titanium < 80 then
+            elsif core.@titanium and multiplicative_rec.@titanium < 80 then
                 c = @titanium;
-            elsif multiplicative_rec.@silicon < 130 then
+            else
                 c = @silicon;
             end;
             unloader3.config = c;
             unloader4.config = c;
-            //unloader5.config = c;
 
             var multiProgress = multiplicative_rec.@progress;
             if lastMultiProgress > multiProgress then
+                display.nextMultiReco = null;
                 factoryUnitFinished(@mega);
                 lastMultiProgress = 0;
             else
