@@ -16,7 +16,7 @@ require "PolyController.mnd" remote polyController;
 require "BlockBuilder.mnd" remote blockBuilder;
 
 // At this point, we're only using a poly
-const capacity = 30;
+const capacity = 28;
 
 // Built blocks
 var
@@ -28,6 +28,8 @@ var
 
 noinit var
     core, coreX, coreY,
+    scrap,
+    sandContainer,
     builder;
 
     // Targets to be met for the next build
@@ -52,7 +54,7 @@ external bank1[511] logPosition = 511;
 
 // SUPPLY OPERATIONS
 
-inline void supplyBase0()
+void supplyBase0()
     var supplied = false;
 
     if unloader1 == null then
@@ -70,9 +72,15 @@ inline void supplyBase0()
                 supplyBlock(smelter, @coal);
                 supplied = true;
             elsif smelter.@sand < 5 then
-                status1("Goal 3: sand for silicon requirement");
-                supplyBlock(smelter, @sand);
-                supplied = true;
+                if scrap then
+                    status1("Goal 3a: scrap for silicon requirement");
+                    supplyBlock(pulverizer1, @scrap);
+                    supplied = true;
+                else
+                    status1("Goal 3: sand for silicon requirement");
+                    supplyBlock(smelter, @sand);
+                    supplied = true;
+                end;
             end;
         end;
 
@@ -85,18 +93,27 @@ inline void supplyBase0()
        end;
     end;
 
-    var titaniumTrigger = core.@titanium < targetTitanium ? min(7, targetTitanium - core.@titanium) : 100;
+    var titaniumTrigger = core.@titanium < targetTitanium ? min(5, targetTitanium - core.@titanium) : 100;
     if titaniumDrill.@titanium < titaniumTrigger then
         if !supplied then
             if battery1.@totalPower < unloader1 * powerTarget then
                 status1("Goal 5: supplying generator");
                 mineOre(@coal);
             elsif core.@silicon < targetSilicon then
-                status1("Goal 6: silicon requirement");
-                var coal = core.@coal;
-                var sand = core.@sand;
-                var ore = coal < sand ? @coal : @sand;
-                mineOre(ore);
+                if scrap then
+                    status1("Goal 6: silicon requirement");
+                    var coal = core.@coal;
+                    var sand = sandContainer.@sand;
+                    var ore = coal < sand ? @coal : @scrap;
+                    var block = coal < sand ? core : sandContainer;
+                    mineOre(ore, block);
+                else
+                    status1("Goal 6: silicon requirement");
+                    var coal = core.@coal;
+                    var sand = core.@sand;
+                    var ore = coal < sand ? @coal : @sand;
+                    mineOre(ore);
+                end;
             elsif core.@copper < targetCopper then
                 status1("Goal 7: copper requirement");
                 mineOre(@copper);
@@ -105,13 +122,19 @@ inline void supplyBase0()
                 mineOre(@lead);
             elsif core.@metaglass < targetMetaglass then
                 status1("Goal 9: metaglass requirement");
-                mineOre(@sand);
+                if scrap then
+                    mineOre(@scrap, sandContainer);
+                else
+                    mineOre(@sand);
+                end;
             else
                 status1("Goal 10: supplying base");
-                var coal = core.@coal;
-                var sand = core.@sand;
-                var ore = coal <= sand ? @coal : @sand;
-                mineOre(ore);
+                if container_a then
+                    mineOre(@scrap, container_a);
+                else
+                    var ore = scrap or core.@coal <= core.@sand ? @coal : @sand;
+                    mineOre(ore);
+                end;
             end;
         end;
     else
@@ -120,12 +143,12 @@ inline void supplyBase0()
     end;
 end;
 
-inline void supplyBase1()
+void supplyBase1()
     status1("Phase 1: supplying base");
     mineOre(@coal);
 end;
 
-inline void supplyBase2()
+void supplyBase2()
     status1("Phase 2: servicing thorium drill");
 
     if thoriumBattery.@totalPower < 2000 then
@@ -156,7 +179,7 @@ void supplyBase()
     end;
 end;
 
-inline def targetMet()
+def targetMet()
     // This is horrible, but Mindcode doesn't do short-circuit evaluation yet.
     if core.@copper < targetCopper then return false; end;
     if core.@lead < targetLead then return false; end;
@@ -322,6 +345,11 @@ begin
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
 
+    scrap = !ulocate(:ore, @sand);
+    scrap = true;
+    display.scrap = scrap;
+    monoController.scrap = scrap;
+
     // PHASE 0: BASIC BLOCKS
 
     buildBlockFromCfg(PRESS);
@@ -331,10 +359,29 @@ begin
 
     powerTarget = 400;
 
+    if scrap then
+        buildBlockFromCfg(PULVERIZER1);
+        sandContainer = pulverizer1;
+        buildBlockFromCfg(OVERFLOW_GATE_A);
+        buildBlockFromCfg(POWER_NODE_A);
+    end;
+
     buildBlockFromCfg(SMELTER);
     buildBlockFromCfg(INVERTED_SORT1);
     titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
+
+    sandContainer = core;
+    if scrap then
+        buildBlockFromCfg(CONTAINER_A);
+        buildBlockFromCfg(UNLOADER_A);
+        sandContainer = container_a;
+        buildBlockFromCfg(PULVERIZER2);
+        buildBlockFromCfg(OVERFLOW_GATE_B);
+        buildBlockFromCfg(OVERFLOW_GATE_C);
+    end;
+    monoController.sandContainer = sandContainer;
+
     buildBlockFromCfg(UNLOADER1);
     buildBlockFromCfg(INVERTED_SORT2);
     buildBlockFromCfg(OVERFLOW_GATE1);
@@ -392,6 +439,9 @@ begin
     graphiteSurplus = 200;
 
     buildBlockFromCfg(SMELTER2);
+    if scrap then
+        buildBlockFromCfg(PULVERIZER3);
+    end;
 
     // POLYS
     buildBlockFromCfg(UNLOADER4);
@@ -488,18 +538,18 @@ void stopAll()
     oreLocator.enabled = false;
     blockBuilder.enabled = false;
     measurements.enabled = false;
-
-    flagUnits(@mega);
-    flagUnits(@poly);
-    flagUnits(@mono);
-    flagUnits(@flare);
-
-    while true do
-        lineUpUnits(coreY + 6, @mega);
-        lineUpUnits(coreY + 2, @poly);
-        lineUpUnits(coreY - 2, @mono);
-        lineUpUnits(coreY - 6, @flare);
-    end;
+//
+//    flagUnits(@mega);
+//    flagUnits(@poly);
+//    flagUnits(@mono);
+//    flagUnits(@flare);
+//
+//    while true do
+//        lineUpUnits(coreY + 6, @mega);
+//        lineUpUnits(coreY + 2, @poly);
+//        lineUpUnits(coreY - 2, @mono);
+//        lineUpUnits(coreY - 6, @flare);
+//    end;
 end;
 
 void flagUnits(unit)

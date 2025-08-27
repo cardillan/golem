@@ -15,6 +15,8 @@ noinit var core, coreX, coreY;
 var min = 0, minOre = null;
 
 noinit remote var
+    scrap,
+    sandContainer,
     copperTarget,
     sandTarget,
     leadTarget;
@@ -37,10 +39,12 @@ void backgroundProcess()
             printflush(message1);
 
             var lead = core.@lead - leadTarget;
-            var sand = core.@sand - sandTarget;
+            var sand = sandContainer.@sand + sandContainer.@scrap - sandTarget;
             var copper = core.@copper - copperTarget;
             min = min(lead, sand, copper);
             minOre = min == sand ? @sand : min == lead ? @lead : @copper;
+            if minOre == @sand and scrap then minOre = @scrap; end;
+
             println("minOre:", minOre);
 
             if min < 10 then min = -100; else min += 100; end;
@@ -131,8 +135,13 @@ end;
 
 void returnItems()
     print("Returning ore");
-    approach(coreX, coreY, RADIUS);
-    itemDrop(core, capacity);
+    if @unit.@firstItem == @scrap then
+        approach(sandContainer.@x, sandContainer.@y, RADIUS);
+        itemDrop(sandContainer, capacity);
+    else
+        approach(coreX, coreY, RADIUS);
+        itemDrop(core, capacity);
+    end;
 
     if @unit.@firstItem == null then
         println(" (finished)");
