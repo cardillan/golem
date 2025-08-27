@@ -10,7 +10,7 @@ const capacity = 20;
 
 linked message1;
 
-noinit var core, coreX, coreY;
+noinit var core, coreX, coreY, sandX, sandY, count;
 
 var min = 0, minOre = null;
 
@@ -32,6 +32,8 @@ void backgroundProcess()
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
 
+    var newCount = 0;
+
     while true do
         ubind(@mono);
         if firstItem.@dead then firstItem = @unit; end;
@@ -48,7 +50,13 @@ void backgroundProcess()
             println("minOre:", minOre);
 
             if min < 10 then min = -100; else min += 100; end;
+
+            count = newCount;
+            newCount = 2;
+            sandX = sandContainer.@x;
+            sandY = sandContainer.@y;
         end;
+        newCount++;
 
         var flag = @unit.@flag;
         println("Unit flag: ", flag);
@@ -77,7 +85,7 @@ void findOreToMine(ore)
 end;
 
 void mine(flag)
-    print("Mining");
+    print("Mining x");
 
     flag \= 2;
     var ore = lookup(:item, flag % 16);
@@ -87,24 +95,32 @@ void mine(flag)
 
     var floorOre =
         ore == @copper ? @ore-copper :
+        ore == @scrap ? @ore-scrap :
         ore == @lead ? @ore-lead :
         @sand-floor;
 
-    if ore != minOre then
-        // We aren't mining the most needed ore
-        if core.sensor(ore) > min then
-            print(", switching to a more needed ore");
-            flag(1);
-            return;
+    var oreCapacity = ore == @scrap ? capacity - count : capacity;
+
+    if ore != @scrap then
+        if ore != minOre then
+            // We aren't mining the most needed ore
+            if core.sensor(ore) > min then
+                print(", switching to a more needed ore");
+                flag(1);
+                return;
+            end;
         end;
     end;
+
+    var items = @unit.@totalItems;
+    print(items);
 
     if @unit.@firstItem != ore then
         print(" (dropping)");
         itemDrop(@air, capacity);
     end;
 
-    if @unit.@totalItems >= capacity then
+    if items >= oreCapacity then
         print(", full");
         approach(coreX, coreY, RADIUS);
         flag(1);
@@ -136,7 +152,7 @@ end;
 void returnItems()
     print("Returning ore");
     if @unit.@firstItem == @scrap then
-        approach(sandContainer.@x, sandContainer.@y, RADIUS);
+        approach(sandX, sandY, RADIUS);
         itemDrop(sandContainer, capacity);
     else
         approach(coreX, coreY, RADIUS);

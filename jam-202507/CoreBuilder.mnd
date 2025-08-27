@@ -2,21 +2,25 @@
 #set syntax = strict;
 //#set sort-variables;
 
-noinit var controller;
-
 require units;
 require "Links.mnd";
 require "Common.mnd";
-require "Actions.mnd";
 require "Display.mnd" remote display;
 require "OreLocator.mnd" remote oreLocator;
-require "CoreController.mnd" remote controller;
+require "CoreController.mnd" remote processor;
 require "MonoController.mnd" remote monoController;
 require "PolyController.mnd" remote polyController;
 require "BlockBuilder.mnd" remote blockBuilder;
 
 // At this point, we're only using a poly
 const capacity = 28;
+
+remote var ERROR = "";
+
+void error(error)
+    ERROR = error;
+    stopProcessor();
+end;
 
 // Built blocks
 var
@@ -32,251 +36,24 @@ noinit var
     sandContainer,
     builder;
 
-    // Targets to be met for the next build
-noinit mlog(@copper.@name)      var targetCopper;
-noinit mlog(@lead.@name)        var targetLead;
-noinit mlog(@graphite.@name)    var targetGraphite;
-noinit mlog(@silicon.@name)     var targetSilicon;
-noinit mlog(@titanium.@name)    var targetTitanium;
-noinit mlog(@metaglass.@name)   var targetMetaglass;
-noinit mlog(@thorium.@name)     var targetThorium;
-noinit                          var noTarget;
-noinit                          var powerTarget;
-
-var
-    leadSurplus = 0,
-    graphiteSurplus = 20,
-    siliconSurplus = 20,
-    siliconMonoSurplus = 0,
-    metaglassSurplus = 20;
-
-external bank1[511] logPosition = 511;
-
-// SUPPLY OPERATIONS
-
-void supplyBase0()
-    var supplied = false;
-
-    if unloader1 == null then
-        if core.@graphite < targetGraphite then
-            if press.@coal < 5 then
-                status1("Goal 1: graphite requirement");
-                supplyBlock(press, @coal);
-                supplied = true;
-            end;
-        end;
-
-        if core.@silicon < targetSilicon then
-            if smelter.@coal < 5 then
-                status1("Goal 2: coal for silicon requirement");
-                supplyBlock(smelter, @coal);
-                supplied = true;
-            elsif smelter.@sand < 5 then
-                if scrap then
-                    status1("Goal 3a: scrap for silicon requirement");
-                    supplyBlock(pulverizer1, @scrap);
-                    supplied = true;
-                else
-                    status1("Goal 3: sand for silicon requirement");
-                    supplyBlock(smelter, @sand);
-                    supplied = true;
-                end;
-            end;
-        end;
-
-        if battery1.@totalPower < powerTarget then
-            if generator.@coal < 2 then
-                status1("Goal 4: supplying generator");
-                supplyBlock(generator, @coal);
-                supplied = true;
-            end;
-       end;
-    end;
-
-    var titaniumTrigger = core.@titanium < targetTitanium ? min(5, targetTitanium - core.@titanium) : 100;
-    if titaniumDrill.@titanium < titaniumTrigger then
-        if !supplied then
-            if battery1.@totalPower < unloader1 * powerTarget then
-                status1("Goal 5: supplying generator");
-                mineOre(@coal);
-            elsif core.@silicon < targetSilicon then
-                if scrap then
-                    status1("Goal 6: silicon requirement");
-                    var coal = core.@coal;
-                    var sand = sandContainer.@sand;
-                    var ore = coal < sand ? @coal : @scrap;
-                    var block = coal < sand ? core : sandContainer;
-                    mineOre(ore, block);
-                else
-                    status1("Goal 6: silicon requirement");
-                    var coal = core.@coal;
-                    var sand = core.@sand;
-                    var ore = coal < sand ? @coal : @sand;
-                    mineOre(ore);
-                end;
-            elsif core.@copper < targetCopper then
-                status1("Goal 7: copper requirement");
-                mineOre(@copper);
-            elsif core.@lead < targetLead then
-                status1("Goal 8: lead requirement");
-                mineOre(@lead);
-            elsif core.@metaglass < targetMetaglass then
-                status1("Goal 9: metaglass requirement");
-                if scrap then
-                    mineOre(@scrap, sandContainer);
-                else
-                    mineOre(@sand);
-                end;
-            else
-                status1("Goal 10: supplying base");
-                if container_a then
-                    mineOre(@scrap, container_a);
-                else
-                    var ore = scrap or core.@coal <= core.@sand ? @coal : @sand;
-                    mineOre(ore);
-                end;
-            end;
-        end;
-    else
-        status1("Goal 11: Fetching titanium");
-        fetchBlock(titaniumDrill, @titanium);
-    end;
-end;
-
-void supplyBase1()
-    status1("Phase 1: supplying base");
-    mineOre(@coal);
-end;
-
-void supplyBase2()
-    status1("Phase 2: servicing thorium drill");
-
-    if thoriumBattery.@totalPower < 2000 then
-        if thoriumGenerator.@coal == 0 then
-            if core.@coal < 50 then
-                supplyBlock(thoriumGenerator, @coal);
-            else
-                supplyBlockFromCore(thoriumGenerator, @coal);
-            end;
-        end;
-    end;
-    fetchBlock(thoriumContainer, @thorium);
-
-    if core.@thorium > 400 then
-        setPolyTarget(4);
-    end;
-end;
-
-void supplyBase()
-    monoController.sandTarget = max(0, siliconMonoSurplus + targetSilicon - core.@silicon);
-
-    if thoriumContainer then
-        supplyBase2();
-    elsif controller.monos > 1 then
-        supplyBase1();
-    else
-        supplyBase0();
-    end;
-end;
-
-def targetMet()
-    // This is horrible, but Mindcode doesn't do short-circuit evaluation yet.
-    if core.@copper < targetCopper then return false; end;
-    if core.@lead < targetLead then return false; end;
-    if core.@graphite < targetGraphite then return false; end;
-    if core.@silicon < targetSilicon then return false; end;
-    if core.@titanium < targetTitanium then return false; end;
-    if core.@metaglass < targetMetaglass then return false; end;
-    if core.@thorium < targetThorium then return false; end;
-    return true;
-end;
-
-void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
-    // Update display
-    var count = 0;
-    for var t in copper, lead, graphite, silicon, titanium, metaglass, thorium do count += sign(t); end;
-    display.totalTargets = count;
-    display.nextBlock = block;
-    display.targetCopper = copper;
-    display.targetLead = lead;
-    display.targetGraphite = graphite;
-    display.targetSilicon = silicon;
-    display.targetTitanium = titanium;
-    display.targetMetaglass = metaglass;
-    display.targetThorium = thorium;
-
-    targetCopper = copper;
-    targetLead = lead + leadSurplus;
-    targetGraphite = graphite;
-    targetSilicon = silicon;
-    targetTitanium = titanium;
-    targetMetaglass = metaglass;
-    targetThorium = thorium;
-    noTarget = isNoTarget;
-
-    controller.pressTarget = graphite + graphiteSurplus;
-    controller.smelterTarget = silicon + siliconSurplus;
-    controller.kilnTarget = metaglass + metaglassSurplus;
-    controller.leadReserve = lead + leadSurplus;
-    controller.siliconReserve = silicon + sign(silicon) * 20;
-    controller.graphiteReserve = graphite + sign(graphite) * 20;
-
-    monoController.leadTarget = targetLead;
-    monoController.copperTarget = targetCopper;
-
-    while !targetMet() do
-        supplyBase();
-    end;
-
-    if forBuild then
-        controller.buildStart();
-        while !targetMet() do
-            supplyBase();
-        end;
-    end;
-end;
-
 // BUILDING OPERATIONS
 
-def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, thorium, rotation, config, index)
-    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, controller != null, false);
-    var built = blockBuilder.buildBlockAt(block, x, y, rotation, config, index);
-    async(controller.buildStop());
-    return built;
-end;
-
-def buildRemoteBlock(cfg, x, y)
-    if x + y > 0 then
-        var type, cu, pb, gr, si, ti, mg, th, rotation, index;
-        unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
-        return buildBlock(type, x, y, cu, pb, gr, si, ti, mg, th, rotation, null, index);
-    end;
-    return false;
+def buildRemoteBlockLocal(cfg, x, y)
+    blockBuilder.buildRemoteBlock(cfg, x, y);
 end;
 
 // Builds a block
-def buildBlockFromCfg(cfg, config)
-    var type, x, y, cu, pb, gr, si, ti, mg, th, rotation, index;
-    unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
-    var building = buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config, index);
-    @this.write(building, cfg);
-    display.write(building, cfg);
-    controller.write(building, cfg);
-    return building;
+def buildBlockFromCfgLocal(cfg, config)
+    return blockBuilder.buildBlockFromCfg(cfg, config);
 end;
 
-def buildBlockFromCfg(cfg)
-    buildBlockFromCfg(cfg, null);
+def buildBlockFromCfgLocal(cfg)
+    return blockBuilder.buildBlockFromCfg(cfg, null);
 end;
 
-void meetTarget(cfg)
-    var type, cu, pb, gr, si, ti, mg, th;
-    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
-    meetTarget(type, cu, pb, gr, si, ti, mg, th, false, false);
-end;
 
 def buildFirstTitaniumDrill(cfg)
-    meetTarget(cfg);
+    blockBuilder.meetTargetCfg(cfg);
 
     display.nextBlock = @ore-titanium;
     var dx, dy;
@@ -296,7 +73,7 @@ void blocksBuildTitaniumDrills()
     // Bind the main builder back
     ubind(builder);
 
-    blockBuilder.buildTitaniumDrills(controller, current);
+    blockBuilder.buildTitaniumDrills(current);
     async(oreLocator.stopLocation());
 end;
 
@@ -305,23 +82,28 @@ void buildThoriumDrill()
     // We're using the main builder for this, and calling synchronously
     oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7);
 
-    meetTarget(LASER_DRILL);
+    blockBuilder.meetTargetCfg(LASER_DRILL);
 
     var result = await(oreLocator.layoutThoriumDrill);
     if !result then error("Cannot locate spot for thorium drill"); end;
     thoriumDrill = blockBuilder.buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, -1);
 
-    buildRemoteBlock(WATER_EXT, oreLocator.water1X, oreLocator.water1Y);
-    buildRemoteBlock(WATER_EXT, oreLocator.water2X, oreLocator.water2Y);
-    thoriumGenerator = buildRemoteBlock(STEAM_GEN, oreLocator.generatorX, oreLocator.generatorY);
-    buildRemoteBlock(POWER_NODE, oreLocator.node1X, oreLocator.node1Y);
-    buildRemoteBlock(POWER_NODE, oreLocator.node2X, oreLocator.node2Y);
-    buildRemoteBlock(SOLAR_PANEL, oreLocator.panelX, oreLocator.panelY);
-    thoriumBattery = buildRemoteBlock(BATTERY1, oreLocator.batteryX, oreLocator.batteryY);
-    thoriumContainer = buildRemoteBlock(CONTAINER, oreLocator.containerX, oreLocator.containerY);
+    buildRemoteBlockLocal(WATER_EXT, oreLocator.water1X, oreLocator.water1Y);
+    buildRemoteBlockLocal(WATER_EXT, oreLocator.water2X, oreLocator.water2Y);
+    thoriumGenerator = buildRemoteBlockLocal(STEAM_GEN, oreLocator.generatorX, oreLocator.generatorY);
+    buildRemoteBlockLocal(POWER_NODE, oreLocator.node1X, oreLocator.node1Y);
+    buildRemoteBlockLocal(POWER_NODE, oreLocator.node2X, oreLocator.node2Y);
+    buildRemoteBlockLocal(SOLAR_PANEL, oreLocator.panelX, oreLocator.panelY);
+    thoriumBattery = buildRemoteBlockLocal(BATTERY1, oreLocator.batteryX, oreLocator.batteryY);
+    thoriumContainer = buildRemoteBlockLocal(CONTAINER, oreLocator.containerX, oreLocator.containerY);
     if thoriumContainer == null then thoriumContainer = thoriumDrill; end;
+
     display.thoriumDrill = thoriumDrill;
     display.thoriumContainer = thoriumContainer;
+
+    blockBuilder.thoriumBattery = thoriumBattery;
+    blockBuilder.thoriumContainer = thoriumContainer;
+    blockBuilder.thoriumGenerator = thoriumGenerator;
 
     polyController.setThoriumContainer(thoriumContainer);
 end;
@@ -329,12 +111,12 @@ end;
 // MAIN
 
 void buildUnits()
-    meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
+    blockBuilder.meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
     display.totalTargets = 0;
     display.nextBlock = null;
-    controller.leadReserve = 0;
-    controller.siliconReserve = 0;
-    controller.graphiteReserve = 0;
+    processor.leadReserve = 0;
+    processor.siliconReserve = 0;
+    processor.graphiteReserve = 0;
 end;
 
 begin
@@ -346,124 +128,127 @@ begin
     while core == null;
 
     scrap = !ulocate(:ore, @sand);
-    scrap = true;
     display.scrap = scrap;
+    blockBuilder.scrap = scrap;
     monoController.scrap = scrap;
 
     // PHASE 0: BASIC BLOCKS
 
-    buildBlockFromCfg(PRESS);
-    buildBlockFromCfg(BATTERY1);
-    buildBlockFromCfg(BATTERY2);
-    buildBlockFromCfg(GENERATOR);
+    buildBlockFromCfgLocal(PRESS);
+    buildBlockFromCfgLocal(BATTERY1);
+    buildBlockFromCfgLocal(BATTERY2);
+    buildBlockFromCfgLocal(GENERATOR);
 
-    powerTarget = 400;
-
-    if scrap then
-        buildBlockFromCfg(PULVERIZER1);
-        sandContainer = pulverizer1;
-        buildBlockFromCfg(OVERFLOW_GATE_A);
-        buildBlockFromCfg(POWER_NODE_A);
-    end;
-
-    buildBlockFromCfg(SMELTER);
-    buildBlockFromCfg(INVERTED_SORT1);
-    titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
-    display.titaniumDrill = titaniumDrill;
+    blockBuilder.powerTarget = 400;
 
     sandContainer = core;
     if scrap then
-        buildBlockFromCfg(CONTAINER_A);
-        buildBlockFromCfg(UNLOADER_A);
-        sandContainer = container_a;
-        buildBlockFromCfg(PULVERIZER2);
-        buildBlockFromCfg(OVERFLOW_GATE_B);
-        buildBlockFromCfg(OVERFLOW_GATE_C);
+        //buildBlockFromCfgLocal(BATTERY3);
+        sandContainer = buildBlockFromCfgLocal(PULVERIZER1);
+        blockBuilder.sandContainer = sandContainer;
+        buildBlockFromCfgLocal(OVERFLOW_GATE_A);
+        buildBlockFromCfgLocal(POWER_NODE_A);
+    end;
+
+    buildBlockFromCfgLocal(SMELTER);
+    buildBlockFromCfgLocal(INVERTED_SORT1);
+    titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
+    display.titaniumDrill = titaniumDrill;
+    blockBuilder.titaniumDrill = titaniumDrill;
+
+    if scrap then
+        buildBlockFromCfgLocal(UNLOADER_A);
+        sandContainer = buildBlockFromCfgLocal(CONTAINER_A);
+        blockBuilder.sandContainer = sandContainer;
+        buildBlockFromCfgLocal(INVERTED_SORT_A);
+        buildBlockFromCfgLocal(PULVERIZER2);
+        buildBlockFromCfgLocal(OVERFLOW_GATE_B);
+        buildBlockFromCfgLocal(OVERFLOW_GATE_C);
     end;
     monoController.sandContainer = sandContainer;
 
-    buildBlockFromCfg(UNLOADER1);
-    buildBlockFromCfg(INVERTED_SORT2);
-    buildBlockFromCfg(OVERFLOW_GATE1);
-    graphiteSurplus = 80;
+    buildBlockFromCfgLocal(INVERTED_SORT2);
+    buildBlockFromCfgLocal(OVERFLOW_GATE1);
+    buildBlockFromCfgLocal(UNLOADER1);
+    blockBuilder.graphiteSurplus = 80;
 
     // Build and initialize base controller
-    controller = buildBlockFromCfg(PROCESSOR, coreControllerConfig);
-
-    controller.timer = timer;
-    controller.display = display;
-    controller.core = core;
-    controller.bank = bank1;
+    buildBlockFromCfgLocal(PROCESSOR, coreControllerConfig);
+    processor.timer = timer;
+    processor.display = display;
+    processor.core = core;
+    processor.bank = bank1;
 
     for var block in BLOCKS[0 ... 10] do
-        controller.write(@this.read(block), block);
+        processor.write(@this.read(block), block);
     end;
 
-    buildBlockFromCfg(POWER_NODE);
-    buildBlockFromCfg(UNLOADER2);
-    buildBlockFromCfg(OVERFLOW_GATE3);
+    buildBlockFromCfgLocal(POWER_NODE);
+    buildBlockFromCfgLocal(UNLOADER2);
+    buildBlockFromCfgLocal(OVERFLOW_GATE3);
 
-    buildBlockFromCfg(AIR_FACTORY);
+    buildBlockFromCfgLocal(AIR_FACTORY);
 
     // PHASE 1: BUILDING UNITS
 
     setFlareTarget(1);
     setMonoTarget(5);
-    controller.pressTarget = 85;
-    controller.smelterTarget = 150;
-    controller.kilnTarget = 30;
-    siliconSurplus = leadSurplus = 20;
+    processor.pressTarget = 85;
+    processor.smelterTarget = 150;
+    processor.kilnTarget = 30;
+    blockBuilder.siliconSurplus = 20;
+    blockBuilder.leadSurplus = 20;
 
     buildUnits();
     do
-        supplyBase();
+        blockBuilder.supplyBase();
 
         // We're low on power: the air units might not get built in time
         // Go on building additional power reserves yourself.
         if battery1.@totalPower < 300 then break; end;
-    while controller.monos < 3;
+    while processor.monos < 3;
 
     // Build stock
-    siliconSurplus = 65;
+    blockBuilder.siliconSurplus = 65;
 
     // Kiln - needed for metaglass
-    buildBlockFromCfg(UNLOADER3);
-    buildBlockFromCfg(INVERTED_SORT3);
-    buildBlockFromCfg(KILN);
+    buildBlockFromCfgLocal(UNLOADER3);
+    buildBlockFromCfgLocal(INVERTED_SORT3);
+    buildBlockFromCfgLocal(KILN);
 
     // Steam generator
-    buildBlockFromCfg(WATER_EXT);
-    buildBlockFromCfg(STEAM_GEN);
+    buildBlockFromCfgLocal(WATER_EXT);
+    buildBlockFromCfgLocal(STEAM_GEN);
 
-    buildBlockFromCfg(MULTIPRESS);
-    graphiteSurplus = 200;
+    buildBlockFromCfgLocal(MULTIPRESS);
+    blockBuilder.graphiteSurplus = 200;
 
-    buildBlockFromCfg(SMELTER2);
+    buildBlockFromCfgLocal(SMELTER2);
     if scrap then
-        buildBlockFromCfg(PULVERIZER3);
+        buildBlockFromCfgLocal(PULVERIZER3);
     end;
 
     // POLYS
-    buildBlockFromCfg(UNLOADER4);
-    buildBlockFromCfg(INVERTED_SORT4);
-    buildBlockFromCfg(ADDITIVE_REC);
+    buildBlockFromCfgLocal(UNLOADER4);
+    buildBlockFromCfgLocal(INVERTED_SORT4);
+    buildBlockFromCfgLocal(ADDITIVE_REC);
 
     // Even more stock
-    siliconSurplus = 1000;
-    siliconMonoSurplus = 20;
-    metaglassSurplus = 100;
+    blockBuilder.siliconSurplus = 1000;
+    blockBuilder.siliconMonoSurplus = 20;
+    blockBuilder.metaglassSurplus = 100;
 
     setMonoTarget(4);
     setPolyTarget(3);
     buildUnits();
 
-    while controller.polys < 2 do
-        supplyBase();
+    while processor.polys < 2 do
+        blockBuilder.supplyBase();
     end;
 
     setFlareTarget(2);
-    while controller.flares < 2 do
-        supplyBase();
+    while processor.flares < 2 do
+        blockBuilder.supplyBase();
     end;
 
     // Build more titanium drills now
@@ -474,63 +259,63 @@ begin
     blocksBuildTitaniumDrills();
     display.nextBlock = null;
 
-    graphiteSurplus = 10;
-    metaglassSurplus = 50;
+    blockBuilder.graphiteSurplus = 10;
+    blockBuilder.metaglassSurplus = 50;
 
     display.nextBlock = @ore-thorium;
     buildThoriumDrill();
     display.nextBlock = null;
 
-    while controller.polys < 3 do
-        supplyBase();
+    while processor.polys < 3 do
+        blockBuilder.supplyBase();
     end;
 
-    setMonoTarget(0);
+    setMonoTarget(4 + scrap);
 
-    controller.powerTarget = 3209;
-    siliconMonoSurplus = 120;
-    leadSurplus = 0;
+    processor.powerTarget = 3209;
+    blockBuilder.siliconMonoSurplus = 120;
+    blockBuilder.leadSurplus = 0;
 
-    buildBlockFromCfg(MULTIPLICATIVE_REC);
+    buildBlockFromCfgLocal(MULTIPLICATIVE_REC);
 
-    metaglassSurplus = 10;
+    blockBuilder.metaglassSurplus = 10;
     setPolyTarget(0);
     setFlareTarget(0);
     setMegaTarget(1);
     buildUnits();
 
-    var tmp = controller.polys - 1;
-    controller.polyTarget = tmp;
-    controller.polys = tmp;
+    var tmp = processor.polys - 1;
+    processor.polyTarget = tmp;
+    processor.polys = tmp;
     display.polys = tmp;
     var x = multiplicative_rec.@x;
     var y = multiplicative_rec.@y;
     do
         move(x, y);
         payEnter();
-    while !controller.megas;
+    while !processor.megas;
 
     stopAll();
 end;
 
 inline void setFlareTarget(target)
-    controller.flareTarget = target;
+    processor.flareTarget = target;
 end;
 
 inline void setMonoTarget(target)
-    controller.monoTarget = target;
+    processor.monoTarget = target;
 end;
 
 inline void setPolyTarget(target)
-    controller.polyTarget = target;
+    processor.polyTarget = target;
 end;
 
 inline void setMegaTarget(target)
-    controller.megaTarget = target;
+    processor.megaTarget = target;
 end;
 
 void stopAll()
-    controller.finished = true;
+    processor.finished = true;
     timer.enabled = false;
     flareController.enabled = false;
     monoController.enabled = false;
@@ -538,18 +323,18 @@ void stopAll()
     oreLocator.enabled = false;
     blockBuilder.enabled = false;
     measurements.enabled = false;
-//
-//    flagUnits(@mega);
-//    flagUnits(@poly);
-//    flagUnits(@mono);
-//    flagUnits(@flare);
-//
-//    while true do
-//        lineUpUnits(coreY + 6, @mega);
-//        lineUpUnits(coreY + 2, @poly);
-//        lineUpUnits(coreY - 2, @mono);
-//        lineUpUnits(coreY - 6, @flare);
-//    end;
+
+    flagUnits(@mega);
+    flagUnits(@poly);
+    flagUnits(@mono);
+    flagUnits(@flare);
+
+    while true do
+        lineUpUnits(coreY + 6, @mega);
+        lineUpUnits(coreY + 2, @poly);
+        lineUpUnits(coreY - 2, @mono);
+        lineUpUnits(coreY - 6, @flare);
+    end;
 end;
 
 void flagUnits(unit)

@@ -1,84 +1,89 @@
-    82 instructions before optimizations.
-     8 instructions eliminated by Temp Variables Elimination (6 iterations).
+    83 instructions before optimizations.
+     9 instructions eliminated by Temp Variables Elimination (6 iterations).
      2 instructions eliminated by Dead Code Elimination (4 iterations).
      8 instructions eliminated by Jump Normalization (2 passes, 5 iterations).
      3 instructions eliminated by Jump Optimization (5 iterations).
      3 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
-     1 instructions modified by Expression Optimization (3 iterations).
-     4 instructions eliminated by If Expression Optimization (4 iterations).
-    52 instructions eliminated by Data Flow Optimization (3 passes, 10 iterations).
+    10 instructions modified by Expression Optimization (3 iterations).
+     3 instructions eliminated by If Expression Optimization (4 iterations).
+    70 instructions eliminated by Data Flow Optimization (3 passes, 12 iterations).
    118 instructions added by Loop Unrolling (4 iterations).
      1 loops unrolled by Loop Unrolling.
      1 instructions eliminated by Jump Straightening (5 iterations).
      1 instructions updated by Jump Threading.
      3 instructions eliminated by Unreachable Code Elimination (2 iterations).
-   116 instructions after optimizations.
+    99 instructions after optimizations.
 
 Pass 1: speed optimization selection (cost limit 939):
-  * Unroll iteration loop at Measurement.mnd:24:9                size  +118, benefit      875.0, efficiency      7.415 (+69 instructions)
+  * Unroll iteration loop at Measurement.mnd:25:9                size  +118, benefit      875.0, efficiency      7.415 (+69 instructions)
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-2 instructions):
  
-    16 op equal *tmp3 :localCore null
-    17 jump *label9 equal *tmp3 false
+    16 op equal *tmp4 :localCore null
+    17 jump *label9 equal *tmp4 false
     18 jump *label4 always
--    * set *tmp4 null
+-    * set *tmp5 null
     19 jump *label10 always
     20 label *label9
--    * set *tmp4 null
+-    * set *tmp5 null
     21 label *label10
     22 set :accumulator 0
     23 set :item @thorium
 
-Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-8 instructions):
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-9 instructions):
  
-    11 jump *label6 notEqual *tmp2 false
+    11 jump *label6 notEqual *tmp3 false
     12 label *label8
     13 op add .nextTime .nextTime 1800
--    * read *tmp1 processor9 ".core"
+-    * read *tmp1 processor5 ".core"
 -    * set :localCore *tmp1
-+   14 read :localCore processor9 ".core"
-    15 op equal *tmp3 :localCore null
-    16 jump *label9 equal *tmp3 false
++   14 read :localCore processor5 ".core"
+    15 op equal *tmp4 :localCore null
+    16 jump *label9 equal *tmp4 false
     17 jump *label4 always
  
     62 jump *label24 always
     63 label *label23
-    64 sensor *tmp10 :item @name
--    * read *tmp11 processor9 *tmp10
--    * set *tmp9 *tmp11
-+   65 read *tmp9 processor9 *tmp10
+    64 sensor *tmp11 :item @name
+-    * read *tmp12 processor5 *tmp11
+-    * set *tmp10 *tmp12
++   65 read *tmp10 processor5 *tmp11
     66 label *label24
-    67 set :target *tmp9
--    * sensor *tmp12 :localCore :item
--    * set :actual *tmp12
-+   68 sensor :actual :localCore :item
-    69 op sub *tmp13 :actual :target
--    * op idiv *tmp14 *tmp13 10
--    * set :measure *tmp14
-+   70 op idiv :measure *tmp13 10
-    71 op greaterThanEq *tmp15 :measure 0
-    72 jump *label25 equal *tmp15 false
-    73 set *tmp16 1
- 
-    78 op add :measure :measure *tmp16
-    79 op min *tmp17 :measure 9
-    80 op max *tmp18 *tmp17 -9
--    * op add *tmp19 9 *tmp18
--    * set :measure *tmp19
-+   81 op add :measure 9 *tmp18
-    82 op shl *tmp20 :accumulator 5
--    * op or *tmp21 *tmp20 :measure
--    * set :accumulator *tmp21
-+   83 op or :accumulator *tmp20 :measure
+    67 set :target *tmp10
+    68 op equal *tmp13 :item @sand
+    69 jump *label25 equal *tmp13 false
+-    * read *tmp2 processor5 ".sandContainer"
+-    * set *tmp14 *tmp2
++   70 read *tmp14 processor5 ".sandContainer"
+    71 jump *label26 always
+    72 label *label25
+    73 set *tmp14 :localCore
+    74 label *label26
+    75 set :container *tmp14
+-    * sensor *tmp15 :container :item
+-    * set :actual *tmp15
++   76 sensor :actual :container :item
+    77 op sub *tmp16 :actual :target
+-    * op idiv *tmp17 *tmp16 10
+-    * set :measure *tmp17
++   78 op idiv :measure *tmp16 10
+    79 op min *tmp18 :measure 9
+    80 op max *tmp19 *tmp18 -9
+-    * op add *tmp20 9 *tmp19
+-    * set :measure *tmp20
++   81 op add :measure 9 *tmp19
+    82 op shl *tmp21 :accumulator 5
+-    * op or *tmp22 *tmp21 :measure
+-    * set :accumulator *tmp22
++   83 op or :accumulator *tmp21 :measure
     84 label *label12
-    85 multijump *tmp5 0 0 (m:marker0)
+    85 multijump *tmp6 0 0 (m:marker0)
     86 multilabel *label22 (m:marker0)
     87 label *label13
--    * op add *tmp22 .tail 1
--    * set :newTail *tmp22
--    * set *tmp23 :newTail
--    * write :accumulator bank2 *tmp23
+-    * op add *tmp23 .tail 1
+-    * set :newTail *tmp23
+-    * set *tmp24 :newTail
+-    * write :accumulator bank2 *tmp24
 +   88 op add :newTail .tail 1
 +   89 write :accumulator bank2 :newTail
     90 set .tail :newTail
@@ -100,32 +105,32 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-3 inst
      6 label *label6
      7 label *label7
      8 read *tmp0 processor1 "time"
--    * op lessThan *tmp2 *tmp0 .nextTime
--    * jump *label6 notEqual *tmp2 false
+-    * op lessThan *tmp3 *tmp0 .nextTime
+-    * jump *label6 notEqual *tmp3 false
 +    9 jump *label6 lessThan *tmp0 .nextTime
     10 label *label8
     11 op add .nextTime .nextTime 1800
-    12 read :localCore processor9 ".core"
--    * op equal *tmp3 :localCore null
--    * jump *label9 equal *tmp3 false
+    12 read :localCore processor5 ".core"
+-    * op equal *tmp4 :localCore null
+-    * jump *label9 equal *tmp4 false
 +   13 jump *label9 notEqual :localCore null
     14 jump *label4 always
     15 jump *label10 always
     16 label *label9
  
-    65 sensor :actual :localCore :item
-    66 op sub *tmp13 :actual :target
-    67 op idiv :measure *tmp13 10
--    * op greaterThanEq *tmp15 :measure 0
--    * jump *label25 equal *tmp15 false
-+   68 jump *label25 lessThan :measure 0
-    69 set *tmp16 1
-    70 jump *label26 always
-    71 label *label25
+    62 read *tmp10 processor5 *tmp11
+    63 label *label24
+    64 set :target *tmp10
+-    * op equal *tmp13 :item @sand
+-    * jump *label25 equal *tmp13 false
++   65 jump *label25 notEqual :item @sand
+    66 read *tmp14 processor5 ".sandContainer"
+    67 jump *label26 always
+    68 label *label25
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
  
-    12 read :localCore processor9 ".core"
+    12 read :localCore processor5 ".core"
     13 jump *label9 notEqual :localCore null
     14 jump *label4 always
 -    * jump *label10 always
@@ -144,14 +149,16 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
      5 label *label3
      6 label *label6
  
-    62 label *label24
-    63 set :target *tmp9
-    64 sensor :actual :localCore :item
--    * op sub *tmp13 :actual :target
-+   65 op sub *tmp13 :actual *tmp9
-    66 op idiv :measure *tmp13 10
-    67 jump *label25 lessThan :measure 0
-    68 set *tmp16 1
+    68 set *tmp14 :localCore
+    69 label *label26
+    70 set :container *tmp14
+-    * sensor :actual :container :item
+-    * op sub *tmp16 :actual :target
++   71 sensor :actual *tmp14 :item
++   72 op sub *tmp16 :actual *tmp10
+    73 op idiv :measure *tmp16 10
+    74 op min *tmp18 :measure 9
+    75 op max *tmp19 *tmp18 -9
  
     83 op add :newTail .tail 1
     84 write :accumulator bank2 :newTail
@@ -162,313 +169,321 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
     88 jump *label3 always
     89 label *label5
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-2 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3 instructions):
 -    * set .head 0
      0 write 0 bank2 511
      1 set .tail -1
      2 write -1 bank2 510
  
-    59 sensor *tmp10 :item @name
-    60 read *tmp9 processor9 *tmp10
+    59 sensor *tmp11 :item @name
+    60 read *tmp10 processor5 *tmp11
     61 label *label24
--    * set :target *tmp9
-    62 sensor :actual :localCore :item
-    63 op sub *tmp13 :actual *tmp9
-    64 op idiv :measure *tmp13 10
+-    * set :target *tmp10
+    62 jump *label25 notEqual :item @sand
+    63 read *tmp14 processor5 ".sandContainer"
+    64 jump *label26 always
+    65 label *label25
+    66 set *tmp14 :localCore
+    67 label *label26
+-    * set :container *tmp14
+    68 sensor :actual *tmp14 :item
+    69 op sub *tmp16 :actual *tmp10
+    70 op idiv :measure *tmp16 10
 
-Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-3 instructions):
+Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-2 instructions):
  
-    62 sensor :actual :localCore :item
-    63 op sub *tmp13 :actual *tmp9
-    64 op idiv :measure *tmp13 10
--    * jump *label25 lessThan :measure 0
--    * set *tmp16 1
+    59 sensor *tmp11 :item @name
+    60 read *tmp10 processor5 *tmp11
+    61 label *label24
+-    * jump *label25 notEqual :item @sand
+-    * read *tmp14 processor5 ".sandContainer"
 -    * jump *label26 always
 -    * label *label25
--    * set *tmp16 -1
+-    * set *tmp14 :localCore
 -    * label *label26
-+   65 select *tmp16 greaterThanEq :measure 0 1 -1
-    66 op add :measure :measure *tmp16
-    67 op min *tmp17 :measure 9
-    68 op max *tmp18 *tmp17 -9
++   62 read *tmp28 processor5 ".sandContainer"
++   63 select *tmp14 equal :item @sand *tmp28 :localCore
+    64 sensor :actual *tmp14 :item
+    65 op sub *tmp16 :actual *tmp10
+    66 op idiv :measure *tmp16 10
 
 Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 2 (-1 instructions):
  
     49 set :item @copper
-    50 setaddr *tmp5 *label22
+    50 setaddr *tmp6 *label22
     51 label *label11
-+   52 set *tmp9 100
-    53 op equal *tmp6 :item @sand
-    54 op equal *tmp7 :item @coal
-    55 op or *tmp8 *tmp6 *tmp7
--    * jump *label23 equal *tmp8 false
--    * set *tmp9 100
++   52 set *tmp10 100
+    53 op equal *tmp7 :item @sand
+    54 op equal *tmp8 :item @coal
+    55 op or *tmp9 *tmp7 *tmp8
+-    * jump *label23 equal *tmp9 false
+-    * set *tmp10 100
 -    * jump *label24 always
-+   56 jump *label24 notEqual *tmp8 false
++   56 jump *label24 notEqual *tmp9 false
     57 label *label23
-    58 sensor *tmp10 :item @name
-    59 read *tmp9 processor9 *tmp10
+    58 sensor *tmp11 :item @name
+    59 read *tmp10 processor5 *tmp11
 
-Modifications by Unroll iteration loop at Measurement.mnd:24:9 (+118 instructions):
+Modifications by Unroll iteration loop at Measurement.mnd:25:9 (+118 instructions):
  
     14 label *label9
     15 label *label10
     16 set :accumulator 0
 -    * set :item @thorium
--    * setaddr *tmp5 *label14
+-    * setaddr *tmp6 *label14
 -    * jump *label11 always
 -    * multilabel *label14 (m:marker0)
 -    * set :item @metaglass
--    * setaddr *tmp5 *label15
+-    * setaddr *tmp6 *label15
 -    * jump *label11 always
 -    * multilabel *label15 (m:marker0)
 -    * set :item @titanium
--    * setaddr *tmp5 *label16
+-    * setaddr *tmp6 *label16
 -    * jump *label11 always
 -    * multilabel *label16 (m:marker0)
 -    * set :item @silicon
--    * setaddr *tmp5 *label17
+-    * setaddr *tmp6 *label17
 -    * jump *label11 always
 -    * multilabel *label17 (m:marker0)
 -    * set :item @graphite
--    * setaddr *tmp5 *label18
+-    * setaddr *tmp6 *label18
 -    * jump *label11 always
 -    * multilabel *label18 (m:marker0)
 -    * set :item @coal
--    * setaddr *tmp5 *label19
+-    * setaddr *tmp6 *label19
 -    * jump *label11 always
 -    * multilabel *label19 (m:marker0)
 -    * set :item @sand
--    * setaddr *tmp5 *label20
+-    * setaddr *tmp6 *label20
 -    * jump *label11 always
 -    * multilabel *label20 (m:marker0)
 -    * set :item @lead
--    * setaddr *tmp5 *label21
+-    * setaddr *tmp6 *label21
 -    * jump *label11 always
 -    * multilabel *label21 (m:marker0)
 -    * set :item @copper
--    * setaddr *tmp5 *label22
+-    * setaddr *tmp6 *label22
 -    * label *label11
--    * set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label24 notEqual *tmp8 false
+-    * set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label24 notEqual *tmp9 false
 -    * label *label23
--    * sensor *tmp10 :item @name
--    * read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
+-    * read *tmp10 processor5 *tmp11
 -    * label *label24
--    * sensor :actual :localCore :item
--    * op sub *tmp13 :actual *tmp9
--    * op idiv :measure *tmp13 10
--    * select *tmp16 greaterThanEq :measure 0 1 -1
--    * op add :measure :measure *tmp16
--    * op min *tmp17 :measure 9
--    * op max *tmp18 *tmp17 -9
--    * op add :measure 9 *tmp18
--    * op shl *tmp20 :accumulator 5
--    * op or :accumulator *tmp20 :measure
+-    * read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
+-    * op sub *tmp16 :actual *tmp10
+-    * op idiv :measure *tmp16 10
+-    * op min *tmp18 :measure 9
+-    * op max *tmp19 *tmp18 -9
+-    * op add :measure 9 *tmp19
+-    * op shl *tmp21 :accumulator 5
+-    * op or :accumulator *tmp21 :measure
 -    * label *label12
--    * multijump *tmp5 0 0 (m:marker0)
+-    * multijump *tmp6 0 0 (m:marker0)
 -    * multilabel *label22 (m:marker0)
 -    * label *label13
 +   17 set :item @thorium
 +   18 label *label27
-+   19 set *tmp9 100
-+   20 op equal *tmp6 :item @sand
-+   21 op equal *tmp7 :item @coal
-+   22 op or *tmp8 *tmp6 *tmp7
-+   23 jump *label29 notEqual *tmp8 false
++   19 set *tmp10 100
++   20 op equal *tmp7 :item @sand
++   21 op equal *tmp8 :item @coal
++   22 op or *tmp9 *tmp7 *tmp8
++   23 jump *label29 notEqual *tmp9 false
 +   24 label *label28
-+   25 sensor *tmp10 :item @name
-+   26 read *tmp9 processor9 *tmp10
++   25 sensor *tmp11 :item @name
++   26 read *tmp10 processor5 *tmp11
 +   27 label *label29
-+   28 sensor :actual :localCore :item
-+   29 op sub *tmp13 :actual *tmp9
-+   30 op idiv :measure *tmp13 10
-+   31 select *tmp16 greaterThanEq :measure 0 1 -1
-+   32 op add :measure :measure *tmp16
-+   33 op min *tmp17 :measure 9
-+   34 op max *tmp18 *tmp17 -9
-+   35 op add :measure 9 *tmp18
-+   36 op shl *tmp20 :accumulator 5
-+   37 op or :accumulator *tmp20 :measure
++   28 read *tmp28 processor5 ".sandContainer"
++   29 select *tmp14 equal :item @sand *tmp28 :localCore
++   30 sensor :actual *tmp14 :item
++   31 op sub *tmp16 :actual *tmp10
++   32 op idiv :measure *tmp16 10
++   33 op min *tmp18 :measure 9
++   34 op max *tmp19 *tmp18 -9
++   35 op add :measure 9 *tmp19
++   36 op shl *tmp21 :accumulator 5
++   37 op or :accumulator *tmp21 :measure
 +   38 label *label30
 +   39 set :item @metaglass
 +   40 label *label33
-+   41 set *tmp9 100
-+   42 op equal *tmp6 :item @sand
-+   43 op equal *tmp7 :item @coal
-+   44 op or *tmp8 *tmp6 *tmp7
-+   45 jump *label35 notEqual *tmp8 false
++   41 set *tmp10 100
++   42 op equal *tmp7 :item @sand
++   43 op equal *tmp8 :item @coal
++   44 op or *tmp9 *tmp7 *tmp8
++   45 jump *label35 notEqual *tmp9 false
 +   46 label *label34
-+   47 sensor *tmp10 :item @name
-+   48 read *tmp9 processor9 *tmp10
++   47 sensor *tmp11 :item @name
++   48 read *tmp10 processor5 *tmp11
 +   49 label *label35
-+   50 sensor :actual :localCore :item
-+   51 op sub *tmp13 :actual *tmp9
-+   52 op idiv :measure *tmp13 10
-+   53 select *tmp16 greaterThanEq :measure 0 1 -1
-+   54 op add :measure :measure *tmp16
-+   55 op min *tmp17 :measure 9
-+   56 op max *tmp18 *tmp17 -9
-+   57 op add :measure 9 *tmp18
-+   58 op shl *tmp20 :accumulator 5
-+   59 op or :accumulator *tmp20 :measure
++   50 read *tmp28 processor5 ".sandContainer"
++   51 select *tmp14 equal :item @sand *tmp28 :localCore
++   52 sensor :actual *tmp14 :item
++   53 op sub *tmp16 :actual *tmp10
++   54 op idiv :measure *tmp16 10
++   55 op min *tmp18 :measure 9
++   56 op max *tmp19 *tmp18 -9
++   57 op add :measure 9 *tmp19
++   58 op shl *tmp21 :accumulator 5
++   59 op or :accumulator *tmp21 :measure
 +   60 label *label36
 +   61 set :item @titanium
 +   62 label *label39
-+   63 set *tmp9 100
-+   64 op equal *tmp6 :item @sand
-+   65 op equal *tmp7 :item @coal
-+   66 op or *tmp8 *tmp6 *tmp7
-+   67 jump *label41 notEqual *tmp8 false
++   63 set *tmp10 100
++   64 op equal *tmp7 :item @sand
++   65 op equal *tmp8 :item @coal
++   66 op or *tmp9 *tmp7 *tmp8
++   67 jump *label41 notEqual *tmp9 false
 +   68 label *label40
-+   69 sensor *tmp10 :item @name
-+   70 read *tmp9 processor9 *tmp10
++   69 sensor *tmp11 :item @name
++   70 read *tmp10 processor5 *tmp11
 +   71 label *label41
-+   72 sensor :actual :localCore :item
-+   73 op sub *tmp13 :actual *tmp9
-+   74 op idiv :measure *tmp13 10
-+   75 select *tmp16 greaterThanEq :measure 0 1 -1
-+   76 op add :measure :measure *tmp16
-+   77 op min *tmp17 :measure 9
-+   78 op max *tmp18 *tmp17 -9
-+   79 op add :measure 9 *tmp18
-+   80 op shl *tmp20 :accumulator 5
-+   81 op or :accumulator *tmp20 :measure
++   72 read *tmp28 processor5 ".sandContainer"
++   73 select *tmp14 equal :item @sand *tmp28 :localCore
++   74 sensor :actual *tmp14 :item
++   75 op sub *tmp16 :actual *tmp10
++   76 op idiv :measure *tmp16 10
++   77 op min *tmp18 :measure 9
++   78 op max *tmp19 *tmp18 -9
++   79 op add :measure 9 *tmp19
++   80 op shl *tmp21 :accumulator 5
++   81 op or :accumulator *tmp21 :measure
 +   82 label *label42
 +   83 set :item @silicon
 +   84 label *label45
-+   85 set *tmp9 100
-+   86 op equal *tmp6 :item @sand
-+   87 op equal *tmp7 :item @coal
-+   88 op or *tmp8 *tmp6 *tmp7
-+   89 jump *label47 notEqual *tmp8 false
++   85 set *tmp10 100
++   86 op equal *tmp7 :item @sand
++   87 op equal *tmp8 :item @coal
++   88 op or *tmp9 *tmp7 *tmp8
++   89 jump *label47 notEqual *tmp9 false
 +   90 label *label46
-+   91 sensor *tmp10 :item @name
-+   92 read *tmp9 processor9 *tmp10
++   91 sensor *tmp11 :item @name
++   92 read *tmp10 processor5 *tmp11
 +   93 label *label47
-+   94 sensor :actual :localCore :item
-+   95 op sub *tmp13 :actual *tmp9
-+   96 op idiv :measure *tmp13 10
-+   97 select *tmp16 greaterThanEq :measure 0 1 -1
-+   98 op add :measure :measure *tmp16
-+   99 op min *tmp17 :measure 9
-+  100 op max *tmp18 *tmp17 -9
-+  101 op add :measure 9 *tmp18
-+  102 op shl *tmp20 :accumulator 5
-+  103 op or :accumulator *tmp20 :measure
++   94 read *tmp28 processor5 ".sandContainer"
++   95 select *tmp14 equal :item @sand *tmp28 :localCore
++   96 sensor :actual *tmp14 :item
++   97 op sub *tmp16 :actual *tmp10
++   98 op idiv :measure *tmp16 10
++   99 op min *tmp18 :measure 9
++  100 op max *tmp19 *tmp18 -9
++  101 op add :measure 9 *tmp19
++  102 op shl *tmp21 :accumulator 5
++  103 op or :accumulator *tmp21 :measure
 +  104 label *label48
 +  105 set :item @graphite
 +  106 label *label51
-+  107 set *tmp9 100
-+  108 op equal *tmp6 :item @sand
-+  109 op equal *tmp7 :item @coal
-+  110 op or *tmp8 *tmp6 *tmp7
-+  111 jump *label53 notEqual *tmp8 false
++  107 set *tmp10 100
++  108 op equal *tmp7 :item @sand
++  109 op equal *tmp8 :item @coal
++  110 op or *tmp9 *tmp7 *tmp8
++  111 jump *label53 notEqual *tmp9 false
 +  112 label *label52
-+  113 sensor *tmp10 :item @name
-+  114 read *tmp9 processor9 *tmp10
++  113 sensor *tmp11 :item @name
++  114 read *tmp10 processor5 *tmp11
 +  115 label *label53
-+  116 sensor :actual :localCore :item
-+  117 op sub *tmp13 :actual *tmp9
-+  118 op idiv :measure *tmp13 10
-+  119 select *tmp16 greaterThanEq :measure 0 1 -1
-+  120 op add :measure :measure *tmp16
-+  121 op min *tmp17 :measure 9
-+  122 op max *tmp18 *tmp17 -9
-+  123 op add :measure 9 *tmp18
-+  124 op shl *tmp20 :accumulator 5
-+  125 op or :accumulator *tmp20 :measure
++  116 read *tmp28 processor5 ".sandContainer"
++  117 select *tmp14 equal :item @sand *tmp28 :localCore
++  118 sensor :actual *tmp14 :item
++  119 op sub *tmp16 :actual *tmp10
++  120 op idiv :measure *tmp16 10
++  121 op min *tmp18 :measure 9
++  122 op max *tmp19 *tmp18 -9
++  123 op add :measure 9 *tmp19
++  124 op shl *tmp21 :accumulator 5
++  125 op or :accumulator *tmp21 :measure
 +  126 label *label54
 +  127 set :item @coal
 +  128 label *label57
-+  129 set *tmp9 100
-+  130 op equal *tmp6 :item @sand
-+  131 op equal *tmp7 :item @coal
-+  132 op or *tmp8 *tmp6 *tmp7
-+  133 jump *label59 notEqual *tmp8 false
++  129 set *tmp10 100
++  130 op equal *tmp7 :item @sand
++  131 op equal *tmp8 :item @coal
++  132 op or *tmp9 *tmp7 *tmp8
++  133 jump *label59 notEqual *tmp9 false
 +  134 label *label58
-+  135 sensor *tmp10 :item @name
-+  136 read *tmp9 processor9 *tmp10
++  135 sensor *tmp11 :item @name
++  136 read *tmp10 processor5 *tmp11
 +  137 label *label59
-+  138 sensor :actual :localCore :item
-+  139 op sub *tmp13 :actual *tmp9
-+  140 op idiv :measure *tmp13 10
-+  141 select *tmp16 greaterThanEq :measure 0 1 -1
-+  142 op add :measure :measure *tmp16
-+  143 op min *tmp17 :measure 9
-+  144 op max *tmp18 *tmp17 -9
-+  145 op add :measure 9 *tmp18
-+  146 op shl *tmp20 :accumulator 5
-+  147 op or :accumulator *tmp20 :measure
++  138 read *tmp28 processor5 ".sandContainer"
++  139 select *tmp14 equal :item @sand *tmp28 :localCore
++  140 sensor :actual *tmp14 :item
++  141 op sub *tmp16 :actual *tmp10
++  142 op idiv :measure *tmp16 10
++  143 op min *tmp18 :measure 9
++  144 op max *tmp19 *tmp18 -9
++  145 op add :measure 9 *tmp19
++  146 op shl *tmp21 :accumulator 5
++  147 op or :accumulator *tmp21 :measure
 +  148 label *label60
 +  149 set :item @sand
 +  150 label *label63
-+  151 set *tmp9 100
-+  152 op equal *tmp6 :item @sand
-+  153 op equal *tmp7 :item @coal
-+  154 op or *tmp8 *tmp6 *tmp7
-+  155 jump *label65 notEqual *tmp8 false
++  151 set *tmp10 100
++  152 op equal *tmp7 :item @sand
++  153 op equal *tmp8 :item @coal
++  154 op or *tmp9 *tmp7 *tmp8
++  155 jump *label65 notEqual *tmp9 false
 +  156 label *label64
-+  157 sensor *tmp10 :item @name
-+  158 read *tmp9 processor9 *tmp10
++  157 sensor *tmp11 :item @name
++  158 read *tmp10 processor5 *tmp11
 +  159 label *label65
-+  160 sensor :actual :localCore :item
-+  161 op sub *tmp13 :actual *tmp9
-+  162 op idiv :measure *tmp13 10
-+  163 select *tmp16 greaterThanEq :measure 0 1 -1
-+  164 op add :measure :measure *tmp16
-+  165 op min *tmp17 :measure 9
-+  166 op max *tmp18 *tmp17 -9
-+  167 op add :measure 9 *tmp18
-+  168 op shl *tmp20 :accumulator 5
-+  169 op or :accumulator *tmp20 :measure
++  160 read *tmp28 processor5 ".sandContainer"
++  161 select *tmp14 equal :item @sand *tmp28 :localCore
++  162 sensor :actual *tmp14 :item
++  163 op sub *tmp16 :actual *tmp10
++  164 op idiv :measure *tmp16 10
++  165 op min *tmp18 :measure 9
++  166 op max *tmp19 *tmp18 -9
++  167 op add :measure 9 *tmp19
++  168 op shl *tmp21 :accumulator 5
++  169 op or :accumulator *tmp21 :measure
 +  170 label *label66
 +  171 set :item @lead
 +  172 label *label69
-+  173 set *tmp9 100
-+  174 op equal *tmp6 :item @sand
-+  175 op equal *tmp7 :item @coal
-+  176 op or *tmp8 *tmp6 *tmp7
-+  177 jump *label71 notEqual *tmp8 false
++  173 set *tmp10 100
++  174 op equal *tmp7 :item @sand
++  175 op equal *tmp8 :item @coal
++  176 op or *tmp9 *tmp7 *tmp8
++  177 jump *label71 notEqual *tmp9 false
 +  178 label *label70
-+  179 sensor *tmp10 :item @name
-+  180 read *tmp9 processor9 *tmp10
++  179 sensor *tmp11 :item @name
++  180 read *tmp10 processor5 *tmp11
 +  181 label *label71
-+  182 sensor :actual :localCore :item
-+  183 op sub *tmp13 :actual *tmp9
-+  184 op idiv :measure *tmp13 10
-+  185 select *tmp16 greaterThanEq :measure 0 1 -1
-+  186 op add :measure :measure *tmp16
-+  187 op min *tmp17 :measure 9
-+  188 op max *tmp18 *tmp17 -9
-+  189 op add :measure 9 *tmp18
-+  190 op shl *tmp20 :accumulator 5
-+  191 op or :accumulator *tmp20 :measure
++  182 read *tmp28 processor5 ".sandContainer"
++  183 select *tmp14 equal :item @sand *tmp28 :localCore
++  184 sensor :actual *tmp14 :item
++  185 op sub *tmp16 :actual *tmp10
++  186 op idiv :measure *tmp16 10
++  187 op min *tmp18 :measure 9
++  188 op max *tmp19 *tmp18 -9
++  189 op add :measure 9 *tmp19
++  190 op shl *tmp21 :accumulator 5
++  191 op or :accumulator *tmp21 :measure
 +  192 label *label72
 +  193 set :item @copper
 +  194 label *label75
-+  195 set *tmp9 100
-+  196 op equal *tmp6 :item @sand
-+  197 op equal *tmp7 :item @coal
-+  198 op or *tmp8 *tmp6 *tmp7
-+  199 jump *label77 notEqual *tmp8 false
++  195 set *tmp10 100
++  196 op equal *tmp7 :item @sand
++  197 op equal *tmp8 :item @coal
++  198 op or *tmp9 *tmp7 *tmp8
++  199 jump *label77 notEqual *tmp9 false
 +  200 label *label76
-+  201 sensor *tmp10 :item @name
-+  202 read *tmp9 processor9 *tmp10
++  201 sensor *tmp11 :item @name
++  202 read *tmp10 processor5 *tmp11
 +  203 label *label77
-+  204 sensor :actual :localCore :item
-+  205 op sub *tmp13 :actual *tmp9
-+  206 op idiv :measure *tmp13 10
-+  207 select *tmp16 greaterThanEq :measure 0 1 -1
-+  208 op add :measure :measure *tmp16
-+  209 op min *tmp17 :measure 9
-+  210 op max *tmp18 *tmp17 -9
-+  211 op add :measure 9 *tmp18
-+  212 op shl *tmp20 :accumulator 5
-+  213 op or :accumulator *tmp20 :measure
++  204 read *tmp28 processor5 ".sandContainer"
++  205 select *tmp14 equal :item @sand *tmp28 :localCore
++  206 sensor :actual *tmp14 :item
++  207 op sub *tmp16 :actual *tmp10
++  208 op idiv :measure *tmp16 10
++  209 op min *tmp18 :measure 9
++  210 op max *tmp19 *tmp18 -9
++  211 op add :measure 9 *tmp19
++  212 op shl *tmp21 :accumulator 5
++  213 op or :accumulator *tmp21 :measure
 +  214 label *label78
 +  215 label *label13
    216 op add :newTail .tail 1
@@ -479,191 +494,216 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
  
     17 set :item @thorium
     18 label *label27
-    19 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+   20 op equal *tmp6 @thorium @sand
-+   21 op equal *tmp7 @thorium @coal
-    22 op or *tmp8 *tmp6 *tmp7
-    23 jump *label29 notEqual *tmp8 false
+    19 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++   20 op equal *tmp7 @thorium @sand
++   21 op equal *tmp8 @thorium @coal
+    22 op or *tmp9 *tmp7 *tmp8
+    23 jump *label29 notEqual *tmp9 false
     24 label *label28
--    * sensor *tmp10 :item @name
-+   25 sensor *tmp10 @thorium @name
-    26 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++   25 sensor *tmp11 @thorium @name
+    26 read *tmp10 processor5 *tmp11
     27 label *label29
--    * sensor :actual :localCore :item
-+   28 sensor :actual :localCore @thorium
-    29 op sub *tmp13 :actual *tmp9
-    30 op idiv :measure *tmp13 10
-    31 select *tmp16 greaterThanEq :measure 0 1 -1
- 
-    33 op min *tmp17 :measure 9
-    34 op max *tmp18 *tmp17 -9
-    35 op add :measure 9 *tmp18
--    * op shl *tmp20 :accumulator 5
--    * op or :accumulator *tmp20 :measure
-+   36 op shl *tmp20 0 5
+    28 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++   29 select *tmp14 equal @thorium @sand *tmp28 :localCore
++   30 sensor :actual *tmp14 @thorium
+    31 op sub *tmp16 :actual *tmp10
+    32 op idiv :measure *tmp16 10
+    33 op min *tmp18 :measure 9
+    34 op max *tmp19 *tmp18 -9
+    35 op add :measure 9 *tmp19
+-    * op shl *tmp21 :accumulator 5
+-    * op or :accumulator *tmp21 :measure
++   36 op shl *tmp21 0 5
 +   37 op or :accumulator 0 :measure
     38 label *label30
     39 set :item @metaglass
     40 label *label33
-    41 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+   42 op equal *tmp6 @metaglass @sand
-+   43 op equal *tmp7 @metaglass @coal
-    44 op or *tmp8 *tmp6 *tmp7
-    45 jump *label35 notEqual *tmp8 false
+    41 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++   42 op equal *tmp7 @metaglass @sand
++   43 op equal *tmp8 @metaglass @coal
+    44 op or *tmp9 *tmp7 *tmp8
+    45 jump *label35 notEqual *tmp9 false
     46 label *label34
--    * sensor *tmp10 :item @name
-+   47 sensor *tmp10 @metaglass @name
-    48 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++   47 sensor *tmp11 @metaglass @name
+    48 read *tmp10 processor5 *tmp11
     49 label *label35
--    * sensor :actual :localCore :item
-+   50 sensor :actual :localCore @metaglass
-    51 op sub *tmp13 :actual *tmp9
-    52 op idiv :measure *tmp13 10
-    53 select *tmp16 greaterThanEq :measure 0 1 -1
+    50 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++   51 select *tmp14 equal @metaglass @sand *tmp28 :localCore
++   52 sensor :actual *tmp14 @metaglass
+    53 op sub *tmp16 :actual *tmp10
+    54 op idiv :measure *tmp16 10
+    55 op min *tmp18 :measure 9
  
     61 set :item @titanium
     62 label *label39
-    63 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+   64 op equal *tmp6 @titanium @sand
-+   65 op equal *tmp7 @titanium @coal
-    66 op or *tmp8 *tmp6 *tmp7
-    67 jump *label41 notEqual *tmp8 false
+    63 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++   64 op equal *tmp7 @titanium @sand
++   65 op equal *tmp8 @titanium @coal
+    66 op or *tmp9 *tmp7 *tmp8
+    67 jump *label41 notEqual *tmp9 false
     68 label *label40
--    * sensor *tmp10 :item @name
-+   69 sensor *tmp10 @titanium @name
-    70 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++   69 sensor *tmp11 @titanium @name
+    70 read *tmp10 processor5 *tmp11
     71 label *label41
--    * sensor :actual :localCore :item
-+   72 sensor :actual :localCore @titanium
-    73 op sub *tmp13 :actual *tmp9
-    74 op idiv :measure *tmp13 10
-    75 select *tmp16 greaterThanEq :measure 0 1 -1
+    72 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++   73 select *tmp14 equal @titanium @sand *tmp28 :localCore
++   74 sensor :actual *tmp14 @titanium
+    75 op sub *tmp16 :actual *tmp10
+    76 op idiv :measure *tmp16 10
+    77 op min *tmp18 :measure 9
  
     83 set :item @silicon
     84 label *label45
-    85 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+   86 op equal *tmp6 @silicon @sand
-+   87 op equal *tmp7 @silicon @coal
-    88 op or *tmp8 *tmp6 *tmp7
-    89 jump *label47 notEqual *tmp8 false
+    85 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++   86 op equal *tmp7 @silicon @sand
++   87 op equal *tmp8 @silicon @coal
+    88 op or *tmp9 *tmp7 *tmp8
+    89 jump *label47 notEqual *tmp9 false
     90 label *label46
--    * sensor *tmp10 :item @name
-+   91 sensor *tmp10 @silicon @name
-    92 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++   91 sensor *tmp11 @silicon @name
+    92 read *tmp10 processor5 *tmp11
     93 label *label47
--    * sensor :actual :localCore :item
-+   94 sensor :actual :localCore @silicon
-    95 op sub *tmp13 :actual *tmp9
-    96 op idiv :measure *tmp13 10
-    97 select *tmp16 greaterThanEq :measure 0 1 -1
+    94 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++   95 select *tmp14 equal @silicon @sand *tmp28 :localCore
++   96 sensor :actual *tmp14 @silicon
+    97 op sub *tmp16 :actual *tmp10
+    98 op idiv :measure *tmp16 10
+    99 op min *tmp18 :measure 9
  
    105 set :item @graphite
    106 label *label51
-   107 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+  108 op equal *tmp6 @graphite @sand
-+  109 op equal *tmp7 @graphite @coal
-   110 op or *tmp8 *tmp6 *tmp7
-   111 jump *label53 notEqual *tmp8 false
+   107 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++  108 op equal *tmp7 @graphite @sand
++  109 op equal *tmp8 @graphite @coal
+   110 op or *tmp9 *tmp7 *tmp8
+   111 jump *label53 notEqual *tmp9 false
    112 label *label52
--    * sensor *tmp10 :item @name
-+  113 sensor *tmp10 @graphite @name
-   114 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++  113 sensor *tmp11 @graphite @name
+   114 read *tmp10 processor5 *tmp11
    115 label *label53
--    * sensor :actual :localCore :item
-+  116 sensor :actual :localCore @graphite
-   117 op sub *tmp13 :actual *tmp9
-   118 op idiv :measure *tmp13 10
-   119 select *tmp16 greaterThanEq :measure 0 1 -1
+   116 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++  117 select *tmp14 equal @graphite @sand *tmp28 :localCore
++  118 sensor :actual *tmp14 @graphite
+   119 op sub *tmp16 :actual *tmp10
+   120 op idiv :measure *tmp16 10
+   121 op min *tmp18 :measure 9
  
    127 set :item @coal
    128 label *label57
-   129 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+  130 op equal *tmp6 @coal @sand
-+  131 op equal *tmp7 @coal @coal
-   132 op or *tmp8 *tmp6 *tmp7
-   133 jump *label59 notEqual *tmp8 false
+   129 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++  130 op equal *tmp7 @coal @sand
++  131 op equal *tmp8 @coal @coal
+   132 op or *tmp9 *tmp7 *tmp8
+   133 jump *label59 notEqual *tmp9 false
    134 label *label58
--    * sensor *tmp10 :item @name
-+  135 sensor *tmp10 @coal @name
-   136 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++  135 sensor *tmp11 @coal @name
+   136 read *tmp10 processor5 *tmp11
    137 label *label59
--    * sensor :actual :localCore :item
-+  138 sensor :actual :localCore @coal
-   139 op sub *tmp13 :actual *tmp9
-   140 op idiv :measure *tmp13 10
-   141 select *tmp16 greaterThanEq :measure 0 1 -1
+   138 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++  139 select *tmp14 equal @coal @sand *tmp28 :localCore
++  140 sensor :actual *tmp14 @coal
+   141 op sub *tmp16 :actual *tmp10
+   142 op idiv :measure *tmp16 10
+   143 op min *tmp18 :measure 9
  
    149 set :item @sand
    150 label *label63
-   151 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+  152 op equal *tmp6 @sand @sand
-+  153 op equal *tmp7 @sand @coal
-   154 op or *tmp8 *tmp6 *tmp7
-   155 jump *label65 notEqual *tmp8 false
+   151 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++  152 op equal *tmp7 @sand @sand
++  153 op equal *tmp8 @sand @coal
+   154 op or *tmp9 *tmp7 *tmp8
+   155 jump *label65 notEqual *tmp9 false
    156 label *label64
--    * sensor *tmp10 :item @name
-+  157 sensor *tmp10 @sand @name
-   158 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++  157 sensor *tmp11 @sand @name
+   158 read *tmp10 processor5 *tmp11
    159 label *label65
--    * sensor :actual :localCore :item
-+  160 sensor :actual :localCore @sand
-   161 op sub *tmp13 :actual *tmp9
-   162 op idiv :measure *tmp13 10
-   163 select *tmp16 greaterThanEq :measure 0 1 -1
+   160 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++  161 select *tmp14 equal @sand @sand *tmp28 :localCore
++  162 sensor :actual *tmp14 @sand
+   163 op sub *tmp16 :actual *tmp10
+   164 op idiv :measure *tmp16 10
+   165 op min *tmp18 :measure 9
  
    171 set :item @lead
    172 label *label69
-   173 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+  174 op equal *tmp6 @lead @sand
-+  175 op equal *tmp7 @lead @coal
-   176 op or *tmp8 *tmp6 *tmp7
-   177 jump *label71 notEqual *tmp8 false
+   173 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++  174 op equal *tmp7 @lead @sand
++  175 op equal *tmp8 @lead @coal
+   176 op or *tmp9 *tmp7 *tmp8
+   177 jump *label71 notEqual *tmp9 false
    178 label *label70
--    * sensor *tmp10 :item @name
-+  179 sensor *tmp10 @lead @name
-   180 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++  179 sensor *tmp11 @lead @name
+   180 read *tmp10 processor5 *tmp11
    181 label *label71
--    * sensor :actual :localCore :item
-+  182 sensor :actual :localCore @lead
-   183 op sub *tmp13 :actual *tmp9
-   184 op idiv :measure *tmp13 10
-   185 select *tmp16 greaterThanEq :measure 0 1 -1
+   182 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++  183 select *tmp14 equal @lead @sand *tmp28 :localCore
++  184 sensor :actual *tmp14 @lead
+   185 op sub *tmp16 :actual *tmp10
+   186 op idiv :measure *tmp16 10
+   187 op min *tmp18 :measure 9
  
    193 set :item @copper
    194 label *label75
-   195 set *tmp9 100
--    * op equal *tmp6 :item @sand
--    * op equal *tmp7 :item @coal
-+  196 op equal *tmp6 @copper @sand
-+  197 op equal *tmp7 @copper @coal
-   198 op or *tmp8 *tmp6 *tmp7
-   199 jump *label77 notEqual *tmp8 false
+   195 set *tmp10 100
+-    * op equal *tmp7 :item @sand
+-    * op equal *tmp8 :item @coal
++  196 op equal *tmp7 @copper @sand
++  197 op equal *tmp8 @copper @coal
+   198 op or *tmp9 *tmp7 *tmp8
+   199 jump *label77 notEqual *tmp9 false
    200 label *label76
--    * sensor *tmp10 :item @name
-+  201 sensor *tmp10 @copper @name
-   202 read *tmp9 processor9 *tmp10
+-    * sensor *tmp11 :item @name
++  201 sensor *tmp11 @copper @name
+   202 read *tmp10 processor5 *tmp11
    203 label *label77
--    * sensor :actual :localCore :item
-+  204 sensor :actual :localCore @copper
-   205 op sub *tmp13 :actual *tmp9
-   206 op idiv :measure *tmp13 10
-   207 select *tmp16 greaterThanEq :measure 0 1 -1
+   204 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal :item @sand *tmp28 :localCore
+-    * sensor :actual *tmp14 :item
++  205 select *tmp14 equal @copper @sand *tmp28 :localCore
++  206 sensor :actual *tmp14 @copper
+   207 op sub *tmp16 :actual *tmp10
+   208 op idiv :measure *tmp16 10
+   209 op min *tmp18 :measure 9
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-11 instructions):
  
@@ -673,270 +713,274 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1
 -    * set :accumulator 0
 -    * set :item @thorium
     16 label *label27
-    17 set *tmp9 100
-    18 op equal *tmp6 @thorium @sand
-    19 op equal *tmp7 @thorium @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label29 notEqual *tmp8 false
-+   20 op or *tmp8 false false
+    17 set *tmp10 100
+    18 op equal *tmp7 @thorium @sand
+    19 op equal *tmp8 @thorium @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label29 notEqual *tmp9 false
++   20 op or *tmp9 false false
 +   21 jump *label29 notEqual 0 false
     22 label *label28
-    23 sensor *tmp10 @thorium @name
-    24 read *tmp9 processor9 *tmp10
+    23 sensor *tmp11 @thorium @name
+    24 read *tmp10 processor5 *tmp11
  
-    31 op min *tmp17 :measure 9
-    32 op max *tmp18 *tmp17 -9
-    33 op add :measure 9 *tmp18
--    * op shl *tmp20 0 5
+    31 op min *tmp18 :measure 9
+    32 op max *tmp19 *tmp18 -9
+    33 op add :measure 9 *tmp19
+-    * op shl *tmp21 0 5
     34 op or :accumulator 0 :measure
     35 label *label30
 -    * set :item @metaglass
     36 label *label33
-    37 set *tmp9 100
-    38 op equal *tmp6 @metaglass @sand
-    39 op equal *tmp7 @metaglass @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label35 notEqual *tmp8 false
-+   40 op or *tmp8 false false
+    37 set *tmp10 100
+    38 op equal *tmp7 @metaglass @sand
+    39 op equal *tmp8 @metaglass @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label35 notEqual *tmp9 false
++   40 op or *tmp9 false false
 +   41 jump *label35 notEqual 0 false
     42 label *label34
-    43 sensor *tmp10 @metaglass @name
-    44 read *tmp9 processor9 *tmp10
+    43 sensor *tmp11 @metaglass @name
+    44 read *tmp10 processor5 *tmp11
  
-    54 op shl *tmp20 :accumulator 5
-    55 op or :accumulator *tmp20 :measure
+    54 op shl *tmp21 :accumulator 5
+    55 op or :accumulator *tmp21 :measure
     56 label *label36
 -    * set :item @titanium
     57 label *label39
-    58 set *tmp9 100
-    59 op equal *tmp6 @titanium @sand
-    60 op equal *tmp7 @titanium @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label41 notEqual *tmp8 false
-+   61 op or *tmp8 false false
+    58 set *tmp10 100
+    59 op equal *tmp7 @titanium @sand
+    60 op equal *tmp8 @titanium @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label41 notEqual *tmp9 false
++   61 op or *tmp9 false false
 +   62 jump *label41 notEqual 0 false
     63 label *label40
-    64 sensor *tmp10 @titanium @name
-    65 read *tmp9 processor9 *tmp10
+    64 sensor *tmp11 @titanium @name
+    65 read *tmp10 processor5 *tmp11
  
-    75 op shl *tmp20 :accumulator 5
-    76 op or :accumulator *tmp20 :measure
+    75 op shl *tmp21 :accumulator 5
+    76 op or :accumulator *tmp21 :measure
     77 label *label42
 -    * set :item @silicon
     78 label *label45
-    79 set *tmp9 100
-    80 op equal *tmp6 @silicon @sand
-    81 op equal *tmp7 @silicon @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label47 notEqual *tmp8 false
-+   82 op or *tmp8 false false
+    79 set *tmp10 100
+    80 op equal *tmp7 @silicon @sand
+    81 op equal *tmp8 @silicon @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label47 notEqual *tmp9 false
++   82 op or *tmp9 false false
 +   83 jump *label47 notEqual 0 false
     84 label *label46
-    85 sensor *tmp10 @silicon @name
-    86 read *tmp9 processor9 *tmp10
+    85 sensor *tmp11 @silicon @name
+    86 read *tmp10 processor5 *tmp11
  
-    96 op shl *tmp20 :accumulator 5
-    97 op or :accumulator *tmp20 :measure
+    96 op shl *tmp21 :accumulator 5
+    97 op or :accumulator *tmp21 :measure
     98 label *label48
 -    * set :item @graphite
     99 label *label51
-   100 set *tmp9 100
-   101 op equal *tmp6 @graphite @sand
-   102 op equal *tmp7 @graphite @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label53 notEqual *tmp8 false
-+  103 op or *tmp8 false false
+   100 set *tmp10 100
+   101 op equal *tmp7 @graphite @sand
+   102 op equal *tmp8 @graphite @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label53 notEqual *tmp9 false
++  103 op or *tmp9 false false
 +  104 jump *label53 notEqual 0 false
    105 label *label52
-   106 sensor *tmp10 @graphite @name
-   107 read *tmp9 processor9 *tmp10
+   106 sensor *tmp11 @graphite @name
+   107 read *tmp10 processor5 *tmp11
  
-   117 op shl *tmp20 :accumulator 5
-   118 op or :accumulator *tmp20 :measure
+   117 op shl *tmp21 :accumulator 5
+   118 op or :accumulator *tmp21 :measure
    119 label *label54
 -    * set :item @coal
    120 label *label57
-   121 set *tmp9 100
-   122 op equal *tmp6 @coal @sand
-   123 op equal *tmp7 @coal @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label59 notEqual *tmp8 false
-+  124 op or *tmp8 false true
+   121 set *tmp10 100
+   122 op equal *tmp7 @coal @sand
+   123 op equal *tmp8 @coal @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label59 notEqual *tmp9 false
++  124 op or *tmp9 false true
 +  125 jump *label59 notEqual 1 false
    126 label *label58
-   127 sensor *tmp10 @coal @name
-   128 read *tmp9 processor9 *tmp10
-   129 label *label59
-   130 sensor :actual :localCore @coal
--    * op sub *tmp13 :actual *tmp9
-+  131 op sub *tmp13 :actual 100
-   132 op idiv :measure *tmp13 10
-   133 select *tmp16 greaterThanEq :measure 0 1 -1
-   134 op add :measure :measure *tmp16
+   127 sensor *tmp11 @coal @name
+   128 read *tmp10 processor5 *tmp11
  
-   138 op shl *tmp20 :accumulator 5
-   139 op or :accumulator *tmp20 :measure
+   130 read *tmp28 processor5 ".sandContainer"
+   131 select *tmp14 equal @coal @sand *tmp28 :localCore
+   132 sensor :actual *tmp14 @coal
+-    * op sub *tmp16 :actual *tmp10
++  133 op sub *tmp16 :actual 100
+   134 op idiv :measure *tmp16 10
+   135 op min *tmp18 :measure 9
+   136 op max *tmp19 *tmp18 -9
+ 
+   138 op shl *tmp21 :accumulator 5
+   139 op or :accumulator *tmp21 :measure
    140 label *label60
 -    * set :item @sand
    141 label *label63
-   142 set *tmp9 100
-   143 op equal *tmp6 @sand @sand
-   144 op equal *tmp7 @sand @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label65 notEqual *tmp8 false
-+  145 op or *tmp8 true false
+   142 set *tmp10 100
+   143 op equal *tmp7 @sand @sand
+   144 op equal *tmp8 @sand @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label65 notEqual *tmp9 false
++  145 op or *tmp9 true false
 +  146 jump *label65 notEqual 1 false
    147 label *label64
-   148 sensor *tmp10 @sand @name
-   149 read *tmp9 processor9 *tmp10
-   150 label *label65
-   151 sensor :actual :localCore @sand
--    * op sub *tmp13 :actual *tmp9
-+  152 op sub *tmp13 :actual 100
-   153 op idiv :measure *tmp13 10
-   154 select *tmp16 greaterThanEq :measure 0 1 -1
-   155 op add :measure :measure *tmp16
+   148 sensor *tmp11 @sand @name
+   149 read *tmp10 processor5 *tmp11
  
-   159 op shl *tmp20 :accumulator 5
-   160 op or :accumulator *tmp20 :measure
+   151 read *tmp28 processor5 ".sandContainer"
+   152 select *tmp14 equal @sand @sand *tmp28 :localCore
+   153 sensor :actual *tmp14 @sand
+-    * op sub *tmp16 :actual *tmp10
++  154 op sub *tmp16 :actual 100
+   155 op idiv :measure *tmp16 10
+   156 op min *tmp18 :measure 9
+   157 op max *tmp19 *tmp18 -9
+ 
+   159 op shl *tmp21 :accumulator 5
+   160 op or :accumulator *tmp21 :measure
    161 label *label66
 -    * set :item @lead
    162 label *label69
-   163 set *tmp9 100
-   164 op equal *tmp6 @lead @sand
-   165 op equal *tmp7 @lead @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label71 notEqual *tmp8 false
-+  166 op or *tmp8 false false
+   163 set *tmp10 100
+   164 op equal *tmp7 @lead @sand
+   165 op equal *tmp8 @lead @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label71 notEqual *tmp9 false
++  166 op or *tmp9 false false
 +  167 jump *label71 notEqual 0 false
    168 label *label70
-   169 sensor *tmp10 @lead @name
-   170 read *tmp9 processor9 *tmp10
+   169 sensor *tmp11 @lead @name
+   170 read *tmp10 processor5 *tmp11
  
-   180 op shl *tmp20 :accumulator 5
-   181 op or :accumulator *tmp20 :measure
+   180 op shl *tmp21 :accumulator 5
+   181 op or :accumulator *tmp21 :measure
    182 label *label72
 -    * set :item @copper
    183 label *label75
-   184 set *tmp9 100
-   185 op equal *tmp6 @copper @sand
-   186 op equal *tmp7 @copper @coal
--    * op or *tmp8 *tmp6 *tmp7
--    * jump *label77 notEqual *tmp8 false
-+  187 op or *tmp8 false false
+   184 set *tmp10 100
+   185 op equal *tmp7 @copper @sand
+   186 op equal *tmp8 @copper @coal
+-    * op or *tmp9 *tmp7 *tmp8
+-    * jump *label77 notEqual *tmp9 false
++  187 op or *tmp9 false false
 +  188 jump *label77 notEqual 0 false
    189 label *label76
-   190 sensor *tmp10 @copper @name
-   191 read *tmp9 processor9 *tmp10
+   190 sensor *tmp11 @copper @name
+   191 read *tmp10 processor5 *tmp11
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 3 (-38 instructions):
  
     14 label *label9
     15 label *label10
     16 label *label27
--    * set *tmp9 100
--    * op equal *tmp6 @thorium @sand
--    * op equal *tmp7 @thorium @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @thorium @sand
+-    * op equal *tmp8 @thorium @coal
+-    * op or *tmp9 false false
     17 jump *label29 notEqual 0 false
     18 label *label28
-    19 sensor *tmp10 @thorium @name
+    19 sensor *tmp11 @thorium @name
  
     30 op or :accumulator 0 :measure
     31 label *label30
     32 label *label33
--    * set *tmp9 100
--    * op equal *tmp6 @metaglass @sand
--    * op equal *tmp7 @metaglass @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @metaglass @sand
+-    * op equal *tmp8 @metaglass @coal
+-    * op or *tmp9 false false
     33 jump *label35 notEqual 0 false
     34 label *label34
-    35 sensor *tmp10 @metaglass @name
+    35 sensor *tmp11 @metaglass @name
  
-    47 op or :accumulator *tmp20 :measure
+    47 op or :accumulator *tmp21 :measure
     48 label *label36
     49 label *label39
--    * set *tmp9 100
--    * op equal *tmp6 @titanium @sand
--    * op equal *tmp7 @titanium @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @titanium @sand
+-    * op equal *tmp8 @titanium @coal
+-    * op or *tmp9 false false
     50 jump *label41 notEqual 0 false
     51 label *label40
-    52 sensor *tmp10 @titanium @name
+    52 sensor *tmp11 @titanium @name
  
-    64 op or :accumulator *tmp20 :measure
+    64 op or :accumulator *tmp21 :measure
     65 label *label42
     66 label *label45
--    * set *tmp9 100
--    * op equal *tmp6 @silicon @sand
--    * op equal *tmp7 @silicon @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @silicon @sand
+-    * op equal *tmp8 @silicon @coal
+-    * op or *tmp9 false false
     67 jump *label47 notEqual 0 false
     68 label *label46
-    69 sensor *tmp10 @silicon @name
+    69 sensor *tmp11 @silicon @name
  
-    81 op or :accumulator *tmp20 :measure
+    81 op or :accumulator *tmp21 :measure
     82 label *label48
     83 label *label51
--    * set *tmp9 100
--    * op equal *tmp6 @graphite @sand
--    * op equal *tmp7 @graphite @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @graphite @sand
+-    * op equal *tmp8 @graphite @coal
+-    * op or *tmp9 false false
     84 jump *label53 notEqual 0 false
     85 label *label52
-    86 sensor *tmp10 @graphite @name
+    86 sensor *tmp11 @graphite @name
  
-    98 op or :accumulator *tmp20 :measure
+    98 op or :accumulator *tmp21 :measure
     99 label *label54
    100 label *label57
--    * set *tmp9 100
--    * op equal *tmp6 @coal @sand
--    * op equal *tmp7 @coal @coal
--    * op or *tmp8 false true
+-    * set *tmp10 100
+-    * op equal *tmp7 @coal @sand
+-    * op equal *tmp8 @coal @coal
+-    * op or *tmp9 false true
    101 jump *label59 notEqual 1 false
    102 label *label58
-   103 sensor *tmp10 @coal @name
--    * read *tmp9 processor9 *tmp10
+   103 sensor *tmp11 @coal @name
+-    * read *tmp10 processor5 *tmp11
    104 label *label59
-   105 sensor :actual :localCore @coal
-   106 op sub *tmp13 :actual 100
+   105 read *tmp28 processor5 ".sandContainer"
+   106 select *tmp14 equal @coal @sand *tmp28 :localCore
  
-   114 op or :accumulator *tmp20 :measure
+   114 op or :accumulator *tmp21 :measure
    115 label *label60
    116 label *label63
--    * set *tmp9 100
--    * op equal *tmp6 @sand @sand
--    * op equal *tmp7 @sand @coal
--    * op or *tmp8 true false
+-    * set *tmp10 100
+-    * op equal *tmp7 @sand @sand
+-    * op equal *tmp8 @sand @coal
+-    * op or *tmp9 true false
    117 jump *label65 notEqual 1 false
    118 label *label64
-   119 sensor *tmp10 @sand @name
--    * read *tmp9 processor9 *tmp10
+   119 sensor *tmp11 @sand @name
+-    * read *tmp10 processor5 *tmp11
    120 label *label65
-   121 sensor :actual :localCore @sand
-   122 op sub *tmp13 :actual 100
+   121 read *tmp28 processor5 ".sandContainer"
+   122 select *tmp14 equal @sand @sand *tmp28 :localCore
  
-   130 op or :accumulator *tmp20 :measure
+   130 op or :accumulator *tmp21 :measure
    131 label *label66
    132 label *label69
--    * set *tmp9 100
--    * op equal *tmp6 @lead @sand
--    * op equal *tmp7 @lead @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @lead @sand
+-    * op equal *tmp8 @lead @coal
+-    * op or *tmp9 false false
    133 jump *label71 notEqual 0 false
    134 label *label70
-   135 sensor *tmp10 @lead @name
+   135 sensor *tmp11 @lead @name
  
-   147 op or :accumulator *tmp20 :measure
+   147 op or :accumulator *tmp21 :measure
    148 label *label72
    149 label *label75
--    * set *tmp9 100
--    * op equal *tmp6 @copper @sand
--    * op equal *tmp7 @copper @coal
--    * op or *tmp8 false false
+-    * set *tmp10 100
+-    * op equal *tmp7 @copper @sand
+-    * op equal *tmp8 @copper @coal
+-    * op or *tmp9 false false
    150 jump *label77 notEqual 0 false
    151 label *label76
-   152 sensor *tmp10 @copper @name
+   152 sensor *tmp11 @copper @name
 
 Modifications by Iterated phase, Jump Normalization, pass 2, iteration 1 (-7 instructions):
  
@@ -945,97 +989,343 @@ Modifications by Iterated phase, Jump Normalization, pass 2, iteration 1 (-7 ins
     16 label *label27
 -    * jump *label29 notEqual 0 false
     17 label *label28
-    18 sensor *tmp10 @thorium @name
-    19 read *tmp9 processor9 *tmp10
+    18 sensor *tmp11 @thorium @name
+    19 read *tmp10 processor5 *tmp11
  
     29 op or :accumulator 0 :measure
     30 label *label30
     31 label *label33
 -    * jump *label35 notEqual 0 false
     32 label *label34
-    33 sensor *tmp10 @metaglass @name
-    34 read *tmp9 processor9 *tmp10
+    33 sensor *tmp11 @metaglass @name
+    34 read *tmp10 processor5 *tmp11
  
-    45 op or :accumulator *tmp20 :measure
+    45 op or :accumulator *tmp21 :measure
     46 label *label36
     47 label *label39
 -    * jump *label41 notEqual 0 false
     48 label *label40
-    49 sensor *tmp10 @titanium @name
-    50 read *tmp9 processor9 *tmp10
+    49 sensor *tmp11 @titanium @name
+    50 read *tmp10 processor5 *tmp11
  
-    61 op or :accumulator *tmp20 :measure
+    61 op or :accumulator *tmp21 :measure
     62 label *label42
     63 label *label45
 -    * jump *label47 notEqual 0 false
     64 label *label46
-    65 sensor *tmp10 @silicon @name
-    66 read *tmp9 processor9 *tmp10
+    65 sensor *tmp11 @silicon @name
+    66 read *tmp10 processor5 *tmp11
  
-    77 op or :accumulator *tmp20 :measure
+    77 op or :accumulator *tmp21 :measure
     78 label *label48
     79 label *label51
 -    * jump *label53 notEqual 0 false
     80 label *label52
-    81 sensor *tmp10 @graphite @name
-    82 read *tmp9 processor9 *tmp10
+    81 sensor *tmp11 @graphite @name
+    82 read *tmp10 processor5 *tmp11
  
-    93 op or :accumulator *tmp20 :measure
+    93 op or :accumulator *tmp21 :measure
     94 label *label54
     95 label *label57
 -    * jump *label59 notEqual 1 false
 +   96 jump *label59 always
     97 label *label58
-    98 sensor *tmp10 @coal @name
+    98 sensor *tmp11 @coal @name
     99 label *label59
  
-   109 op or :accumulator *tmp20 :measure
+   109 op or :accumulator *tmp21 :measure
    110 label *label60
    111 label *label63
 -    * jump *label65 notEqual 1 false
 +  112 jump *label65 always
    113 label *label64
-   114 sensor *tmp10 @sand @name
+   114 sensor *tmp11 @sand @name
    115 label *label65
  
-   125 op or :accumulator *tmp20 :measure
+   125 op or :accumulator *tmp21 :measure
    126 label *label66
    127 label *label69
 -    * jump *label71 notEqual 0 false
    128 label *label70
-   129 sensor *tmp10 @lead @name
-   130 read *tmp9 processor9 *tmp10
+   129 sensor *tmp11 @lead @name
+   130 read *tmp10 processor5 *tmp11
  
-   141 op or :accumulator *tmp20 :measure
+   141 op or :accumulator *tmp21 :measure
    142 label *label72
    143 label *label75
 -    * jump *label77 notEqual 0 false
    144 label *label76
-   145 sensor *tmp10 @copper @name
-   146 read *tmp9 processor9 *tmp10
+   145 sensor *tmp11 @copper @name
+   146 read *tmp10 processor5 *tmp11
 
 Modifications by Iterated phase, Expression Optimization, pass 2, iteration 1:
  
-    26 op min *tmp17 :measure 9
-    27 op max *tmp18 *tmp17 -9
-    28 op add :measure 9 *tmp18
+    19 read *tmp10 processor5 *tmp11
+    20 label *label29
+    21 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @thorium @sand *tmp28 :localCore
++   22 set *tmp14 :localCore
+    23 sensor :actual *tmp14 @thorium
+    24 op sub *tmp16 :actual *tmp10
+    25 op idiv :measure *tmp16 10
+    26 op min *tmp18 :measure 9
+    27 op max *tmp19 *tmp18 -9
+    28 op add :measure 9 *tmp19
 -    * op or :accumulator 0 :measure
 +   29 set :accumulator :measure
     30 label *label30
     31 label *label33
     32 label *label34
-
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-1 instructions):
  
-    25 op add :measure :measure *tmp16
-    26 op min *tmp17 :measure 9
-    27 op max *tmp18 *tmp17 -9
--    * op add :measure 9 *tmp18
+    34 read *tmp10 processor5 *tmp11
+    35 label *label35
+    36 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @metaglass @sand *tmp28 :localCore
++   37 set *tmp14 :localCore
+    38 sensor :actual *tmp14 @metaglass
+    39 op sub *tmp16 :actual *tmp10
+    40 op idiv :measure *tmp16 10
+ 
+    50 read *tmp10 processor5 *tmp11
+    51 label *label41
+    52 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @titanium @sand *tmp28 :localCore
++   53 set *tmp14 :localCore
+    54 sensor :actual *tmp14 @titanium
+    55 op sub *tmp16 :actual *tmp10
+    56 op idiv :measure *tmp16 10
+ 
+    66 read *tmp10 processor5 *tmp11
+    67 label *label47
+    68 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @silicon @sand *tmp28 :localCore
++   69 set *tmp14 :localCore
+    70 sensor :actual *tmp14 @silicon
+    71 op sub *tmp16 :actual *tmp10
+    72 op idiv :measure *tmp16 10
+ 
+    82 read *tmp10 processor5 *tmp11
+    83 label *label53
+    84 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @graphite @sand *tmp28 :localCore
++   85 set *tmp14 :localCore
+    86 sensor :actual *tmp14 @graphite
+    87 op sub *tmp16 :actual *tmp10
+    88 op idiv :measure *tmp16 10
+ 
+    98 sensor *tmp11 @coal @name
+    99 label *label59
+   100 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @coal @sand *tmp28 :localCore
++  101 set *tmp14 :localCore
+   102 sensor :actual *tmp14 @coal
+   103 op sub *tmp16 :actual 100
+   104 op idiv :measure *tmp16 10
+ 
+   114 sensor *tmp11 @sand @name
+   115 label *label65
+   116 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @sand @sand *tmp28 :localCore
++  117 set *tmp14 *tmp28
+   118 sensor :actual *tmp14 @sand
+   119 op sub *tmp16 :actual 100
+   120 op idiv :measure *tmp16 10
+ 
+   130 read *tmp10 processor5 *tmp11
+   131 label *label71
+   132 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @lead @sand *tmp28 :localCore
++  133 set *tmp14 :localCore
+   134 sensor :actual *tmp14 @lead
+   135 op sub *tmp16 :actual *tmp10
+   136 op idiv :measure *tmp16 10
+ 
+   146 read *tmp10 processor5 *tmp11
+   147 label *label77
+   148 read *tmp28 processor5 ".sandContainer"
+-    * select *tmp14 equal @copper @sand *tmp28 :localCore
++  149 set *tmp14 :localCore
+   150 sensor :actual *tmp14 @copper
+   151 op sub *tmp16 :actual *tmp10
+   152 op idiv :measure *tmp16 10
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-2 instructions):
+ 
+    25 op idiv :measure *tmp16 10
+    26 op min *tmp18 :measure 9
+    27 op max *tmp19 *tmp18 -9
+-    * op add :measure 9 *tmp19
 -    * set :accumulator :measure
-+   28 op add :accumulator 9 *tmp18
++   28 op add :accumulator 9 *tmp19
     29 label *label30
     30 label *label33
     31 label *label34
+ 
+   112 label *label64
+   113 sensor *tmp11 @sand @name
+   114 label *label65
+-    * read *tmp28 processor5 ".sandContainer"
+-    * set *tmp14 *tmp28
++  115 read *tmp14 processor5 ".sandContainer"
+   116 sensor :actual *tmp14 @sand
+   117 op sub *tmp16 :actual 100
+   118 op idiv :measure *tmp16 10
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2 (-8 instructions):
+ 
+    18 sensor *tmp11 @thorium @name
+    19 read *tmp10 processor5 *tmp11
+    20 label *label29
+-    * read *tmp28 processor5 ".sandContainer"
+    21 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @thorium
++   22 sensor :actual :localCore @thorium
+    23 op sub *tmp16 :actual *tmp10
+    24 op idiv :measure *tmp16 10
+    25 op min *tmp18 :measure 9
+ 
+    31 sensor *tmp11 @metaglass @name
+    32 read *tmp10 processor5 *tmp11
+    33 label *label35
+-    * read *tmp28 processor5 ".sandContainer"
+    34 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @metaglass
++   35 sensor :actual :localCore @metaglass
+    36 op sub *tmp16 :actual *tmp10
+    37 op idiv :measure *tmp16 10
+    38 op min *tmp18 :measure 9
+ 
+    46 sensor *tmp11 @titanium @name
+    47 read *tmp10 processor5 *tmp11
+    48 label *label41
+-    * read *tmp28 processor5 ".sandContainer"
+    49 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @titanium
++   50 sensor :actual :localCore @titanium
+    51 op sub *tmp16 :actual *tmp10
+    52 op idiv :measure *tmp16 10
+    53 op min *tmp18 :measure 9
+ 
+    61 sensor *tmp11 @silicon @name
+    62 read *tmp10 processor5 *tmp11
+    63 label *label47
+-    * read *tmp28 processor5 ".sandContainer"
+    64 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @silicon
++   65 sensor :actual :localCore @silicon
+    66 op sub *tmp16 :actual *tmp10
+    67 op idiv :measure *tmp16 10
+    68 op min *tmp18 :measure 9
+ 
+    76 sensor *tmp11 @graphite @name
+    77 read *tmp10 processor5 *tmp11
+    78 label *label53
+-    * read *tmp28 processor5 ".sandContainer"
+    79 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @graphite
++   80 sensor :actual :localCore @graphite
+    81 op sub *tmp16 :actual *tmp10
+    82 op idiv :measure *tmp16 10
+    83 op min *tmp18 :measure 9
+ 
+    91 label *label58
+    92 sensor *tmp11 @coal @name
+    93 label *label59
+-    * read *tmp28 processor5 ".sandContainer"
+    94 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @coal
++   95 sensor :actual :localCore @coal
+    96 op sub *tmp16 :actual 100
+    97 op idiv :measure *tmp16 10
+    98 op min *tmp18 :measure 9
+ 
+   121 sensor *tmp11 @lead @name
+   122 read *tmp10 processor5 *tmp11
+   123 label *label71
+-    * read *tmp28 processor5 ".sandContainer"
+   124 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @lead
++  125 sensor :actual :localCore @lead
+   126 op sub *tmp16 :actual *tmp10
+   127 op idiv :measure *tmp16 10
+   128 op min *tmp18 :measure 9
+ 
+   136 sensor *tmp11 @copper @name
+   137 read *tmp10 processor5 *tmp11
+   138 label *label77
+-    * read *tmp28 processor5 ".sandContainer"
+   139 set *tmp14 :localCore
+-    * sensor :actual *tmp14 @copper
++  140 sensor :actual :localCore @copper
+   141 op sub *tmp16 :actual *tmp10
+   142 op idiv :measure *tmp16 10
+   143 op min *tmp18 :measure 9
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 3 (-8 instructions):
+ 
+    18 sensor *tmp11 @thorium @name
+    19 read *tmp10 processor5 *tmp11
+    20 label *label29
+-    * set *tmp14 :localCore
+    21 sensor :actual :localCore @thorium
+    22 op sub *tmp16 :actual *tmp10
+    23 op idiv :measure *tmp16 10
+ 
+    30 sensor *tmp11 @metaglass @name
+    31 read *tmp10 processor5 *tmp11
+    32 label *label35
+-    * set *tmp14 :localCore
+    33 sensor :actual :localCore @metaglass
+    34 op sub *tmp16 :actual *tmp10
+    35 op idiv :measure *tmp16 10
+ 
+    44 sensor *tmp11 @titanium @name
+    45 read *tmp10 processor5 *tmp11
+    46 label *label41
+-    * set *tmp14 :localCore
+    47 sensor :actual :localCore @titanium
+    48 op sub *tmp16 :actual *tmp10
+    49 op idiv :measure *tmp16 10
+ 
+    58 sensor *tmp11 @silicon @name
+    59 read *tmp10 processor5 *tmp11
+    60 label *label47
+-    * set *tmp14 :localCore
+    61 sensor :actual :localCore @silicon
+    62 op sub *tmp16 :actual *tmp10
+    63 op idiv :measure *tmp16 10
+ 
+    72 sensor *tmp11 @graphite @name
+    73 read *tmp10 processor5 *tmp11
+    74 label *label53
+-    * set *tmp14 :localCore
+    75 sensor :actual :localCore @graphite
+    76 op sub *tmp16 :actual *tmp10
+    77 op idiv :measure *tmp16 10
+ 
+    86 label *label58
+    87 sensor *tmp11 @coal @name
+    88 label *label59
+-    * set *tmp14 :localCore
+    89 sensor :actual :localCore @coal
+    90 op sub *tmp16 :actual 100
+    91 op idiv :measure *tmp16 10
+ 
+   115 sensor *tmp11 @lead @name
+   116 read *tmp10 processor5 *tmp11
+   117 label *label71
+-    * set *tmp14 :localCore
+   118 sensor :actual :localCore @lead
+   119 op sub *tmp16 :actual *tmp10
+   120 op idiv :measure *tmp16 10
+ 
+   129 sensor *tmp11 @copper @name
+   130 read *tmp10 processor5 *tmp11
+   131 label *label77
+-    * set *tmp14 :localCore
+   132 sensor :actual :localCore @copper
+   133 op sub *tmp16 :actual *tmp10
+   134 op idiv :measure *tmp16 10
 
 Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
  
@@ -1047,227 +1337,226 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
      7 jump *label6 lessThan *tmp0 .nextTime
 -    * label *label8
      8 op add .nextTime .nextTime 1800
-     9 read :localCore processor9 ".core"
+     9 read :localCore processor5 ".core"
     10 jump *label9 notEqual :localCore null
     11 jump *label4 always
     12 label *label9
 -    * label *label10
 -    * label *label27
 -    * label *label28
-    13 sensor *tmp10 @thorium @name
-    14 read *tmp9 processor9 *tmp10
+    13 sensor *tmp11 @thorium @name
+    14 read *tmp10 processor5 *tmp11
 -    * label *label29
     15 sensor :actual :localCore @thorium
-    16 op sub *tmp13 :actual *tmp9
-    17 op idiv :measure *tmp13 10
- 
-    20 op min *tmp17 :measure 9
-    21 op max *tmp18 *tmp17 -9
-    22 op add :accumulator 9 *tmp18
+    16 op sub *tmp16 :actual *tmp10
+    17 op idiv :measure *tmp16 10
+    18 op min *tmp18 :measure 9
+    19 op max *tmp19 *tmp18 -9
+    20 op add :accumulator 9 *tmp19
 -    * label *label30
 -    * label *label33
 -    * label *label34
-    23 sensor *tmp10 @metaglass @name
-    24 read *tmp9 processor9 *tmp10
+    21 sensor *tmp11 @metaglass @name
+    22 read *tmp10 processor5 *tmp11
 -    * label *label35
-    25 sensor :actual :localCore @metaglass
-    26 op sub *tmp13 :actual *tmp9
-    27 op idiv :measure *tmp13 10
+    23 sensor :actual :localCore @metaglass
+    24 op sub *tmp16 :actual *tmp10
+    25 op idiv :measure *tmp16 10
  
-    32 op add :measure 9 *tmp18
-    33 op shl *tmp20 :accumulator 5
-    34 op or :accumulator *tmp20 :measure
+    28 op add :measure 9 *tmp19
+    29 op shl *tmp21 :accumulator 5
+    30 op or :accumulator *tmp21 :measure
 -    * label *label36
 -    * label *label39
 -    * label *label40
-    35 sensor *tmp10 @titanium @name
-    36 read *tmp9 processor9 *tmp10
+    31 sensor *tmp11 @titanium @name
+    32 read *tmp10 processor5 *tmp11
 -    * label *label41
-    37 sensor :actual :localCore @titanium
-    38 op sub *tmp13 :actual *tmp9
-    39 op idiv :measure *tmp13 10
+    33 sensor :actual :localCore @titanium
+    34 op sub *tmp16 :actual *tmp10
+    35 op idiv :measure *tmp16 10
  
-    44 op add :measure 9 *tmp18
-    45 op shl *tmp20 :accumulator 5
-    46 op or :accumulator *tmp20 :measure
+    38 op add :measure 9 *tmp19
+    39 op shl *tmp21 :accumulator 5
+    40 op or :accumulator *tmp21 :measure
 -    * label *label42
 -    * label *label45
 -    * label *label46
-    47 sensor *tmp10 @silicon @name
-    48 read *tmp9 processor9 *tmp10
+    41 sensor *tmp11 @silicon @name
+    42 read *tmp10 processor5 *tmp11
 -    * label *label47
-    49 sensor :actual :localCore @silicon
-    50 op sub *tmp13 :actual *tmp9
-    51 op idiv :measure *tmp13 10
+    43 sensor :actual :localCore @silicon
+    44 op sub *tmp16 :actual *tmp10
+    45 op idiv :measure *tmp16 10
  
-    56 op add :measure 9 *tmp18
-    57 op shl *tmp20 :accumulator 5
-    58 op or :accumulator *tmp20 :measure
+    48 op add :measure 9 *tmp19
+    49 op shl *tmp21 :accumulator 5
+    50 op or :accumulator *tmp21 :measure
 -    * label *label48
 -    * label *label51
 -    * label *label52
-    59 sensor *tmp10 @graphite @name
-    60 read *tmp9 processor9 *tmp10
+    51 sensor *tmp11 @graphite @name
+    52 read *tmp10 processor5 *tmp11
 -    * label *label53
-    61 sensor :actual :localCore @graphite
-    62 op sub *tmp13 :actual *tmp9
-    63 op idiv :measure *tmp13 10
+    53 sensor :actual :localCore @graphite
+    54 op sub *tmp16 :actual *tmp10
+    55 op idiv :measure *tmp16 10
  
-    68 op add :measure 9 *tmp18
-    69 op shl *tmp20 :accumulator 5
-    70 op or :accumulator *tmp20 :measure
+    58 op add :measure 9 *tmp19
+    59 op shl *tmp21 :accumulator 5
+    60 op or :accumulator *tmp21 :measure
 -    * label *label54
 -    * label *label57
-    71 jump *label59 always
+    61 jump *label59 always
 -    * label *label58
-    72 sensor *tmp10 @coal @name
-    73 label *label59
-    74 sensor :actual :localCore @coal
+    62 sensor *tmp11 @coal @name
+    63 label *label59
+    64 sensor :actual :localCore @coal
  
-    81 op add :measure 9 *tmp18
-    82 op shl *tmp20 :accumulator 5
-    83 op or :accumulator *tmp20 :measure
+    69 op add :measure 9 *tmp19
+    70 op shl *tmp21 :accumulator 5
+    71 op or :accumulator *tmp21 :measure
 -    * label *label60
 -    * label *label63
-    84 jump *label65 always
+    72 jump *label65 always
 -    * label *label64
-    85 sensor *tmp10 @sand @name
-    86 label *label65
-    87 sensor :actual :localCore @sand
+    73 sensor *tmp11 @sand @name
+    74 label *label65
+    75 read *tmp14 processor5 ".sandContainer"
  
-    94 op add :measure 9 *tmp18
-    95 op shl *tmp20 :accumulator 5
-    96 op or :accumulator *tmp20 :measure
+    81 op add :measure 9 *tmp19
+    82 op shl *tmp21 :accumulator 5
+    83 op or :accumulator *tmp21 :measure
 -    * label *label66
 -    * label *label69
 -    * label *label70
-    97 sensor *tmp10 @lead @name
-    98 read *tmp9 processor9 *tmp10
+    84 sensor *tmp11 @lead @name
+    85 read *tmp10 processor5 *tmp11
 -    * label *label71
-    99 sensor :actual :localCore @lead
-   100 op sub *tmp13 :actual *tmp9
-   101 op idiv :measure *tmp13 10
+    86 sensor :actual :localCore @lead
+    87 op sub *tmp16 :actual *tmp10
+    88 op idiv :measure *tmp16 10
  
-   106 op add :measure 9 *tmp18
-   107 op shl *tmp20 :accumulator 5
-   108 op or :accumulator *tmp20 :measure
+    91 op add :measure 9 *tmp19
+    92 op shl *tmp21 :accumulator 5
+    93 op or :accumulator *tmp21 :measure
 -    * label *label72
 -    * label *label75
 -    * label *label76
-   109 sensor *tmp10 @copper @name
-   110 read *tmp9 processor9 *tmp10
+    94 sensor *tmp11 @copper @name
+    95 read *tmp10 processor5 *tmp11
 -    * label *label77
-   111 sensor :actual :localCore @copper
-   112 op sub *tmp13 :actual *tmp9
-   113 op idiv :measure *tmp13 10
+    96 sensor :actual :localCore @copper
+    97 op sub *tmp16 :actual *tmp10
+    98 op idiv :measure *tmp16 10
  
-   118 op add :measure 9 *tmp18
-   119 op shl *tmp20 :accumulator 5
-   120 op or :accumulator *tmp20 :measure
+   101 op add :measure 9 *tmp19
+   102 op shl *tmp21 :accumulator 5
+   103 op or :accumulator *tmp21 :measure
 -    * label *label78
 -    * label *label13
-   121 op add :newTail .tail 1
-   122 write :accumulator bank2 :newTail
-   123 set .tail :newTail
-   124 write :newTail bank2 510
-   125 label *label4
-   126 jump *label3 always
+   104 op add :newTail .tail 1
+   105 write :accumulator bank2 :newTail
+   106 set .tail :newTail
+   107 write :newTail bank2 510
+   108 label *label4
+   109 jump *label3 always
 -    * label *label5
-   127 end
+   110 end
 
 Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instructions):
  
      7 jump *label6 lessThan *tmp0 .nextTime
      8 op add .nextTime .nextTime 1800
-     9 read :localCore processor9 ".core"
+     9 read :localCore processor5 ".core"
 -    * jump *label9 notEqual :localCore null
 -    * jump *label4 always
 +   10 jump *label4 equal :localCore null
     11 label *label9
-    12 sensor *tmp10 @thorium @name
-    13 read *tmp9 processor9 *tmp10
+    12 sensor *tmp11 @thorium @name
+    13 read *tmp10 processor5 *tmp11
 
 Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
  
      8 op add .nextTime .nextTime 1800
-     9 read :localCore processor9 ".core"
+     9 read :localCore processor5 ".core"
     10 jump *label4 equal :localCore null
 -    * label *label9
-    11 sensor *tmp10 @thorium @name
-    12 read *tmp9 processor9 *tmp10
+    11 sensor *tmp11 @thorium @name
+    12 read *tmp10 processor5 *tmp11
     13 sensor :actual :localCore @thorium
 
 Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
  
      7 jump *label6 lessThan *tmp0 .nextTime
      8 op add .nextTime .nextTime 1800
-     9 read :localCore processor9 ".core"
+     9 read :localCore processor5 ".core"
 -    * jump *label4 equal :localCore null
 +   10 jump *label3 equal :localCore null
-    11 sensor *tmp10 @thorium @name
-    12 read *tmp9 processor9 *tmp10
+    11 sensor *tmp11 @thorium @name
+    12 read *tmp10 processor5 *tmp11
     13 sensor :actual :localCore @thorium
 
 Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-3 instructions):
  
-    67 op shl *tmp20 :accumulator 5
-    68 op or :accumulator *tmp20 :measure
-    69 jump *label59 always
--    * sensor *tmp10 @coal @name
-    70 label *label59
-    71 sensor :actual :localCore @coal
-    72 op sub *tmp13 :actual 100
+    57 op shl *tmp21 :accumulator 5
+    58 op or :accumulator *tmp21 :measure
+    59 jump *label59 always
+-    * sensor *tmp11 @coal @name
+    60 label *label59
+    61 sensor :actual :localCore @coal
+    62 op sub *tmp16 :actual 100
  
-    79 op shl *tmp20 :accumulator 5
-    80 op or :accumulator *tmp20 :measure
-    81 jump *label65 always
--    * sensor *tmp10 @sand @name
-    82 label *label65
-    83 sensor :actual :localCore @sand
-    84 op sub *tmp13 :actual 100
+    67 op shl *tmp21 :accumulator 5
+    68 op or :accumulator *tmp21 :measure
+    69 jump *label65 always
+-    * sensor *tmp11 @sand @name
+    70 label *label65
+    71 read *tmp14 processor5 ".sandContainer"
+    72 sensor :actual *tmp14 @sand
  
-   118 write :accumulator bank2 :newTail
-   119 set .tail :newTail
-   120 write :newTail bank2 510
+   101 write :accumulator bank2 :newTail
+   102 set .tail :newTail
+   103 write :newTail bank2 510
 -    * label *label4
-   121 jump *label3 always
+   104 jump *label3 always
 -    * end
 
 Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-2 instructions):
  
-    66 op add :measure 9 *tmp18
-    67 op shl *tmp20 :accumulator 5
-    68 op or :accumulator *tmp20 :measure
+    56 op add :measure 9 *tmp19
+    57 op shl *tmp21 :accumulator 5
+    58 op or :accumulator *tmp21 :measure
 -    * jump *label59 always
-    69 label *label59
-    70 sensor :actual :localCore @coal
-    71 op sub *tmp13 :actual 100
+    59 label *label59
+    60 sensor :actual :localCore @coal
+    61 op sub *tmp16 :actual 100
  
-    77 op add :measure 9 *tmp18
-    78 op shl *tmp20 :accumulator 5
-    79 op or :accumulator *tmp20 :measure
+    65 op add :measure 9 *tmp19
+    66 op shl *tmp21 :accumulator 5
+    67 op or :accumulator *tmp21 :measure
 -    * jump *label65 always
-    80 label *label65
-    81 sensor :actual :localCore @sand
-    82 op sub *tmp13 :actual 100
+    68 label *label65
+    69 read *tmp14 processor5 ".sandContainer"
+    70 sensor :actual *tmp14 @sand
 
 Modifications by Jumps phase, Jump Normalization, pass 5, iteration 1:
  
-    66 op add :measure 9 *tmp18
-    67 op shl *tmp20 :accumulator 5
-    68 op or :accumulator *tmp20 :measure
+    56 op add :measure 9 *tmp19
+    57 op shl *tmp21 :accumulator 5
+    58 op or :accumulator *tmp21 :measure
 -    * label *label59
-    69 sensor :actual :localCore @coal
-    70 op sub *tmp13 :actual 100
-    71 op idiv :measure *tmp13 10
+    59 sensor :actual :localCore @coal
+    60 op sub *tmp16 :actual 100
+    61 op idiv :measure *tmp16 10
  
-    76 op add :measure 9 *tmp18
-    77 op shl *tmp20 :accumulator 5
-    78 op or :accumulator *tmp20 :measure
+    64 op add :measure 9 *tmp19
+    65 op shl *tmp21 :accumulator 5
+    66 op or :accumulator *tmp21 :measure
 -    * label *label65
-    79 sensor :actual :localCore @sand
-    80 op sub *tmp13 :actual 100
-    81 op idiv :measure *tmp13 10
+    67 read *tmp14 processor5 ".sandContainer"
+    68 sensor :actual *tmp14 @sand
+    69 op sub *tmp16 :actual 100
 
 Final code before resolving virtual instructions:
 
@@ -1280,121 +1569,105 @@ Final code before resolving virtual instructions:
     4:  read *tmp0 processor1 "time"                                 ...
     5:  jump *label6 lessThan *tmp0 .nextTime                        ...
     6:  op add .nextTime .nextTime 1800                              Measurement.mnd: nextTime += INTERVAL;
-    7:  read :localCore processor9 ".core"                           Measurement.mnd: var localCore = core;        // Copy remote to local
+    7:  read :localCore processor5 ".core"                           Measurement.mnd: var localCore = core;        // Copy remote to local
     8:  jump *label3 equal :localCore null                           Measurement.mnd: if localCore == null then continue; end;
-    9:  sensor *tmp10 @thorium @name                                 Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-   10:  read *tmp9 processor9 *tmp10                                 ...
-   11:  sensor :actual :localCore @thorium                           Measurement.mnd: var actual = localCore.sensor(item);
-   12:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-   13:  op idiv :measure *tmp13 10                                   ...
-   14:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   15:  op add :measure :measure *tmp16                              ...
-   16:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   17:  op max *tmp18 *tmp17 -9                                      ...
-   18:  op add :accumulator 9 *tmp18                                 ...
-   19:  sensor *tmp10 @metaglass @name                               Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-   20:  read *tmp9 processor9 *tmp10                                 ...
-   21:  sensor :actual :localCore @metaglass                         Measurement.mnd: var actual = localCore.sensor(item);
-   22:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-   23:  op idiv :measure *tmp13 10                                   ...
-   24:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   25:  op add :measure :measure *tmp16                              ...
-   26:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   27:  op max *tmp18 *tmp17 -9                                      ...
-   28:  op add :measure 9 *tmp18                                     ...
-   29:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   30:  op or :accumulator *tmp20 :measure                           ...
-   31:  sensor *tmp10 @titanium @name                                Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-   32:  read *tmp9 processor9 *tmp10                                 ...
-   33:  sensor :actual :localCore @titanium                          Measurement.mnd: var actual = localCore.sensor(item);
-   34:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-   35:  op idiv :measure *tmp13 10                                   ...
-   36:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   37:  op add :measure :measure *tmp16                              ...
-   38:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   39:  op max *tmp18 *tmp17 -9                                      ...
-   40:  op add :measure 9 *tmp18                                     ...
-   41:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   42:  op or :accumulator *tmp20 :measure                           ...
-   43:  sensor *tmp10 @silicon @name                                 Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-   44:  read *tmp9 processor9 *tmp10                                 ...
-   45:  sensor :actual :localCore @silicon                           Measurement.mnd: var actual = localCore.sensor(item);
-   46:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-   47:  op idiv :measure *tmp13 10                                   ...
-   48:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   49:  op add :measure :measure *tmp16                              ...
-   50:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   51:  op max *tmp18 *tmp17 -9                                      ...
-   52:  op add :measure 9 *tmp18                                     ...
-   53:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   54:  op or :accumulator *tmp20 :measure                           ...
-   55:  sensor *tmp10 @graphite @name                                Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-   56:  read *tmp9 processor9 *tmp10                                 ...
-   57:  sensor :actual :localCore @graphite                          Measurement.mnd: var actual = localCore.sensor(item);
-   58:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-   59:  op idiv :measure *tmp13 10                                   ...
-   60:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   61:  op add :measure :measure *tmp16                              ...
-   62:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   63:  op max *tmp18 *tmp17 -9                                      ...
-   64:  op add :measure 9 *tmp18                                     ...
-   65:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   66:  op or :accumulator *tmp20 :measure                           ...
-   67:  sensor :actual :localCore @coal                              Measurement.mnd: var actual = localCore.sensor(item);
-   68:  op sub *tmp13 :actual 100                                    Measurement.mnd: var measure = (actual - target) \ 10;
-   69:  op idiv :measure *tmp13 10                                   ...
-   70:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   71:  op add :measure :measure *tmp16                              ...
-   72:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   73:  op max *tmp18 *tmp17 -9                                      ...
-   74:  op add :measure 9 *tmp18                                     ...
-   75:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   76:  op or :accumulator *tmp20 :measure                           ...
-   77:  sensor :actual :localCore @sand                              Measurement.mnd: var actual = localCore.sensor(item);
-   78:  op sub *tmp13 :actual 100                                    Measurement.mnd: var measure = (actual - target) \ 10;
-   79:  op idiv :measure *tmp13 10                                   ...
-   80:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   81:  op add :measure :measure *tmp16                              ...
-   82:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   83:  op max *tmp18 *tmp17 -9                                      ...
-   84:  op add :measure 9 *tmp18                                     ...
-   85:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   86:  op or :accumulator *tmp20 :measure                           ...
-   87:  sensor *tmp10 @lead @name                                    Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-   88:  read *tmp9 processor9 *tmp10                                 ...
-   89:  sensor :actual :localCore @lead                              Measurement.mnd: var actual = localCore.sensor(item);
-   90:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-   91:  op idiv :measure *tmp13 10                                   ...
-   92:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-   93:  op add :measure :measure *tmp16                              ...
-   94:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-   95:  op max *tmp18 *tmp17 -9                                      ...
-   96:  op add :measure 9 *tmp18                                     ...
-   97:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-   98:  op or :accumulator *tmp20 :measure                           ...
-   99:  sensor *tmp10 @copper @name                                  Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : coreBuilder.read(item.@name);
-  100:  read *tmp9 processor9 *tmp10                                 ...
-  101:  sensor :actual :localCore @copper                            Measurement.mnd: var actual = localCore.sensor(item);
-  102:  op sub *tmp13 :actual *tmp9                                  Measurement.mnd: var measure = (actual - target) \ 10;
-  103:  op idiv :measure *tmp13 10                                   ...
-  104:  select *tmp16 greaterThanEq :measure 0 1 -1                  Measurement.mnd: measure += measure >= 0 ? 1 : -1;
-  105:  op add :measure :measure *tmp16                              ...
-  106:  op min *tmp17 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
-  107:  op max *tmp18 *tmp17 -9                                      ...
-  108:  op add :measure 9 *tmp18                                     ...
-  109:  op shl *tmp20 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
-  110:  op or :accumulator *tmp20 :measure                           ...
-  111:  op add :newTail .tail 1                                      Measurement.mnd: var newTail = tail + 1;
-  112:  write :accumulator bank2 :newTail                            Measurement.mnd: bank2[newTail] = accumulator;
-  113:  set .tail :newTail                                           Measurement.mnd: tail = newTail;
-  114:  write :newTail bank2 510                                     ...
-  115:  jump *label3 always 0 0                                      Measurement.mnd: while true do
+    9:  sensor *tmp11 @thorium @name                                 Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   10:  read *tmp10 processor5 *tmp11                                ...
+   11:  sensor :actual :localCore @thorium                           Measurement.mnd: var actual = container.sensor(item);
+   12:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   13:  op idiv :measure *tmp16 10                                   ...
+   14:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   15:  op max *tmp19 *tmp18 -9                                      ...
+   16:  op add :accumulator 9 *tmp19                                 ...
+   17:  sensor *tmp11 @metaglass @name                               Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   18:  read *tmp10 processor5 *tmp11                                ...
+   19:  sensor :actual :localCore @metaglass                         Measurement.mnd: var actual = container.sensor(item);
+   20:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   21:  op idiv :measure *tmp16 10                                   ...
+   22:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   23:  op max *tmp19 *tmp18 -9                                      ...
+   24:  op add :measure 9 *tmp19                                     ...
+   25:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   26:  op or :accumulator *tmp21 :measure                           ...
+   27:  sensor *tmp11 @titanium @name                                Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   28:  read *tmp10 processor5 *tmp11                                ...
+   29:  sensor :actual :localCore @titanium                          Measurement.mnd: var actual = container.sensor(item);
+   30:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   31:  op idiv :measure *tmp16 10                                   ...
+   32:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   33:  op max *tmp19 *tmp18 -9                                      ...
+   34:  op add :measure 9 *tmp19                                     ...
+   35:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   36:  op or :accumulator *tmp21 :measure                           ...
+   37:  sensor *tmp11 @silicon @name                                 Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   38:  read *tmp10 processor5 *tmp11                                ...
+   39:  sensor :actual :localCore @silicon                           Measurement.mnd: var actual = container.sensor(item);
+   40:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   41:  op idiv :measure *tmp16 10                                   ...
+   42:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   43:  op max *tmp19 *tmp18 -9                                      ...
+   44:  op add :measure 9 *tmp19                                     ...
+   45:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   46:  op or :accumulator *tmp21 :measure                           ...
+   47:  sensor *tmp11 @graphite @name                                Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   48:  read *tmp10 processor5 *tmp11                                ...
+   49:  sensor :actual :localCore @graphite                          Measurement.mnd: var actual = container.sensor(item);
+   50:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   51:  op idiv :measure *tmp16 10                                   ...
+   52:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   53:  op max *tmp19 *tmp18 -9                                      ...
+   54:  op add :measure 9 *tmp19                                     ...
+   55:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   56:  op or :accumulator *tmp21 :measure                           ...
+   57:  sensor :actual :localCore @coal                              Measurement.mnd: var actual = container.sensor(item);
+   58:  op sub *tmp16 :actual 100                                    Measurement.mnd: var measure = (actual - target) \ 10;
+   59:  op idiv :measure *tmp16 10                                   ...
+   60:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   61:  op max *tmp19 *tmp18 -9                                      ...
+   62:  op add :measure 9 *tmp19                                     ...
+   63:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   64:  op or :accumulator *tmp21 :measure                           ...
+   65:  read *tmp14 processor5 ".sandContainer"                      Measurement.mnd: var container = item == @sand ? sandContainer : localCore;
+   66:  sensor :actual *tmp14 @sand                                  Measurement.mnd: var actual = container.sensor(item);
+   67:  op sub *tmp16 :actual 100                                    Measurement.mnd: var measure = (actual - target) \ 10;
+   68:  op idiv :measure *tmp16 10                                   ...
+   69:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   70:  op max *tmp19 *tmp18 -9                                      ...
+   71:  op add :measure 9 *tmp19                                     ...
+   72:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   73:  op or :accumulator *tmp21 :measure                           ...
+   74:  sensor *tmp11 @lead @name                                    Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   75:  read *tmp10 processor5 *tmp11                                ...
+   76:  sensor :actual :localCore @lead                              Measurement.mnd: var actual = container.sensor(item);
+   77:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   78:  op idiv :measure *tmp16 10                                   ...
+   79:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   80:  op max *tmp19 *tmp18 -9                                      ...
+   81:  op add :measure 9 *tmp19                                     ...
+   82:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   83:  op or :accumulator *tmp21 :measure                           ...
+   84:  sensor *tmp11 @copper @name                                  Measurement.mnd: var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+   85:  read *tmp10 processor5 *tmp11                                ...
+   86:  sensor :actual :localCore @copper                            Measurement.mnd: var actual = container.sensor(item);
+   87:  op sub *tmp16 :actual *tmp10                                 Measurement.mnd: var measure = (actual - target) \ 10;
+   88:  op idiv :measure *tmp16 10                                   ...
+   89:  op min *tmp18 :measure 9                                     Measurement.mnd: measure = 9 + max(min(measure, 9), -9);
+   90:  op max *tmp19 *tmp18 -9                                      ...
+   91:  op add :measure 9 *tmp19                                     ...
+   92:  op shl *tmp21 :accumulator 5                                 Measurement.mnd: accumulator = accumulator << 5 | measure;
+   93:  op or :accumulator *tmp21 :measure                           ...
+   94:  op add :newTail .tail 1                                      Measurement.mnd: var newTail = tail + 1;
+   95:  write :accumulator bank2 :newTail                            Measurement.mnd: bank2[newTail] = accumulator;
+   96:  set .tail :newTail                                           Measurement.mnd: tail = newTail;
+   97:  write :newTail bank2 510                                     ...
+   98:  jump *label3 always 0 0                                      Measurement.mnd: while true do
 
 
-Performance: parsed in 380 ms, compiled in 303 ms, optimized in 253 ms, run in 7 ms.
-Error connecting to Mlog Watcher: Connection refused: connect
-  - make sure Mindustry with active Mlog Watcher mod is running
-  - verify Mlog Watcher listens on port 9992
+Performance: parsed in 417 ms, compiled in 409 ms, optimized in 298 ms, run in 7 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
 
 Program output (5 steps):
 The program didn't generate any output.
