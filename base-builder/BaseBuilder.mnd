@@ -10,7 +10,7 @@ require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote processor;
 require "MonoController.mnd" remote monoController;
 require "PolyController.mnd" remote polyController;
-require "BlockBuilder.mnd" remote blockBuilder;
+require "BuilderController.mnd" remote builderController;
 
 // At this point, we're only using a poly
 const capacity = 28;
@@ -39,21 +39,21 @@ noinit var
 // BUILDING OPERATIONS
 
 def buildRemoteBlockLocal(cfg, x, y)
-    blockBuilder.buildRemoteBlock(cfg, x, y);
+    builderController.buildRemoteBlock(cfg, x, y);
 end;
 
 // Builds a block
 def buildBlockFromCfgLocal(cfg, config)
-    return blockBuilder.buildBlockFromCfg(cfg, config);
+    return builderController.buildBlockFromCfg(cfg, config);
 end;
 
 def buildBlockFromCfgLocal(cfg)
-    return blockBuilder.buildBlockFromCfg(cfg, null);
+    return builderController.buildBlockFromCfg(cfg, null);
 end;
 
 
 def buildFirstTitaniumDrill(cfg)
-    blockBuilder.meetTargetCfg(cfg);
+    builderController.meetTargetCfg(cfg);
 
     display.nextBlock = @ore-titanium;
     var dx, dy;
@@ -61,7 +61,7 @@ def buildFirstTitaniumDrill(cfg)
     if !result then error("Cannot locate spot for titanium drill"); end;
     display.nextBlock = @pneumatic-drill;
 
-    return blockBuilder.buildFirstTitaniumDrillAt(dx, dy);
+    return builderController.buildFirstTitaniumDrillAt(dx, dy);
 end;
 
 void blocksBuildTitaniumDrills()
@@ -73,7 +73,7 @@ void blocksBuildTitaniumDrills()
     // Bind the main builder back
     ubind(builder);
 
-    blockBuilder.buildTitaniumDrills(current);
+    builderController.buildTitaniumDrills(current);
     async(oreLocator.stopLocation());
 end;
 
@@ -82,11 +82,11 @@ void buildThoriumDrill()
     // We're using the main builder for this, and calling synchronously
     oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7);
 
-    blockBuilder.meetTargetCfg(LASER_DRILL);
+    builderController.meetTargetCfg(LASER_DRILL);
 
     var result = await(oreLocator.layoutThoriumDrill);
     if !result then error("Cannot locate spot for thorium drill"); end;
-    thoriumDrill = blockBuilder.buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, -1);
+    thoriumDrill = builderController.buildBlockAt(@laser-drill, oreLocator.drillX, oreLocator.drillY, null, 0, -1);
 
     buildRemoteBlockLocal(WATER_EXT, oreLocator.water1X, oreLocator.water1Y);
     buildRemoteBlockLocal(WATER_EXT, oreLocator.water2X, oreLocator.water2Y);
@@ -101,9 +101,9 @@ void buildThoriumDrill()
     display.thoriumDrill = thoriumDrill;
     display.thoriumContainer = thoriumContainer;
 
-    blockBuilder.thoriumBattery = thoriumBattery;
-    blockBuilder.thoriumContainer = thoriumContainer;
-    blockBuilder.thoriumGenerator = thoriumGenerator;
+    builderController.thoriumBattery = thoriumBattery;
+    builderController.thoriumContainer = thoriumContainer;
+    builderController.thoriumGenerator = thoriumGenerator;
 
     polyController.setThoriumContainer(thoriumContainer);
 end;
@@ -111,7 +111,7 @@ end;
 // MAIN
 
 void buildUnits()
-    blockBuilder.meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
+    builderController.meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
     display.totalTargets = 0;
     display.nextBlock = null;
     processor.leadReserve = 0;
@@ -129,7 +129,7 @@ begin
 
     scrap = !ulocate(:ore, @sand);
     display.scrap = scrap;
-    blockBuilder.scrap = scrap;
+    builderController.scrap = scrap;
     monoController.scrap = scrap;
 
     // PHASE 0: BASIC BLOCKS
@@ -139,13 +139,13 @@ begin
     buildBlockFromCfgLocal(BATTERY2);
     buildBlockFromCfgLocal(GENERATOR);
 
-    blockBuilder.powerTarget = 400;
+    builderController.powerTarget = 400;
 
     sandContainer = core;
     if scrap then
         //buildBlockFromCfgLocal(BATTERY3);
         sandContainer = buildBlockFromCfgLocal(PULVERIZER1);
-        blockBuilder.sandContainer = sandContainer;
+        builderController.sandContainer = sandContainer;
         buildBlockFromCfgLocal(OVERFLOW_GATE_A);
         buildBlockFromCfgLocal(POWER_NODE_A);
     end;
@@ -154,12 +154,12 @@ begin
     buildBlockFromCfgLocal(INVERTED_SORT1);
     titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
     display.titaniumDrill = titaniumDrill;
-    blockBuilder.titaniumDrill = titaniumDrill;
+    builderController.titaniumDrill = titaniumDrill;
 
     if scrap then
         buildBlockFromCfgLocal(UNLOADER_A);
         sandContainer = buildBlockFromCfgLocal(CONTAINER_A);
-        blockBuilder.sandContainer = sandContainer;
+        builderController.sandContainer = sandContainer;
         buildBlockFromCfgLocal(INVERTED_SORT_A);
         buildBlockFromCfgLocal(PULVERIZER2);
         buildBlockFromCfgLocal(OVERFLOW_GATE_B);
@@ -170,7 +170,7 @@ begin
     buildBlockFromCfgLocal(INVERTED_SORT2);
     buildBlockFromCfgLocal(OVERFLOW_GATE1);
     buildBlockFromCfgLocal(UNLOADER1);
-    blockBuilder.graphiteSurplus = 80;
+    builderController.graphiteSurplus = 80;
 
     // Build and initialize base controller
     buildBlockFromCfgLocal(PROCESSOR, coreControllerConfig);
@@ -196,12 +196,12 @@ begin
     processor.pressTarget = 85;
     processor.smelterTarget = 150;
     processor.kilnTarget = 30;
-    blockBuilder.siliconSurplus = 20;
-    blockBuilder.leadSurplus = 20;
+    builderController.siliconSurplus = 20;
+    builderController.leadSurplus = 20;
 
     buildUnits();
     do
-        blockBuilder.supplyBase();
+        builderController.supplyBase();
 
         // We're low on power: the air units might not get built in time
         // Go on building additional power reserves yourself.
@@ -209,7 +209,7 @@ begin
     while processor.monos < 3;
 
     // Build stock
-    blockBuilder.siliconSurplus = 65;
+    builderController.siliconSurplus = 65;
 
     // Kiln - needed for metaglass
     buildBlockFromCfgLocal(UNLOADER3);
@@ -221,7 +221,7 @@ begin
     buildBlockFromCfgLocal(STEAM_GEN);
 
     buildBlockFromCfgLocal(MULTIPRESS);
-    blockBuilder.graphiteSurplus = 200;
+    builderController.graphiteSurplus = 200;
 
     buildBlockFromCfgLocal(SMELTER2);
     if scrap then
@@ -234,21 +234,21 @@ begin
     buildBlockFromCfgLocal(ADDITIVE_REC);
 
     // Even more stock
-    blockBuilder.siliconSurplus = 1000;
-    blockBuilder.siliconMonoSurplus = 20;
-    blockBuilder.metaglassSurplus = 100;
+    builderController.siliconSurplus = 1000;
+    builderController.siliconMonoSurplus = 20;
+    builderController.metaglassSurplus = 100;
 
     setMonoTarget(4);
     setPolyTarget(3);
     buildUnits();
 
     while processor.polys < 2 do
-        blockBuilder.supplyBase();
+        builderController.supplyBase();
     end;
 
     setFlareTarget(2);
     while processor.flares < 2 do
-        blockBuilder.supplyBase();
+        builderController.supplyBase();
     end;
 
     // Build more titanium drills now
@@ -259,26 +259,26 @@ begin
     blocksBuildTitaniumDrills();
     display.nextBlock = null;
 
-    blockBuilder.graphiteSurplus = 10;
-    blockBuilder.metaglassSurplus = 50;
+    builderController.graphiteSurplus = 10;
+    builderController.metaglassSurplus = 50;
 
     display.nextBlock = @ore-thorium;
     buildThoriumDrill();
     display.nextBlock = null;
 
     while processor.polys < 3 do
-        blockBuilder.supplyBase();
+        builderController.supplyBase();
     end;
 
     setMonoTarget(4 + scrap);
 
     processor.powerTarget = 3209;
-    blockBuilder.siliconMonoSurplus = 120;
-    blockBuilder.leadSurplus = 0;
+    builderController.siliconMonoSurplus = 120;
+    builderController.leadSurplus = 0;
 
     buildBlockFromCfgLocal(MULTIPLICATIVE_REC);
 
-    blockBuilder.metaglassSurplus = 10;
+    builderController.metaglassSurplus = 10;
     setPolyTarget(0);
     setFlareTarget(0);
     setMegaTarget(1);
@@ -321,7 +321,7 @@ void stopAll()
     monoController.enabled = false;
     polyController.enabled = false;
     oreLocator.enabled = false;
-    blockBuilder.enabled = false;
+    builderController.enabled = false;
     measurements.enabled = false;
 
     flagUnits(@mega);

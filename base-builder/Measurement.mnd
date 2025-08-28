@@ -10,8 +10,8 @@ external bank2[510] cached tail = -1;
 const INTERVAL = 15 * 120;
 
 var nextTime = INTERVAL;
-remote blockBuilder var core;
-remote blockBuilder var sandContainer;
+remote builderController var core;
+remote builderController var sandContainer;
 
 begin
     while true do
@@ -24,7 +24,7 @@ begin
         var accumulator = 0;
         for var item in @copper, @lead, @sand, @coal, @graphite, @silicon, @titanium, @metaglass, @thorium descending do
             // There's no target for sand, so sand will always come out positive
-            var target = (item == @sand or item == @coal) ? 100 : blockBuilder.read(item.@name);
+            var target = (item == @sand or item == @coal) ? 100 : builderController.read(item.@name);
             var container = item == @sand ? sandContainer : localCore;
             var actual = container.sensor(item);
 

@@ -1,6 +1,6 @@
-# Skye's July 2025 Jam
+# Base Builder
 
-This is my entry for Skye's Jam of July 2025.
+This schematic was originally created as an entry for Skye's Jam of July 2025.
 
 The schematic builds and runs a base around the core until a mega is produced. Unless the resources are scarce or far away, the mega is produced within 30 minutes.
 
@@ -27,19 +27,20 @@ The mega is produced by building a base first. Flares, monos, and polys are also
 Brief description of the processors:
 
 * The world processor for spawning the poly (allows the schematic to be put on any map and run)
-* [Core Builder](CoreBuilder.mnd) (the leftmost logic processor): the main driver of the logic. Responsible for going through all the intermediate steps of the process. Controls the original poly most of the time.
-* [Display](Display.mnd) (middle column, top): responsible for displaying information on the display and the bottom message.
-* [Ore Locator](OreLocator.mnd) (middle column, middle): contains the logic for searching for the ore and part of the logic for laying out blocks not included in the core base (drill infrastructure).
-* [Matrices Generator](Matrices.mnd) (middle column, bottom): logic for scanning terrain for ore and build obstacles. Extracted from Ore Locator due to a large code size; however, this also allows two terrain scanning operations to run in parallel, speeding up the thorium drill building operation significantly. 
-* Microprocessors (top to bottom):
-  * Timer: measures time by counting instruction executions. Allows measuring time when the Time Control mod is used. Consists of a single `op add time time 1` instruction.
+* [Base Builder](BaseBuilder.mnd) (top-left logic processor): the main driver of the logic. Responsible for going through all the intermediate steps of the process.
+* [Builder Controller](BuilderController.mnd) (top-right processor): Controls the original poly (the builder), uses it to fullfill individual goals prescribed by the base builder.
+* [Ore Locator](OreLocator.mnd) (middle-left logic processor): contains the logic for searching for the ore and part of the logic for laying out blocks not included in the core base (drill infrastructure).
+* [Matrices Generator](Matrices.mnd) (middle-right logic processor): logic for scanning terrain for ore and build obstacles. Extracted from Ore Locator due to a large code size; however, this also allows two terrain scanning operations to run in parallel, speeding up the thorium drill building operation significantly. 
+* [Display](Display.mnd) (bottom-left logic processor): responsible for displaying information on the display and the bottom message.
+* Microprocessors (top to bottom, left to right):
+  * [Mono Controller](MonoController.mnd): controls the monos. Monos mine the most needed resource (copper, lead or sand/scrap) depending on the core stockpile and the next planned building.  
   * [Flare Controller](FlareController.mnd): controls the flares. Flares are used to fetch titanium from the drills (each flare serves one titanium drill, for simplicity).
-  * [Mono Controller](MonoController.mnd): controls the monos. Monos mine the most needed resource (copper, lead or sand) depending on the core stockpile and the next planned building.  
+  * [Resource measurement](Measurement.mnd): measures the resources stored in the core relative to the target and stores the information in the right-hand memory bank.
   * [Poly Controller](PolyController.mnd): controls the polys (except the original one). Polys mine coal exclusively.
-  * [Block Builder](BlockBuilder.mnd): contains logic for building blocks at given positions. Extracted from Core Builder due to a large code size.
+  * Timer: measures time by counting instruction executions. Allows measuring time when the Time Control mod is used. Consists of a single `op add time time 1` instruction.
   * [Core Controller](CoreController.mnd): controls blocks in the core base, managing resource production. (The actual processor doing this is built in the base and uses this processor only for copying the logic from it).
 
-The top-level process is mostly uninteresting. The Core Builder goes through a predefined sequence of goals (i.e., building a block or a unit). Each goal comes with a resource requirement, and the Core Builder ensures the requirement is met before building the block or unit. No sophistication is used here: the resources are gathered using fixed routines (e.g., mine ore, bring ore to a block, bring ore to the core, fetch ore from a drill, etc.), and each routine runs into completion. This also means the routine cannot end prematurely: a mining operation is not interrupted when the requirements are met. This is probably efficient, as the ores mined will be needed later anyway, and terminating the mining prematurely would actually waste time, but it is visually unappealing.
+The top-level process is mostly uninteresting. The Base Builder goes through a predefined sequence of goals (i.e., building a block or a unit). Each goal comes with a resource requirement, and the Builder Controller ensures the requirement is met before building the block or unit. No sophistication is used here: the resources are gathered using fixed routines (e.g., mine ore, bring ore to a block, bring ore to the core, fetch ore from a drill, etc.), and each routine runs into completion.
 
 Although a lot of details had to be ironed out for this, some specific tasks might be more interesting and are described in greater detail below.
 
@@ -55,7 +56,7 @@ The ore search is used on three different occasions:
 * building additional titanium drills,
 * building the thorium drill and a related infrastructure.
 
-The thorium ore search almost immediately follows the second search for the titanium ore. Arguably, these two search phases could be combined and some time might be saved on maps where the ore is located far away, but this would increase the code size considerably.  
+The thorium ore search almost immediately follows the second search for the titanium ore. Arguably, these two search phases could be combined, and some time might be saved on maps where the ore is located far away, but this would increase the code size considerably.  
 
 ### Optimal drill placement
 
@@ -69,11 +70,11 @@ The 2x2 and 3x3 drills are placed optimally within a 5x5 area. The 4x4 drill is 
 * 3x3 drill: 9 different placements,
 * 4x4 drill: 16 different placements.
 
-For each possible placement, a score is calculated; the best score determines the optimal placement. Score is calculated by summing up individual tile values: 0 for an empty tile, 1 for a tile with an ore, and 32 for a solid tile (actually, these values are divided by 255 for reasons stated below). Score greater or equal to 32 indicates an invalid position, while other values give the number of tiles under the drill.
+For each possible placement, a score is calculated; the best score determines the optimal placement. Score is calculated by summing up individual tile values: 0 for an empty tile, 1 for a tile with an ore, and 32 for a solid tile (for computation these values are divided by 255 for reasons stated below). Score greater or equal to 32 indicates an invalid position, while other values give the number of tiles under the drill.
 
 The actual trick here is making the calculation fast. To this end, all tiles in a row within the area are scanned, and a partial score is calculated by summing up tile values of the (three or four) possible horizontal drill positions. These values are then packed together into a single value using `packcolor` (for the 4x4 drill, the values are capped at 32, but for the other two dimensions this is not even necessary) - this is why the original tile scores are divided by 255, as required by `packcolor`.
 
-The final score for each possible vertical drill position is calculated by summing up the partial row scores for each row within the position and then unpacking the values into four column scores using `unpackcolor`. This greatly reduces the total number of additions needed, and using `packcolor` and `unpackcolor` saves the bit manipulation operations.
+The final score for each possible vertical drill position is calculated by summing up the partial row scores for each row within the position and then unpacking the values into four column scores using `unpackcolor`. This greatly reduces the total number of additions needed, and using `packcolor` and `unpackcolor` avoids a lot of bit manipulation operations.
 
 When the optimal drill position obtained by this process is different from the original ore location, a new area, centered around the optimal drill position, is evaluated again using the same process. This is repeated as long as the drill score increases. This process is capable of following a vein of ore to a better location in some circumstances.
 
@@ -88,7 +89,7 @@ The remaining blocks, unlike the drills, do not require a specific position for 
 * they cannot be built on a solid block (the same as drills),
 * they must not touch another already existing block (touching by corners is okay).
 
-The second constraint is to prevent placing the water extractor next to a pneumatic drill built earlier. When this happens, the pneumatic drill might drain all water from the extractor, making the drill potentially unoperational.
+The second constraint is to prevent placing the water extractor next to a pneumatic drill built earlier. When this happens, the pneumatic drill might drain all water from the extractor, making the steam generator, and consequently the laser drill, non-operational.
 
 The placement of these additional blocks is planned on a 7x7 grid centered on the drill. This area contains 49 tiles, for which two bitmasks are created: a bitmask of solid blocks, and a bitmask of tiles adjacent to existing blocks (these bitmasks are built in parallel, and each tile is scanned only one for each bitmask). The bitmasks are then combined for a single "terrain" bitmask containing ones at bits corresponding to blocked tiles, and zeroes at bits corresponding to free tiles.
 
@@ -101,7 +102,7 @@ To find a position for a block, a bitmask for a block is created. To evaluate di
 
 To place blocks that have to touch the side of the drill, the [drill itself and the corners of the area bitmask are explicitly blocked](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L477). This ensures these 2x2 blocks cannot be placed diagonally from the drill. Positions of these blocks are marked in the terrain bitmask by or-ing them in. 
 
-The water extractor, the steam generator are placed as a single 2x4 block, either horizontally or vertically, using the updated terrain bitmask, and then the three 1x1 blocks (battery, solar panel, and power node) are also added. The 1x1 blocks must not be placed in corners or in tiles adjacent to the corners, otherwise the distance between the power node and either of the two other blocks might be too large for a connection to be made.  
+The water extractor, the steam generator are placed as a single 2x4 block, either horizontally or vertically, using the updated terrain bitmask, and then the three 1x1 blocks (battery, solar panel, and power node) are also added. The 1x1 blocks must not be placed in corners or on tiles adjacent to the corners, otherwise the distance between the power node and either of the two other blocks might be too large for a connection to be made.  
 
 If it is not possible to place all these blocks within the original 7x7 area (this may actually easily happen), four more areas, each shifted by three tiles in both x and y directions, are evaluated. The terrain needs to be scanned anew for these areas, but the already planned blocks (the drill and the two touching 2x2 blocks) are [shifted accordingly](https://github.com/cardillan/golem/blob/5e0cb22fb89be1cc94957b2db68dbe002690ca84/jam-202507/OreLocator.mnd#L271) and combined with the new terrain mask. An additional power node is built when the original power node is not able to reach all powered blocks; connection is ultimately ensured via the drill.  
 
