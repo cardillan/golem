@@ -21,23 +21,25 @@ noinit remote var
     sandTarget,
     leadTarget;
 
+volatile mlog(@copper.@name)  var oreCopper = @ore-copper;
+volatile mlog(@scrap.@name)   var oreScrap = @ore-scrap;
+volatile mlog(@lead.@name)    var oreLead = @ore-lead;
+volatile mlog(@sand.@name)    var oreSand = @sand-floor;
+
 void backgroundProcess()
+    var firstUnit;
     do
-        ubind(@mono);
-    while @unit == null;
-
-    var firstItem = @unit;
-
-    do
+        firstUnit = ubind(@mono);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
 
-    var newCount = 0;
+    var runningCount = 0;
 
     while true do
         ubind(@mono);
-        if firstItem.@dead then firstItem = @unit; end;
-        if @unit == firstItem then
+        if firstUnit.@dead then firstUnit = @unit; end;
+
+        if @unit == firstUnit then
             printflush(message1);
 
             var lead = core.@lead - leadTarget;
@@ -45,18 +47,19 @@ void backgroundProcess()
             var copper = core.@copper - copperTarget;
             min = min(lead, sand, copper);
             minOre = min == sand ? @sand : min == lead ? @lead : @copper;
-            if minOre == @sand and scrap then minOre = @scrap; end;
+            if scrap then
+                if minOre == @sand then minOre = @scrap; end;
+            end;
 
             println("minOre:", minOre);
+            min += 10 * runningCount;
 
-            if min < 10 then min = -100; else min += 100; end;
-
-            count = newCount;
-            newCount = 2;
+            count = runningCount;
+            runningCount = 2;
             sandX = sandContainer.@x;
             sandY = sandContainer.@y;
         end;
-        newCount++;
+        runningCount++;
 
         var flag = @unit.@flag;
         println("Unit flag: ", flag);
@@ -80,29 +83,24 @@ void findOreToMine(ore)
     ulocate(:ore, ore, out x, out y);
     approach(x, y, RADIUS);
     mine(x, y);
-    flag((x * 1000 + y) * 32 + ore.@id * 2);
+    flag((x * 1000 + y) * 16 + ore.@id);
     println($"Found $ore at $x, $y");
 end;
 
 void mine(flag)
-    print("Mining x");
+    print("Mining ");
 
-    flag \= 2;
     var ore = lookup(:item, flag % 16);
+    printchar(ore);
     flag \= 16;
     var y = flag % 1000;
     var x = flag \ 1000;
 
-    var floorOre =
-        ore == @copper ? @ore-copper :
-        ore == @scrap ? @ore-scrap :
-        ore == @lead ? @ore-lead :
-        @sand-floor;
-
+    var floorOre = @this.read(ore.@name);
     var oreCapacity = ore == @scrap ? capacity - count : capacity;
 
-    if ore != @scrap then
-        if ore != minOre then
+    if ore != minOre then
+        if ore != @scrap then
             // We aren't mining the most needed ore
             if core.sensor(ore) > min then
                 print(", switching to a more needed ore");
@@ -131,10 +129,10 @@ void mine(flag)
             itemDrop(core, capacity);
         end;
     else
-        var floor = null;
-
         print($" at $x, $y");
         approach(x, y, RADIUS);
+
+        var floor;
         var block = getBlock(x, y, , out floor);
         if floor != floorOre then
             if floor == null then

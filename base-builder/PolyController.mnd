@@ -10,9 +10,16 @@ require units;
 
 linked message1;
 
+const FLAG_FREE         = 0;
+const FLAG_MINE_COAL    = 1;
+const FLAG_MINE_SCRAP   = 2;
+const FLAG_RETURN_COAL  = 3;
+const FLAG_RETURN_SCRAP = 4;
+
 // At this point, we're only using a flare
-const CAPACITY = 30;
-const RADIUS = 6;
+const CAPACITY          = 30;
+const SCRAP_CAPACITY    = 25;
+const RADIUS            = 6;
 
 noinit volatile var
     builder, core, coreX, coreY,
@@ -32,14 +39,25 @@ remote void setThoriumContainer(container)
     thoriumLimit = thoriumContainer.@itemCapacity > 10 ? 100 : 0;
 end;
 
-remote void pause();
-    // Must be called asynchronously
-    do while true;
+volatile noinit var
+    container,
+    containerX,
+    containerY;
+
+remote void setScrapContainer(scrapContainer)
+    container = scrapContainer;
+    containerX = container.@x;
+    containerY = container.@y;
 end;
 
-remote void resume()
-    // Do nothing
-end;
+var
+    ore = @coal,
+    coalX = 0,
+    coalY = 0,
+    coalDistance = 1e9,
+    scrapX = 0,
+    scrapY = 0,
+    scrapDistance = 1e9;
 
 void backgroundProcess()
     if core == null then return; end;
@@ -57,23 +75,23 @@ void backgroundProcess()
                 continue;
             end;
 
+            if container then
+                var coal = core.@coal;
+                ore = coal < 120 ? @coal : coal > 220 ? @scrap : ore;
+            end;
+
             var flag = @unit.@flag;
             println("Unit flag: ", flag);
-            if flag == 0 then
-                findOreToMine();
-            elsif flag == 1 then
-                returnItems();
-            else
-                mine();
+            case flag
+                when FLAG_FREE          then findOreToMine();
+                when FLAG_MINE_COAL     then mineCoal();
+                when FLAG_MINE_SCRAP    then mineScrap();
+                when FLAG_RETURN_COAL   then returnCoal();
+                when FLAG_RETURN_SCRAP  then returnScrap();
             end;
         end;
     end;
 end;
-
-var
-    coalX = 0,
-    coalY = 0,
-    distance = 1e9;
 
 void findOreToMine()
     // Shouldn't happen here, but...
@@ -85,34 +103,40 @@ void findOreToMine()
         end;
     end;
 
+    flag(ore == @coal ? FLAG_MINE_COAL : FLAG_MINE_SCRAP);
+    var targetX = ore == @coal ? coreX : containerX;
+    var targetY = ore == @coal ? coreY : containerY;
+    var distance = ore == @coal ? coalDistance : scrapDistance;
+
     // Try to find a better ore
     var x, y;
-    ulocate(:ore, @coal, out x, out y);
-    var dist = len(x - coreX, y - coreY);
+    ulocate(:ore, ore, out x, out y);
+    var dist = len(x - targetX, y - targetY);
     if dist < distance then
-        coalX = x;
-        coalY = y;
-        distance = dist;
+        if ore == @coal then
+            coalX = x;
+            coalY = y;
+            coalDistance = dist;
+        else
+            scrapX = x;
+            scrapY = y;
+            scrapDistance = dist;
+        end;
     end;
 
-    approach(coalX, coalY, RADIUS);
-    var floor = null;
-    getBlock(coalX, coalY, , out floor);
-    if floor == @ore-coal then
-        mine(x, y);
-        println($"Found coal at $coalX, $coalY");
-        flag(2);
-    elsif floor != null
-        // The ore we remembered disappeared - got built over?
-        then distance = 1e9;
-        println($"Coal at $coalX, $coalY disappeared");
-    else
-        println($"Not close enough to $coalX, $coalY");
-    end;
+    approach(x, y, RADIUS);
 end;
 
-void mine()
-    print("Mining");
+void mineCoal()
+    print("Mining ");
+    printchar(@coal);
+
+    if ore != @coal then
+        print(", switching");
+        approach(coreX, coreY, RADIUS);
+        itemDrop(core, CAPACITY);
+        flag(FLAG_RETURN_COAL);
+    end;
 
     if @unit.@firstItem != @coal then
         print(" (dropping)");
@@ -126,28 +150,80 @@ void mine()
     if @unit.@totalItems >= CAPACITY then
         print(", full");
         approach(coreX, coreY, RADIUS);
-        flag(1);
+        itemDrop(core, CAPACITY);
+        flag(FLAG_RETURN_COAL);
     elsif within(coalX, coalY, RADIUS + 0.5) then
         if !@unit.@mining then
             // The mining spot was lost (i.e. built over)
             print(", ore lost");
-            distance = 1e9;
+            coalDistance = 1e9;
             approach(coreX, coreY, RADIUS);
-            flag(1);
+            itemDrop(core, CAPACITY);
+            flag(FLAG_RETURN_COAL);
         end;
     end;
 
     println();
 end;
 
-void returnItems()
+void returnCoal()
     println("Returning");
     approach(coreX, coreY, RADIUS);
     itemDrop(core, CAPACITY);
 
     if @unit.@firstItem == null then
         println("    Finished");
-        flag(0);
+        flag(FLAG_FREE);
+    end;
+end;
+
+void mineScrap()
+    print("Mining ");
+    printchar(@scrap);
+
+    if ore != @scrap then
+        print(", switching");
+        approach(containerX, containerY, RADIUS);
+        itemDrop(container, CAPACITY);
+        flag(FLAG_RETURN_SCRAP);
+    end;
+
+    if @unit.@firstItem != @scrap then
+        print(" (dropping)");
+        itemDrop(@air, CAPACITY);
+    end;
+
+    print($" at $scrapX, $scrapY");
+    approach(scrapX, scrapY, RADIUS);
+    mine(scrapX, scrapY);
+
+    if @unit.@totalItems >= SCRAP_CAPACITY then
+        print(", full");
+        approach(containerX, containerY, RADIUS);
+        itemDrop(container, CAPACITY);
+        flag(FLAG_RETURN_SCRAP);
+    elsif within(scrapX, scrapY, RADIUS + 0.5) then
+        if !@unit.@mining then
+            // The mining spot was lost (i.e. built over)
+            print(", ore lost");
+            scrapDistance = 1e9;
+            approach(containerX, containerY, RADIUS);
+            itemDrop(container, CAPACITY);
+            flag(FLAG_RETURN_SCRAP);
+        end;
+    end;
+
+    println();
+end;
+
+void returnScrap()
+    println("Returning");
+    approach(containerX, containerY, RADIUS);
+    itemDrop(container, CAPACITY);
+
+    if @unit.@firstItem == null then
+        println("    Finished");
+        flag(FLAG_FREE);
     end;
 end;
 

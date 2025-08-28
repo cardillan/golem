@@ -186,13 +186,14 @@ end;
 
 def targetMet()
     // This is horrible, but Mindcode doesn't do short-circuit evaluation yet.
-    if core.@copper < targetCopper then return false; end;
-    if core.@lead < targetLead then return false; end;
-    if core.@graphite < targetGraphite then return false; end;
-    if core.@silicon < targetSilicon then return false; end;
-    if core.@titanium < targetTitanium then return false; end;
-    if core.@metaglass < targetMetaglass then return false; end;
-    if core.@thorium < targetThorium then return false; end;
+    if core.@copper < targetCopper then display.missing = @copper; return false; end;
+    if core.@lead < targetLead then display.missing = @lead; return false; end;
+    if core.@graphite < targetGraphite then display.missing = @graphite; return false; end;
+    if core.@silicon < targetSilicon then display.missing = @silicon; return false; end;
+    if core.@titanium < targetTitanium then display.missing = @titanium; return false; end;
+    if core.@metaglass < targetMetaglass then display.missing = @metaglass; return false; end;
+    if core.@thorium < targetThorium then display.missing = @thorium; return false; end;
+    //display.missing = false;
     return true;
 end;
 
@@ -222,7 +223,6 @@ void meetTargetLocal(block, copper, lead, graphite, silicon, titanium, metaglass
     processor.pressTarget = graphite + graphiteSurplus;
     processor.smelterTarget = silicon + siliconSurplus;
     processor.kilnTarget = metaglass + metaglassSurplus;
-    processor.leadReserve = lead + leadSurplus;
     processor.siliconReserve = silicon + sign(silicon) * 20;
     processor.graphiteReserve = graphite + sign(graphite) * 20;
 
@@ -379,8 +379,8 @@ end;
 
 volatile var positive = 0, negative = 0;
 
-const MAX_TILES = 10;
-const MAX_COUNT = 6;
+var MAX_TILES = 10;
+var MAX_COUNT = 6;
 
 def buildTitaniumDrill(x, y, in out count, in out tiles)
     if count < MAX_COUNT then
@@ -418,10 +418,12 @@ remote void buildTitaniumDrills(current)
     var count = 1;
     var tiles = 0;
 
+    if scrap then MAX_TILES += 4; end;
+
     wait(1e-4);
     wait(1e-4);
 
-    while !oreLocator.searchFinished do
+    do
         while current < oreLocator.locations do
             var index = current * 4;
             var size = bank1[index + 1];
@@ -443,7 +445,7 @@ remote void buildTitaniumDrills(current)
 
         if tiles >= MAX_TILES then break; end;
         if count >= MAX_COUNT then break; end;
-    end;
+    while !oreLocator.searchFinished;
 end;
 
 remote void supplyBase()

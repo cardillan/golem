@@ -1,6 +1,6 @@
 jump 3 always 0 0
-jump 245 always 0 0
-jump 250 always 0 0
+jump 256 always 0 0
+jump 261 always 0 0
 set .finished false
 set .flares 0
 set .monos 0
@@ -13,7 +13,7 @@ set .flareTarget 0
 set .monoTarget 0
 set .polyTarget 0
 set .megaTarget 0
-set .powerTarget 1009
+set .powerTarget 1609
 set .lastProgress 0
 set .lastRecoProgress 0
 set .lastMultiProgress 0
@@ -21,230 +21,241 @@ set .recoEntered false
 set .canConsume true
 set .airFactoryTarget null
 set *signature "eb9ab5a008f372ac:v1"
-jump 243 notEqual .finished false
+jump 254 notEqual .finished false
 set :backgroundProcess:ticks @tick
 sensor :backgroundProcess:coreSilicon .core @silicon
 sensor :backgroundProcess:coreGraphite .core @graphite
-set *tmp34 ALQIJ^-silicon-smelter20
-set *tmp36 ALMQJN-silicon-smelter4
-op lessThan *tmp38 :backgroundProcess:coreSilicon .smelterTarget
-control enabled *tmp36 *tmp38 0 0 0
-control enabled *tmp34 *tmp38 0 0 0
-set *tmp39 AJEMJJ-graphite-press0
-op equal *tmp41 AKFRJ_-multi-press21 false
-op lessThan *tmp42 :backgroundProcess:coreGraphite .pressTarget
-op land *tmp43 *tmp41 *tmp42
-control enabled *tmp39 *tmp43 0 0 0
-set *tmp44 AKFRJ_-multi-press21
-op lessThan *tmp46 :backgroundProcess:coreGraphite .pressTarget
-control enabled *tmp44 *tmp46 0 0 0
-set *tmp47 ANOMJZ-kiln16
-sensor *tmp49 .core @metaglass
-op lessThan *tmp50 *tmp49 .kilnTarget
-control enabled *tmp47 *tmp50 0 0 0
+set *tmp35 ALQIJ]-silicon-smelter19
+set *tmp37 ALMQJN-silicon-smelter4
+op lessThan *tmp39 :backgroundProcess:coreSilicon .smelterTarget
+control enabled *tmp37 *tmp39 0 0 0
+control enabled *tmp35 *tmp39 0 0 0
+set *tmp40 AJEMJJ-graphite-press0
+op equal *tmp42 AKFRJ^-multi-press20 false
+op lessThan *tmp43 :backgroundProcess:coreGraphite .pressTarget
+op land *tmp44 *tmp42 *tmp43
+control enabled *tmp40 *tmp44 0 0 0
+set *tmp45 AKFRJ^-multi-press20
+op lessThan *tmp47 :backgroundProcess:coreGraphite .pressTarget
+control enabled *tmp45 *tmp47 0 0 0
+set *tmp48 ANOMJZ-kiln16
+sensor *tmp50 .core @metaglass
+op lessThan *tmp51 *tmp50 .kilnTarget
+control enabled *tmp48 *tmp51 0 0 0
 sensor :backgroundProcess:power AJTJK-battery1 @totalPower
-jump 53 equal AAKJ\-steam-generator18 false
-set *tmp53 AJRJM-combustion-generator3
-op lessThan *tmp55 :backgroundProcess:power 9
-control enabled *tmp53 *tmp55 0 0 0
-set *tmp56 AAKJ\-steam-generator18
-op lessThan *tmp58 :backgroundProcess:power .powerTarget
-control enabled *tmp56 *tmp58 0 0 0
-jump 56 always 0 0
-set *tmp59 AJRJM-combustion-generator3
-op lessThan *tmp61 :backgroundProcess:power 809
-control enabled *tmp59 *tmp61 0 0 0
-op lessThan *tmp62 .flares .flareTarget
-op notEqual *tmp63 .airFactoryTarget @mono
-op land *tmp64 *tmp62 *tmp63
-jump 99 equal *tmp64 false
+jump 59 equal AAKJ\-steam-generator18 false
+set *tmp54 AJRJM-combustion-generator3
+op lessThan *tmp56 :backgroundProcess:power 9
+control enabled *tmp54 *tmp56 0 0 0
+set *tmp57 AAKJ\-steam-generator18
+op lessThan *tmp59 :backgroundProcess:power .powerTarget
+control enabled *tmp57 *tmp59 0 0 0
+set *tmp60 AXTNJl-pulverizer34
+op greaterThan *tmp62 :backgroundProcess:power 900
+control enabled *tmp60 *tmp62 0 0 0
+set *tmp63 AXTLJm-pulverizer35
+op greaterThan *tmp65 :backgroundProcess:power 1000
+control enabled *tmp63 *tmp65 0 0 0
+jump 62 always 0 0
+set *tmp66 AJRJM-combustion-generator3
+op lessThan *tmp68 :backgroundProcess:power 809
+control enabled *tmp66 *tmp68 0 0 0
+op lessThan *tmp69 .flares .flareTarget
+op notEqual *tmp70 .airFactoryTarget @mono
+op land *tmp71 *tmp69 *tmp70
+jump 105 equal *tmp71 false
 set .airFactoryTarget @flare
 write @flare .display ".nextFactory"
-jump 65 notEqual .canConsume false
+jump 71 notEqual .canConsume false
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 153 always 0 0
-sensor *tmp70 AAKJ\-steam-generator18 @coal
-op mul *tmp71 5 AAKJ\-steam-generator18
-jump 70 greaterThanEq *tmp70 *tmp71
+jump 159 always 0 0
+sensor *tmp77 AAKJ\-steam-generator18 @coal
+op mul *tmp78 5 AAKJ\-steam-generator18
+jump 76 greaterThanEq *tmp77 *tmp78
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 153 always 0 0
-jump 73 greaterThanEq :backgroundProcess:power 200
+jump 159 always 0 0
+jump 79 greaterThanEq :backgroundProcess:power 200
 control enabled A¾BFLW-air-factory13 false 0 0 0
-jump 75 always 0 0
-jump 75 lessThanEq :backgroundProcess:power 500
+jump 81 always 0 0
+jump 81 lessThanEq :backgroundProcess:power 500
 control enabled A¾BFLW-air-factory13 true 0 0 0
 control config A¾BFLW-air-factory13 @flare 0 0 0
 sensor :handleAirFactory:factoryProgress A¾BFLW-air-factory13 @progress
-jump 91 lessThanEq .lastProgress :handleAirFactory:factoryProgress
-read *tmp30 .bank 511
-op sub *tmp232 *tmp30 1
-write *tmp232 .bank 511
-read *tmp235 .timer "time"
-op mul *tmp236 *tmp235 1000
-op add *tmp237 275 *tmp236
-write *tmp237 .bank *tmp232
-op add *tmp226 .flares 1
-set .flares *tmp226
-write *tmp226 .display ".flares"
+jump 97 lessThanEq .lastProgress :handleAirFactory:factoryProgress
+read *tmp31 .bank 511
+op sub *tmp243 *tmp31 1
+write *tmp243 .bank 511
+read *tmp246 .timer "time"
+op mul *tmp247 *tmp246 1000
+op add *tmp248 275 *tmp247
+write *tmp248 .bank *tmp243
+op add *tmp237 .flares 1
+set .flares *tmp237
+write *tmp237 .display ".flares"
 set .lastProgress 0
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 153 always 0 0
+jump 159 always 0 0
 set .lastProgress :handleAirFactory:factoryProgress
-sensor *tmp100 .core @silicon
-select *tmp102 greaterThan *tmp100 0 15 0
-set *tmp103 A©FJJU-unloader11
-sensor *tmp105 A¾BFLW-air-factory13 @silicon
-select *tmp107 lessThan *tmp105 *tmp102 @silicon @coal
-control config *tmp103 *tmp107 0 0 0
-jump 153 always 0 0
-op lessThan *tmp108 .monos .monoTarget
-op notEqual *tmp109 .airFactoryTarget @flare
-op land *tmp110 *tmp108 *tmp109
-jump 148 equal *tmp110 false
+sensor *tmp107 .core @silicon
+select *tmp109 greaterThan *tmp107 0 15 0
+set *tmp110 A©FJJU-unloader11
+sensor *tmp112 A¾BFLW-air-factory13 @silicon
+select *tmp114 lessThan *tmp112 *tmp109 @silicon @coal
+control config *tmp110 *tmp114 0 0 0
+jump 159 always 0 0
+op lessThan *tmp115 .monos .monoTarget
+op notEqual *tmp116 .airFactoryTarget @flare
+op land *tmp117 *tmp115 *tmp116
+jump 154 equal *tmp117 false
 set .airFactoryTarget @mono
 write @mono .display ".nextFactory"
-jump 108 notEqual .canConsume false
+jump 114 notEqual .canConsume false
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 153 always 0 0
-sensor *tmp116 AAKJ\-steam-generator18 @coal
-op mul *tmp117 5 AAKJ\-steam-generator18
-jump 113 greaterThanEq *tmp116 *tmp117
+jump 159 always 0 0
+sensor *tmp123 AAKJ\-steam-generator18 @coal
+op mul *tmp124 5 AAKJ\-steam-generator18
+jump 119 greaterThanEq *tmp123 *tmp124
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 153 always 0 0
-jump 116 greaterThanEq :backgroundProcess:power 200
+jump 159 always 0 0
+jump 122 greaterThanEq :backgroundProcess:power 200
 control enabled A¾BFLW-air-factory13 false 0 0 0
-jump 118 always 0 0
-jump 118 lessThanEq :backgroundProcess:power 500
+jump 124 always 0 0
+jump 124 lessThanEq :backgroundProcess:power 500
 control enabled A¾BFLW-air-factory13 true 0 0 0
 control config A¾BFLW-air-factory13 @mono 0 0 0
 sensor :handleAirFactory.1:factoryProgress A¾BFLW-air-factory13 @progress
-jump 134 lessThanEq .lastProgress :handleAirFactory.1:factoryProgress
-read *tmp30 .bank 511
-op sub *tmp232 *tmp30 1
-write *tmp232 .bank 511
-read *tmp235 .timer "time"
-op mul *tmp236 *tmp235 1000
-op add *tmp237 280 *tmp236
-write *tmp237 .bank *tmp232
-op add *tmp227 .monos 1
-set .monos *tmp227
-write *tmp227 .display ".monos"
+jump 140 lessThanEq .lastProgress :handleAirFactory.1:factoryProgress
+read *tmp31 .bank 511
+op sub *tmp243 *tmp31 1
+write *tmp243 .bank 511
+read *tmp246 .timer "time"
+op mul *tmp247 *tmp246 1000
+op add *tmp248 280 *tmp247
+write *tmp248 .bank *tmp243
+op add *tmp238 .monos 1
+set .monos *tmp238
+write *tmp238 .display ".monos"
 set .lastProgress 0
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 153 always 0 0
+jump 159 always 0 0
 set .lastProgress :handleAirFactory.1:factoryProgress
-sensor *tmp138 .core @lead
-select *tmp140 greaterThan *tmp138 0 15 0
-sensor *tmp141 A¾BFLW-air-factory13 @lead
-jump 141 greaterThanEq *tmp141 *tmp140
+sensor *tmp145 .core @lead
+select *tmp147 greaterThan *tmp145 0 15 0
+sensor *tmp148 A¾BFLW-air-factory13 @lead
+jump 147 greaterThanEq *tmp148 *tmp147
 control config A©FJJU-unloader11 @lead 0 0 0
-jump 153 always 0 0
-sensor *tmp146 .core @silicon
-select *tmp148 greaterThan *tmp146 0 30 0
-set *tmp149 A©FJJU-unloader11
-sensor *tmp151 A¾BFLW-air-factory13 @silicon
-select *tmp153 lessThan *tmp151 *tmp148 @silicon @coal
-control config *tmp149 *tmp153 0 0 0
-jump 153 always 0 0
+jump 159 always 0 0
+sensor *tmp153 .core @silicon
+select *tmp155 greaterThan *tmp153 0 30 0
+set *tmp156 A©FJJU-unloader11
+sensor *tmp158 A¾BFLW-air-factory13 @silicon
+select *tmp160 lessThan *tmp158 *tmp155 @silicon @coal
+control config *tmp156 *tmp160 0 0 0
+jump 159 always 0 0
 set .airFactoryTarget null
 write null .display ".nextFactory"
 control enabled A¾BFLW-air-factory13 false 0 0 0
 control config A¾BFLW-air-factory13 @flare 0 0 0
 control config A©FJJU-unloader11 @coal 0 0 0
-jump 205 greaterThanEq .polys .polyTarget
+jump 211 greaterThanEq .polys .polyTarget
 write @poly .display ".nextAddReco"
-sensor :backgroundProcess:recoProgress AÀF@Lc-additive-reconstructor25 @progress
-jump 170 lessThanEq .lastRecoProgress :backgroundProcess:recoProgress
-read *tmp30 .bank 511
-op sub *tmp232 *tmp30 1
-write *tmp232 .bank 511
-read *tmp235 .timer "time"
-op mul *tmp236 *tmp235 1000
-op add *tmp237 281 *tmp236
-write *tmp237 .bank *tmp232
-op add *tmp228 .polys 1
-set .polys *tmp228
-write *tmp228 .display ".polys"
+sensor :backgroundProcess:recoProgress AÀF@Lb-additive-reconstructor24 @progress
+jump 176 lessThanEq .lastRecoProgress :backgroundProcess:recoProgress
+read *tmp31 .bank 511
+op sub *tmp243 *tmp31 1
+write *tmp243 .bank 511
+read *tmp246 .timer "time"
+op mul *tmp247 *tmp246 1000
+op add *tmp248 281 *tmp247
+write *tmp248 .bank *tmp243
+op add *tmp239 .polys 1
+set .polys *tmp239
+write *tmp239 .display ".polys"
 set .recoEntered false
 set .lastRecoProgress 0
-jump 171 always 0 0
+jump 177 always 0 0
 set .lastRecoProgress :backgroundProcess:recoProgress
-sensor :backgroundProcess:s AÀF@Lc-additive-reconstructor25 @silicon
-sensor :backgroundProcess:g AÀF@Lc-additive-reconstructor25 @graphite
-op greaterThanEq *tmp167 :backgroundProcess:s 40
-op greaterThanEq *tmp168 :backgroundProcess:g 40
-op land *tmp169 *tmp167 *tmp168
-jump 191 equal *tmp169 false
-jump 189 notEqual .recoEntered false
-sensor :backgroundProcess:x AÀF@Lc-additive-reconstructor25 @x
-sensor :backgroundProcess:y AÀF@Lc-additive-reconstructor25 @y
+sensor :backgroundProcess:s AÀF@Lb-additive-reconstructor24 @silicon
+sensor :backgroundProcess:g AÀF@Lb-additive-reconstructor24 @graphite
+op greaterThanEq *tmp174 :backgroundProcess:s 40
+op greaterThanEq *tmp175 :backgroundProcess:g 40
+op land *tmp176 *tmp174 *tmp175
+jump 197 equal *tmp176 false
+jump 195 notEqual .recoEntered false
+sensor :backgroundProcess:x AÀF@Lb-additive-reconstructor24 @x
+sensor :backgroundProcess:y AÀF@Lb-additive-reconstructor24 @y
 ubind @mono
 ucontrol move :backgroundProcess:x :backgroundProcess:y 0 0 0
 ucontrol payEnter 0 0 0 0 0
-sensor *tmp175 @unit @dead
-jump 181 equal *tmp175 false
-op sub *tmp177 .monos 1
-set .monos *tmp177
-write *tmp177 .display ".monos"
+sensor *tmp182 @unit @dead
+jump 187 equal *tmp182 false
+op sub *tmp184 .monos 1
+set .monos *tmp184
+write *tmp184 .display ".monos"
 set .recoEntered true
-control enabled A{HDJb-inverted-sorter24 false 0 0 0
-jump 207 always 0 0
-op greaterThan *tmp180 :backgroundProcess:coreSilicon .siliconReserve
-op mul *tmp181 40 *tmp180
-jump 197 greaterThanEq :backgroundProcess:s *tmp181
-control config A©HFJa-unloader23 @silicon 0 0 0
-control enabled A{HDJb-inverted-sorter24 .canConsume 0 0 0
-jump 207 always 0 0
-op greaterThan *tmp189 :backgroundProcess:coreGraphite .graphiteReserve
-op mul *tmp190 40 *tmp189
-jump 203 greaterThanEq :backgroundProcess:g *tmp190
-control config A©HFJa-unloader23 @graphite 0 0 0
-control enabled A{HDJb-inverted-sorter24 .canConsume 0 0 0
-jump 207 always 0 0
-control enabled A{HDJb-inverted-sorter24 false 0 0 0
-jump 207 always 0 0
+control enabled A{HDJa-inverted-sorter23 false 0 0 0
+jump 213 always 0 0
+op greaterThan *tmp187 :backgroundProcess:coreSilicon .siliconReserve
+op mul *tmp188 40 *tmp187
+jump 203 greaterThanEq :backgroundProcess:s *tmp188
+control config A©HFJ_-unloader21 @silicon 0 0 0
+control enabled A{HDJa-inverted-sorter23 .canConsume 0 0 0
+jump 213 always 0 0
+op greaterThan *tmp196 :backgroundProcess:coreGraphite .graphiteReserve
+op mul *tmp197 40 *tmp196
+jump 209 greaterThanEq :backgroundProcess:g *tmp197
+control config A©HFJ_-unloader21 @graphite 0 0 0
+control enabled A{HDJa-inverted-sorter23 .canConsume 0 0 0
+jump 213 always 0 0
+control enabled A{HDJa-inverted-sorter23 false 0 0 0
+jump 213 always 0 0
 write null .display ".nextAddReco"
-control enabled A{HDJb-inverted-sorter24 false 0 0 0
-jump 241 equal AÁNBJd-multiplicative-reconstructor26 false
+control enabled A{HDJa-inverted-sorter23 false 0 0 0
+jump 252 equal AÁNBJc-multiplicative-reconstructor25 false
 write @mega .display ".nextMultiReco"
 set :backgroundProcess:c @metaglass
-sensor *tmp203 AÁNBJd-multiplicative-reconstructor26 @metaglass
-jump 223 lessThan *tmp203 40
+sensor *tmp210 AÁNBJc-multiplicative-reconstructor25 @metaglass
+jump 229 lessThan *tmp210 40
 set :backgroundProcess:c @titanium
-sensor *tmp206 .core @titanium
-sensor *tmp207 AÁNBJd-multiplicative-reconstructor26 @titanium
-op lessThan *tmp208 *tmp207 80
-op land *tmp209 *tmp206 *tmp208
-jump 223 notEqual *tmp209 false
-sensor *tmp211 .core @silicon
-sensor *tmp212 AÁNBJd-multiplicative-reconstructor26 @silicon
-op lessThan *tmp213 *tmp212 130
-op land *tmp214 *tmp211 *tmp213
-select :backgroundProcess:c notEqual *tmp214 false @silicon @coal
+sensor *tmp213 .core @titanium
+sensor *tmp214 AÁNBJc-multiplicative-reconstructor25 @titanium
+op lessThan *tmp215 *tmp214 80
+op land *tmp216 *tmp213 *tmp215
+jump 229 notEqual *tmp216 false
+sensor *tmp218 .core @silicon
+sensor *tmp219 AÁNBJc-multiplicative-reconstructor25 @silicon
+op lessThan *tmp220 *tmp219 130
+op land *tmp221 *tmp218 *tmp220
+select :backgroundProcess:c notEqual *tmp221 false @silicon @coal
 control config A©NHJX-unloader14 :backgroundProcess:c 0 0 0
-control config A©HFJa-unloader23 :backgroundProcess:c 0 0 0
-sensor :backgroundProcess:multiProgress AÁNBJd-multiplicative-reconstructor26 @progress
-jump 240 lessThanEq .lastMultiProgress :backgroundProcess:multiProgress
+control config A©HFJ_-unloader21 :backgroundProcess:c 0 0 0
+sensor :backgroundProcess:multiProgress AÁNBJc-multiplicative-reconstructor25 @progress
+jump 246 lessThanEq .lastMultiProgress :backgroundProcess:multiProgress
 write null .display ".nextMultiReco"
-read *tmp30 .bank 511
-op sub *tmp232 *tmp30 1
-write *tmp232 .bank 511
-read *tmp235 .timer "time"
-op mul *tmp236 *tmp235 1000
-op add *tmp237 282 *tmp236
-write *tmp237 .bank *tmp232
-op add *tmp229 .megas 1
-set .megas *tmp229
-write *tmp229 .display ".megas"
+read *tmp31 .bank 511
+op sub *tmp243 *tmp31 1
+write *tmp243 .bank 511
+read *tmp246 .timer "time"
+op mul *tmp247 *tmp246 1000
+op add *tmp248 282 *tmp247
+write *tmp248 .bank *tmp243
+op add *tmp240 .megas 1
+set .megas *tmp240
+write *tmp240 .display ".megas"
 set .lastMultiProgress 0
-jump 241 always 0 0
+jump 252 always 0 0
+jump 251 lessThanEq :backgroundProcess:multiProgress 0
+control enabled A©RPJg-unloader29 false 0 0 0
+set .smelterTarget 0
+set .pressTarget 0
+set .kilnTarget 0
 set .lastMultiProgress :backgroundProcess:multiProgress
 op sub .loopTicks @tick :backgroundProcess:ticks
 jump 24 equal .finished false
 wait 1e12
 jump 23 always 0 0
 control config A©FJJU-unloader11 @coal 0 0 0
-control enabled A{HDJb-inverted-sorter24 false 0 0 0
+control enabled A{HDJa-inverted-sorter23 false 0 0 0
 set .canConsume false
 set :buildStart*finished true
 jump 23 always 0 0
@@ -252,8 +263,7 @@ set .canConsume true
 set :buildStop*finished true
 jump 23 always 0 0
 draw triangle ALTJL-battery2 A{LNJO-inverted-sorter5 A©JNJP-unloader6 A{HNJQ-inverted-sorter7 AJPJR-underflow-gate8 AÕFFJS-micro-processor9
-draw triangle AFHJT-power-node10 A~DJJV-overflow-gate12 A{NJJY-inverted-sorter15 A¡AOJ[-water-extractor17 AXPRJe-pulverizer27 A~PPJf-overflow-gate28
-draw triangle APTJg-power-node29 A©RPJh-unloader30 A¨SSJi-container31 AXTNJj-pulverizer32 A~RNJk-overflow-gate33 A~RLJl-overflow-gate34
-draw triangle A{TPJm-inverted-sorter35 AXTLJn-pulverizer36 .leadReserve 0 0 0
+draw triangle AFHJT-power-node10 A~DJJV-overflow-gate12 A{NJJY-inverted-sorter15 A¡AOJ[-water-extractor17 AXPRJd-pulverizer26 A~PPJe-overflow-gate27
+draw triangle APTJf-power-node28 A¨SSJh-container30 AXTPJi-pulverizer31 A~RNJj-overflow-gate32 A~RLJk-overflow-gate33 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

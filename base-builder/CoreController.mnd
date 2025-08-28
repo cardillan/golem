@@ -18,7 +18,6 @@ noinit remote var
 
     // Lead and/or silicone will only be sent to the Air Factory
     // if they are above these limits
-    leadReserve,
     siliconReserve,
     graphiteReserve,
     loopTicks;
@@ -37,7 +36,7 @@ remote var
     monoTarget = 0,
     polyTarget = 0,
     megaTarget = 0,
-    powerTarget = 1009;
+    powerTarget = 1609;
 
 external bank[511] var logPosition;
 
@@ -130,6 +129,8 @@ void backgroundProcess()
         if steam_gen then
             generator.enabled = power < 9;
             steam_gen.enabled = power < powerTarget;
+            pulverizer3.enabled = power > 900;
+            pulverizer4.enabled = power > 1000;
         else
             generator.enabled = power < 809;
         end;
@@ -209,6 +210,12 @@ void backgroundProcess()
                 factoryUnitFinished(@mega);
                 lastMultiProgress = 0;
             else
+                if multiProgress > 0 then
+                    unloader_a.enabled = false;
+                    smelterTarget = 0;
+                    pressTarget = 0;
+                    kilnTarget = 0;
+                end;
                 lastMultiProgress = multiProgress;
             end;
         end;

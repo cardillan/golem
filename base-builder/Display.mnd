@@ -10,11 +10,11 @@ require "OreLocator.mnd" remote oreLocator;
 
 var
     core = null,
-//    coreX = 0, coreY = 0,
     page = 0,
     numPages = 4;
 
 noinit remote var
+    missing,
     scrap,
     nextBlock,
     nextFactory,
@@ -135,6 +135,10 @@ void drawHeader()
         drawBold(HEADER_X, HEADER1_Y, @bottom, "Goal");
 
         col(%[white]);
+        if missing then
+            image(16, 264, missing, 12, 0);
+            missing = false;
+        end;
 
         if nextMultiReco then
             // There can't be any other active goal now
@@ -483,7 +487,7 @@ end;
 //    drawflush(display1);
 //end;
 
-void setupScale()
+inline void setBaseMapScale()
     var size = 220;
     reset();
     translate(90, 105);
@@ -493,15 +497,11 @@ end;
 void drawBlock(cfg)
     var type, x, y, rotation, size, index;
     unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index);
-    if blocksBuilt & (1 << index) then
-        col(%[white]);
-        setupScale();
-        image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
-    elsif pageSwitched then
-        color(128, 255, 128, 128);
-        setupScale();
-        image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
-    end;
+    var built = blocksBuilt & (1 << index);
+    if built + pageSwitched == 0 then return; end;
+
+    col(built ? %[white] : %80ff8080);
+    image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
 end;
 
 void displayBaseMap()
@@ -514,21 +514,24 @@ void displayBaseMap()
         drawBold(90, HEADER1_Y1 - 11, @center, "Base map");
 
         col(%[white]);
-        setupScale();
+        setBaseMapScale();
         image(0, 0, @core-shard, 6, 0);
         drawflush(display1);
         limit = 5;
+    else
+        setBaseMapScale();
     end;
 
     var counter = 0;
     for var cfg in BLOCKS do
-        if not scrap then
-            if cfg == PULVERIZER1 then break; end;
+        if cfg == PULVERIZER1 then
+            if not scrap then break; end;
         end;
 
         // Sets color to white
         if counter == limit then
             drawHeader();
+            setBaseMapScale();
             counter = 0;
         else
             counter++;
@@ -536,14 +539,15 @@ void displayBaseMap()
 
         drawBlock(cfg);
 
-        var index = recentBuildIndex;
-        if index >= 0 then
+        if recentBuildIndex >= 0 then
+            var index = recentBuildIndex;
             recentBuildIndex = -1;
             drawBlock(BLOCKS[index]);
         end;
 
         if switch1.enabled then
             clear(0, 0, 32);
+            drawflush(display1);
             break;
         end;
         drawflush(display1);
@@ -553,7 +557,6 @@ end;
 noinit var lastTail;
 
 void displayStorage()
-    //var head = bank2[511];
     var tail = bank2[510];
     var START = HEADER1_Y1 - 11 - 16;
 
@@ -592,16 +595,11 @@ end;
 
 var pageSwitched = false;
 
-void main()
+void backgroundProcess()
     do
         ubind(@poly);
         core = ulocate(:building, :core, false);
     while core == null;
-//    coreX = core.@x;
-//    coreY = core.@y;
-
-    printflush(null);
-    drawflush(null);
 
     while true do
         if display.@bufferSize < 200 then
@@ -637,8 +635,4 @@ void main()
             clear(0, 0, 32);
         end;
     end;
-end;
-
-void backgroundProcess()
-    main();
 end;

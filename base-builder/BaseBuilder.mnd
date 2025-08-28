@@ -82,6 +82,7 @@ void buildThoriumDrill()
     // We're using the main builder for this, and calling synchronously
     oreLocator.layoutThoriumDrill(coreX, coreY, @unit, 7);
 
+    // §§§ meetTargetCfg uses the builder too!
     builderController.meetTargetCfg(LASER_DRILL);
 
     var result = await(oreLocator.layoutThoriumDrill);
@@ -114,7 +115,6 @@ void buildUnits()
     builderController.meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
     display.totalTargets = 0;
     display.nextBlock = null;
-    processor.leadReserve = 0;
     processor.siliconReserve = 0;
     processor.graphiteReserve = 0;
 end;
@@ -160,7 +160,6 @@ begin
         buildBlockFromCfgLocal(UNLOADER_A);
         sandContainer = buildBlockFromCfgLocal(CONTAINER_A);
         builderController.sandContainer = sandContainer;
-        buildBlockFromCfgLocal(INVERTED_SORT_A);
         buildBlockFromCfgLocal(PULVERIZER2);
         buildBlockFromCfgLocal(OVERFLOW_GATE_B);
         buildBlockFromCfgLocal(OVERFLOW_GATE_C);
@@ -182,6 +181,7 @@ begin
     for var block in BLOCKS[0 ... 10] do
         processor.write(@this.read(block), block);
     end;
+    processor.write(@this.read(UNLOADER_A), UNLOADER_A);
 
     buildBlockFromCfgLocal(POWER_NODE);
     buildBlockFromCfgLocal(UNLOADER2);
@@ -197,7 +197,7 @@ begin
     processor.smelterTarget = 150;
     processor.kilnTarget = 30;
     builderController.siliconSurplus = 20;
-    builderController.leadSurplus = 20;
+    builderController.leadSurplus = 2;
 
     buildUnits();
     do
@@ -226,6 +226,8 @@ begin
     buildBlockFromCfgLocal(SMELTER2);
     if scrap then
         buildBlockFromCfgLocal(PULVERIZER3);
+        buildBlockFromCfgLocal(PULVERIZER4);
+        polyController.setScrapContainer(sandContainer);
     end;
 
     // POLYS
@@ -272,7 +274,7 @@ begin
 
     setMonoTarget(4 + scrap);
 
-    processor.powerTarget = 3209;
+    processor.powerTarget = 3209 + 700 * scrap;
     builderController.siliconMonoSurplus = 120;
     builderController.leadSurplus = 0;
 
