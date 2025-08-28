@@ -1,6 +1,8 @@
 # Base Builder
 
-This schematic was originally created as an entry for Skye's Jam of July 2025.
+![Screenshot of the schematics in action](BaseBuilder.png)
+
+> This schematic was originally created as an entry for Skye's Jam of July 2025.
 
 The schematic builds and runs a base around the core until a mega is produced. Unless the resources are scarce or far away, the mega is produced within 30 minutes.
 

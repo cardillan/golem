@@ -8,6 +8,7 @@ To compile Mindcode program into mlog, you can use the [web app](http://mindcode
 
 ## Table of contents
 
+- **[Base Builder](base-builder)**. A sample Mindcode project for automated base building, showcasing complex schematics and multiprocessor logic.
 - **[Benchmarks](benchmarks)**. Collection of compiler benchmarks.
 - **[Mandelbrot](mandelbrot)**. A schematics for drawing the famous Mandelbrot fractal using hyper-processors.
 - **[Measurements](measurements)**. Collection of schematics for measuring and displaying quantities.
