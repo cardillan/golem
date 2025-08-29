@@ -5,7 +5,6 @@
 
 module Builder;
 
-require units;
 require "Links.mnd";
 require "Common.mnd";
 require "Actions.mnd";
@@ -173,7 +172,7 @@ inline void supplyBase2()
     end;
 end;
 
-void supplyBaseLocal()
+remote void supplyBase()
     monoController.sandTarget = max(0, siliconMonoSurplus + targetSilicon - core.@silicon);
 
     if thoriumContainer then
@@ -198,7 +197,7 @@ def targetMet()
     return true;
 end;
 
-void meetTargetLocal(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
+remote void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
     // Update display
     var count = 0;
     for var t in copper, lead, graphite, silicon, titanium, metaglass, thorium do count += sign(t); end;
@@ -231,33 +230,29 @@ void meetTargetLocal(block, copper, lead, graphite, silicon, titanium, metaglass
     monoController.copperTarget = targetCopper;
 
     while !targetMet() do
-        supplyBaseLocal();
+        supplyBase();
     end;
 
     if forBuild then
         processor.buildStart();
         while !targetMet() do
-            supplyBaseLocal();
+            supplyBase();
         end;
     end;
 end;
 
-remote void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
-    meetTargetLocal(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget);
-end;
-
-remote void meetTargetCfg(cfg)
+remote void meetTargetCfg(cfg, forBuild)
     var type, cu, pb, gr, si, ti, mg, th;
     unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
-    meetTargetLocal(type, cu, pb, gr, si, ti, mg, th, false, false);
+    meetTarget(type, cu, pb, gr, si, ti, mg, th, forBuild, false);
 end;
 
 
 // BUILDING OPERATIONS
 
 def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass, thorium, rotation, config, index)
-    meetTargetLocal(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, processor != null, false);
-    var built = buildBlockAtLocal(block, x, y, rotation, config, index);
+    meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, processor != null, false);
+    var built = buildBlockAt(block, x, y, rotation, config, index);
     async(processor.buildStop());
     return built;
 end;
@@ -283,13 +278,6 @@ remote def buildBlockFromCfg(cfg, config)
     return building;
 end;
 
-void meetTargetLocal(cfg)
-    var type, cu, pb, gr, si, ti, mg, th;
-    unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
-    meetTargetLocal(type, cu, pb, gr, si, ti, mg, th, false, false);
-end;
-
-
 noinit remote var ERROR_FOUND_BLOCK, ERROR_FOUND_TYPE, ERROR_X, ERROR_Y;
 
 inline void buildError(text, block, type, x, y);
@@ -313,7 +301,7 @@ inline void logBlock(block, index)
     end;
 end;
 
-def buildBlockAtLocal(block, x, y, rotation, config, index)
+remote def buildBlockAt(block, x, y, rotation, config, index)
     moveTo(x, y);
 
     var type;
@@ -354,12 +342,8 @@ def buildBlockAtLocal(block, x, y, rotation, config, index)
     return building;
 end;
 
-remote def buildBlockAt(block, x, y, rotation, config, index)
-    return buildBlockAtLocal(block, x, y, rotation, config, index);
-end;
-
 remote def buildFirstTitaniumDrillAt(x, y)
-    var drill = buildBlockAtLocal(@pneumatic-drill, x, y, 0, null, -1);
+    var drill = buildBlockAt(@pneumatic-drill, x, y, 0, null, -1);
     flareController.addTitaniumDrill(drill);
     return drill;
 end;
@@ -394,7 +378,8 @@ def buildTitaniumDrill(x, y, in out count, in out tiles)
             titaniumDrillScore(x + 0.5, y + 0.5, in out positive, in out negative);
 
             if positive > negative && positive >= 2 then
-                var drill = buildBlockAtLocal(@pneumatic-drill, x, y, null, 0, -1);
+                meetTargetCfg(PNEUMATIC_DRILL, true);
+                var drill = buildBlockAt(@pneumatic-drill, x, y, null, 0, -1);
                 if drill != null then
                     flareController.addTitaniumDrill(drill);
 
@@ -447,10 +432,6 @@ remote void buildTitaniumDrills(current)
         if tiles >= MAX_TILES then break; end;
         if count >= MAX_COUNT then break; end;
     while !oreLocator.searchFinished;
-end;
-
-remote void supplyBase()
-    supplyBaseLocal();
 end;
 
 inline void setMonoTarget(target)

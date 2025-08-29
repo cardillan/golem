@@ -130,7 +130,8 @@ var angle;
 // limit: if the number of tiles under the drill is equal to this, don't search for better
 //        Setting limit to 10 means we'll try it all over the map
 // Returns true if something was found
-noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity)
+remote def findDrillLocation(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity)
+    searchFinished = false;
     ubind(unit);
 
     locationsStart = locations;
@@ -160,6 +161,7 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
         mapTotal = (distanceLimit / SPIRAL_WIDTH) ** 2;
 
         if !locateOreAway(item, in out oreX, in out oreY, in distanceLimit) then
+            searchFinished = true;
             return capacity > 0;
         end;
 
@@ -190,6 +192,7 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
                 if capacity >= limit then
                     saveLocation(item, score, dx, dy);
                     unbind();
+                    searchFinished = true;
                     return true;
                 end;
             end;
@@ -219,6 +222,9 @@ noinline def findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, 
 //            debugPrintSpot("");
         end;
     end;
+
+    searchFinished = true;
+    false;
 end;
 
 inline def visited(in x, in y)
@@ -634,14 +640,8 @@ noinline def layoutThoriumDrillAtLocation()
     return true;
 end;
 
-remote def findDrillLocation(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity)
-    searchFinished = false;
-    findDrillLocationLocal(x, y, unit, item, ore, size, limit, out dx, out dy, out capacity);
-    searchFinished = true;
-end;
-
 remote def layoutThoriumDrill(x, y, unit, limit)
-    if !findDrillLocationLocal(x, y, unit, @thorium, @ore-thorium, 3, limit, out drillX, out drillY) then
+    if !findDrillLocation(x, y, unit, @thorium, @ore-thorium, 3, limit, out drillX, out drillY) then
         return false;
     end;
 
@@ -696,7 +696,7 @@ end;
 ////        printflush(message1);
 ////        stop();
 ////
-////        findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 2, out dx, out dy, out capacity);
+////        findDrillLocation(x, y, @unit, @titanium, @ore-titanium, 4, 2, out dx, out dy, out capacity);
 ////        println($"Found $capacity at $dx, $dy.");
 ////        printflush(message1);
 ////        debugPause();
@@ -705,7 +705,7 @@ end;
 ////        wait(1);
 ////        ubind(@flare);
 ////
-////        //findDrillLocationLocal(x, y, @unit, @titanium, @ore-titanium, 4, 1e9, out dx, out dy, out capacity);
+////        //findDrillLocation(x, y, @unit, @titanium, @ore-titanium, 4, 1e9, out dx, out dy, out capacity);
 ////    else
 //        drillX = 88;
 //        drillY = 103;
