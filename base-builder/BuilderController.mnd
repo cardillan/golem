@@ -133,11 +133,12 @@ inline void supplyBase0()
                 end;
             else
                 status1("Goal 10: supplying base");
-                if container_a then
-                    mineOre(@scrap, container_a);
+                if container_a == null then
+                    mineOre(scrap or core.@coal <= core.@sand ? @coal : @sand);
+                elsif core.@coal <= container_a.@sand + container_a.@scrap then
+                    mineOre(@coal);
                 else
-                    var ore = scrap or core.@coal <= core.@sand ? @coal : @sand;
-                    mineOre(ore);
+                    mineOre(@scrap, container_a);
                 end;
             end;
         end;
@@ -186,12 +187,12 @@ end;
 
 def targetMet()
     // This is horrible, but Mindcode doesn't do short-circuit evaluation yet.
+    if core.@silicon < targetSilicon then display.missing = @silicon; return false; end;
     if core.@copper < targetCopper then display.missing = @copper; return false; end;
     if core.@lead < targetLead then display.missing = @lead; return false; end;
-    if core.@graphite < targetGraphite then display.missing = @graphite; return false; end;
-    if core.@silicon < targetSilicon then display.missing = @silicon; return false; end;
-    if core.@titanium < targetTitanium then display.missing = @titanium; return false; end;
     if core.@metaglass < targetMetaglass then display.missing = @metaglass; return false; end;
+    if core.@graphite < targetGraphite then display.missing = @graphite; return false; end;
+    if core.@titanium < targetTitanium then display.missing = @titanium; return false; end;
     if core.@thorium < targetThorium then display.missing = @thorium; return false; end;
     //display.missing = false;
     return true;
@@ -470,4 +471,5 @@ begin
         builder = ubind(@poly);
         core = ulocate(:building, :core, false, out coreX, out coreY);
     while core == null;
+    sandContainer = core;
 end;
