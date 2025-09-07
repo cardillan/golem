@@ -114,6 +114,8 @@ remote void buildStop()
 end;
 
 var airFactoryTarget = null;
+var waterMax = 0;
+var enableWater = true;
 
 void backgroundProcess()
     while !finished do
@@ -131,6 +133,11 @@ void backgroundProcess()
             steam_gen.enabled = power < powerTarget;
             pulverizer3.enabled = power > 900;
             pulverizer4.enabled = power > 1000;
+
+            var water = liquid_container.@totalLiquids;
+            waterMax = max(waterMax, water);
+            enableWater = water < 250 ? true : water > 500 ? false : enableWater;
+            water_ext.enabled = enableWater;
         else
             generator.enabled = power < 809;
         end;

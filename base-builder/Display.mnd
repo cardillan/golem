@@ -1,5 +1,6 @@
 #set target = 8;
 #set syntax = strict;
+//#set boundary-checks = assert;
 //#set sort-variables;
 
 module Display;
@@ -39,8 +40,9 @@ noinit remote var
     thoriumDrill,
     thoriumContainer;
 
-remote var
+remote volatile var
     recentBuildIndex = -1,
+    nextBuildIndex = 1000,
     monos = 0,
     flares = 0,
     polys = 1,
@@ -49,8 +51,6 @@ remote var
 void unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index)
     unpackCfg(cfg, out type, out x, out y, , , , , , , , out rotation, out size, out index);
 end;
-
-#declare builtin @center, @top, @bottom, @left, @right, @topLeft, @topRight, @bottomLeft, @bottomRight;
 
 inline void drawText(x, y, alignment)
     drawPrint(x, y, alignment);
@@ -497,10 +497,14 @@ end;
 void drawBlock(cfg)
     var type, x, y, rotation, size, index;
     unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index);
-    var built = blocksBuilt & (1 << index);
-    if built + pageSwitched == 0 then return; end;
+    if index == nextBuildIndex then
+        col(%80ffffff);
+    else
+        var built = blocksBuilt & (1 << index);
+        if built + pageSwitched == 0 then return; end;
 
-    col(built ? %[white] : %80ff8080);
+        col(built ? %[white] : %408040ff);
+    end;
     image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
 end;
 
@@ -509,17 +513,17 @@ void displayBaseMap()
     drawHeader();
 
     var limit = 0;
+    setBaseMapScale();
+
     if pageSwitched then
+        image(0, 0, @core-shard, 6, 0);
+        reset();
         col(%[gold]);
         drawBold(90, HEADER1_Y1 - 11, @center, "Base map");
-
-        col(%[white]);
         setBaseMapScale();
-        image(0, 0, @core-shard, 6, 0);
+        col(%[white]);
         drawflush(display1);
         limit = 5;
-    else
-        setBaseMapScale();
     end;
 
     var counter = 0;
@@ -528,21 +532,22 @@ void displayBaseMap()
             if not scrap then break; end;
         end;
 
-        // Sets color to white
-        if counter == limit then
+        if ++counter > limit then
             drawHeader();
             setBaseMapScale();
             counter = 0;
-        else
-            counter++;
         end;
 
         drawBlock(cfg);
 
-        if recentBuildIndex >= 0 then
-            var index = recentBuildIndex;
+        var index = recentBuildIndex;
+        if index >= 0 then
             recentBuildIndex = -1;
             drawBlock(BLOCKS[index]);
+            index = nextBuildIndex;
+            if index < length(BLOCKS) then
+                drawBlock(BLOCKS[index]);
+            end;
         end;
 
         if switch1.enabled then

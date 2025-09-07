@@ -270,7 +270,9 @@ end;
 remote def buildBlockFromCfg(cfg, config)
     var type, x, y, cu, pb, gr, si, ti, mg, th, rotation, index;
     unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
+    display.nextBuildIndex = index;
     var building = buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config, index);
+    display.nextBuildIndex = 1000;
     @this.write(building, cfg);
     display.write(building, cfg);
     processor.write(building, cfg);
@@ -295,7 +297,7 @@ end;
 
 inline void logBlock(block, index)
     log(block.@id);
-    if index >= 0 then
+    if index >= 0 and index < length(BLOCKS) then
         display.blocksBuilt |= (1 << index);
         display.recentBuildIndex = index;
     end;
