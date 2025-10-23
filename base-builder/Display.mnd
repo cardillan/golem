@@ -42,7 +42,7 @@ noinit remote var
 
 remote volatile var
     recentBuildIndex = -1,
-    nextBuildIndex = 1000,
+    //nextBuildIndex = 1000,
     monos = 0,
     flares = 0,
     polys = 1,
@@ -51,6 +51,23 @@ remote volatile var
 void unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index)
     unpackCfg(cfg, out type, out x, out y, , , , , , , , out rotation, out size, out index);
 end;
+
+const SEPARATOR_Y = 5;
+const ROW_HEIGHT = 15;
+const BAR_HEIGHT = 10;
+const BAR_X = 22;
+
+const ICON_SIZE = 16;
+const ICON_X = 11;
+const ICON_Y = +5;
+
+const BAR_LENGTH = 126;
+const BAR_LENGTH2 = 37;
+
+const HEADER_X = 176 / 4 - 2;
+const HEADER1_Y = 276 - 15;
+const HEADER1_Y1 = HEADER1_Y - 44;
+const HEADER2_Y = HEADER1_Y - 60;
 
 inline void drawText(x, y, alignment)
     drawPrint(x, y, alignment);
@@ -71,23 +88,6 @@ inline void drawTitleRow(in out y, alignment, text...)
     drawText(BAR_X + 1, y, alignment, text);
     y -= ROW_HEIGHT;
 end;
-
-const SEPARATOR_Y = 5;
-const ROW_HEIGHT = 15;
-const BAR_HEIGHT = 10;
-const BAR_X = 22;
-
-const ICON_SIZE = 16;
-const ICON_X = 11;
-const ICON_Y = +5;
-
-const BAR_LENGTH = 126;
-const BAR_LENGTH2 = 37;
-
-const HEADER_X = 176 / 4 - 2;
-const HEADER1_Y = 276 - 15;
-const HEADER1_Y1 = HEADER1_Y - 44;
-const HEADER2_Y = HEADER1_Y - 60;
 
 var animation = -15;
 
@@ -346,15 +346,18 @@ inline void drawBuilder(ref y)
 end;
 
 inline void drawPower(ref y)
-    if y < ROW_HEIGHT + SEPARATOR_Y then return; end;
     if battery1 == null then return; end;
-
-    y = ROW_HEIGHT + SEPARATOR_Y;
+    var pos = liquid_container ? 2 * ROW_HEIGHT + SEPARATOR_Y : ROW_HEIGHT + SEPARATOR_Y;
+    if y < pos then return; end;
 
     col(%[white]);
-    drawTitleRow(in out y, @bottomLeft, "Power");
+    drawTitleRow(in out pos, @bottomLeft, liquid_container ? "Power / Water" : "Power");
     var power = battery1.@totalPower;
-    drawItemColor(%808000FF, %FFFF00FF, in 0, in out y, 1, @battery, power, 4000, floor(power * 100 / 4000), "%");
+    drawItemColor(%808000FF, %FFFF00FF, in 0, in out pos, 1, @battery, power, 4000, floor(power * 100 / 4000), "%");
+    if liquid_container then
+        var water = liquid_container.@totalLiquids;
+        drawItemColor(%5A5AAAFF, %AFAFFFFF, in 0, in out pos, 1, @liquid-container, water, 700, floor(water * 100 / 700), "%");
+    end;
 end;
 
 inline void drawUnit(item, items, in out y)
@@ -375,7 +378,7 @@ inline void drawItemColor(color1, color2, in out col, in out y, columns, item, c
     var textX = textEnd + col * 176 / 2;
 
     col(%[white]);
-    image(iconX, y + ICON_Y, item, 16, 0);
+    image(iconX, y + ICON_Y, item, 14, 0);
 
     col(color1);
     rect(barX, y, length, BAR_HEIGHT);
@@ -497,14 +500,14 @@ end;
 void drawBlock(cfg)
     var type, x, y, rotation, size, index;
     unpackCfg2(cfg, out type, out x, out y, out rotation, out size, out index);
-    if index == nextBuildIndex then
-        col(%80ffffff);
-    else
+//    if index == nextBuildIndex then
+//        col(%80ffffff);
+//    else
         var built = blocksBuilt & (1 << index);
         if built + pageSwitched == 0 then return; end;
 
         col(built ? %[white] : %408040ff);
-    end;
+//    end;
     image(2 * x, 2 * y, type, 2 * size, 90 * rotation);
 end;
 
@@ -544,10 +547,10 @@ void displayBaseMap()
         if index >= 0 then
             recentBuildIndex = -1;
             drawBlock(BLOCKS[index]);
-            index = nextBuildIndex;
-            if index < length(BLOCKS) then
-                drawBlock(BLOCKS[index]);
-            end;
+//            index = nextBuildIndex;
+//            if index < length(BLOCKS) then
+//                drawBlock(BLOCKS[index]);
+//            end;
         end;
 
         if switch1.enabled then
