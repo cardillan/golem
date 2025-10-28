@@ -16,7 +16,7 @@ noinit var core;
 begin
     message("Initializing...");
     do
-        var unit = findUnit(null);
+        var unit = processor1.findUnit(null);
 
         // Needs to bind the unit, it is bound by the remote processor at this moment
         ubind(unit);
@@ -27,15 +27,15 @@ begin
     while core == null;
 
     // Start searching for a better unit
-    async(findUnit(@unit));
+    async(processor1.findUnit(@unit));
 
     while true do
         moveItems();
 
         // Try to see whether a better unit has been found
-        if finished(findUnit) then
+        if finished(processor1.findUnit) then
             // Obtain the result of the remote call
-            var unit = await(findUnit);
+            var unit = await(processor1.findUnit);
 
             // There might have been a delay: verify the unit is valid
             if !unit.@dead and (unit.@controller == processor1 or !unit.@controlled) then
@@ -49,7 +49,7 @@ begin
             end;
 
             // Start looking again
-            async(findUnit(@unit));
+            async(processor1.findUnit(@unit));
         end;
     end;
 end;

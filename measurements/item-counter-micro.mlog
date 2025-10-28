@@ -5,22 +5,22 @@ set .conv*3 null
 set .memory null
 set .found 0
 set .links @links
-op sub :initialize.0:n .links 1
-jump 23 lessThan :initialize.0:n 0
-getlink :initialize.0:block :initialize.0:n
-sensor *tmp4 :initialize.0:block @type
+op sub :initialize:n .links 1
+jump 23 lessThan :initialize:n 0
+getlink :initialize:block :initialize:n
+sensor *tmp4 :initialize:block @type
 jump 13 equal *tmp4 @memory-cell
 jump 15 notEqual *tmp4 @memory-bank
-set .memory :initialize.0:block
+set .memory :initialize:block
 jump 21 always 0 0
 jump 21 notEqual *tmp4 @plastanium-conveyor
 set .conv*3 .conv*2
 set .conv*2 .conv*1
 set .conv*1 .conv*0
-set .conv*0 :initialize.0:block
+set .conv*0 :initialize:block
 op add .found .found 1
-op sub :initialize.0:n :initialize.0:n 1
-jump 9 greaterThanEq :initialize.0:n 0
+op sub :initialize:n :initialize:n 1
+jump 9 greaterThanEq :initialize:n 0
 jump 29 notEqual .found 0
 print "[gold]Item Counter Micro[], version [gold]1.0[]\n[salmon]No plastanium conveyor attached (maximum: 4, found: "
 print .found
@@ -45,17 +45,20 @@ set .totalIndex *tmp15
 read .total .memory *tmp15
 control enabled switch1 false 0 0 0
 set :start @time
-sensor .state1*0 .conv*0 @totalItems
-jump 50 greaterThanEq .state1*0 .state2*0
+sensor *tmp23 .conv*0 @totalItems
+set .state1*0 *tmp23
+jump 51 greaterThanEq *tmp23 .state2*0
 op add .total .total 10
-sensor .state1*1 .conv*1 @totalItems
-jump 53 greaterThanEq .state1*1 .state2*1
+sensor *tmp23 .conv*1 @totalItems
+set .state1*1 *tmp23
+jump 55 greaterThanEq *tmp23 .state2*1
 op add .total .total 10
-sensor .state1*2 .conv*2 @totalItems
-jump 56 greaterThanEq .state1*2 .state2*2
+sensor *tmp23 .conv*2 @totalItems
+set .state1*2 *tmp23
+jump 59 greaterThanEq *tmp23 .state2*2
 op add .total .total 10
-sensor .state1*3 .conv*3 @totalItems
-jump 59 greaterThanEq .state1*3 .state2*3
+sensor *tmp23 .conv*3 @totalItems
+jump 62 greaterThanEq *tmp23 .state2*3
 op add .total .total 10
 write .total .memory .totalIndex
 print "[gold]Item Counter Micro[], version [gold]1.0[]            \nMonitoring [green]"
@@ -63,17 +66,21 @@ print .found
 print "[] conveyors\nTotal items: [gold]"
 print .total
 print "[]\n"
-sensor .state2*0 .conv*0 @totalItems
-jump 68 greaterThanEq .state2*0 .state1*0
+sensor *tmp38 .conv*0 @totalItems
+set .state2*0 *tmp38
+jump 72 greaterThanEq *tmp38 .state1*0
 op add .total .total 10
-sensor .state2*1 .conv*1 @totalItems
-jump 71 greaterThanEq .state2*1 .state1*1
+sensor *tmp38 .conv*1 @totalItems
+set .state2*1 *tmp38
+jump 76 greaterThanEq *tmp38 .state1*1
 op add .total .total 10
-sensor .state2*2 .conv*2 @totalItems
-jump 74 greaterThanEq .state2*2 .state1*2
+sensor *tmp38 .conv*2 @totalItems
+set .state2*2 *tmp38
+jump 80 greaterThanEq *tmp38 .state1*2
 op add .total .total 10
-sensor .state2*3 .conv*3 @totalItems
-jump 77 greaterThanEq .state2*3 .state1*3
+sensor *tmp38 .conv*3 @totalItems
+set .state2*3 *tmp38
+jump 84 greaterThanEq *tmp38 *tmp23
 op add .total .total 10
 op sub *tmp46 @time :start
 op idiv *tmp48 *tmp46 2
@@ -81,7 +88,7 @@ print "[lightgray]Loop time: "
 print *tmp48
 print " ms\n"
 printflush message1
-jump 85 equal .links @links
+jump 92 equal .links @links
 end
 sensor *tmp51 switch1 @enabled
 jump 46 equal *tmp51 false

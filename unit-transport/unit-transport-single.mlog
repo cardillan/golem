@@ -20,10 +20,10 @@ sensor *tmp2 switch1 @enabled
 jump 16 equal *tmp2 false
 sensor *tmp4 @unit @dead
 jump 57 equal *tmp4 0
-set :rebindUnit.0:first_unit null
+set :rebindUnit:first_unit null
 ubind UNIT
 jump 27 equal @unit null
-set :rebindUnit.0:first_unit @unit
+set :rebindUnit:first_unit @unit
 jump 32 always 0 0
 print "[salmon]No unit of type "
 print UNIT
@@ -35,8 +35,8 @@ jump 55 equal *tmp9 @this
 ubind UNIT
 print "[gold]Looking for old unit..."
 printflush message1
-op notEqual *tmp12 @unit :rebindUnit.0:first_unit
-sensor *tmp13 :rebindUnit.0:first_unit @dead
+op notEqual *tmp12 @unit :rebindUnit:first_unit
+sensor *tmp13 :rebindUnit:first_unit @dead
 op equal *tmp14 *tmp13 0
 op land *tmp15 *tmp12 *tmp14
 jump 32 notEqual *tmp15 false
@@ -90,7 +90,7 @@ jump 93 notEqual LINK_ID 0
 print "[gold]Locating core..."
 printflush message1
 ulocate building core false @copper .CORE_X .CORE_Y 0 .CORE
-jump 131 always 0 0
+jump 130 always 0 0
 print "[gold]Locating vault #"
 print LINK_ID
 print "..."
@@ -99,17 +99,16 @@ op add .QUERY_FLAG 99999900 LINK_ID
 set :flag .QUERY_FLAG
 ucontrol flag .QUERY_FLAG 0 0 0 0
 sensor *tmp44 @unit @dead
-op equal *tmp45 *tmp44 0
-op land *tmp46 true *tmp45
-jump 111 equal *tmp46 false
+op equal *tmp46 *tmp44 0
+jump 110 equal *tmp46 false
 ucontrol stop 0 0 0 0 0
 sensor :flag @unit @flag
 op equal *tmp43 :flag .QUERY_FLAG
 sensor *tmp44 @unit @dead
 op equal *tmp45 *tmp44 0
 op land *tmp46 *tmp43 *tmp45
-jump 104 notEqual *tmp46 false
-jump 131 equal :flag .QUERY_FLAG
+jump 103 notEqual *tmp46 false
+jump 130 equal :flag .QUERY_FLAG
 op idiv :position :flag 100
 op mod .CORE_X :position @mapw
 op idiv .CORE_Y :position @mapw
@@ -118,27 +117,27 @@ op equal *tmp54 *tmp53 false
 sensor *tmp55 @unit @dead
 op equal *tmp56 *tmp55 0
 op land *tmp57 *tmp54 *tmp56
-jump 128 equal *tmp57 false
+jump 127 equal *tmp57 false
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 ucontrol within .CORE_X .CORE_Y 8 *tmp53 0
 op equal *tmp54 *tmp53 false
 sensor *tmp55 @unit @dead
 op equal *tmp56 *tmp55 0
 op land *tmp57 *tmp54 *tmp56
-jump 121 notEqual *tmp57 false
+jump 120 notEqual *tmp57 false
 ucontrol getBlock .CORE_X .CORE_Y :b_type .CORE 0
-jump 131 equal :b_type @vault
+jump 130 equal :b_type @vault
 set .CORE null
-jump 133 notEqual .CORE null
+jump 132 notEqual .CORE null
 end
 set .SORTER sorter1
 sensor :sorter_type sorter1 @type
 op notEqual *tmp65 :sorter_type @sorter
 op notEqual *tmp66 :sorter_type @inverted-sorter
 op land *tmp67 *tmp65 *tmp66
-jump 150 equal *tmp67 false
+jump 149 equal *tmp67 false
 print "[salmon]Block sorter1 is neither a sorter, nor an inverted sorter.\n"
-jump 143 equal .SORTER null
+jump 142 equal .SORTER null
 print "Block found: "
 print .SORTER
 printflush message1
@@ -147,8 +146,8 @@ sensor :sorter_type sorter1 @type
 op notEqual *tmp65 :sorter_type @sorter
 op notEqual *tmp66 :sorter_type @inverted-sorter
 op land *tmp67 *tmp65 *tmp66
-jump 139 notEqual *tmp67 false
-jump 167 notEqual :sorter_type @sorter
+jump 138 notEqual *tmp67 false
+jump 166 notEqual :sorter_type @sorter
 set .SHOW_REMOTE_LEVEL true
 set .SRC .CORE
 set .DST .CONTAINER
@@ -162,9 +161,9 @@ op idiv .DROP_LEVEL *tmp78 100
 set .LOCAL_MARGIN .DROP_LEVEL
 set .REMOTE_MARGIN .LOAD_LEVEL
 set .DIRECTION "[] from vault #"
-jump 185 notEqual LINK_ID 0
+jump 184 notEqual LINK_ID 0
 set .DIRECTION "[] from core"
-jump 185 always 0 0
+jump 184 always 0 0
 op greaterThan .SHOW_REMOTE_LEVEL LINK_ID 0
 set .SRC .CONTAINER
 set .DST .CORE
@@ -181,20 +180,20 @@ op add .DROP_LEVEL *tmp89 *tmp91
 set .LOCAL_MARGIN .LOAD_LEVEL
 set .REMOTE_MARGIN .DROP_LEVEL
 set .DIRECTION "[] to vault #"
-jump 185 notEqual LINK_ID 0
+jump 184 notEqual LINK_ID 0
 set .DIRECTION "[] to core"
 set *tmp96 LINK_ID
-jump 188 notEqual LINK_ID 0
+jump 187 notEqual LINK_ID 0
 set *tmp96 ""
 sensor .SRC_X .SRC @x
 sensor .SRC_Y .SRC @y
 sensor .DST_X .DST @x
 sensor .DST_Y .DST @y
-jump 197 notEqual .DROP_TARGET null
+jump 196 notEqual .DROP_TARGET null
 set .DROP_TARGET .CORE
 set .DROP_X .CORE_X
 set .DROP_Y .CORE_Y
-jump 199 always 0 0
+jump 198 always 0 0
 sensor .DROP_X .DROP_TARGET @x
 sensor .DROP_Y .DROP_TARGET @y
 set .LAST_ITEM @mono
@@ -206,76 +205,76 @@ sensor *tmp106 @unit @dead
 op equal *tmp107 *tmp106 0
 sensor *tmp108 @unit @controller
 op notEqual *tmp109 *tmp108 @this
-jump 224 greaterThan *tmp107 *tmp109
+jump 223 greaterThan *tmp107 *tmp109
 ubind UNIT
-jump 215 notEqual @unit null
+jump 214 notEqual @unit null
 print "[salmon]No unit of type "
 print UNIT
 print " found."
-jump 220 always 0 0
+jump 219 always 0 0
 sensor *tmp114 @unit @controlled
-jump 222 equal *tmp114 0
+jump 221 equal *tmp114 0
 print "[salmon]Looking for a free "
 print UNIT
 print "..."
 printflush message1
-jump 209 always 0 0
+jump 208 always 0 0
 ucontrol flag 1 0 0 0 0
 set :state 1
 sensor .ITEM .SORTER @config
-jump 233 equal .ITEM .LAST_ITEM
-jump 231 notEqual .ITEM null
+jump 232 equal .ITEM .LAST_ITEM
+jump 230 notEqual .ITEM null
 print "[salmon]No item type selected for transport."
 printflush message1
 sensor .ITEM .SORTER @config
-jump 227 equal .ITEM null
+jump 226 equal .ITEM null
 set .LAST_ITEM .ITEM
 set :state 1
 set :show_state 0
-jump 248 notEqual :state 1
+jump 247 notEqual :state 1
 sensor *tmp124 @unit @firstItem
-jump 239 notEqual *tmp124 .ITEM
+jump 238 notEqual *tmp124 .ITEM
 set :state 3
-jump 248 always 0 0
+jump 247 always 0 0
 sensor *tmp127 @unit @totalItems
-jump 243 notEqual *tmp127 0
+jump 242 notEqual *tmp127 0
 set :state 2
-jump 248 always 0 0
+jump 247 always 0 0
 set .MSG "\nUnloading previous items: [green]"
 ucontrol approach .DROP_X .DROP_Y 6 0 0
 ucontrol within .DROP_X .DROP_Y 8 *tmp130 0
-jump 248 equal *tmp130 false
+jump 247 equal *tmp130 false
 ucontrol itemDrop .DROP_TARGET .UNIT_CAPACITY 0 0 0
-jump 264 notEqual :state 2
+jump 263 notEqual :state 2
 ucontrol within .SRC_X .SRC_Y 8 *tmp134 0
-jump 261 equal *tmp134 false
+jump 260 equal *tmp134 false
 sensor *tmp136 .SRC .ITEM
 op sub *tmp137 *tmp136 .LOAD_LEVEL
 op max :max_load *tmp137 0
 ucontrol itemTake .SRC .ITEM :max_load 0 0
 sensor *tmp139 @unit @totalItems
-jump 259 lessThan *tmp139 .UNIT_CAPACITY
+jump 258 lessThan *tmp139 .UNIT_CAPACITY
 set :state 3
-jump 264 always 0 0
+jump 263 always 0 0
 set .MSG "\nLoading items: [green]"
-jump 264 always 0 0
+jump 263 always 0 0
 ucontrol approach .SRC_X .SRC_Y 6 0 0
 set .MSG "\nGoing to source: [green]"
 set :show_state 2
-jump 281 notEqual :state 3
+jump 280 notEqual :state 3
 ucontrol within .DST_X .DST_Y 8 *tmp144 0
-jump 278 equal *tmp144 false
+jump 277 equal *tmp144 false
 sensor *tmp146 .DST .ITEM
 op sub *tmp147 .DROP_LEVEL *tmp146
 op max :max_drop *tmp147 0
 ucontrol itemDrop .DST :max_drop 0 0 0
 sensor *tmp149 @unit @totalItems
-jump 276 greaterThan *tmp149 0
+jump 275 greaterThan *tmp149 0
 set :state 2
 ucontrol approach .SRC_X .SRC_Y 6 0 0
-jump 281 always 0 0
+jump 280 always 0 0
 set .MSG "\nDropping items: [green]"
-jump 281 always 0 0
+jump 280 always 0 0
 ucontrol approach .DST_X .DST_Y 6 0 0
 set .MSG "\nGoing to destination: [green]"
 set :show_state 3
@@ -287,16 +286,16 @@ sensor *tmp153 .CONTAINER .ITEM
 print "\nLocal items: [gold]"
 print *tmp153
 print "[]"
-jump 293 greaterThanEq .EFF_LOCAL_LIMIT 100
+jump 292 greaterThanEq .EFF_LOCAL_LIMIT 100
 print " (limit [orange]"
 print .LOCAL_MARGIN
 print "[])"
-jump 302 equal .SHOW_REMOTE_LEVEL false
+jump 301 equal .SHOW_REMOTE_LEVEL false
 sensor *tmp157 .CORE .ITEM
 print "\nRemote items: [gold]"
 print *tmp157
 print "[]"
-jump 302 greaterThanEq .EFF_REMOTE_LIMIT 100
+jump 301 greaterThanEq .EFF_REMOTE_LIMIT 100
 print " (limit [orange]"
 print .REMOTE_MARGIN
 print "[])"
@@ -304,7 +303,7 @@ sensor *tmp160 @unit @totalItems
 print .MSG
 print *tmp160
 print "[]\n"
-jump 318 notEqual :show_state 2
+jump 317 notEqual :show_state 2
 sensor *tmp164 @unit @x
 op sub *tmp165 .SRC_X *tmp164
 sensor *tmp166 @unit @y
@@ -315,8 +314,8 @@ op div *tmp170 *tmp169 10
 print "[]  arriving in [gold]"
 print *tmp170
 print " sec[]\n"
-jump 329 always 0 0
-jump 329 notEqual :show_state 3
+jump 328 always 0 0
+jump 328 notEqual :show_state 3
 sensor *tmp173 @unit @x
 op sub *tmp174 .DST_X *tmp173
 sensor *tmp175 @unit @y
@@ -333,22 +332,22 @@ print *tmp180
 print " ms[]\n"
 printflush message1
 sensor *tmp181 switch1 @enabled
-jump 344 equal *tmp181 0
+jump 343 equal *tmp181 0
 sensor *tmp184 .SRC @dead
-jump 344 notEqual *tmp184 0
+jump 343 notEqual *tmp184 0
 sensor *tmp187 .DST @dead
-jump 344 notEqual *tmp187 0
+jump 343 notEqual *tmp187 0
 sensor *tmp190 .SORTER @dead
-jump 344 notEqual *tmp190 0
+jump 343 notEqual *tmp190 0
 op sub :loop_time @time :start
-jump 203 always 0 0
+jump 202 always 0 0
 sensor *tmp194 .SORTER @dead
-jump 351 notEqual *tmp194 0
+jump 350 notEqual *tmp194 0
 print "[salmon]sorter1 is missing!\n[gold]Please place and link sorter or inverted sorter to the processor.\n"
 printflush message1
 printflush message2
 sensor *tmp194 sorter1 @dead
-jump 346 equal *tmp194 0
+jump 345 equal *tmp194 0
 sensor *tmp196 .SRC @dead
 op notEqual *tmp197 *tmp196 0
 sensor *tmp198 .DST @dead
@@ -362,5 +361,5 @@ print "[salmon]Local or remote container became invalid.\n[gold]Please fix and p
 printflush message1
 printflush message2
 sensor *tmp203 switch1 @enabled
-jump 360 equal *tmp203 false
+jump 359 equal *tmp203 false
 

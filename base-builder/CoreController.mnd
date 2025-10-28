@@ -6,12 +6,12 @@
 
 module CoreController;
 
-noinit remote var display;
+noinit export var display;
 
 require "Common.mnd";
 require "Display.mnd" remote display;
 
-noinit remote var
+noinit export var
     timer,
     core,
     bank,
@@ -22,7 +22,7 @@ noinit remote var
     graphiteReserve,
     loopTicks;
 
-remote var
+export var
     finished = false,
     flares = 0,
     monos = 0,
@@ -38,7 +38,7 @@ remote var
     megaTarget = 0,
     powerTarget = 1609;
 
-external bank[511] var logPosition;
+external(bank[511]) var logPosition;
 
 void log(encodedId)
     bank[--logPosition] = encodedId + timer.read("time") * 1000;
@@ -103,13 +103,13 @@ volatile var lastProgress = 0, lastRecoProgress = 0, lastMultiProgress = 0;
 volatile var recoEntered = false;
 volatile var canConsume = true;
 
-remote void buildStart()
+export void buildStart()
     unloader2.config = @coal;
     inverted_sort4.enabled = false;
     canConsume = false;
 end;
 
-remote void buildStop()
+export void buildStop()
     canConsume = true;
 end;
 

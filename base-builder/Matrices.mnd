@@ -3,9 +3,7 @@
 //#set sort-variables;
 #set remarks = none;
 
-// Allows one more function call to be inlined
-// Further optimizations get the code size back below 1000.
-#set instruction-limit = 1020;
+#set mlog-block-optimization = true;
 
 module Matrices;
 
@@ -22,7 +20,7 @@ def isSolid(x, y)
 end;
 
 // Creates a 7x7 terrain mask centered around x and y
-remote def createTerrainMask(unit, x, y)
+export def createTerrainMask(unit, x, y)
     ubind(unit);
 
     var result = 0;
@@ -58,7 +56,7 @@ inline def tileValue(x, y, ore)
     result;
 end;
 
-def computeRowValues(x, y, ore, size)
+inline def computeRowValues(x, y, ore, size)
     var x1 = tileValue(x - 2, y, ore);
     var x2 = tileValue(x - 1, y, ore);
     var x3 = tileValue(x + 0, y, ore);
@@ -132,7 +130,7 @@ inline void updateRowPositionsOdd(dy, rowSum, ref bestX, ref bestY, ref best)
 //    remark($"updateRowPositions3x3: $bestX, $bestY: ${best * 255}\n");
 end;
 
-remote def findBestPosition(unit, x, y, ore, size, out bestX, out bestY)
+export def findBestPosition(unit, x, y, ore, size, out bestX, out bestY)
     ubind(unit);
 
     var y1 = computeRowValues(x, y - 2, ore, size);

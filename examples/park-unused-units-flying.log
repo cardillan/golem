@@ -1,0 +1,3677 @@
+   112 instructions before optimizations.
+     1 instructions eliminated by Temp Variables Elimination (6 iterations).
+    10 instructions eliminated by Dead Code Elimination (5 iterations).
+    25 instructions eliminated by Jump Optimization (2 passes, 5 iterations).
+     5 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
+    24 instructions eliminated by Data Flow Optimization (2 passes, 8 iterations).
+   438 instructions added by Loop Unrolling (4 iterations).
+     1 loops unrolled by Loop Unrolling.
+    42 instructions eliminated by Jump Straightening (5 iterations).
+     4 instructions updated by Jump Threading.
+   443 instructions after optimizations.
+
+Pass 1: speed optimization selection (cost limit 910):
+  * Unroll iteration loop at line 15:5                           size  +421, benefit       83.0, efficiency      0.197 (+417 instructions)
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-6 instructions):
+ 
+    86 op equal *tmp1 @unit null
+    87 jump *label24 equal *tmp1 false
+    88 jump *label1 always
+-    * set *tmp2 null
+    89 jump *label25 always
+    90 label *label24
+-    * set *tmp2 null
+    91 label *label25
+    92 sensor *tmp3 @unit @controlled
+    93 jump *label26 equal *tmp3 false
+ 
+   100 label *label28
+   101 set *tmp7 null
+   102 label *label29
+-    * set *tmp4 *tmp7
+   103 jump *label27 always
+   104 label *label26
+-    * set *tmp4 null
+   105 label *label27
+   106 # "Function: def inRadius(in x, in y, in radius)"
+   107 set :inRadius:x x
+ 
+   120 ucontrol boost true
+   121 ucontrol flag 2435345345
+   122 ucontrol move x y
+-    * set *tmp16 null
+   123 jump *label32 always
+   124 label *label31
+   125 sensor *tmp17 @unit @flag
+ 
+   133 label *label33
+   134 set *tmp19 null
+   135 label *label34
+-    * set *tmp16 *tmp19
+   136 label *label32
+   137 label *label1
+   138 multijump *tmp0 0 0 (m:marker0)
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-4 instructions):
+ 
+    95 op notEqual *tmp6 *tmp5 @this
+    96 jump *label28 equal *tmp6 false
+    97 jump *label1 always
+-    * set *tmp7 null
+    98 jump *label29 always
+    99 label *label28
+-    * set *tmp7 null
+   100 label *label29
+   101 jump *label27 always
+   102 label *label26
+ 
+   126 ucontrol boost false
+   127 ucontrol flag 0
+   128 ucontrol unbind
+-    * set *tmp19 null
+   129 jump *label34 always
+   130 label *label33
+-    * set *tmp19 null
+   131 label *label34
+   132 label *label32
+   133 label *label1
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-1 instructions):
+ 
+   110 sensor *tmp11 @unit @y
+   111 op sub *tmp12 :inRadius:y *tmp11
+   112 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp14 *tmp13 :inRadius:radius
+-    * set *tmp8 *tmp14
++  113 op lessThan *tmp8 *tmp13 :inRadius:radius
+   114 label *label30
+   115 op equal *tmp15 *tmp8 false
+   116 jump *label31 equal *tmp15 false
+
+Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-4 instructions):
+ 
+    83 set *tmp0 null
+    84 label *label0
+    85 ubind :type
+-    * op equal *tmp1 @unit null
+-    * jump *label24 equal *tmp1 false
++   86 jump *label24 notEqual @unit null
+    87 jump *label1 always
+    88 jump *label25 always
+    89 label *label24
+ 
+    91 sensor *tmp3 @unit @controlled
+    92 jump *label26 equal *tmp3 false
+    93 sensor *tmp5 @unit @controller
+-    * op notEqual *tmp6 *tmp5 @this
+-    * jump *label28 equal *tmp6 false
++   94 jump *label28 equal *tmp5 @this
+    95 jump *label1 always
+    96 jump *label29 always
+    97 label *label28
+ 
+   110 op len *tmp13 *tmp10 *tmp12
+   111 op lessThan *tmp8 *tmp13 :inRadius:radius
+   112 label *label30
+-    * op equal *tmp15 *tmp8 false
+-    * jump *label31 equal *tmp15 false
++  113 jump *label31 notEqual *tmp8 false
+   114 ucontrol boost true
+   115 ucontrol flag 2435345345
+   116 ucontrol move x y
+   117 jump *label32 always
+   118 label *label31
+   119 sensor *tmp17 @unit @flag
+-    * op notEqual *tmp18 *tmp17 0
+-    * jump *label33 equal *tmp18 false
++  120 jump *label33 equal *tmp17 0
+   121 ucontrol boost false
+   122 ucontrol flag 0
+   123 ucontrol unbind
+
+Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-4 instructions):
+ 
+    85 ubind :type
+    86 jump *label24 notEqual @unit null
+    87 jump *label1 always
+-    * jump *label25 always
+    88 label *label24
+    89 label *label25
+    90 sensor *tmp3 @unit @controlled
+ 
+    92 sensor *tmp5 @unit @controller
+    93 jump *label28 equal *tmp5 @this
+    94 jump *label1 always
+-    * jump *label29 always
+    95 label *label28
+    96 label *label29
+-    * jump *label27 always
+    97 label *label26
+    98 label *label27
+    99 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   118 ucontrol boost false
+   119 ucontrol flag 0
+   120 ucontrol unbind
+-    * jump *label34 always
+   121 label *label33
+   122 label *label34
+   123 label *label32
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+   101 set :inRadius:y y
+   102 set :inRadius:radius 8
+   103 sensor *tmp9 @unit @x
+-    * op sub *tmp10 :inRadius:x *tmp9
++  104 op sub *tmp10 x *tmp9
+   105 sensor *tmp11 @unit @y
+-    * op sub *tmp12 :inRadius:y *tmp11
++  106 op sub *tmp12 y *tmp11
+   107 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 :inRadius:radius
++  108 op lessThan *tmp8 *tmp13 8
+   109 label *label30
+   110 jump *label31 notEqual *tmp8 false
+   111 ucontrol boost true
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3 instructions):
+ 
+    97 label *label26
+    98 label *label27
+    99 # "Function: def inRadius(in x, in y, in radius)"
+-    * set :inRadius:x x
+-    * set :inRadius:y y
+-    * set :inRadius:radius 8
+   100 sensor *tmp9 @unit @x
+   101 op sub *tmp10 x *tmp9
+   102 sensor *tmp11 @unit @y
+
+Modifications by Unroll iteration loop at line 15:5 (+438 instructions):
+     0 set x @thisx
+     1 set y @thisy
+-    * set :type @nova
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label3 (m:marker0)
+-    * set :type @pulsar
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label4 (m:marker0)
+-    * set :type @quasar
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label5 (m:marker0)
+-    * set :type @vela
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label6 (m:marker0)
+-    * set :type @flare
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label7 (m:marker0)
+-    * set :type @horizon
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label8 (m:marker0)
+-    * set :type @zenith
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label9 (m:marker0)
+-    * set :type @antumbra
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label10 (m:marker0)
+-    * set :type @eclipse
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label11 (m:marker0)
+-    * set :type @mono
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label12 (m:marker0)
+-    * set :type @poly
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label13 (m:marker0)
+-    * set :type @mega
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label14 (m:marker0)
+-    * set :type @quad
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label15 (m:marker0)
+-    * set :type @oct
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label16 (m:marker0)
+-    * set :type @avert
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label17 (m:marker0)
+-    * set :type @obviate
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label18 (m:marker0)
+-    * set :type @quell
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label19 (m:marker0)
+-    * set :type @disrupt
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label20 (m:marker0)
+-    * set :type @evoke
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label21 (m:marker0)
+-    * set :type @incite
+-    * op add *tmp0 @counter 1
+-    * jump *label0 always
+-    * multilabel *label22 (m:marker0)
+-    * set :type @emanate
+-    * set *tmp0 null
+-    * label *label0
+-    * ubind :type
+-    * jump *label24 notEqual @unit null
+-    * jump *label1 always
+-    * label *label24
+-    * label *label25
+-    * sensor *tmp3 @unit @controlled
+-    * jump *label26 equal *tmp3 false
+-    * sensor *tmp5 @unit @controller
+-    * jump *label28 equal *tmp5 @this
+-    * jump *label1 always
+-    * label *label28
+-    * label *label29
+-    * label *label26
+-    * label *label27
+-    * # "Function: def inRadius(in x, in y, in radius)"
+-    * sensor *tmp9 @unit @x
+-    * op sub *tmp10 x *tmp9
+-    * sensor *tmp11 @unit @y
+-    * op sub *tmp12 y *tmp11
+-    * op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+-    * label *label30
+-    * jump *label31 notEqual *tmp8 false
+-    * ucontrol boost true
+-    * ucontrol flag 2435345345
+-    * ucontrol move x y
+-    * jump *label32 always
+-    * label *label31
+-    * sensor *tmp17 @unit @flag
+-    * jump *label33 equal *tmp17 0
+-    * ucontrol boost false
+-    * ucontrol flag 0
+-    * ucontrol unbind
+-    * label *label33
+-    * label *label34
+-    * label *label32
+-    * label *label1
+-    * multijump *tmp0 0 0 (m:marker0)
+-    * multilabel *label23 (m:marker0)
+-    * label *label2
++    2 set :type @nova
++    3 label *label35
++    4 ubind :type
++    5 jump *label36 notEqual @unit null
++    6 jump *label47 always
++    7 label *label36
++    8 label *label37
++    9 sensor *tmp3 @unit @controlled
++   10 jump *label40 equal *tmp3 false
++   11 sensor *tmp5 @unit @controller
++   12 jump *label38 equal *tmp5 @this
++   13 jump *label47 always
++   14 label *label38
++   15 label *label39
++   16 label *label40
++   17 label *label41
++   18 # "Function: def inRadius(in x, in y, in radius)"
++   19 sensor *tmp9 @unit @x
++   20 op sub *tmp10 x *tmp9
++   21 sensor *tmp11 @unit @y
++   22 op sub *tmp12 y *tmp11
++   23 op len *tmp13 *tmp10 *tmp12
++   24 op lessThan *tmp8 *tmp13 8
++   25 label *label42
++   26 jump *label43 notEqual *tmp8 false
++   27 ucontrol boost true
++   28 ucontrol flag 2435345345
++   29 ucontrol move x y
++   30 jump *label46 always
++   31 label *label43
++   32 sensor *tmp17 @unit @flag
++   33 jump *label44 equal *tmp17 0
++   34 ucontrol boost false
++   35 ucontrol flag 0
++   36 ucontrol unbind
++   37 label *label44
++   38 label *label45
++   39 label *label46
++   40 label *label47
++   41 set :type @pulsar
++   42 label *label50
++   43 ubind :type
++   44 jump *label51 notEqual @unit null
++   45 jump *label62 always
++   46 label *label51
++   47 label *label52
++   48 sensor *tmp3 @unit @controlled
++   49 jump *label55 equal *tmp3 false
++   50 sensor *tmp5 @unit @controller
++   51 jump *label53 equal *tmp5 @this
++   52 jump *label62 always
++   53 label *label53
++   54 label *label54
++   55 label *label55
++   56 label *label56
++   57 # "Function: def inRadius(in x, in y, in radius)"
++   58 sensor *tmp9 @unit @x
++   59 op sub *tmp10 x *tmp9
++   60 sensor *tmp11 @unit @y
++   61 op sub *tmp12 y *tmp11
++   62 op len *tmp13 *tmp10 *tmp12
++   63 op lessThan *tmp8 *tmp13 8
++   64 label *label57
++   65 jump *label58 notEqual *tmp8 false
++   66 ucontrol boost true
++   67 ucontrol flag 2435345345
++   68 ucontrol move x y
++   69 jump *label61 always
++   70 label *label58
++   71 sensor *tmp17 @unit @flag
++   72 jump *label59 equal *tmp17 0
++   73 ucontrol boost false
++   74 ucontrol flag 0
++   75 ucontrol unbind
++   76 label *label59
++   77 label *label60
++   78 label *label61
++   79 label *label62
++   80 set :type @quasar
++   81 label *label65
++   82 ubind :type
++   83 jump *label66 notEqual @unit null
++   84 jump *label77 always
++   85 label *label66
++   86 label *label67
++   87 sensor *tmp3 @unit @controlled
++   88 jump *label70 equal *tmp3 false
++   89 sensor *tmp5 @unit @controller
++   90 jump *label68 equal *tmp5 @this
++   91 jump *label77 always
++   92 label *label68
++   93 label *label69
++   94 label *label70
++   95 label *label71
++   96 # "Function: def inRadius(in x, in y, in radius)"
++   97 sensor *tmp9 @unit @x
++   98 op sub *tmp10 x *tmp9
++   99 sensor *tmp11 @unit @y
++  100 op sub *tmp12 y *tmp11
++  101 op len *tmp13 *tmp10 *tmp12
++  102 op lessThan *tmp8 *tmp13 8
++  103 label *label72
++  104 jump *label73 notEqual *tmp8 false
++  105 ucontrol boost true
++  106 ucontrol flag 2435345345
++  107 ucontrol move x y
++  108 jump *label76 always
++  109 label *label73
++  110 sensor *tmp17 @unit @flag
++  111 jump *label74 equal *tmp17 0
++  112 ucontrol boost false
++  113 ucontrol flag 0
++  114 ucontrol unbind
++  115 label *label74
++  116 label *label75
++  117 label *label76
++  118 label *label77
++  119 set :type @vela
++  120 label *label80
++  121 ubind :type
++  122 jump *label81 notEqual @unit null
++  123 jump *label92 always
++  124 label *label81
++  125 label *label82
++  126 sensor *tmp3 @unit @controlled
++  127 jump *label85 equal *tmp3 false
++  128 sensor *tmp5 @unit @controller
++  129 jump *label83 equal *tmp5 @this
++  130 jump *label92 always
++  131 label *label83
++  132 label *label84
++  133 label *label85
++  134 label *label86
++  135 # "Function: def inRadius(in x, in y, in radius)"
++  136 sensor *tmp9 @unit @x
++  137 op sub *tmp10 x *tmp9
++  138 sensor *tmp11 @unit @y
++  139 op sub *tmp12 y *tmp11
++  140 op len *tmp13 *tmp10 *tmp12
++  141 op lessThan *tmp8 *tmp13 8
++  142 label *label87
++  143 jump *label88 notEqual *tmp8 false
++  144 ucontrol boost true
++  145 ucontrol flag 2435345345
++  146 ucontrol move x y
++  147 jump *label91 always
++  148 label *label88
++  149 sensor *tmp17 @unit @flag
++  150 jump *label89 equal *tmp17 0
++  151 ucontrol boost false
++  152 ucontrol flag 0
++  153 ucontrol unbind
++  154 label *label89
++  155 label *label90
++  156 label *label91
++  157 label *label92
++  158 set :type @flare
++  159 label *label95
++  160 ubind :type
++  161 jump *label96 notEqual @unit null
++  162 jump *label107 always
++  163 label *label96
++  164 label *label97
++  165 sensor *tmp3 @unit @controlled
++  166 jump *label100 equal *tmp3 false
++  167 sensor *tmp5 @unit @controller
++  168 jump *label98 equal *tmp5 @this
++  169 jump *label107 always
++  170 label *label98
++  171 label *label99
++  172 label *label100
++  173 label *label101
++  174 # "Function: def inRadius(in x, in y, in radius)"
++  175 sensor *tmp9 @unit @x
++  176 op sub *tmp10 x *tmp9
++  177 sensor *tmp11 @unit @y
++  178 op sub *tmp12 y *tmp11
++  179 op len *tmp13 *tmp10 *tmp12
++  180 op lessThan *tmp8 *tmp13 8
++  181 label *label102
++  182 jump *label103 notEqual *tmp8 false
++  183 ucontrol boost true
++  184 ucontrol flag 2435345345
++  185 ucontrol move x y
++  186 jump *label106 always
++  187 label *label103
++  188 sensor *tmp17 @unit @flag
++  189 jump *label104 equal *tmp17 0
++  190 ucontrol boost false
++  191 ucontrol flag 0
++  192 ucontrol unbind
++  193 label *label104
++  194 label *label105
++  195 label *label106
++  196 label *label107
++  197 set :type @horizon
++  198 label *label110
++  199 ubind :type
++  200 jump *label111 notEqual @unit null
++  201 jump *label122 always
++  202 label *label111
++  203 label *label112
++  204 sensor *tmp3 @unit @controlled
++  205 jump *label115 equal *tmp3 false
++  206 sensor *tmp5 @unit @controller
++  207 jump *label113 equal *tmp5 @this
++  208 jump *label122 always
++  209 label *label113
++  210 label *label114
++  211 label *label115
++  212 label *label116
++  213 # "Function: def inRadius(in x, in y, in radius)"
++  214 sensor *tmp9 @unit @x
++  215 op sub *tmp10 x *tmp9
++  216 sensor *tmp11 @unit @y
++  217 op sub *tmp12 y *tmp11
++  218 op len *tmp13 *tmp10 *tmp12
++  219 op lessThan *tmp8 *tmp13 8
++  220 label *label117
++  221 jump *label118 notEqual *tmp8 false
++  222 ucontrol boost true
++  223 ucontrol flag 2435345345
++  224 ucontrol move x y
++  225 jump *label121 always
++  226 label *label118
++  227 sensor *tmp17 @unit @flag
++  228 jump *label119 equal *tmp17 0
++  229 ucontrol boost false
++  230 ucontrol flag 0
++  231 ucontrol unbind
++  232 label *label119
++  233 label *label120
++  234 label *label121
++  235 label *label122
++  236 set :type @zenith
++  237 label *label125
++  238 ubind :type
++  239 jump *label126 notEqual @unit null
++  240 jump *label137 always
++  241 label *label126
++  242 label *label127
++  243 sensor *tmp3 @unit @controlled
++  244 jump *label130 equal *tmp3 false
++  245 sensor *tmp5 @unit @controller
++  246 jump *label128 equal *tmp5 @this
++  247 jump *label137 always
++  248 label *label128
++  249 label *label129
++  250 label *label130
++  251 label *label131
++  252 # "Function: def inRadius(in x, in y, in radius)"
++  253 sensor *tmp9 @unit @x
++  254 op sub *tmp10 x *tmp9
++  255 sensor *tmp11 @unit @y
++  256 op sub *tmp12 y *tmp11
++  257 op len *tmp13 *tmp10 *tmp12
++  258 op lessThan *tmp8 *tmp13 8
++  259 label *label132
++  260 jump *label133 notEqual *tmp8 false
++  261 ucontrol boost true
++  262 ucontrol flag 2435345345
++  263 ucontrol move x y
++  264 jump *label136 always
++  265 label *label133
++  266 sensor *tmp17 @unit @flag
++  267 jump *label134 equal *tmp17 0
++  268 ucontrol boost false
++  269 ucontrol flag 0
++  270 ucontrol unbind
++  271 label *label134
++  272 label *label135
++  273 label *label136
++  274 label *label137
++  275 set :type @antumbra
++  276 label *label140
++  277 ubind :type
++  278 jump *label141 notEqual @unit null
++  279 jump *label152 always
++  280 label *label141
++  281 label *label142
++  282 sensor *tmp3 @unit @controlled
++  283 jump *label145 equal *tmp3 false
++  284 sensor *tmp5 @unit @controller
++  285 jump *label143 equal *tmp5 @this
++  286 jump *label152 always
++  287 label *label143
++  288 label *label144
++  289 label *label145
++  290 label *label146
++  291 # "Function: def inRadius(in x, in y, in radius)"
++  292 sensor *tmp9 @unit @x
++  293 op sub *tmp10 x *tmp9
++  294 sensor *tmp11 @unit @y
++  295 op sub *tmp12 y *tmp11
++  296 op len *tmp13 *tmp10 *tmp12
++  297 op lessThan *tmp8 *tmp13 8
++  298 label *label147
++  299 jump *label148 notEqual *tmp8 false
++  300 ucontrol boost true
++  301 ucontrol flag 2435345345
++  302 ucontrol move x y
++  303 jump *label151 always
++  304 label *label148
++  305 sensor *tmp17 @unit @flag
++  306 jump *label149 equal *tmp17 0
++  307 ucontrol boost false
++  308 ucontrol flag 0
++  309 ucontrol unbind
++  310 label *label149
++  311 label *label150
++  312 label *label151
++  313 label *label152
++  314 set :type @eclipse
++  315 label *label155
++  316 ubind :type
++  317 jump *label156 notEqual @unit null
++  318 jump *label167 always
++  319 label *label156
++  320 label *label157
++  321 sensor *tmp3 @unit @controlled
++  322 jump *label160 equal *tmp3 false
++  323 sensor *tmp5 @unit @controller
++  324 jump *label158 equal *tmp5 @this
++  325 jump *label167 always
++  326 label *label158
++  327 label *label159
++  328 label *label160
++  329 label *label161
++  330 # "Function: def inRadius(in x, in y, in radius)"
++  331 sensor *tmp9 @unit @x
++  332 op sub *tmp10 x *tmp9
++  333 sensor *tmp11 @unit @y
++  334 op sub *tmp12 y *tmp11
++  335 op len *tmp13 *tmp10 *tmp12
++  336 op lessThan *tmp8 *tmp13 8
++  337 label *label162
++  338 jump *label163 notEqual *tmp8 false
++  339 ucontrol boost true
++  340 ucontrol flag 2435345345
++  341 ucontrol move x y
++  342 jump *label166 always
++  343 label *label163
++  344 sensor *tmp17 @unit @flag
++  345 jump *label164 equal *tmp17 0
++  346 ucontrol boost false
++  347 ucontrol flag 0
++  348 ucontrol unbind
++  349 label *label164
++  350 label *label165
++  351 label *label166
++  352 label *label167
++  353 set :type @mono
++  354 label *label170
++  355 ubind :type
++  356 jump *label171 notEqual @unit null
++  357 jump *label182 always
++  358 label *label171
++  359 label *label172
++  360 sensor *tmp3 @unit @controlled
++  361 jump *label175 equal *tmp3 false
++  362 sensor *tmp5 @unit @controller
++  363 jump *label173 equal *tmp5 @this
++  364 jump *label182 always
++  365 label *label173
++  366 label *label174
++  367 label *label175
++  368 label *label176
++  369 # "Function: def inRadius(in x, in y, in radius)"
++  370 sensor *tmp9 @unit @x
++  371 op sub *tmp10 x *tmp9
++  372 sensor *tmp11 @unit @y
++  373 op sub *tmp12 y *tmp11
++  374 op len *tmp13 *tmp10 *tmp12
++  375 op lessThan *tmp8 *tmp13 8
++  376 label *label177
++  377 jump *label178 notEqual *tmp8 false
++  378 ucontrol boost true
++  379 ucontrol flag 2435345345
++  380 ucontrol move x y
++  381 jump *label181 always
++  382 label *label178
++  383 sensor *tmp17 @unit @flag
++  384 jump *label179 equal *tmp17 0
++  385 ucontrol boost false
++  386 ucontrol flag 0
++  387 ucontrol unbind
++  388 label *label179
++  389 label *label180
++  390 label *label181
++  391 label *label182
++  392 set :type @poly
++  393 label *label185
++  394 ubind :type
++  395 jump *label186 notEqual @unit null
++  396 jump *label197 always
++  397 label *label186
++  398 label *label187
++  399 sensor *tmp3 @unit @controlled
++  400 jump *label190 equal *tmp3 false
++  401 sensor *tmp5 @unit @controller
++  402 jump *label188 equal *tmp5 @this
++  403 jump *label197 always
++  404 label *label188
++  405 label *label189
++  406 label *label190
++  407 label *label191
++  408 # "Function: def inRadius(in x, in y, in radius)"
++  409 sensor *tmp9 @unit @x
++  410 op sub *tmp10 x *tmp9
++  411 sensor *tmp11 @unit @y
++  412 op sub *tmp12 y *tmp11
++  413 op len *tmp13 *tmp10 *tmp12
++  414 op lessThan *tmp8 *tmp13 8
++  415 label *label192
++  416 jump *label193 notEqual *tmp8 false
++  417 ucontrol boost true
++  418 ucontrol flag 2435345345
++  419 ucontrol move x y
++  420 jump *label196 always
++  421 label *label193
++  422 sensor *tmp17 @unit @flag
++  423 jump *label194 equal *tmp17 0
++  424 ucontrol boost false
++  425 ucontrol flag 0
++  426 ucontrol unbind
++  427 label *label194
++  428 label *label195
++  429 label *label196
++  430 label *label197
++  431 set :type @mega
++  432 label *label200
++  433 ubind :type
++  434 jump *label201 notEqual @unit null
++  435 jump *label212 always
++  436 label *label201
++  437 label *label202
++  438 sensor *tmp3 @unit @controlled
++  439 jump *label205 equal *tmp3 false
++  440 sensor *tmp5 @unit @controller
++  441 jump *label203 equal *tmp5 @this
++  442 jump *label212 always
++  443 label *label203
++  444 label *label204
++  445 label *label205
++  446 label *label206
++  447 # "Function: def inRadius(in x, in y, in radius)"
++  448 sensor *tmp9 @unit @x
++  449 op sub *tmp10 x *tmp9
++  450 sensor *tmp11 @unit @y
++  451 op sub *tmp12 y *tmp11
++  452 op len *tmp13 *tmp10 *tmp12
++  453 op lessThan *tmp8 *tmp13 8
++  454 label *label207
++  455 jump *label208 notEqual *tmp8 false
++  456 ucontrol boost true
++  457 ucontrol flag 2435345345
++  458 ucontrol move x y
++  459 jump *label211 always
++  460 label *label208
++  461 sensor *tmp17 @unit @flag
++  462 jump *label209 equal *tmp17 0
++  463 ucontrol boost false
++  464 ucontrol flag 0
++  465 ucontrol unbind
++  466 label *label209
++  467 label *label210
++  468 label *label211
++  469 label *label212
++  470 set :type @quad
++  471 label *label215
++  472 ubind :type
++  473 jump *label216 notEqual @unit null
++  474 jump *label227 always
++  475 label *label216
++  476 label *label217
++  477 sensor *tmp3 @unit @controlled
++  478 jump *label220 equal *tmp3 false
++  479 sensor *tmp5 @unit @controller
++  480 jump *label218 equal *tmp5 @this
++  481 jump *label227 always
++  482 label *label218
++  483 label *label219
++  484 label *label220
++  485 label *label221
++  486 # "Function: def inRadius(in x, in y, in radius)"
++  487 sensor *tmp9 @unit @x
++  488 op sub *tmp10 x *tmp9
++  489 sensor *tmp11 @unit @y
++  490 op sub *tmp12 y *tmp11
++  491 op len *tmp13 *tmp10 *tmp12
++  492 op lessThan *tmp8 *tmp13 8
++  493 label *label222
++  494 jump *label223 notEqual *tmp8 false
++  495 ucontrol boost true
++  496 ucontrol flag 2435345345
++  497 ucontrol move x y
++  498 jump *label226 always
++  499 label *label223
++  500 sensor *tmp17 @unit @flag
++  501 jump *label224 equal *tmp17 0
++  502 ucontrol boost false
++  503 ucontrol flag 0
++  504 ucontrol unbind
++  505 label *label224
++  506 label *label225
++  507 label *label226
++  508 label *label227
++  509 set :type @oct
++  510 label *label230
++  511 ubind :type
++  512 jump *label231 notEqual @unit null
++  513 jump *label242 always
++  514 label *label231
++  515 label *label232
++  516 sensor *tmp3 @unit @controlled
++  517 jump *label235 equal *tmp3 false
++  518 sensor *tmp5 @unit @controller
++  519 jump *label233 equal *tmp5 @this
++  520 jump *label242 always
++  521 label *label233
++  522 label *label234
++  523 label *label235
++  524 label *label236
++  525 # "Function: def inRadius(in x, in y, in radius)"
++  526 sensor *tmp9 @unit @x
++  527 op sub *tmp10 x *tmp9
++  528 sensor *tmp11 @unit @y
++  529 op sub *tmp12 y *tmp11
++  530 op len *tmp13 *tmp10 *tmp12
++  531 op lessThan *tmp8 *tmp13 8
++  532 label *label237
++  533 jump *label238 notEqual *tmp8 false
++  534 ucontrol boost true
++  535 ucontrol flag 2435345345
++  536 ucontrol move x y
++  537 jump *label241 always
++  538 label *label238
++  539 sensor *tmp17 @unit @flag
++  540 jump *label239 equal *tmp17 0
++  541 ucontrol boost false
++  542 ucontrol flag 0
++  543 ucontrol unbind
++  544 label *label239
++  545 label *label240
++  546 label *label241
++  547 label *label242
++  548 set :type @avert
++  549 label *label245
++  550 ubind :type
++  551 jump *label246 notEqual @unit null
++  552 jump *label257 always
++  553 label *label246
++  554 label *label247
++  555 sensor *tmp3 @unit @controlled
++  556 jump *label250 equal *tmp3 false
++  557 sensor *tmp5 @unit @controller
++  558 jump *label248 equal *tmp5 @this
++  559 jump *label257 always
++  560 label *label248
++  561 label *label249
++  562 label *label250
++  563 label *label251
++  564 # "Function: def inRadius(in x, in y, in radius)"
++  565 sensor *tmp9 @unit @x
++  566 op sub *tmp10 x *tmp9
++  567 sensor *tmp11 @unit @y
++  568 op sub *tmp12 y *tmp11
++  569 op len *tmp13 *tmp10 *tmp12
++  570 op lessThan *tmp8 *tmp13 8
++  571 label *label252
++  572 jump *label253 notEqual *tmp8 false
++  573 ucontrol boost true
++  574 ucontrol flag 2435345345
++  575 ucontrol move x y
++  576 jump *label256 always
++  577 label *label253
++  578 sensor *tmp17 @unit @flag
++  579 jump *label254 equal *tmp17 0
++  580 ucontrol boost false
++  581 ucontrol flag 0
++  582 ucontrol unbind
++  583 label *label254
++  584 label *label255
++  585 label *label256
++  586 label *label257
++  587 set :type @obviate
++  588 label *label260
++  589 ubind :type
++  590 jump *label261 notEqual @unit null
++  591 jump *label272 always
++  592 label *label261
++  593 label *label262
++  594 sensor *tmp3 @unit @controlled
++  595 jump *label265 equal *tmp3 false
++  596 sensor *tmp5 @unit @controller
++  597 jump *label263 equal *tmp5 @this
++  598 jump *label272 always
++  599 label *label263
++  600 label *label264
++  601 label *label265
++  602 label *label266
++  603 # "Function: def inRadius(in x, in y, in radius)"
++  604 sensor *tmp9 @unit @x
++  605 op sub *tmp10 x *tmp9
++  606 sensor *tmp11 @unit @y
++  607 op sub *tmp12 y *tmp11
++  608 op len *tmp13 *tmp10 *tmp12
++  609 op lessThan *tmp8 *tmp13 8
++  610 label *label267
++  611 jump *label268 notEqual *tmp8 false
++  612 ucontrol boost true
++  613 ucontrol flag 2435345345
++  614 ucontrol move x y
++  615 jump *label271 always
++  616 label *label268
++  617 sensor *tmp17 @unit @flag
++  618 jump *label269 equal *tmp17 0
++  619 ucontrol boost false
++  620 ucontrol flag 0
++  621 ucontrol unbind
++  622 label *label269
++  623 label *label270
++  624 label *label271
++  625 label *label272
++  626 set :type @quell
++  627 label *label275
++  628 ubind :type
++  629 jump *label276 notEqual @unit null
++  630 jump *label287 always
++  631 label *label276
++  632 label *label277
++  633 sensor *tmp3 @unit @controlled
++  634 jump *label280 equal *tmp3 false
++  635 sensor *tmp5 @unit @controller
++  636 jump *label278 equal *tmp5 @this
++  637 jump *label287 always
++  638 label *label278
++  639 label *label279
++  640 label *label280
++  641 label *label281
++  642 # "Function: def inRadius(in x, in y, in radius)"
++  643 sensor *tmp9 @unit @x
++  644 op sub *tmp10 x *tmp9
++  645 sensor *tmp11 @unit @y
++  646 op sub *tmp12 y *tmp11
++  647 op len *tmp13 *tmp10 *tmp12
++  648 op lessThan *tmp8 *tmp13 8
++  649 label *label282
++  650 jump *label283 notEqual *tmp8 false
++  651 ucontrol boost true
++  652 ucontrol flag 2435345345
++  653 ucontrol move x y
++  654 jump *label286 always
++  655 label *label283
++  656 sensor *tmp17 @unit @flag
++  657 jump *label284 equal *tmp17 0
++  658 ucontrol boost false
++  659 ucontrol flag 0
++  660 ucontrol unbind
++  661 label *label284
++  662 label *label285
++  663 label *label286
++  664 label *label287
++  665 set :type @disrupt
++  666 label *label290
++  667 ubind :type
++  668 jump *label291 notEqual @unit null
++  669 jump *label302 always
++  670 label *label291
++  671 label *label292
++  672 sensor *tmp3 @unit @controlled
++  673 jump *label295 equal *tmp3 false
++  674 sensor *tmp5 @unit @controller
++  675 jump *label293 equal *tmp5 @this
++  676 jump *label302 always
++  677 label *label293
++  678 label *label294
++  679 label *label295
++  680 label *label296
++  681 # "Function: def inRadius(in x, in y, in radius)"
++  682 sensor *tmp9 @unit @x
++  683 op sub *tmp10 x *tmp9
++  684 sensor *tmp11 @unit @y
++  685 op sub *tmp12 y *tmp11
++  686 op len *tmp13 *tmp10 *tmp12
++  687 op lessThan *tmp8 *tmp13 8
++  688 label *label297
++  689 jump *label298 notEqual *tmp8 false
++  690 ucontrol boost true
++  691 ucontrol flag 2435345345
++  692 ucontrol move x y
++  693 jump *label301 always
++  694 label *label298
++  695 sensor *tmp17 @unit @flag
++  696 jump *label299 equal *tmp17 0
++  697 ucontrol boost false
++  698 ucontrol flag 0
++  699 ucontrol unbind
++  700 label *label299
++  701 label *label300
++  702 label *label301
++  703 label *label302
++  704 set :type @evoke
++  705 label *label305
++  706 ubind :type
++  707 jump *label306 notEqual @unit null
++  708 jump *label317 always
++  709 label *label306
++  710 label *label307
++  711 sensor *tmp3 @unit @controlled
++  712 jump *label310 equal *tmp3 false
++  713 sensor *tmp5 @unit @controller
++  714 jump *label308 equal *tmp5 @this
++  715 jump *label317 always
++  716 label *label308
++  717 label *label309
++  718 label *label310
++  719 label *label311
++  720 # "Function: def inRadius(in x, in y, in radius)"
++  721 sensor *tmp9 @unit @x
++  722 op sub *tmp10 x *tmp9
++  723 sensor *tmp11 @unit @y
++  724 op sub *tmp12 y *tmp11
++  725 op len *tmp13 *tmp10 *tmp12
++  726 op lessThan *tmp8 *tmp13 8
++  727 label *label312
++  728 jump *label313 notEqual *tmp8 false
++  729 ucontrol boost true
++  730 ucontrol flag 2435345345
++  731 ucontrol move x y
++  732 jump *label316 always
++  733 label *label313
++  734 sensor *tmp17 @unit @flag
++  735 jump *label314 equal *tmp17 0
++  736 ucontrol boost false
++  737 ucontrol flag 0
++  738 ucontrol unbind
++  739 label *label314
++  740 label *label315
++  741 label *label316
++  742 label *label317
++  743 set :type @incite
++  744 label *label320
++  745 ubind :type
++  746 jump *label321 notEqual @unit null
++  747 jump *label332 always
++  748 label *label321
++  749 label *label322
++  750 sensor *tmp3 @unit @controlled
++  751 jump *label325 equal *tmp3 false
++  752 sensor *tmp5 @unit @controller
++  753 jump *label323 equal *tmp5 @this
++  754 jump *label332 always
++  755 label *label323
++  756 label *label324
++  757 label *label325
++  758 label *label326
++  759 # "Function: def inRadius(in x, in y, in radius)"
++  760 sensor *tmp9 @unit @x
++  761 op sub *tmp10 x *tmp9
++  762 sensor *tmp11 @unit @y
++  763 op sub *tmp12 y *tmp11
++  764 op len *tmp13 *tmp10 *tmp12
++  765 op lessThan *tmp8 *tmp13 8
++  766 label *label327
++  767 jump *label328 notEqual *tmp8 false
++  768 ucontrol boost true
++  769 ucontrol flag 2435345345
++  770 ucontrol move x y
++  771 jump *label331 always
++  772 label *label328
++  773 sensor *tmp17 @unit @flag
++  774 jump *label329 equal *tmp17 0
++  775 ucontrol boost false
++  776 ucontrol flag 0
++  777 ucontrol unbind
++  778 label *label329
++  779 label *label330
++  780 label *label331
++  781 label *label332
++  782 set :type @emanate
++  783 label *label335
++  784 ubind :type
++  785 jump *label336 notEqual @unit null
++  786 jump *label347 always
++  787 label *label336
++  788 label *label337
++  789 sensor *tmp3 @unit @controlled
++  790 jump *label340 equal *tmp3 false
++  791 sensor *tmp5 @unit @controller
++  792 jump *label338 equal *tmp5 @this
++  793 jump *label347 always
++  794 label *label338
++  795 label *label339
++  796 label *label340
++  797 label *label341
++  798 # "Function: def inRadius(in x, in y, in radius)"
++  799 sensor *tmp9 @unit @x
++  800 op sub *tmp10 x *tmp9
++  801 sensor *tmp11 @unit @y
++  802 op sub *tmp12 y *tmp11
++  803 op len *tmp13 *tmp10 *tmp12
++  804 op lessThan *tmp8 *tmp13 8
++  805 label *label342
++  806 jump *label343 notEqual *tmp8 false
++  807 ucontrol boost true
++  808 ucontrol flag 2435345345
++  809 ucontrol move x y
++  810 jump *label346 always
++  811 label *label343
++  812 sensor *tmp17 @unit @flag
++  813 jump *label344 equal *tmp17 0
++  814 ucontrol boost false
++  815 ucontrol flag 0
++  816 ucontrol unbind
++  817 label *label344
++  818 label *label345
++  819 label *label346
++  820 label *label347
++  821 label *label2
+   822 end
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+ 
+     1 set y @thisy
+     2 set :type @nova
+     3 label *label35
+-    * ubind :type
++    4 ubind @nova
+     5 jump *label36 notEqual @unit null
+     6 jump *label47 always
+     7 label *label36
+ 
+    40 label *label47
+    41 set :type @pulsar
+    42 label *label50
+-    * ubind :type
++   43 ubind @pulsar
+    44 jump *label51 notEqual @unit null
+    45 jump *label62 always
+    46 label *label51
+ 
+    79 label *label62
+    80 set :type @quasar
+    81 label *label65
+-    * ubind :type
++   82 ubind @quasar
+    83 jump *label66 notEqual @unit null
+    84 jump *label77 always
+    85 label *label66
+ 
+   118 label *label77
+   119 set :type @vela
+   120 label *label80
+-    * ubind :type
++  121 ubind @vela
+   122 jump *label81 notEqual @unit null
+   123 jump *label92 always
+   124 label *label81
+ 
+   157 label *label92
+   158 set :type @flare
+   159 label *label95
+-    * ubind :type
++  160 ubind @flare
+   161 jump *label96 notEqual @unit null
+   162 jump *label107 always
+   163 label *label96
+ 
+   196 label *label107
+   197 set :type @horizon
+   198 label *label110
+-    * ubind :type
++  199 ubind @horizon
+   200 jump *label111 notEqual @unit null
+   201 jump *label122 always
+   202 label *label111
+ 
+   235 label *label122
+   236 set :type @zenith
+   237 label *label125
+-    * ubind :type
++  238 ubind @zenith
+   239 jump *label126 notEqual @unit null
+   240 jump *label137 always
+   241 label *label126
+ 
+   274 label *label137
+   275 set :type @antumbra
+   276 label *label140
+-    * ubind :type
++  277 ubind @antumbra
+   278 jump *label141 notEqual @unit null
+   279 jump *label152 always
+   280 label *label141
+ 
+   313 label *label152
+   314 set :type @eclipse
+   315 label *label155
+-    * ubind :type
++  316 ubind @eclipse
+   317 jump *label156 notEqual @unit null
+   318 jump *label167 always
+   319 label *label156
+ 
+   352 label *label167
+   353 set :type @mono
+   354 label *label170
+-    * ubind :type
++  355 ubind @mono
+   356 jump *label171 notEqual @unit null
+   357 jump *label182 always
+   358 label *label171
+ 
+   391 label *label182
+   392 set :type @poly
+   393 label *label185
+-    * ubind :type
++  394 ubind @poly
+   395 jump *label186 notEqual @unit null
+   396 jump *label197 always
+   397 label *label186
+ 
+   430 label *label197
+   431 set :type @mega
+   432 label *label200
+-    * ubind :type
++  433 ubind @mega
+   434 jump *label201 notEqual @unit null
+   435 jump *label212 always
+   436 label *label201
+ 
+   469 label *label212
+   470 set :type @quad
+   471 label *label215
+-    * ubind :type
++  472 ubind @quad
+   473 jump *label216 notEqual @unit null
+   474 jump *label227 always
+   475 label *label216
+ 
+   508 label *label227
+   509 set :type @oct
+   510 label *label230
+-    * ubind :type
++  511 ubind @oct
+   512 jump *label231 notEqual @unit null
+   513 jump *label242 always
+   514 label *label231
+ 
+   547 label *label242
+   548 set :type @avert
+   549 label *label245
+-    * ubind :type
++  550 ubind @avert
+   551 jump *label246 notEqual @unit null
+   552 jump *label257 always
+   553 label *label246
+ 
+   586 label *label257
+   587 set :type @obviate
+   588 label *label260
+-    * ubind :type
++  589 ubind @obviate
+   590 jump *label261 notEqual @unit null
+   591 jump *label272 always
+   592 label *label261
+ 
+   625 label *label272
+   626 set :type @quell
+   627 label *label275
+-    * ubind :type
++  628 ubind @quell
+   629 jump *label276 notEqual @unit null
+   630 jump *label287 always
+   631 label *label276
+ 
+   664 label *label287
+   665 set :type @disrupt
+   666 label *label290
+-    * ubind :type
++  667 ubind @disrupt
+   668 jump *label291 notEqual @unit null
+   669 jump *label302 always
+   670 label *label291
+ 
+   703 label *label302
+   704 set :type @evoke
+   705 label *label305
+-    * ubind :type
++  706 ubind @evoke
+   707 jump *label306 notEqual @unit null
+   708 jump *label317 always
+   709 label *label306
+ 
+   742 label *label317
+   743 set :type @incite
+   744 label *label320
+-    * ubind :type
++  745 ubind @incite
+   746 jump *label321 notEqual @unit null
+   747 jump *label332 always
+   748 label *label321
+ 
+   781 label *label332
+   782 set :type @emanate
+   783 label *label335
+-    * ubind :type
++  784 ubind @emanate
+   785 jump *label336 notEqual @unit null
+   786 jump *label347 always
+   787 label *label336
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-21 instructions):
+     0 set x @thisx
+     1 set y @thisy
+-    * set :type @nova
+     2 label *label35
+     3 ubind @nova
+     4 jump *label36 notEqual @unit null
+ 
+    37 label *label45
+    38 label *label46
+    39 label *label47
+-    * set :type @pulsar
+    40 label *label50
+    41 ubind @pulsar
+    42 jump *label51 notEqual @unit null
+ 
+    75 label *label60
+    76 label *label61
+    77 label *label62
+-    * set :type @quasar
+    78 label *label65
+    79 ubind @quasar
+    80 jump *label66 notEqual @unit null
+ 
+   113 label *label75
+   114 label *label76
+   115 label *label77
+-    * set :type @vela
+   116 label *label80
+   117 ubind @vela
+   118 jump *label81 notEqual @unit null
+ 
+   151 label *label90
+   152 label *label91
+   153 label *label92
+-    * set :type @flare
+   154 label *label95
+   155 ubind @flare
+   156 jump *label96 notEqual @unit null
+ 
+   189 label *label105
+   190 label *label106
+   191 label *label107
+-    * set :type @horizon
+   192 label *label110
+   193 ubind @horizon
+   194 jump *label111 notEqual @unit null
+ 
+   227 label *label120
+   228 label *label121
+   229 label *label122
+-    * set :type @zenith
+   230 label *label125
+   231 ubind @zenith
+   232 jump *label126 notEqual @unit null
+ 
+   265 label *label135
+   266 label *label136
+   267 label *label137
+-    * set :type @antumbra
+   268 label *label140
+   269 ubind @antumbra
+   270 jump *label141 notEqual @unit null
+ 
+   303 label *label150
+   304 label *label151
+   305 label *label152
+-    * set :type @eclipse
+   306 label *label155
+   307 ubind @eclipse
+   308 jump *label156 notEqual @unit null
+ 
+   341 label *label165
+   342 label *label166
+   343 label *label167
+-    * set :type @mono
+   344 label *label170
+   345 ubind @mono
+   346 jump *label171 notEqual @unit null
+ 
+   379 label *label180
+   380 label *label181
+   381 label *label182
+-    * set :type @poly
+   382 label *label185
+   383 ubind @poly
+   384 jump *label186 notEqual @unit null
+ 
+   417 label *label195
+   418 label *label196
+   419 label *label197
+-    * set :type @mega
+   420 label *label200
+   421 ubind @mega
+   422 jump *label201 notEqual @unit null
+ 
+   455 label *label210
+   456 label *label211
+   457 label *label212
+-    * set :type @quad
+   458 label *label215
+   459 ubind @quad
+   460 jump *label216 notEqual @unit null
+ 
+   493 label *label225
+   494 label *label226
+   495 label *label227
+-    * set :type @oct
+   496 label *label230
+   497 ubind @oct
+   498 jump *label231 notEqual @unit null
+ 
+   531 label *label240
+   532 label *label241
+   533 label *label242
+-    * set :type @avert
+   534 label *label245
+   535 ubind @avert
+   536 jump *label246 notEqual @unit null
+ 
+   569 label *label255
+   570 label *label256
+   571 label *label257
+-    * set :type @obviate
+   572 label *label260
+   573 ubind @obviate
+   574 jump *label261 notEqual @unit null
+ 
+   607 label *label270
+   608 label *label271
+   609 label *label272
+-    * set :type @quell
+   610 label *label275
+   611 ubind @quell
+   612 jump *label276 notEqual @unit null
+ 
+   645 label *label285
+   646 label *label286
+   647 label *label287
+-    * set :type @disrupt
+   648 label *label290
+   649 ubind @disrupt
+   650 jump *label291 notEqual @unit null
+ 
+   683 label *label300
+   684 label *label301
+   685 label *label302
+-    * set :type @evoke
+   686 label *label305
+   687 ubind @evoke
+   688 jump *label306 notEqual @unit null
+ 
+   721 label *label315
+   722 label *label316
+   723 label *label317
+-    * set :type @incite
+   724 label *label320
+   725 ubind @incite
+   726 jump *label321 notEqual @unit null
+ 
+   759 label *label330
+   760 label *label331
+   761 label *label332
+-    * set :type @emanate
+   762 label *label335
+   763 ubind @emanate
+   764 jump *label336 notEqual @unit null
+
+Modifications by Iterated phase, Jump Optimization, pass 2, iteration 1 (-21 instructions):
+ 
+    20 sensor *tmp11 @unit @y
+    21 op sub *tmp12 y *tmp11
+    22 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+    23 label *label42
+-    * jump *label43 notEqual *tmp8 false
++   24 jump *label43 lessThan *tmp13 8
+    25 ucontrol boost true
+    26 ucontrol flag 2435345345
+    27 ucontrol move x y
+ 
+    57 sensor *tmp11 @unit @y
+    58 op sub *tmp12 y *tmp11
+    59 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+    60 label *label57
+-    * jump *label58 notEqual *tmp8 false
++   61 jump *label58 lessThan *tmp13 8
+    62 ucontrol boost true
+    63 ucontrol flag 2435345345
+    64 ucontrol move x y
+ 
+    94 sensor *tmp11 @unit @y
+    95 op sub *tmp12 y *tmp11
+    96 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+    97 label *label72
+-    * jump *label73 notEqual *tmp8 false
++   98 jump *label73 lessThan *tmp13 8
+    99 ucontrol boost true
+   100 ucontrol flag 2435345345
+   101 ucontrol move x y
+ 
+   131 sensor *tmp11 @unit @y
+   132 op sub *tmp12 y *tmp11
+   133 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   134 label *label87
+-    * jump *label88 notEqual *tmp8 false
++  135 jump *label88 lessThan *tmp13 8
+   136 ucontrol boost true
+   137 ucontrol flag 2435345345
+   138 ucontrol move x y
+ 
+   168 sensor *tmp11 @unit @y
+   169 op sub *tmp12 y *tmp11
+   170 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   171 label *label102
+-    * jump *label103 notEqual *tmp8 false
++  172 jump *label103 lessThan *tmp13 8
+   173 ucontrol boost true
+   174 ucontrol flag 2435345345
+   175 ucontrol move x y
+ 
+   205 sensor *tmp11 @unit @y
+   206 op sub *tmp12 y *tmp11
+   207 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   208 label *label117
+-    * jump *label118 notEqual *tmp8 false
++  209 jump *label118 lessThan *tmp13 8
+   210 ucontrol boost true
+   211 ucontrol flag 2435345345
+   212 ucontrol move x y
+ 
+   242 sensor *tmp11 @unit @y
+   243 op sub *tmp12 y *tmp11
+   244 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   245 label *label132
+-    * jump *label133 notEqual *tmp8 false
++  246 jump *label133 lessThan *tmp13 8
+   247 ucontrol boost true
+   248 ucontrol flag 2435345345
+   249 ucontrol move x y
+ 
+   279 sensor *tmp11 @unit @y
+   280 op sub *tmp12 y *tmp11
+   281 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   282 label *label147
+-    * jump *label148 notEqual *tmp8 false
++  283 jump *label148 lessThan *tmp13 8
+   284 ucontrol boost true
+   285 ucontrol flag 2435345345
+   286 ucontrol move x y
+ 
+   316 sensor *tmp11 @unit @y
+   317 op sub *tmp12 y *tmp11
+   318 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   319 label *label162
+-    * jump *label163 notEqual *tmp8 false
++  320 jump *label163 lessThan *tmp13 8
+   321 ucontrol boost true
+   322 ucontrol flag 2435345345
+   323 ucontrol move x y
+ 
+   353 sensor *tmp11 @unit @y
+   354 op sub *tmp12 y *tmp11
+   355 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   356 label *label177
+-    * jump *label178 notEqual *tmp8 false
++  357 jump *label178 lessThan *tmp13 8
+   358 ucontrol boost true
+   359 ucontrol flag 2435345345
+   360 ucontrol move x y
+ 
+   390 sensor *tmp11 @unit @y
+   391 op sub *tmp12 y *tmp11
+   392 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   393 label *label192
+-    * jump *label193 notEqual *tmp8 false
++  394 jump *label193 lessThan *tmp13 8
+   395 ucontrol boost true
+   396 ucontrol flag 2435345345
+   397 ucontrol move x y
+ 
+   427 sensor *tmp11 @unit @y
+   428 op sub *tmp12 y *tmp11
+   429 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   430 label *label207
+-    * jump *label208 notEqual *tmp8 false
++  431 jump *label208 lessThan *tmp13 8
+   432 ucontrol boost true
+   433 ucontrol flag 2435345345
+   434 ucontrol move x y
+ 
+   464 sensor *tmp11 @unit @y
+   465 op sub *tmp12 y *tmp11
+   466 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   467 label *label222
+-    * jump *label223 notEqual *tmp8 false
++  468 jump *label223 lessThan *tmp13 8
+   469 ucontrol boost true
+   470 ucontrol flag 2435345345
+   471 ucontrol move x y
+ 
+   501 sensor *tmp11 @unit @y
+   502 op sub *tmp12 y *tmp11
+   503 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   504 label *label237
+-    * jump *label238 notEqual *tmp8 false
++  505 jump *label238 lessThan *tmp13 8
+   506 ucontrol boost true
+   507 ucontrol flag 2435345345
+   508 ucontrol move x y
+ 
+   538 sensor *tmp11 @unit @y
+   539 op sub *tmp12 y *tmp11
+   540 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   541 label *label252
+-    * jump *label253 notEqual *tmp8 false
++  542 jump *label253 lessThan *tmp13 8
+   543 ucontrol boost true
+   544 ucontrol flag 2435345345
+   545 ucontrol move x y
+ 
+   575 sensor *tmp11 @unit @y
+   576 op sub *tmp12 y *tmp11
+   577 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   578 label *label267
+-    * jump *label268 notEqual *tmp8 false
++  579 jump *label268 lessThan *tmp13 8
+   580 ucontrol boost true
+   581 ucontrol flag 2435345345
+   582 ucontrol move x y
+ 
+   612 sensor *tmp11 @unit @y
+   613 op sub *tmp12 y *tmp11
+   614 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   615 label *label282
+-    * jump *label283 notEqual *tmp8 false
++  616 jump *label283 lessThan *tmp13 8
+   617 ucontrol boost true
+   618 ucontrol flag 2435345345
+   619 ucontrol move x y
+ 
+   649 sensor *tmp11 @unit @y
+   650 op sub *tmp12 y *tmp11
+   651 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   652 label *label297
+-    * jump *label298 notEqual *tmp8 false
++  653 jump *label298 lessThan *tmp13 8
+   654 ucontrol boost true
+   655 ucontrol flag 2435345345
+   656 ucontrol move x y
+ 
+   686 sensor *tmp11 @unit @y
+   687 op sub *tmp12 y *tmp11
+   688 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   689 label *label312
+-    * jump *label313 notEqual *tmp8 false
++  690 jump *label313 lessThan *tmp13 8
+   691 ucontrol boost true
+   692 ucontrol flag 2435345345
+   693 ucontrol move x y
+ 
+   723 sensor *tmp11 @unit @y
+   724 op sub *tmp12 y *tmp11
+   725 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   726 label *label327
+-    * jump *label328 notEqual *tmp8 false
++  727 jump *label328 lessThan *tmp13 8
+   728 ucontrol boost true
+   729 ucontrol flag 2435345345
+   730 ucontrol move x y
+ 
+   760 sensor *tmp11 @unit @y
+   761 op sub *tmp12 y *tmp11
+   762 op len *tmp13 *tmp10 *tmp12
+-    * op lessThan *tmp8 *tmp13 8
+   763 label *label342
+-    * jump *label343 notEqual *tmp8 false
++  764 jump *label343 lessThan *tmp13 8
+   765 ucontrol boost true
+   766 ucontrol flag 2435345345
+   767 ucontrol move x y
+
+Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
+     0 set x @thisx
+     1 set y @thisy
+-    * label *label35
+     2 ubind @nova
+     3 jump *label36 notEqual @unit null
+     4 jump *label47 always
+     5 label *label36
+-    * label *label37
+     6 sensor *tmp3 @unit @controlled
+     7 jump *label40 equal *tmp3 false
+     8 sensor *tmp5 @unit @controller
+     9 jump *label38 equal *tmp5 @this
+    10 jump *label47 always
+    11 label *label38
+-    * label *label39
+    12 label *label40
+-    * label *label41
+    13 # "Function: def inRadius(in x, in y, in radius)"
+    14 sensor *tmp9 @unit @x
+    15 op sub *tmp10 x *tmp9
+    16 sensor *tmp11 @unit @y
+    17 op sub *tmp12 y *tmp11
+    18 op len *tmp13 *tmp10 *tmp12
+-    * label *label42
+    19 jump *label43 lessThan *tmp13 8
+    20 ucontrol boost true
+    21 ucontrol flag 2435345345
+ 
+    28 ucontrol flag 0
+    29 ucontrol unbind
+    30 label *label44
+-    * label *label45
+    31 label *label46
+    32 label *label47
+-    * label *label50
+    33 ubind @pulsar
+    34 jump *label51 notEqual @unit null
+    35 jump *label62 always
+    36 label *label51
+-    * label *label52
+    37 sensor *tmp3 @unit @controlled
+    38 jump *label55 equal *tmp3 false
+    39 sensor *tmp5 @unit @controller
+    40 jump *label53 equal *tmp5 @this
+    41 jump *label62 always
+    42 label *label53
+-    * label *label54
+    43 label *label55
+-    * label *label56
+    44 # "Function: def inRadius(in x, in y, in radius)"
+    45 sensor *tmp9 @unit @x
+    46 op sub *tmp10 x *tmp9
+    47 sensor *tmp11 @unit @y
+    48 op sub *tmp12 y *tmp11
+    49 op len *tmp13 *tmp10 *tmp12
+-    * label *label57
+    50 jump *label58 lessThan *tmp13 8
+    51 ucontrol boost true
+    52 ucontrol flag 2435345345
+ 
+    59 ucontrol flag 0
+    60 ucontrol unbind
+    61 label *label59
+-    * label *label60
+    62 label *label61
+    63 label *label62
+-    * label *label65
+    64 ubind @quasar
+    65 jump *label66 notEqual @unit null
+    66 jump *label77 always
+    67 label *label66
+-    * label *label67
+    68 sensor *tmp3 @unit @controlled
+    69 jump *label70 equal *tmp3 false
+    70 sensor *tmp5 @unit @controller
+    71 jump *label68 equal *tmp5 @this
+    72 jump *label77 always
+    73 label *label68
+-    * label *label69
+    74 label *label70
+-    * label *label71
+    75 # "Function: def inRadius(in x, in y, in radius)"
+    76 sensor *tmp9 @unit @x
+    77 op sub *tmp10 x *tmp9
+    78 sensor *tmp11 @unit @y
+    79 op sub *tmp12 y *tmp11
+    80 op len *tmp13 *tmp10 *tmp12
+-    * label *label72
+    81 jump *label73 lessThan *tmp13 8
+    82 ucontrol boost true
+    83 ucontrol flag 2435345345
+ 
+    90 ucontrol flag 0
+    91 ucontrol unbind
+    92 label *label74
+-    * label *label75
+    93 label *label76
+    94 label *label77
+-    * label *label80
+    95 ubind @vela
+    96 jump *label81 notEqual @unit null
+    97 jump *label92 always
+    98 label *label81
+-    * label *label82
+    99 sensor *tmp3 @unit @controlled
+   100 jump *label85 equal *tmp3 false
+   101 sensor *tmp5 @unit @controller
+   102 jump *label83 equal *tmp5 @this
+   103 jump *label92 always
+   104 label *label83
+-    * label *label84
+   105 label *label85
+-    * label *label86
+   106 # "Function: def inRadius(in x, in y, in radius)"
+   107 sensor *tmp9 @unit @x
+   108 op sub *tmp10 x *tmp9
+   109 sensor *tmp11 @unit @y
+   110 op sub *tmp12 y *tmp11
+   111 op len *tmp13 *tmp10 *tmp12
+-    * label *label87
+   112 jump *label88 lessThan *tmp13 8
+   113 ucontrol boost true
+   114 ucontrol flag 2435345345
+ 
+   121 ucontrol flag 0
+   122 ucontrol unbind
+   123 label *label89
+-    * label *label90
+   124 label *label91
+   125 label *label92
+-    * label *label95
+   126 ubind @flare
+   127 jump *label96 notEqual @unit null
+   128 jump *label107 always
+   129 label *label96
+-    * label *label97
+   130 sensor *tmp3 @unit @controlled
+   131 jump *label100 equal *tmp3 false
+   132 sensor *tmp5 @unit @controller
+   133 jump *label98 equal *tmp5 @this
+   134 jump *label107 always
+   135 label *label98
+-    * label *label99
+   136 label *label100
+-    * label *label101
+   137 # "Function: def inRadius(in x, in y, in radius)"
+   138 sensor *tmp9 @unit @x
+   139 op sub *tmp10 x *tmp9
+   140 sensor *tmp11 @unit @y
+   141 op sub *tmp12 y *tmp11
+   142 op len *tmp13 *tmp10 *tmp12
+-    * label *label102
+   143 jump *label103 lessThan *tmp13 8
+   144 ucontrol boost true
+   145 ucontrol flag 2435345345
+ 
+   152 ucontrol flag 0
+   153 ucontrol unbind
+   154 label *label104
+-    * label *label105
+   155 label *label106
+   156 label *label107
+-    * label *label110
+   157 ubind @horizon
+   158 jump *label111 notEqual @unit null
+   159 jump *label122 always
+   160 label *label111
+-    * label *label112
+   161 sensor *tmp3 @unit @controlled
+   162 jump *label115 equal *tmp3 false
+   163 sensor *tmp5 @unit @controller
+   164 jump *label113 equal *tmp5 @this
+   165 jump *label122 always
+   166 label *label113
+-    * label *label114
+   167 label *label115
+-    * label *label116
+   168 # "Function: def inRadius(in x, in y, in radius)"
+   169 sensor *tmp9 @unit @x
+   170 op sub *tmp10 x *tmp9
+   171 sensor *tmp11 @unit @y
+   172 op sub *tmp12 y *tmp11
+   173 op len *tmp13 *tmp10 *tmp12
+-    * label *label117
+   174 jump *label118 lessThan *tmp13 8
+   175 ucontrol boost true
+   176 ucontrol flag 2435345345
+ 
+   183 ucontrol flag 0
+   184 ucontrol unbind
+   185 label *label119
+-    * label *label120
+   186 label *label121
+   187 label *label122
+-    * label *label125
+   188 ubind @zenith
+   189 jump *label126 notEqual @unit null
+   190 jump *label137 always
+   191 label *label126
+-    * label *label127
+   192 sensor *tmp3 @unit @controlled
+   193 jump *label130 equal *tmp3 false
+   194 sensor *tmp5 @unit @controller
+   195 jump *label128 equal *tmp5 @this
+   196 jump *label137 always
+   197 label *label128
+-    * label *label129
+   198 label *label130
+-    * label *label131
+   199 # "Function: def inRadius(in x, in y, in radius)"
+   200 sensor *tmp9 @unit @x
+   201 op sub *tmp10 x *tmp9
+   202 sensor *tmp11 @unit @y
+   203 op sub *tmp12 y *tmp11
+   204 op len *tmp13 *tmp10 *tmp12
+-    * label *label132
+   205 jump *label133 lessThan *tmp13 8
+   206 ucontrol boost true
+   207 ucontrol flag 2435345345
+ 
+   214 ucontrol flag 0
+   215 ucontrol unbind
+   216 label *label134
+-    * label *label135
+   217 label *label136
+   218 label *label137
+-    * label *label140
+   219 ubind @antumbra
+   220 jump *label141 notEqual @unit null
+   221 jump *label152 always
+   222 label *label141
+-    * label *label142
+   223 sensor *tmp3 @unit @controlled
+   224 jump *label145 equal *tmp3 false
+   225 sensor *tmp5 @unit @controller
+   226 jump *label143 equal *tmp5 @this
+   227 jump *label152 always
+   228 label *label143
+-    * label *label144
+   229 label *label145
+-    * label *label146
+   230 # "Function: def inRadius(in x, in y, in radius)"
+   231 sensor *tmp9 @unit @x
+   232 op sub *tmp10 x *tmp9
+   233 sensor *tmp11 @unit @y
+   234 op sub *tmp12 y *tmp11
+   235 op len *tmp13 *tmp10 *tmp12
+-    * label *label147
+   236 jump *label148 lessThan *tmp13 8
+   237 ucontrol boost true
+   238 ucontrol flag 2435345345
+ 
+   245 ucontrol flag 0
+   246 ucontrol unbind
+   247 label *label149
+-    * label *label150
+   248 label *label151
+   249 label *label152
+-    * label *label155
+   250 ubind @eclipse
+   251 jump *label156 notEqual @unit null
+   252 jump *label167 always
+   253 label *label156
+-    * label *label157
+   254 sensor *tmp3 @unit @controlled
+   255 jump *label160 equal *tmp3 false
+   256 sensor *tmp5 @unit @controller
+   257 jump *label158 equal *tmp5 @this
+   258 jump *label167 always
+   259 label *label158
+-    * label *label159
+   260 label *label160
+-    * label *label161
+   261 # "Function: def inRadius(in x, in y, in radius)"
+   262 sensor *tmp9 @unit @x
+   263 op sub *tmp10 x *tmp9
+   264 sensor *tmp11 @unit @y
+   265 op sub *tmp12 y *tmp11
+   266 op len *tmp13 *tmp10 *tmp12
+-    * label *label162
+   267 jump *label163 lessThan *tmp13 8
+   268 ucontrol boost true
+   269 ucontrol flag 2435345345
+ 
+   276 ucontrol flag 0
+   277 ucontrol unbind
+   278 label *label164
+-    * label *label165
+   279 label *label166
+   280 label *label167
+-    * label *label170
+   281 ubind @mono
+   282 jump *label171 notEqual @unit null
+   283 jump *label182 always
+   284 label *label171
+-    * label *label172
+   285 sensor *tmp3 @unit @controlled
+   286 jump *label175 equal *tmp3 false
+   287 sensor *tmp5 @unit @controller
+   288 jump *label173 equal *tmp5 @this
+   289 jump *label182 always
+   290 label *label173
+-    * label *label174
+   291 label *label175
+-    * label *label176
+   292 # "Function: def inRadius(in x, in y, in radius)"
+   293 sensor *tmp9 @unit @x
+   294 op sub *tmp10 x *tmp9
+   295 sensor *tmp11 @unit @y
+   296 op sub *tmp12 y *tmp11
+   297 op len *tmp13 *tmp10 *tmp12
+-    * label *label177
+   298 jump *label178 lessThan *tmp13 8
+   299 ucontrol boost true
+   300 ucontrol flag 2435345345
+ 
+   307 ucontrol flag 0
+   308 ucontrol unbind
+   309 label *label179
+-    * label *label180
+   310 label *label181
+   311 label *label182
+-    * label *label185
+   312 ubind @poly
+   313 jump *label186 notEqual @unit null
+   314 jump *label197 always
+   315 label *label186
+-    * label *label187
+   316 sensor *tmp3 @unit @controlled
+   317 jump *label190 equal *tmp3 false
+   318 sensor *tmp5 @unit @controller
+   319 jump *label188 equal *tmp5 @this
+   320 jump *label197 always
+   321 label *label188
+-    * label *label189
+   322 label *label190
+-    * label *label191
+   323 # "Function: def inRadius(in x, in y, in radius)"
+   324 sensor *tmp9 @unit @x
+   325 op sub *tmp10 x *tmp9
+   326 sensor *tmp11 @unit @y
+   327 op sub *tmp12 y *tmp11
+   328 op len *tmp13 *tmp10 *tmp12
+-    * label *label192
+   329 jump *label193 lessThan *tmp13 8
+   330 ucontrol boost true
+   331 ucontrol flag 2435345345
+ 
+   338 ucontrol flag 0
+   339 ucontrol unbind
+   340 label *label194
+-    * label *label195
+   341 label *label196
+   342 label *label197
+-    * label *label200
+   343 ubind @mega
+   344 jump *label201 notEqual @unit null
+   345 jump *label212 always
+   346 label *label201
+-    * label *label202
+   347 sensor *tmp3 @unit @controlled
+   348 jump *label205 equal *tmp3 false
+   349 sensor *tmp5 @unit @controller
+   350 jump *label203 equal *tmp5 @this
+   351 jump *label212 always
+   352 label *label203
+-    * label *label204
+   353 label *label205
+-    * label *label206
+   354 # "Function: def inRadius(in x, in y, in radius)"
+   355 sensor *tmp9 @unit @x
+   356 op sub *tmp10 x *tmp9
+   357 sensor *tmp11 @unit @y
+   358 op sub *tmp12 y *tmp11
+   359 op len *tmp13 *tmp10 *tmp12
+-    * label *label207
+   360 jump *label208 lessThan *tmp13 8
+   361 ucontrol boost true
+   362 ucontrol flag 2435345345
+ 
+   369 ucontrol flag 0
+   370 ucontrol unbind
+   371 label *label209
+-    * label *label210
+   372 label *label211
+   373 label *label212
+-    * label *label215
+   374 ubind @quad
+   375 jump *label216 notEqual @unit null
+   376 jump *label227 always
+   377 label *label216
+-    * label *label217
+   378 sensor *tmp3 @unit @controlled
+   379 jump *label220 equal *tmp3 false
+   380 sensor *tmp5 @unit @controller
+   381 jump *label218 equal *tmp5 @this
+   382 jump *label227 always
+   383 label *label218
+-    * label *label219
+   384 label *label220
+-    * label *label221
+   385 # "Function: def inRadius(in x, in y, in radius)"
+   386 sensor *tmp9 @unit @x
+   387 op sub *tmp10 x *tmp9
+   388 sensor *tmp11 @unit @y
+   389 op sub *tmp12 y *tmp11
+   390 op len *tmp13 *tmp10 *tmp12
+-    * label *label222
+   391 jump *label223 lessThan *tmp13 8
+   392 ucontrol boost true
+   393 ucontrol flag 2435345345
+ 
+   400 ucontrol flag 0
+   401 ucontrol unbind
+   402 label *label224
+-    * label *label225
+   403 label *label226
+   404 label *label227
+-    * label *label230
+   405 ubind @oct
+   406 jump *label231 notEqual @unit null
+   407 jump *label242 always
+   408 label *label231
+-    * label *label232
+   409 sensor *tmp3 @unit @controlled
+   410 jump *label235 equal *tmp3 false
+   411 sensor *tmp5 @unit @controller
+   412 jump *label233 equal *tmp5 @this
+   413 jump *label242 always
+   414 label *label233
+-    * label *label234
+   415 label *label235
+-    * label *label236
+   416 # "Function: def inRadius(in x, in y, in radius)"
+   417 sensor *tmp9 @unit @x
+   418 op sub *tmp10 x *tmp9
+   419 sensor *tmp11 @unit @y
+   420 op sub *tmp12 y *tmp11
+   421 op len *tmp13 *tmp10 *tmp12
+-    * label *label237
+   422 jump *label238 lessThan *tmp13 8
+   423 ucontrol boost true
+   424 ucontrol flag 2435345345
+ 
+   431 ucontrol flag 0
+   432 ucontrol unbind
+   433 label *label239
+-    * label *label240
+   434 label *label241
+   435 label *label242
+-    * label *label245
+   436 ubind @avert
+   437 jump *label246 notEqual @unit null
+   438 jump *label257 always
+   439 label *label246
+-    * label *label247
+   440 sensor *tmp3 @unit @controlled
+   441 jump *label250 equal *tmp3 false
+   442 sensor *tmp5 @unit @controller
+   443 jump *label248 equal *tmp5 @this
+   444 jump *label257 always
+   445 label *label248
+-    * label *label249
+   446 label *label250
+-    * label *label251
+   447 # "Function: def inRadius(in x, in y, in radius)"
+   448 sensor *tmp9 @unit @x
+   449 op sub *tmp10 x *tmp9
+   450 sensor *tmp11 @unit @y
+   451 op sub *tmp12 y *tmp11
+   452 op len *tmp13 *tmp10 *tmp12
+-    * label *label252
+   453 jump *label253 lessThan *tmp13 8
+   454 ucontrol boost true
+   455 ucontrol flag 2435345345
+ 
+   462 ucontrol flag 0
+   463 ucontrol unbind
+   464 label *label254
+-    * label *label255
+   465 label *label256
+   466 label *label257
+-    * label *label260
+   467 ubind @obviate
+   468 jump *label261 notEqual @unit null
+   469 jump *label272 always
+   470 label *label261
+-    * label *label262
+   471 sensor *tmp3 @unit @controlled
+   472 jump *label265 equal *tmp3 false
+   473 sensor *tmp5 @unit @controller
+   474 jump *label263 equal *tmp5 @this
+   475 jump *label272 always
+   476 label *label263
+-    * label *label264
+   477 label *label265
+-    * label *label266
+   478 # "Function: def inRadius(in x, in y, in radius)"
+   479 sensor *tmp9 @unit @x
+   480 op sub *tmp10 x *tmp9
+   481 sensor *tmp11 @unit @y
+   482 op sub *tmp12 y *tmp11
+   483 op len *tmp13 *tmp10 *tmp12
+-    * label *label267
+   484 jump *label268 lessThan *tmp13 8
+   485 ucontrol boost true
+   486 ucontrol flag 2435345345
+ 
+   493 ucontrol flag 0
+   494 ucontrol unbind
+   495 label *label269
+-    * label *label270
+   496 label *label271
+   497 label *label272
+-    * label *label275
+   498 ubind @quell
+   499 jump *label276 notEqual @unit null
+   500 jump *label287 always
+   501 label *label276
+-    * label *label277
+   502 sensor *tmp3 @unit @controlled
+   503 jump *label280 equal *tmp3 false
+   504 sensor *tmp5 @unit @controller
+   505 jump *label278 equal *tmp5 @this
+   506 jump *label287 always
+   507 label *label278
+-    * label *label279
+   508 label *label280
+-    * label *label281
+   509 # "Function: def inRadius(in x, in y, in radius)"
+   510 sensor *tmp9 @unit @x
+   511 op sub *tmp10 x *tmp9
+   512 sensor *tmp11 @unit @y
+   513 op sub *tmp12 y *tmp11
+   514 op len *tmp13 *tmp10 *tmp12
+-    * label *label282
+   515 jump *label283 lessThan *tmp13 8
+   516 ucontrol boost true
+   517 ucontrol flag 2435345345
+ 
+   524 ucontrol flag 0
+   525 ucontrol unbind
+   526 label *label284
+-    * label *label285
+   527 label *label286
+   528 label *label287
+-    * label *label290
+   529 ubind @disrupt
+   530 jump *label291 notEqual @unit null
+   531 jump *label302 always
+   532 label *label291
+-    * label *label292
+   533 sensor *tmp3 @unit @controlled
+   534 jump *label295 equal *tmp3 false
+   535 sensor *tmp5 @unit @controller
+   536 jump *label293 equal *tmp5 @this
+   537 jump *label302 always
+   538 label *label293
+-    * label *label294
+   539 label *label295
+-    * label *label296
+   540 # "Function: def inRadius(in x, in y, in radius)"
+   541 sensor *tmp9 @unit @x
+   542 op sub *tmp10 x *tmp9
+   543 sensor *tmp11 @unit @y
+   544 op sub *tmp12 y *tmp11
+   545 op len *tmp13 *tmp10 *tmp12
+-    * label *label297
+   546 jump *label298 lessThan *tmp13 8
+   547 ucontrol boost true
+   548 ucontrol flag 2435345345
+ 
+   555 ucontrol flag 0
+   556 ucontrol unbind
+   557 label *label299
+-    * label *label300
+   558 label *label301
+   559 label *label302
+-    * label *label305
+   560 ubind @evoke
+   561 jump *label306 notEqual @unit null
+   562 jump *label317 always
+   563 label *label306
+-    * label *label307
+   564 sensor *tmp3 @unit @controlled
+   565 jump *label310 equal *tmp3 false
+   566 sensor *tmp5 @unit @controller
+   567 jump *label308 equal *tmp5 @this
+   568 jump *label317 always
+   569 label *label308
+-    * label *label309
+   570 label *label310
+-    * label *label311
+   571 # "Function: def inRadius(in x, in y, in radius)"
+   572 sensor *tmp9 @unit @x
+   573 op sub *tmp10 x *tmp9
+   574 sensor *tmp11 @unit @y
+   575 op sub *tmp12 y *tmp11
+   576 op len *tmp13 *tmp10 *tmp12
+-    * label *label312
+   577 jump *label313 lessThan *tmp13 8
+   578 ucontrol boost true
+   579 ucontrol flag 2435345345
+ 
+   586 ucontrol flag 0
+   587 ucontrol unbind
+   588 label *label314
+-    * label *label315
+   589 label *label316
+   590 label *label317
+-    * label *label320
+   591 ubind @incite
+   592 jump *label321 notEqual @unit null
+   593 jump *label332 always
+   594 label *label321
+-    * label *label322
+   595 sensor *tmp3 @unit @controlled
+   596 jump *label325 equal *tmp3 false
+   597 sensor *tmp5 @unit @controller
+   598 jump *label323 equal *tmp5 @this
+   599 jump *label332 always
+   600 label *label323
+-    * label *label324
+   601 label *label325
+-    * label *label326
+   602 # "Function: def inRadius(in x, in y, in radius)"
+   603 sensor *tmp9 @unit @x
+   604 op sub *tmp10 x *tmp9
+   605 sensor *tmp11 @unit @y
+   606 op sub *tmp12 y *tmp11
+   607 op len *tmp13 *tmp10 *tmp12
+-    * label *label327
+   608 jump *label328 lessThan *tmp13 8
+   609 ucontrol boost true
+   610 ucontrol flag 2435345345
+ 
+   617 ucontrol flag 0
+   618 ucontrol unbind
+   619 label *label329
+-    * label *label330
+   620 label *label331
+   621 label *label332
+-    * label *label335
+   622 ubind @emanate
+   623 jump *label336 notEqual @unit null
+   624 jump *label347 always
+   625 label *label336
+-    * label *label337
+   626 sensor *tmp3 @unit @controlled
+   627 jump *label340 equal *tmp3 false
+   628 sensor *tmp5 @unit @controller
+   629 jump *label338 equal *tmp5 @this
+   630 jump *label347 always
+   631 label *label338
+-    * label *label339
+   632 label *label340
+-    * label *label341
+   633 # "Function: def inRadius(in x, in y, in radius)"
+   634 sensor *tmp9 @unit @x
+   635 op sub *tmp10 x *tmp9
+   636 sensor *tmp11 @unit @y
+   637 op sub *tmp12 y *tmp11
+   638 op len *tmp13 *tmp10 *tmp12
+-    * label *label342
+   639 jump *label343 lessThan *tmp13 8
+   640 ucontrol boost true
+   641 ucontrol flag 2435345345
+ 
+   648 ucontrol flag 0
+   649 ucontrol unbind
+   650 label *label344
+-    * label *label345
+   651 label *label346
+   652 label *label347
+-    * label *label2
+   653 end
+
+Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-42 instructions):
+     0 set x @thisx
+     1 set y @thisy
+     2 ubind @nova
+-    * jump *label36 notEqual @unit null
+-    * jump *label47 always
++    3 jump *label47 equal @unit null
+     4 label *label36
+     5 sensor *tmp3 @unit @controlled
+     6 jump *label40 equal *tmp3 false
+     7 sensor *tmp5 @unit @controller
+-    * jump *label38 equal *tmp5 @this
+-    * jump *label47 always
++    8 jump *label47 notEqual *tmp5 @this
+     9 label *label38
+    10 label *label40
+    11 # "Function: def inRadius(in x, in y, in radius)"
+ 
+    29 label *label46
+    30 label *label47
+    31 ubind @pulsar
+-    * jump *label51 notEqual @unit null
+-    * jump *label62 always
++   32 jump *label62 equal @unit null
+    33 label *label51
+    34 sensor *tmp3 @unit @controlled
+    35 jump *label55 equal *tmp3 false
+    36 sensor *tmp5 @unit @controller
+-    * jump *label53 equal *tmp5 @this
+-    * jump *label62 always
++   37 jump *label62 notEqual *tmp5 @this
+    38 label *label53
+    39 label *label55
+    40 # "Function: def inRadius(in x, in y, in radius)"
+ 
+    58 label *label61
+    59 label *label62
+    60 ubind @quasar
+-    * jump *label66 notEqual @unit null
+-    * jump *label77 always
++   61 jump *label77 equal @unit null
+    62 label *label66
+    63 sensor *tmp3 @unit @controlled
+    64 jump *label70 equal *tmp3 false
+    65 sensor *tmp5 @unit @controller
+-    * jump *label68 equal *tmp5 @this
+-    * jump *label77 always
++   66 jump *label77 notEqual *tmp5 @this
+    67 label *label68
+    68 label *label70
+    69 # "Function: def inRadius(in x, in y, in radius)"
+ 
+    87 label *label76
+    88 label *label77
+    89 ubind @vela
+-    * jump *label81 notEqual @unit null
+-    * jump *label92 always
++   90 jump *label92 equal @unit null
+    91 label *label81
+    92 sensor *tmp3 @unit @controlled
+    93 jump *label85 equal *tmp3 false
+    94 sensor *tmp5 @unit @controller
+-    * jump *label83 equal *tmp5 @this
+-    * jump *label92 always
++   95 jump *label92 notEqual *tmp5 @this
+    96 label *label83
+    97 label *label85
+    98 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   116 label *label91
+   117 label *label92
+   118 ubind @flare
+-    * jump *label96 notEqual @unit null
+-    * jump *label107 always
++  119 jump *label107 equal @unit null
+   120 label *label96
+   121 sensor *tmp3 @unit @controlled
+   122 jump *label100 equal *tmp3 false
+   123 sensor *tmp5 @unit @controller
+-    * jump *label98 equal *tmp5 @this
+-    * jump *label107 always
++  124 jump *label107 notEqual *tmp5 @this
+   125 label *label98
+   126 label *label100
+   127 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   145 label *label106
+   146 label *label107
+   147 ubind @horizon
+-    * jump *label111 notEqual @unit null
+-    * jump *label122 always
++  148 jump *label122 equal @unit null
+   149 label *label111
+   150 sensor *tmp3 @unit @controlled
+   151 jump *label115 equal *tmp3 false
+   152 sensor *tmp5 @unit @controller
+-    * jump *label113 equal *tmp5 @this
+-    * jump *label122 always
++  153 jump *label122 notEqual *tmp5 @this
+   154 label *label113
+   155 label *label115
+   156 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   174 label *label121
+   175 label *label122
+   176 ubind @zenith
+-    * jump *label126 notEqual @unit null
+-    * jump *label137 always
++  177 jump *label137 equal @unit null
+   178 label *label126
+   179 sensor *tmp3 @unit @controlled
+   180 jump *label130 equal *tmp3 false
+   181 sensor *tmp5 @unit @controller
+-    * jump *label128 equal *tmp5 @this
+-    * jump *label137 always
++  182 jump *label137 notEqual *tmp5 @this
+   183 label *label128
+   184 label *label130
+   185 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   203 label *label136
+   204 label *label137
+   205 ubind @antumbra
+-    * jump *label141 notEqual @unit null
+-    * jump *label152 always
++  206 jump *label152 equal @unit null
+   207 label *label141
+   208 sensor *tmp3 @unit @controlled
+   209 jump *label145 equal *tmp3 false
+   210 sensor *tmp5 @unit @controller
+-    * jump *label143 equal *tmp5 @this
+-    * jump *label152 always
++  211 jump *label152 notEqual *tmp5 @this
+   212 label *label143
+   213 label *label145
+   214 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   232 label *label151
+   233 label *label152
+   234 ubind @eclipse
+-    * jump *label156 notEqual @unit null
+-    * jump *label167 always
++  235 jump *label167 equal @unit null
+   236 label *label156
+   237 sensor *tmp3 @unit @controlled
+   238 jump *label160 equal *tmp3 false
+   239 sensor *tmp5 @unit @controller
+-    * jump *label158 equal *tmp5 @this
+-    * jump *label167 always
++  240 jump *label167 notEqual *tmp5 @this
+   241 label *label158
+   242 label *label160
+   243 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   261 label *label166
+   262 label *label167
+   263 ubind @mono
+-    * jump *label171 notEqual @unit null
+-    * jump *label182 always
++  264 jump *label182 equal @unit null
+   265 label *label171
+   266 sensor *tmp3 @unit @controlled
+   267 jump *label175 equal *tmp3 false
+   268 sensor *tmp5 @unit @controller
+-    * jump *label173 equal *tmp5 @this
+-    * jump *label182 always
++  269 jump *label182 notEqual *tmp5 @this
+   270 label *label173
+   271 label *label175
+   272 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   290 label *label181
+   291 label *label182
+   292 ubind @poly
+-    * jump *label186 notEqual @unit null
+-    * jump *label197 always
++  293 jump *label197 equal @unit null
+   294 label *label186
+   295 sensor *tmp3 @unit @controlled
+   296 jump *label190 equal *tmp3 false
+   297 sensor *tmp5 @unit @controller
+-    * jump *label188 equal *tmp5 @this
+-    * jump *label197 always
++  298 jump *label197 notEqual *tmp5 @this
+   299 label *label188
+   300 label *label190
+   301 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   319 label *label196
+   320 label *label197
+   321 ubind @mega
+-    * jump *label201 notEqual @unit null
+-    * jump *label212 always
++  322 jump *label212 equal @unit null
+   323 label *label201
+   324 sensor *tmp3 @unit @controlled
+   325 jump *label205 equal *tmp3 false
+   326 sensor *tmp5 @unit @controller
+-    * jump *label203 equal *tmp5 @this
+-    * jump *label212 always
++  327 jump *label212 notEqual *tmp5 @this
+   328 label *label203
+   329 label *label205
+   330 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   348 label *label211
+   349 label *label212
+   350 ubind @quad
+-    * jump *label216 notEqual @unit null
+-    * jump *label227 always
++  351 jump *label227 equal @unit null
+   352 label *label216
+   353 sensor *tmp3 @unit @controlled
+   354 jump *label220 equal *tmp3 false
+   355 sensor *tmp5 @unit @controller
+-    * jump *label218 equal *tmp5 @this
+-    * jump *label227 always
++  356 jump *label227 notEqual *tmp5 @this
+   357 label *label218
+   358 label *label220
+   359 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   377 label *label226
+   378 label *label227
+   379 ubind @oct
+-    * jump *label231 notEqual @unit null
+-    * jump *label242 always
++  380 jump *label242 equal @unit null
+   381 label *label231
+   382 sensor *tmp3 @unit @controlled
+   383 jump *label235 equal *tmp3 false
+   384 sensor *tmp5 @unit @controller
+-    * jump *label233 equal *tmp5 @this
+-    * jump *label242 always
++  385 jump *label242 notEqual *tmp5 @this
+   386 label *label233
+   387 label *label235
+   388 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   406 label *label241
+   407 label *label242
+   408 ubind @avert
+-    * jump *label246 notEqual @unit null
+-    * jump *label257 always
++  409 jump *label257 equal @unit null
+   410 label *label246
+   411 sensor *tmp3 @unit @controlled
+   412 jump *label250 equal *tmp3 false
+   413 sensor *tmp5 @unit @controller
+-    * jump *label248 equal *tmp5 @this
+-    * jump *label257 always
++  414 jump *label257 notEqual *tmp5 @this
+   415 label *label248
+   416 label *label250
+   417 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   435 label *label256
+   436 label *label257
+   437 ubind @obviate
+-    * jump *label261 notEqual @unit null
+-    * jump *label272 always
++  438 jump *label272 equal @unit null
+   439 label *label261
+   440 sensor *tmp3 @unit @controlled
+   441 jump *label265 equal *tmp3 false
+   442 sensor *tmp5 @unit @controller
+-    * jump *label263 equal *tmp5 @this
+-    * jump *label272 always
++  443 jump *label272 notEqual *tmp5 @this
+   444 label *label263
+   445 label *label265
+   446 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   464 label *label271
+   465 label *label272
+   466 ubind @quell
+-    * jump *label276 notEqual @unit null
+-    * jump *label287 always
++  467 jump *label287 equal @unit null
+   468 label *label276
+   469 sensor *tmp3 @unit @controlled
+   470 jump *label280 equal *tmp3 false
+   471 sensor *tmp5 @unit @controller
+-    * jump *label278 equal *tmp5 @this
+-    * jump *label287 always
++  472 jump *label287 notEqual *tmp5 @this
+   473 label *label278
+   474 label *label280
+   475 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   493 label *label286
+   494 label *label287
+   495 ubind @disrupt
+-    * jump *label291 notEqual @unit null
+-    * jump *label302 always
++  496 jump *label302 equal @unit null
+   497 label *label291
+   498 sensor *tmp3 @unit @controlled
+   499 jump *label295 equal *tmp3 false
+   500 sensor *tmp5 @unit @controller
+-    * jump *label293 equal *tmp5 @this
+-    * jump *label302 always
++  501 jump *label302 notEqual *tmp5 @this
+   502 label *label293
+   503 label *label295
+   504 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   522 label *label301
+   523 label *label302
+   524 ubind @evoke
+-    * jump *label306 notEqual @unit null
+-    * jump *label317 always
++  525 jump *label317 equal @unit null
+   526 label *label306
+   527 sensor *tmp3 @unit @controlled
+   528 jump *label310 equal *tmp3 false
+   529 sensor *tmp5 @unit @controller
+-    * jump *label308 equal *tmp5 @this
+-    * jump *label317 always
++  530 jump *label317 notEqual *tmp5 @this
+   531 label *label308
+   532 label *label310
+   533 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   551 label *label316
+   552 label *label317
+   553 ubind @incite
+-    * jump *label321 notEqual @unit null
+-    * jump *label332 always
++  554 jump *label332 equal @unit null
+   555 label *label321
+   556 sensor *tmp3 @unit @controlled
+   557 jump *label325 equal *tmp3 false
+   558 sensor *tmp5 @unit @controller
+-    * jump *label323 equal *tmp5 @this
+-    * jump *label332 always
++  559 jump *label332 notEqual *tmp5 @this
+   560 label *label323
+   561 label *label325
+   562 # "Function: def inRadius(in x, in y, in radius)"
+ 
+   580 label *label331
+   581 label *label332
+   582 ubind @emanate
+-    * jump *label336 notEqual @unit null
+-    * jump *label347 always
++  583 jump *label347 equal @unit null
+   584 label *label336
+   585 sensor *tmp3 @unit @controlled
+   586 jump *label340 equal *tmp3 false
+   587 sensor *tmp5 @unit @controller
+-    * jump *label338 equal *tmp5 @this
+-    * jump *label347 always
++  588 jump *label347 notEqual *tmp5 @this
+   589 label *label338
+   590 label *label340
+   591 # "Function: def inRadius(in x, in y, in radius)"
+
+Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
+ 
+     1 set y @thisy
+     2 ubind @nova
+     3 jump *label47 equal @unit null
+-    * label *label36
+     4 sensor *tmp3 @unit @controlled
+     5 jump *label40 equal *tmp3 false
+     6 sensor *tmp5 @unit @controller
+     7 jump *label47 notEqual *tmp5 @this
+-    * label *label38
+     8 label *label40
+     9 # "Function: def inRadius(in x, in y, in radius)"
+    10 sensor *tmp9 @unit @x
+ 
+    28 label *label47
+    29 ubind @pulsar
+    30 jump *label62 equal @unit null
+-    * label *label51
+    31 sensor *tmp3 @unit @controlled
+    32 jump *label55 equal *tmp3 false
+    33 sensor *tmp5 @unit @controller
+    34 jump *label62 notEqual *tmp5 @this
+-    * label *label53
+    35 label *label55
+    36 # "Function: def inRadius(in x, in y, in radius)"
+    37 sensor *tmp9 @unit @x
+ 
+    55 label *label62
+    56 ubind @quasar
+    57 jump *label77 equal @unit null
+-    * label *label66
+    58 sensor *tmp3 @unit @controlled
+    59 jump *label70 equal *tmp3 false
+    60 sensor *tmp5 @unit @controller
+    61 jump *label77 notEqual *tmp5 @this
+-    * label *label68
+    62 label *label70
+    63 # "Function: def inRadius(in x, in y, in radius)"
+    64 sensor *tmp9 @unit @x
+ 
+    82 label *label77
+    83 ubind @vela
+    84 jump *label92 equal @unit null
+-    * label *label81
+    85 sensor *tmp3 @unit @controlled
+    86 jump *label85 equal *tmp3 false
+    87 sensor *tmp5 @unit @controller
+    88 jump *label92 notEqual *tmp5 @this
+-    * label *label83
+    89 label *label85
+    90 # "Function: def inRadius(in x, in y, in radius)"
+    91 sensor *tmp9 @unit @x
+ 
+   109 label *label92
+   110 ubind @flare
+   111 jump *label107 equal @unit null
+-    * label *label96
+   112 sensor *tmp3 @unit @controlled
+   113 jump *label100 equal *tmp3 false
+   114 sensor *tmp5 @unit @controller
+   115 jump *label107 notEqual *tmp5 @this
+-    * label *label98
+   116 label *label100
+   117 # "Function: def inRadius(in x, in y, in radius)"
+   118 sensor *tmp9 @unit @x
+ 
+   136 label *label107
+   137 ubind @horizon
+   138 jump *label122 equal @unit null
+-    * label *label111
+   139 sensor *tmp3 @unit @controlled
+   140 jump *label115 equal *tmp3 false
+   141 sensor *tmp5 @unit @controller
+   142 jump *label122 notEqual *tmp5 @this
+-    * label *label113
+   143 label *label115
+   144 # "Function: def inRadius(in x, in y, in radius)"
+   145 sensor *tmp9 @unit @x
+ 
+   163 label *label122
+   164 ubind @zenith
+   165 jump *label137 equal @unit null
+-    * label *label126
+   166 sensor *tmp3 @unit @controlled
+   167 jump *label130 equal *tmp3 false
+   168 sensor *tmp5 @unit @controller
+   169 jump *label137 notEqual *tmp5 @this
+-    * label *label128
+   170 label *label130
+   171 # "Function: def inRadius(in x, in y, in radius)"
+   172 sensor *tmp9 @unit @x
+ 
+   190 label *label137
+   191 ubind @antumbra
+   192 jump *label152 equal @unit null
+-    * label *label141
+   193 sensor *tmp3 @unit @controlled
+   194 jump *label145 equal *tmp3 false
+   195 sensor *tmp5 @unit @controller
+   196 jump *label152 notEqual *tmp5 @this
+-    * label *label143
+   197 label *label145
+   198 # "Function: def inRadius(in x, in y, in radius)"
+   199 sensor *tmp9 @unit @x
+ 
+   217 label *label152
+   218 ubind @eclipse
+   219 jump *label167 equal @unit null
+-    * label *label156
+   220 sensor *tmp3 @unit @controlled
+   221 jump *label160 equal *tmp3 false
+   222 sensor *tmp5 @unit @controller
+   223 jump *label167 notEqual *tmp5 @this
+-    * label *label158
+   224 label *label160
+   225 # "Function: def inRadius(in x, in y, in radius)"
+   226 sensor *tmp9 @unit @x
+ 
+   244 label *label167
+   245 ubind @mono
+   246 jump *label182 equal @unit null
+-    * label *label171
+   247 sensor *tmp3 @unit @controlled
+   248 jump *label175 equal *tmp3 false
+   249 sensor *tmp5 @unit @controller
+   250 jump *label182 notEqual *tmp5 @this
+-    * label *label173
+   251 label *label175
+   252 # "Function: def inRadius(in x, in y, in radius)"
+   253 sensor *tmp9 @unit @x
+ 
+   271 label *label182
+   272 ubind @poly
+   273 jump *label197 equal @unit null
+-    * label *label186
+   274 sensor *tmp3 @unit @controlled
+   275 jump *label190 equal *tmp3 false
+   276 sensor *tmp5 @unit @controller
+   277 jump *label197 notEqual *tmp5 @this
+-    * label *label188
+   278 label *label190
+   279 # "Function: def inRadius(in x, in y, in radius)"
+   280 sensor *tmp9 @unit @x
+ 
+   298 label *label197
+   299 ubind @mega
+   300 jump *label212 equal @unit null
+-    * label *label201
+   301 sensor *tmp3 @unit @controlled
+   302 jump *label205 equal *tmp3 false
+   303 sensor *tmp5 @unit @controller
+   304 jump *label212 notEqual *tmp5 @this
+-    * label *label203
+   305 label *label205
+   306 # "Function: def inRadius(in x, in y, in radius)"
+   307 sensor *tmp9 @unit @x
+ 
+   325 label *label212
+   326 ubind @quad
+   327 jump *label227 equal @unit null
+-    * label *label216
+   328 sensor *tmp3 @unit @controlled
+   329 jump *label220 equal *tmp3 false
+   330 sensor *tmp5 @unit @controller
+   331 jump *label227 notEqual *tmp5 @this
+-    * label *label218
+   332 label *label220
+   333 # "Function: def inRadius(in x, in y, in radius)"
+   334 sensor *tmp9 @unit @x
+ 
+   352 label *label227
+   353 ubind @oct
+   354 jump *label242 equal @unit null
+-    * label *label231
+   355 sensor *tmp3 @unit @controlled
+   356 jump *label235 equal *tmp3 false
+   357 sensor *tmp5 @unit @controller
+   358 jump *label242 notEqual *tmp5 @this
+-    * label *label233
+   359 label *label235
+   360 # "Function: def inRadius(in x, in y, in radius)"
+   361 sensor *tmp9 @unit @x
+ 
+   379 label *label242
+   380 ubind @avert
+   381 jump *label257 equal @unit null
+-    * label *label246
+   382 sensor *tmp3 @unit @controlled
+   383 jump *label250 equal *tmp3 false
+   384 sensor *tmp5 @unit @controller
+   385 jump *label257 notEqual *tmp5 @this
+-    * label *label248
+   386 label *label250
+   387 # "Function: def inRadius(in x, in y, in radius)"
+   388 sensor *tmp9 @unit @x
+ 
+   406 label *label257
+   407 ubind @obviate
+   408 jump *label272 equal @unit null
+-    * label *label261
+   409 sensor *tmp3 @unit @controlled
+   410 jump *label265 equal *tmp3 false
+   411 sensor *tmp5 @unit @controller
+   412 jump *label272 notEqual *tmp5 @this
+-    * label *label263
+   413 label *label265
+   414 # "Function: def inRadius(in x, in y, in radius)"
+   415 sensor *tmp9 @unit @x
+ 
+   433 label *label272
+   434 ubind @quell
+   435 jump *label287 equal @unit null
+-    * label *label276
+   436 sensor *tmp3 @unit @controlled
+   437 jump *label280 equal *tmp3 false
+   438 sensor *tmp5 @unit @controller
+   439 jump *label287 notEqual *tmp5 @this
+-    * label *label278
+   440 label *label280
+   441 # "Function: def inRadius(in x, in y, in radius)"
+   442 sensor *tmp9 @unit @x
+ 
+   460 label *label287
+   461 ubind @disrupt
+   462 jump *label302 equal @unit null
+-    * label *label291
+   463 sensor *tmp3 @unit @controlled
+   464 jump *label295 equal *tmp3 false
+   465 sensor *tmp5 @unit @controller
+   466 jump *label302 notEqual *tmp5 @this
+-    * label *label293
+   467 label *label295
+   468 # "Function: def inRadius(in x, in y, in radius)"
+   469 sensor *tmp9 @unit @x
+ 
+   487 label *label302
+   488 ubind @evoke
+   489 jump *label317 equal @unit null
+-    * label *label306
+   490 sensor *tmp3 @unit @controlled
+   491 jump *label310 equal *tmp3 false
+   492 sensor *tmp5 @unit @controller
+   493 jump *label317 notEqual *tmp5 @this
+-    * label *label308
+   494 label *label310
+   495 # "Function: def inRadius(in x, in y, in radius)"
+   496 sensor *tmp9 @unit @x
+ 
+   514 label *label317
+   515 ubind @incite
+   516 jump *label332 equal @unit null
+-    * label *label321
+   517 sensor *tmp3 @unit @controlled
+   518 jump *label325 equal *tmp3 false
+   519 sensor *tmp5 @unit @controller
+   520 jump *label332 notEqual *tmp5 @this
+-    * label *label323
+   521 label *label325
+   522 # "Function: def inRadius(in x, in y, in radius)"
+   523 sensor *tmp9 @unit @x
+ 
+   541 label *label332
+   542 ubind @emanate
+   543 jump *label347 equal @unit null
+-    * label *label336
+   544 sensor *tmp3 @unit @controlled
+   545 jump *label340 equal *tmp3 false
+   546 sensor *tmp5 @unit @controller
+   547 jump *label347 notEqual *tmp5 @this
+-    * label *label338
+   548 label *label340
+   549 # "Function: def inRadius(in x, in y, in radius)"
+   550 sensor *tmp9 @unit @x
+
+Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
++    0 label __start__
+     1 set x @thisx
+     2 set y @thisy
+     3 ubind @nova
+ 
+   541 label *label331
+   542 label *label332
+   543 ubind @emanate
+-    * jump *label347 equal @unit null
++  544 jump __start__ equal @unit null
+   545 sensor *tmp3 @unit @controlled
+   546 jump *label340 equal *tmp3 false
+   547 sensor *tmp5 @unit @controller
+-    * jump *label347 notEqual *tmp5 @this
++  548 jump __start__ notEqual *tmp5 @this
+   549 label *label340
+   550 # "Function: def inRadius(in x, in y, in radius)"
+   551 sensor *tmp9 @unit @x
+ 
+   557 ucontrol boost true
+   558 ucontrol flag 2435345345
+   559 ucontrol move x y
+-    * jump *label346 always
++  560 jump __start__ always
+   561 label *label343
+   562 sensor *tmp17 @unit @flag
+-    * jump *label344 equal *tmp17 0
++  563 jump __start__ equal *tmp17 0
+   564 ucontrol boost false
+   565 ucontrol flag 0
+   566 ucontrol unbind
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1:
+ 
+   564 ucontrol boost false
+   565 ucontrol flag 0
+   566 ucontrol unbind
+-    * label *label344
+-    * label *label346
+-    * label *label347
+   567 end
+
+Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
+ 
+   564 ucontrol boost false
+   565 ucontrol flag 0
+   566 ucontrol unbind
+-    * end
+
+Final code before resolving virtual instructions:
+
+        label __start__                                              param x = @thisx;
+    0:  set x @thisx                                                 ...
+    1:  set y @thisy                                                 param y = @thisy;
+    2:  ubind @nova                                                  ubind(type);
+    3:  jump *label47 equal @unit null                               if @unit == null then continue; end;
+    4:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+    5:  jump *label40 equal *tmp3 false                              ...
+    6:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+    7:  jump *label47 notEqual *tmp5 @this                           ...
+        label *label40                                               if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+    8:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+    9:  op sub *tmp10 x *tmp9                                        ...
+   10:  sensor *tmp11 @unit @y                                       ...
+   11:  op sub *tmp12 y *tmp11                                       ...
+   12:  op len *tmp13 *tmp10 *tmp12                                  ...
+   13:  jump *label43 lessThan *tmp13 8                              if !inRadius(x, y, RADIUS) then
+   14:  ucontrol boost true 0 0 0 0                                  boost(true);
+   15:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+   16:  ucontrol move x y 0 0 0                                      move(x, y);
+   17:  jump *label46 always 0 0                                     if !inRadius(x, y, RADIUS) then
+        label *label43                                               ...
+   18:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+   19:  jump *label44 equal *tmp17 0                                 ...
+   20:  ucontrol boost false 0 0 0 0                                 boost(false);
+   21:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   22:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label44                                               elsif @unit.@flag != 0 then
+        label *label46                                               if !inRadius(x, y, RADIUS) then
+        label *label47                                               for var type in
+   23:  ubind @pulsar                                                ubind(type);
+   24:  jump *label62 equal @unit null                               if @unit == null then continue; end;
+   25:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+   26:  jump *label55 equal *tmp3 false                              ...
+   27:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+   28:  jump *label62 notEqual *tmp5 @this                           ...
+        label *label55                                               if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+   29:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+   30:  op sub *tmp10 x *tmp9                                        ...
+   31:  sensor *tmp11 @unit @y                                       ...
+   32:  op sub *tmp12 y *tmp11                                       ...
+   33:  op len *tmp13 *tmp10 *tmp12                                  ...
+   34:  jump *label58 lessThan *tmp13 8                              if !inRadius(x, y, RADIUS) then
+   35:  ucontrol boost true 0 0 0 0                                  boost(true);
+   36:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+   37:  ucontrol move x y 0 0 0                                      move(x, y);
+   38:  jump *label61 always 0 0                                     if !inRadius(x, y, RADIUS) then
+        label *label58                                               ...
+   39:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+   40:  jump *label59 equal *tmp17 0                                 ...
+   41:  ucontrol boost false 0 0 0 0                                 boost(false);
+   42:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   43:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label59                                               elsif @unit.@flag != 0 then
+        label *label61                                               if !inRadius(x, y, RADIUS) then
+        label *label62                                               for var type in
+   44:  ubind @quasar                                                ubind(type);
+   45:  jump *label77 equal @unit null                               if @unit == null then continue; end;
+   46:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+   47:  jump *label70 equal *tmp3 false                              ...
+   48:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+   49:  jump *label77 notEqual *tmp5 @this                           ...
+        label *label70                                               if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+   50:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+   51:  op sub *tmp10 x *tmp9                                        ...
+   52:  sensor *tmp11 @unit @y                                       ...
+   53:  op sub *tmp12 y *tmp11                                       ...
+   54:  op len *tmp13 *tmp10 *tmp12                                  ...
+   55:  jump *label73 lessThan *tmp13 8                              if !inRadius(x, y, RADIUS) then
+   56:  ucontrol boost true 0 0 0 0                                  boost(true);
+   57:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+   58:  ucontrol move x y 0 0 0                                      move(x, y);
+   59:  jump *label76 always 0 0                                     if !inRadius(x, y, RADIUS) then
+        label *label73                                               ...
+   60:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+   61:  jump *label74 equal *tmp17 0                                 ...
+   62:  ucontrol boost false 0 0 0 0                                 boost(false);
+   63:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   64:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label74                                               elsif @unit.@flag != 0 then
+        label *label76                                               if !inRadius(x, y, RADIUS) then
+        label *label77                                               for var type in
+   65:  ubind @vela                                                  ubind(type);
+   66:  jump *label92 equal @unit null                               if @unit == null then continue; end;
+   67:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+   68:  jump *label85 equal *tmp3 false                              ...
+   69:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+   70:  jump *label92 notEqual *tmp5 @this                           ...
+        label *label85                                               if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+   71:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+   72:  op sub *tmp10 x *tmp9                                        ...
+   73:  sensor *tmp11 @unit @y                                       ...
+   74:  op sub *tmp12 y *tmp11                                       ...
+   75:  op len *tmp13 *tmp10 *tmp12                                  ...
+   76:  jump *label88 lessThan *tmp13 8                              if !inRadius(x, y, RADIUS) then
+   77:  ucontrol boost true 0 0 0 0                                  boost(true);
+   78:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+   79:  ucontrol move x y 0 0 0                                      move(x, y);
+   80:  jump *label91 always 0 0                                     if !inRadius(x, y, RADIUS) then
+        label *label88                                               ...
+   81:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+   82:  jump *label89 equal *tmp17 0                                 ...
+   83:  ucontrol boost false 0 0 0 0                                 boost(false);
+   84:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   85:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label89                                               elsif @unit.@flag != 0 then
+        label *label91                                               if !inRadius(x, y, RADIUS) then
+        label *label92                                               for var type in
+   86:  ubind @flare                                                 ubind(type);
+   87:  jump *label107 equal @unit null                              if @unit == null then continue; end;
+   88:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+   89:  jump *label100 equal *tmp3 false                             ...
+   90:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+   91:  jump *label107 notEqual *tmp5 @this                          ...
+        label *label100                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+   92:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+   93:  op sub *tmp10 x *tmp9                                        ...
+   94:  sensor *tmp11 @unit @y                                       ...
+   95:  op sub *tmp12 y *tmp11                                       ...
+   96:  op len *tmp13 *tmp10 *tmp12                                  ...
+   97:  jump *label103 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+   98:  ucontrol boost true 0 0 0 0                                  boost(true);
+   99:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  100:  ucontrol move x y 0 0 0                                      move(x, y);
+  101:  jump *label106 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label103                                              ...
+  102:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  103:  jump *label104 equal *tmp17 0                                ...
+  104:  ucontrol boost false 0 0 0 0                                 boost(false);
+  105:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  106:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label104                                              elsif @unit.@flag != 0 then
+        label *label106                                              if !inRadius(x, y, RADIUS) then
+        label *label107                                              for var type in
+  107:  ubind @horizon                                               ubind(type);
+  108:  jump *label122 equal @unit null                              if @unit == null then continue; end;
+  109:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  110:  jump *label115 equal *tmp3 false                             ...
+  111:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  112:  jump *label122 notEqual *tmp5 @this                          ...
+        label *label115                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  113:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  114:  op sub *tmp10 x *tmp9                                        ...
+  115:  sensor *tmp11 @unit @y                                       ...
+  116:  op sub *tmp12 y *tmp11                                       ...
+  117:  op len *tmp13 *tmp10 *tmp12                                  ...
+  118:  jump *label118 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  119:  ucontrol boost true 0 0 0 0                                  boost(true);
+  120:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  121:  ucontrol move x y 0 0 0                                      move(x, y);
+  122:  jump *label121 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label118                                              ...
+  123:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  124:  jump *label119 equal *tmp17 0                                ...
+  125:  ucontrol boost false 0 0 0 0                                 boost(false);
+  126:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  127:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label119                                              elsif @unit.@flag != 0 then
+        label *label121                                              if !inRadius(x, y, RADIUS) then
+        label *label122                                              for var type in
+  128:  ubind @zenith                                                ubind(type);
+  129:  jump *label137 equal @unit null                              if @unit == null then continue; end;
+  130:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  131:  jump *label130 equal *tmp3 false                             ...
+  132:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  133:  jump *label137 notEqual *tmp5 @this                          ...
+        label *label130                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  134:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  135:  op sub *tmp10 x *tmp9                                        ...
+  136:  sensor *tmp11 @unit @y                                       ...
+  137:  op sub *tmp12 y *tmp11                                       ...
+  138:  op len *tmp13 *tmp10 *tmp12                                  ...
+  139:  jump *label133 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  140:  ucontrol boost true 0 0 0 0                                  boost(true);
+  141:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  142:  ucontrol move x y 0 0 0                                      move(x, y);
+  143:  jump *label136 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label133                                              ...
+  144:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  145:  jump *label134 equal *tmp17 0                                ...
+  146:  ucontrol boost false 0 0 0 0                                 boost(false);
+  147:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  148:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label134                                              elsif @unit.@flag != 0 then
+        label *label136                                              if !inRadius(x, y, RADIUS) then
+        label *label137                                              for var type in
+  149:  ubind @antumbra                                              ubind(type);
+  150:  jump *label152 equal @unit null                              if @unit == null then continue; end;
+  151:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  152:  jump *label145 equal *tmp3 false                             ...
+  153:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  154:  jump *label152 notEqual *tmp5 @this                          ...
+        label *label145                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  155:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  156:  op sub *tmp10 x *tmp9                                        ...
+  157:  sensor *tmp11 @unit @y                                       ...
+  158:  op sub *tmp12 y *tmp11                                       ...
+  159:  op len *tmp13 *tmp10 *tmp12                                  ...
+  160:  jump *label148 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  161:  ucontrol boost true 0 0 0 0                                  boost(true);
+  162:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  163:  ucontrol move x y 0 0 0                                      move(x, y);
+  164:  jump *label151 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label148                                              ...
+  165:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  166:  jump *label149 equal *tmp17 0                                ...
+  167:  ucontrol boost false 0 0 0 0                                 boost(false);
+  168:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  169:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label149                                              elsif @unit.@flag != 0 then
+        label *label151                                              if !inRadius(x, y, RADIUS) then
+        label *label152                                              for var type in
+  170:  ubind @eclipse                                               ubind(type);
+  171:  jump *label167 equal @unit null                              if @unit == null then continue; end;
+  172:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  173:  jump *label160 equal *tmp3 false                             ...
+  174:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  175:  jump *label167 notEqual *tmp5 @this                          ...
+        label *label160                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  176:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  177:  op sub *tmp10 x *tmp9                                        ...
+  178:  sensor *tmp11 @unit @y                                       ...
+  179:  op sub *tmp12 y *tmp11                                       ...
+  180:  op len *tmp13 *tmp10 *tmp12                                  ...
+  181:  jump *label163 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  182:  ucontrol boost true 0 0 0 0                                  boost(true);
+  183:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  184:  ucontrol move x y 0 0 0                                      move(x, y);
+  185:  jump *label166 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label163                                              ...
+  186:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  187:  jump *label164 equal *tmp17 0                                ...
+  188:  ucontrol boost false 0 0 0 0                                 boost(false);
+  189:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  190:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label164                                              elsif @unit.@flag != 0 then
+        label *label166                                              if !inRadius(x, y, RADIUS) then
+        label *label167                                              for var type in
+  191:  ubind @mono                                                  ubind(type);
+  192:  jump *label182 equal @unit null                              if @unit == null then continue; end;
+  193:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  194:  jump *label175 equal *tmp3 false                             ...
+  195:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  196:  jump *label182 notEqual *tmp5 @this                          ...
+        label *label175                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  197:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  198:  op sub *tmp10 x *tmp9                                        ...
+  199:  sensor *tmp11 @unit @y                                       ...
+  200:  op sub *tmp12 y *tmp11                                       ...
+  201:  op len *tmp13 *tmp10 *tmp12                                  ...
+  202:  jump *label178 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  203:  ucontrol boost true 0 0 0 0                                  boost(true);
+  204:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  205:  ucontrol move x y 0 0 0                                      move(x, y);
+  206:  jump *label181 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label178                                              ...
+  207:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  208:  jump *label179 equal *tmp17 0                                ...
+  209:  ucontrol boost false 0 0 0 0                                 boost(false);
+  210:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  211:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label179                                              elsif @unit.@flag != 0 then
+        label *label181                                              if !inRadius(x, y, RADIUS) then
+        label *label182                                              for var type in
+  212:  ubind @poly                                                  ubind(type);
+  213:  jump *label197 equal @unit null                              if @unit == null then continue; end;
+  214:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  215:  jump *label190 equal *tmp3 false                             ...
+  216:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  217:  jump *label197 notEqual *tmp5 @this                          ...
+        label *label190                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  218:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  219:  op sub *tmp10 x *tmp9                                        ...
+  220:  sensor *tmp11 @unit @y                                       ...
+  221:  op sub *tmp12 y *tmp11                                       ...
+  222:  op len *tmp13 *tmp10 *tmp12                                  ...
+  223:  jump *label193 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  224:  ucontrol boost true 0 0 0 0                                  boost(true);
+  225:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  226:  ucontrol move x y 0 0 0                                      move(x, y);
+  227:  jump *label196 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label193                                              ...
+  228:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  229:  jump *label194 equal *tmp17 0                                ...
+  230:  ucontrol boost false 0 0 0 0                                 boost(false);
+  231:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  232:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label194                                              elsif @unit.@flag != 0 then
+        label *label196                                              if !inRadius(x, y, RADIUS) then
+        label *label197                                              for var type in
+  233:  ubind @mega                                                  ubind(type);
+  234:  jump *label212 equal @unit null                              if @unit == null then continue; end;
+  235:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  236:  jump *label205 equal *tmp3 false                             ...
+  237:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  238:  jump *label212 notEqual *tmp5 @this                          ...
+        label *label205                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  239:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  240:  op sub *tmp10 x *tmp9                                        ...
+  241:  sensor *tmp11 @unit @y                                       ...
+  242:  op sub *tmp12 y *tmp11                                       ...
+  243:  op len *tmp13 *tmp10 *tmp12                                  ...
+  244:  jump *label208 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  245:  ucontrol boost true 0 0 0 0                                  boost(true);
+  246:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  247:  ucontrol move x y 0 0 0                                      move(x, y);
+  248:  jump *label211 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label208                                              ...
+  249:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  250:  jump *label209 equal *tmp17 0                                ...
+  251:  ucontrol boost false 0 0 0 0                                 boost(false);
+  252:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  253:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label209                                              elsif @unit.@flag != 0 then
+        label *label211                                              if !inRadius(x, y, RADIUS) then
+        label *label212                                              for var type in
+  254:  ubind @quad                                                  ubind(type);
+  255:  jump *label227 equal @unit null                              if @unit == null then continue; end;
+  256:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  257:  jump *label220 equal *tmp3 false                             ...
+  258:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  259:  jump *label227 notEqual *tmp5 @this                          ...
+        label *label220                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  260:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  261:  op sub *tmp10 x *tmp9                                        ...
+  262:  sensor *tmp11 @unit @y                                       ...
+  263:  op sub *tmp12 y *tmp11                                       ...
+  264:  op len *tmp13 *tmp10 *tmp12                                  ...
+  265:  jump *label223 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  266:  ucontrol boost true 0 0 0 0                                  boost(true);
+  267:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  268:  ucontrol move x y 0 0 0                                      move(x, y);
+  269:  jump *label226 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label223                                              ...
+  270:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  271:  jump *label224 equal *tmp17 0                                ...
+  272:  ucontrol boost false 0 0 0 0                                 boost(false);
+  273:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  274:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label224                                              elsif @unit.@flag != 0 then
+        label *label226                                              if !inRadius(x, y, RADIUS) then
+        label *label227                                              for var type in
+  275:  ubind @oct                                                   ubind(type);
+  276:  jump *label242 equal @unit null                              if @unit == null then continue; end;
+  277:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  278:  jump *label235 equal *tmp3 false                             ...
+  279:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  280:  jump *label242 notEqual *tmp5 @this                          ...
+        label *label235                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  281:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  282:  op sub *tmp10 x *tmp9                                        ...
+  283:  sensor *tmp11 @unit @y                                       ...
+  284:  op sub *tmp12 y *tmp11                                       ...
+  285:  op len *tmp13 *tmp10 *tmp12                                  ...
+  286:  jump *label238 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  287:  ucontrol boost true 0 0 0 0                                  boost(true);
+  288:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  289:  ucontrol move x y 0 0 0                                      move(x, y);
+  290:  jump *label241 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label238                                              ...
+  291:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  292:  jump *label239 equal *tmp17 0                                ...
+  293:  ucontrol boost false 0 0 0 0                                 boost(false);
+  294:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  295:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label239                                              elsif @unit.@flag != 0 then
+        label *label241                                              if !inRadius(x, y, RADIUS) then
+        label *label242                                              for var type in
+  296:  ubind @avert                                                 ubind(type);
+  297:  jump *label257 equal @unit null                              if @unit == null then continue; end;
+  298:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  299:  jump *label250 equal *tmp3 false                             ...
+  300:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  301:  jump *label257 notEqual *tmp5 @this                          ...
+        label *label250                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  302:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  303:  op sub *tmp10 x *tmp9                                        ...
+  304:  sensor *tmp11 @unit @y                                       ...
+  305:  op sub *tmp12 y *tmp11                                       ...
+  306:  op len *tmp13 *tmp10 *tmp12                                  ...
+  307:  jump *label253 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  308:  ucontrol boost true 0 0 0 0                                  boost(true);
+  309:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  310:  ucontrol move x y 0 0 0                                      move(x, y);
+  311:  jump *label256 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label253                                              ...
+  312:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  313:  jump *label254 equal *tmp17 0                                ...
+  314:  ucontrol boost false 0 0 0 0                                 boost(false);
+  315:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  316:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label254                                              elsif @unit.@flag != 0 then
+        label *label256                                              if !inRadius(x, y, RADIUS) then
+        label *label257                                              for var type in
+  317:  ubind @obviate                                               ubind(type);
+  318:  jump *label272 equal @unit null                              if @unit == null then continue; end;
+  319:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  320:  jump *label265 equal *tmp3 false                             ...
+  321:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  322:  jump *label272 notEqual *tmp5 @this                          ...
+        label *label265                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  323:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  324:  op sub *tmp10 x *tmp9                                        ...
+  325:  sensor *tmp11 @unit @y                                       ...
+  326:  op sub *tmp12 y *tmp11                                       ...
+  327:  op len *tmp13 *tmp10 *tmp12                                  ...
+  328:  jump *label268 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  329:  ucontrol boost true 0 0 0 0                                  boost(true);
+  330:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  331:  ucontrol move x y 0 0 0                                      move(x, y);
+  332:  jump *label271 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label268                                              ...
+  333:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  334:  jump *label269 equal *tmp17 0                                ...
+  335:  ucontrol boost false 0 0 0 0                                 boost(false);
+  336:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  337:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label269                                              elsif @unit.@flag != 0 then
+        label *label271                                              if !inRadius(x, y, RADIUS) then
+        label *label272                                              for var type in
+  338:  ubind @quell                                                 ubind(type);
+  339:  jump *label287 equal @unit null                              if @unit == null then continue; end;
+  340:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  341:  jump *label280 equal *tmp3 false                             ...
+  342:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  343:  jump *label287 notEqual *tmp5 @this                          ...
+        label *label280                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  344:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  345:  op sub *tmp10 x *tmp9                                        ...
+  346:  sensor *tmp11 @unit @y                                       ...
+  347:  op sub *tmp12 y *tmp11                                       ...
+  348:  op len *tmp13 *tmp10 *tmp12                                  ...
+  349:  jump *label283 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  350:  ucontrol boost true 0 0 0 0                                  boost(true);
+  351:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  352:  ucontrol move x y 0 0 0                                      move(x, y);
+  353:  jump *label286 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label283                                              ...
+  354:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  355:  jump *label284 equal *tmp17 0                                ...
+  356:  ucontrol boost false 0 0 0 0                                 boost(false);
+  357:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  358:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label284                                              elsif @unit.@flag != 0 then
+        label *label286                                              if !inRadius(x, y, RADIUS) then
+        label *label287                                              for var type in
+  359:  ubind @disrupt                                               ubind(type);
+  360:  jump *label302 equal @unit null                              if @unit == null then continue; end;
+  361:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  362:  jump *label295 equal *tmp3 false                             ...
+  363:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  364:  jump *label302 notEqual *tmp5 @this                          ...
+        label *label295                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  365:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  366:  op sub *tmp10 x *tmp9                                        ...
+  367:  sensor *tmp11 @unit @y                                       ...
+  368:  op sub *tmp12 y *tmp11                                       ...
+  369:  op len *tmp13 *tmp10 *tmp12                                  ...
+  370:  jump *label298 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  371:  ucontrol boost true 0 0 0 0                                  boost(true);
+  372:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  373:  ucontrol move x y 0 0 0                                      move(x, y);
+  374:  jump *label301 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label298                                              ...
+  375:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  376:  jump *label299 equal *tmp17 0                                ...
+  377:  ucontrol boost false 0 0 0 0                                 boost(false);
+  378:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  379:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label299                                              elsif @unit.@flag != 0 then
+        label *label301                                              if !inRadius(x, y, RADIUS) then
+        label *label302                                              for var type in
+  380:  ubind @evoke                                                 ubind(type);
+  381:  jump *label317 equal @unit null                              if @unit == null then continue; end;
+  382:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  383:  jump *label310 equal *tmp3 false                             ...
+  384:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  385:  jump *label317 notEqual *tmp5 @this                          ...
+        label *label310                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  386:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  387:  op sub *tmp10 x *tmp9                                        ...
+  388:  sensor *tmp11 @unit @y                                       ...
+  389:  op sub *tmp12 y *tmp11                                       ...
+  390:  op len *tmp13 *tmp10 *tmp12                                  ...
+  391:  jump *label313 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  392:  ucontrol boost true 0 0 0 0                                  boost(true);
+  393:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  394:  ucontrol move x y 0 0 0                                      move(x, y);
+  395:  jump *label316 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label313                                              ...
+  396:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  397:  jump *label314 equal *tmp17 0                                ...
+  398:  ucontrol boost false 0 0 0 0                                 boost(false);
+  399:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  400:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label314                                              elsif @unit.@flag != 0 then
+        label *label316                                              if !inRadius(x, y, RADIUS) then
+        label *label317                                              for var type in
+  401:  ubind @incite                                                ubind(type);
+  402:  jump *label332 equal @unit null                              if @unit == null then continue; end;
+  403:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  404:  jump *label325 equal *tmp3 false                             ...
+  405:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  406:  jump *label332 notEqual *tmp5 @this                          ...
+        label *label325                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  407:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  408:  op sub *tmp10 x *tmp9                                        ...
+  409:  sensor *tmp11 @unit @y                                       ...
+  410:  op sub *tmp12 y *tmp11                                       ...
+  411:  op len *tmp13 *tmp10 *tmp12                                  ...
+  412:  jump *label328 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  413:  ucontrol boost true 0 0 0 0                                  boost(true);
+  414:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  415:  ucontrol move x y 0 0 0                                      move(x, y);
+  416:  jump *label331 always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label328                                              ...
+  417:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  418:  jump *label329 equal *tmp17 0                                ...
+  419:  ucontrol boost false 0 0 0 0                                 boost(false);
+  420:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  421:  ucontrol unbind 0 0 0 0 0                                    unbind();
+        label *label329                                              elsif @unit.@flag != 0 then
+        label *label331                                              if !inRadius(x, y, RADIUS) then
+        label *label332                                              for var type in
+  422:  ubind @emanate                                               ubind(type);
+  423:  jump __start__ equal @unit null                              if @unit == null then continue; end;
+  424:  sensor *tmp3 @unit @controlled                               if @unit.@controlled then
+  425:  jump *label340 equal *tmp3 false                             ...
+  426:  sensor *tmp5 @unit @controller                               if @unit.@controller != @this then continue; end;
+  427:  jump __start__ notEqual *tmp5 @this                          ...
+        label *label340                                              if @unit.@controlled then
+        # "Function: def inRadius(in x, in y, in radius)"            if !inRadius(x, y, RADIUS) then
+  428:  sensor *tmp9 @unit @x                                        len(x - @unit.@x, y - @unit.@y) < radius;
+  429:  op sub *tmp10 x *tmp9                                        ...
+  430:  sensor *tmp11 @unit @y                                       ...
+  431:  op sub *tmp12 y *tmp11                                       ...
+  432:  op len *tmp13 *tmp10 *tmp12                                  ...
+  433:  jump *label343 lessThan *tmp13 8                             if !inRadius(x, y, RADIUS) then
+  434:  ucontrol boost true 0 0 0 0                                  boost(true);
+  435:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
+  436:  ucontrol move x y 0 0 0                                      move(x, y);
+  437:  jump __start__ always 0 0                                    if !inRadius(x, y, RADIUS) then
+        label *label343                                              ...
+  438:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
+  439:  jump __start__ equal *tmp17 0                                ...
+  440:  ucontrol boost false 0 0 0 0                                 boost(false);
+  441:  ucontrol flag 0 0 0 0 0                                      flag(0);
+  442:  ucontrol unbind 0 0 0 0 0                                    unbind();
+
+
+Code size and number of instantiations by function:
+  Size  Times  AvgSize  Function
+   338     1x    338,0  <no function>
+   105    21x      5,0  def inRadius(in x, in y, in radius)
+
+Performance: parsed in 127 ms, compiled in 199 ms, optimized in 313 ms, run in 10 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
+
+Program output (3 steps):
+The program didn't generate any output.
+Execution exception at instruction 2: ubind @nova:
+Instruction not supported by Mindcode emulator.
+(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

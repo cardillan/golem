@@ -1,26 +1,26 @@
    466 instructions before optimizations.
-    19 instructions eliminated by Temp Variables Elimination.
+    20 instructions eliminated by Temp Variables Elimination (2 passes, 7 iterations).
     73 instructions eliminated by Dead Code Elimination (7 iterations).
      7 instructions eliminated by Jump Normalization (2 passes, 5 iterations).
     20 instructions eliminated by Jump Optimization (5 iterations).
     34 instructions eliminated by Single Step Elimination (3 passes, 8 iterations).
-    32 instructions eliminated by Data Flow Optimization (4 passes, 13 iterations).
+    31 instructions eliminated by Data Flow Optimization (4 passes, 12 iterations).
      1 instructions added by Loop Optimization (3 iterations).
      1 loops improved by Loop Optimization.
     91 instructions added by Loop Unrolling (5 iterations).
      1 loops unrolled by Loop Unrolling.
      4 instructions eliminated by Jump Straightening (5 iterations).
-    10 instructions updated by JumpThreading.
+    10 instructions updated by Jump Threading.
     18 instructions eliminated by Unreachable Code Elimination (2 iterations).
     26 instructions eliminated by Print Merging.
    325 instructions after optimizations.
 
 Pass 1: speed optimization selection (cost limit 697):
-  * Replicate loop condition at line 30:1                        cost     1, benefit       25.0, efficiency       25.0 (+1 instructions)
-    Unroll iteration loop at line 93:9                           cost   117, benefit      375.0, efficiency        3.2
+  * Replicate loop condition at line 30:1                        size    +1, benefit       25.0, efficiency     25.000 (+1 instructions)
+    Unroll iteration loop at line 93:9                           size  +117, benefit      375.0, efficiency      3.205
 
 Pass 1: speed optimization selection (cost limit 696):
-  * Unroll iteration loop at line 93:9                           cost   117, benefit      375.0, efficiency        3.2 (+87 instructions)
+  * Unroll iteration loop at line 93:9                           size  +117, benefit      375.0, efficiency      3.205 (+87 instructions)
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-49 instructions):
  
@@ -506,7 +506,7 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-19 ins
    207 label *label53
 -    * ulocate building core false @copper *tmp62 *tmp63 *tmp64 *tmp61
 -    * set .CORE *tmp61
-+  208 ulocate building core false @copper 0 0 0 .CORE
++  208 ulocate building core false @copper *tmp62 *tmp63 *tmp64 .CORE
    209 label *label54
    210 op equal *tmp65 .CORE null
    211 jump *label53 notEqual *tmp65 false
@@ -679,7 +679,7 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-20 ins
    173 label *label51
  
    199 label *label53
-   200 ulocate building core false @copper 0 0 0 .CORE
+   200 ulocate building core false @copper *tmp62 *tmp63 *tmp64 .CORE
    201 label *label54
 -    * op equal *tmp65 .CORE null
 -    * jump *label53 notEqual *tmp65 false
@@ -2003,20 +2003,7 @@ Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-
    510 jump *label110 equal *tmp149 false
    511 end
 
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-1 instructions):
- 
-   455 label *label94
-   456 print .MSG
-   457 label *label95
--    * set *tmp76 @unit
-+  458 set .UNIT @unit
-   459 label *label61
--    * set .UNIT *tmp76
-   460 op equal *tmp140 :processUnit:state 2
-   461 sensor *tmp141 .VAULT @thorium
-   462 op greaterThanEq *tmp142 *tmp141 500
-
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2 (-3 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-3 instructions):
  
    255 jump *label42 always
    256 ubind null
@@ -2254,7 +2241,7 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
  
    240 printflush message1
    241 label *label53
-   242 ulocate building core false @copper 0 0 0 .CORE
+   242 ulocate building core false @copper *tmp62 *tmp63 *tmp64 .CORE
 -    * label *label54
    243 jump *label53 equal .CORE null
 -    * label *label55
@@ -2328,55 +2315,55 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
  
    386 print .MSG
    387 label *label95
-   388 set .UNIT @unit
+   388 set *tmp76 @unit
 -    * label *label61
-   389 op equal *tmp140 :processUnit:state 2
-   390 sensor *tmp141 .VAULT @thorium
-   391 op greaterThanEq *tmp142 *tmp141 500
+   389 set .UNIT *tmp76
+   390 op equal *tmp140 :processUnit:state 2
+   391 sensor *tmp141 .VAULT @thorium
  
-   416 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
-   417 label *label107
-   418 ubind UNIT_TYPE
+   417 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
+   418 label *label107
+   419 ubind UNIT_TYPE
 -    * label *label104
-   419 op notEqual *tmp159 @unit :areUnitsAvailable.2:firstUnit
-   420 sensor *tmp160 :areUnitsAvailable.2:firstUnit @dead
-   421 op equal *tmp161 *tmp160 0
-   422 op land *tmp162 *tmp159 *tmp161
-   423 jump *label103 notEqual *tmp162 false
+   420 op notEqual *tmp159 @unit :areUnitsAvailable.2:firstUnit
+   421 sensor *tmp160 :areUnitsAvailable.2:firstUnit @dead
+   422 op equal *tmp161 *tmp160 0
+   423 op land *tmp162 *tmp159 *tmp161
+   424 jump *label103 notEqual *tmp162 false
 -    * label *label105
-   424 label *label101
+   425 label *label101
 -    * label *label102
-   425 jump *label108 always
-   426 print UNIT_TYPE
-   427 print " "
+   426 jump *label108 always
+   427 print UNIT_TYPE
+   428 print " "
  
-   429 print :areUnitsAvailable.2:occupied
-   430 print "\n"
-   431 label *label108
+   430 print :areUnitsAvailable.2:occupied
+   431 print "\n"
+   432 label *label108
 -    * label *label109
-   432 set *tmp149 false
-   433 label *label100
-   434 jump *label110 equal *tmp149 false
-   435 end
-   436 label *label110
+   433 set *tmp149 false
+   434 label *label100
+   435 jump *label110 equal *tmp149 false
+   436 end
+   437 label *label110
 -    * label *label111
-   437 op add :unitCheck @time 5000
-   438 label *label98
+   438 op add :unitCheck @time 5000
+   439 label *label98
 -    * label *label99
-   439 label *label97
-   440 label *label59
+   440 label *label97
+   441 label *label59
 -    * label *label60
-   441 op sub *tmp166 @time :start
-   442 op floor *tmp167 *tmp166
-   443 print "\n"
+   442 op sub *tmp166 @time :start
+   443 op floor *tmp167 *tmp166
+   444 print "\n"
  
-   446 print " "
-   447 print "ms"
-   448 printflush message1
+   447 print " "
+   448 print "ms"
+   449 printflush message1
 -    * label *label57
-   449 jump *label56 always
+   450 jump *label56 always
 -    * label *label58
-   450 end
+   451 end
 
 Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-4 instructions):
  
@@ -2541,14 +2528,14 @@ Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
    348 set :processUnit:state 2
    349 label *label92
  
-   394 set :areUnitsAvailable.2:occupied 0
-   395 ubind UNIT_TYPE
-   396 set :areUnitsAvailable.2:firstUnit @unit
+   395 set :areUnitsAvailable.2:occupied 0
+   396 ubind UNIT_TYPE
+   397 set :areUnitsAvailable.2:firstUnit @unit
 -    * jump *label101 equal :areUnitsAvailable.2:firstUnit null
-+  397 jump *label108 equal :areUnitsAvailable.2:firstUnit null
-   398 label *label103
-   399 sensor *tmp153 @unit @controlled
-   400 op equal *tmp154 *tmp153 0
++  398 jump *label108 equal :areUnitsAvailable.2:firstUnit null
+   399 label *label103
+   400 sensor *tmp153 @unit @controlled
+   401 op equal *tmp154 *tmp153 0
 
 Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-18 instructions):
  
@@ -2638,31 +2625,31 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
    335 label *label90
    336 ucontrol approach .VAULT_X .VAULT_Y 6
  
-   388 jump *label106 equal *tmp157 false
-   389 set *tmp149 true
-   390 jump *label100 always
+   389 jump *label106 equal *tmp157 false
+   390 set *tmp149 true
+   391 jump *label100 always
 -    * jump *label107 always
-   391 label *label106
-   392 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
-   393 label *label107
+   392 label *label106
+   393 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
+   394 label *label107
  
-   397 op equal *tmp161 *tmp160 0
-   398 op land *tmp162 *tmp159 *tmp161
-   399 jump *label103 notEqual *tmp162 false
+   398 op equal *tmp161 *tmp160 0
+   399 op land *tmp162 *tmp159 *tmp161
+   400 jump *label103 notEqual *tmp162 false
 -    * label *label101
-   400 jump *label108 always
+   401 jump *label108 always
 -    * print UNIT_TYPE
 -    * print " "
 -    * print "occupied: "
 -    * print :areUnitsAvailable.2:occupied
 -    * print "\n"
-   401 label *label108
-   402 set *tmp149 false
-   403 label *label100
+   402 label *label108
+   403 set *tmp149 false
+   404 label *label100
  
-   417 print "ms"
-   418 printflush message1
-   419 jump *label56 always
+   418 print "ms"
+   419 printflush message1
+   420 jump *label56 always
 -    * end
 
 Modifications by Jumps phase, Dead Code Elimination, pass 4, iteration 1:
@@ -2707,23 +2694,44 @@ Modifications by Jumps phase, Dead Code Elimination, pass 4, iteration 1:
    176 op notEqual *tmp32 @unit :areUnitsAvailable.1:firstUnit
    177 sensor *tmp33 :areUnitsAvailable.1:firstUnit @dead
  
-   385 jump *label100 always
-   386 label *label106
-   387 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
+   386 jump *label100 always
+   387 label *label106
+   388 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
 -    * label *label107
-   388 ubind UNIT_TYPE
-   389 op notEqual *tmp159 @unit :areUnitsAvailable.2:firstUnit
-   390 sensor *tmp160 :areUnitsAvailable.2:firstUnit @dead
+   389 ubind UNIT_TYPE
+   390 op notEqual *tmp159 @unit :areUnitsAvailable.2:firstUnit
+   391 sensor *tmp160 :areUnitsAvailable.2:firstUnit @dead
 
 Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
  
-   391 op equal *tmp161 *tmp160 0
-   392 op land *tmp162 *tmp159 *tmp161
-   393 jump *label103 notEqual *tmp162 false
+   392 op equal *tmp161 *tmp160 0
+   393 op land *tmp162 *tmp159 *tmp161
+   394 jump *label103 notEqual *tmp162 false
 -    * jump *label108 always
-   394 label *label108
-   395 set *tmp149 false
-   396 label *label100
+   395 label *label108
+   396 set *tmp149 false
+   397 label *label100
+
+Modifications by Final phase, Temp Variables Elimination, iteration 1 (-1 instructions):
+ 
+   218 print "[gold]Locating core..."
+   219 printflush message1
+   220 label *label53
+-    * ulocate building core false @copper *tmp62 *tmp63 *tmp64 .CORE
++  221 ulocate building core false @copper 0 0 0 .CORE
+   222 jump *label53 equal .CORE null
+   223 sensor .CORE_X .CORE @x
+   224 sensor .CORE_Y .CORE @y
+ 
+   357 label *label94
+   358 print .MSG
+   359 label *label95
+-    * set *tmp76 @unit
+-    * set .UNIT *tmp76
++  360 set .UNIT @unit
+   361 op equal *tmp140 :processUnit:state 2
+   362 sensor *tmp141 .VAULT @thorium
+   363 op greaterThanEq *tmp142 *tmp141 500
 
 Modifications by Final phase, Print Merging, iteration 1 (-26 instructions):
  
@@ -3193,7 +3201,7 @@ Final code before resolving virtual instructions:
         label *label94                                               ...
   281:  print .MSG                                                   print(MSG);
         label *label95                                               if distance >= 0 then
-  282:  set .UNIT @unit                                              return @unit;
+  282:  set .UNIT @unit                                              UNIT = processUnit(UNIT, out state);
   283:  op equal *tmp140 :processUnit:state 2                        if state == S_APPROACH_SRC and VAULT.sensor(ITEM) >= 500 then
   284:  sensor *tmp141 .VAULT @thorium                               ...
   285:  op greaterThanEq *tmp142 *tmp141 500                         ...
@@ -3246,10 +3254,19 @@ Final code before resolving virtual instructions:
   323:  jump *label56 always 0 0                                     while true do
 
 
-Performance: parsed in 198 ms, compiled in 219 ms, optimized in 596 ms, run in 9 ms.
+Code size and number of instantiations by function:
+  Size  Times  AvgSize  Function
+   136     6x     22,7  inline def areUnitsAvailable(in type, in output)
+    69     1x     69,0  inline def processUnit(in unit, out state)
+    59     1x     59,0  <no function>
+    32     2x     16,0  inline def rebindUnit(in currentUnit)
+    27     1x     27,0  inline def chooseUnitType()
+     2     1x      2,0  inline def acquireUnit(in currentUnit)
 
-Compiled mlog code was sent to Mlog Watcher.
-  Mlog Watcher: success.
+Performance: parsed in 234 ms, compiled in 303 ms, optimized in 535 ms, run in 16 ms.
+Error connecting to Mlog Watcher: Connection refused: connect
+  - make sure Mindustry with active Mlog Watcher mod is running
+  - verify Mlog Watcher listens on port 9992
 
 Program output (6 steps):
 The program didn't generate any output.

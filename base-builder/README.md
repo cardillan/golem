@@ -11,7 +11,7 @@ Prerequisites:
 * A single Shard core must be present on the map.
 * 13x13 area centered on the core must be empty (allow buildings to be built).
 * The terrain must not block the multiplicative reconstructor's exit. 
-* Copper, lead, coal, titanium and thorium ore, and a sand tile, must be present on the map. The titanium and thorium ore must allow a drill to be built on them, and the area around thorium must allow building required infrastructure.
+* Copper, lead, coal, titanium and thorium ore, and a sand tile or scrap ore, must be present on the map. The titanium and thorium ore must allow a drill to be built on them, and the area around thorium must allow building required infrastructure.
 * If the Time Control mod is used, speeds higher than 8x may lead to failures (the processors do not keep up, at speeds greater than 16x it seems that even mining gets broken).
 
 The world processor in the schematic sets up a single poly near the core.
@@ -37,7 +37,7 @@ Brief description of the processors:
 * Microprocessors (top to bottom, left to right):
   * [Mono Controller](MonoController.mnd): controls the monos. Monos mine the most needed resource (copper, lead or sand/scrap) depending on the core stockpile and the next planned building.  
   * [Flare Controller](FlareController.mnd): controls the flares. Flares are used to fetch titanium from the drills (each flare serves one titanium drill, for simplicity).
-  * [Resource measurement](Measurement.mnd): measures the resources stored in the core relative to the target and stores the information in the right-hand memory bank.
+  * [Resource Measurement](Measurement.mnd): measures the resources stored in the core relative to the target and stores the information in the right-hand memory bank.
   * [Poly Controller](PolyController.mnd): controls the polys (except the original one). Polys mine coal exclusively.
   * Timer: measures time by counting instruction executions. Allows measuring time when the Time Control mod is used. Consists of a single `op add time time 1` instruction.
   * [Core Controller](CoreController.mnd): controls blocks in the core base, managing resource production. (The actual processor doing this is built in the base and uses this processor only for copying the logic from it).

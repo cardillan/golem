@@ -21,7 +21,7 @@ const capacity = 28;
 noinit var
     core, coreX, coreY, builder;
 
-remote noinit var
+export noinit var
     powerTarget,
     titaniumDrill,
     thoriumBattery,
@@ -40,14 +40,14 @@ noinit mlog(@metaglass.@name)   var targetMetaglass;
 noinit mlog(@thorium.@name)     var targetThorium;
 noinit                          var noTarget;
 
-remote var
+export var
     leadSurplus = 0,
     graphiteSurplus = 20,
     siliconSurplus = 20,
     siliconMonoSurplus = 0,
     metaglassSurplus = 20;
 
-external bank1[511] logPosition = 511;
+external(bank1[511]) logPosition = 511;
 
 // SUPPLY OPERATIONS
 
@@ -172,7 +172,7 @@ inline void supplyBase2()
     end;
 end;
 
-remote void supplyBase()
+export void supplyBase()
     monoController.sandTarget = max(0, siliconMonoSurplus + targetSilicon - core.@silicon);
 
     if thoriumContainer then
@@ -197,7 +197,7 @@ def targetMet()
     return true;
 end;
 
-remote void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
+export void meetTarget(block, copper, lead, graphite, silicon, titanium, metaglass, thorium, forBuild, isNoTarget)
     // Update display
     var count = 0;
     for var t in copper, lead, graphite, silicon, titanium, metaglass, thorium do count += sign(t); end;
@@ -241,7 +241,7 @@ remote void meetTarget(block, copper, lead, graphite, silicon, titanium, metagla
     end;
 end;
 
-remote void meetTargetCfg(cfg, forBuild)
+export void meetTargetCfg(cfg, forBuild)
     var type, cu, pb, gr, si, ti, mg, th;
     unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th);
     meetTarget(type, cu, pb, gr, si, ti, mg, th, forBuild, false);
@@ -257,7 +257,7 @@ def buildBlock(block, x, y, copper, lead, graphite, silicon, titanium, metaglass
     return built;
 end;
 
-remote def buildRemoteBlock(cfg, x, y)
+export def buildRemoteBlock(cfg, x, y)
     if x + y > 0 then
         var type, cu, pb, gr, si, ti, mg, th, rotation, index;
         unpackCfg(cfg, out type, , , out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
@@ -267,7 +267,7 @@ remote def buildRemoteBlock(cfg, x, y)
 end;
 
 // Builds a block
-remote def buildBlockFromCfg(cfg, config)
+export def buildBlockFromCfg(cfg, config)
     var type, x, y, cu, pb, gr, si, ti, mg, th, rotation, index;
     unpackCfg(cfg, out type, out x, out y, out cu, out pb, out gr, out si, out ti, out mg, out th, out rotation, , out index);
     //display.nextBuildIndex = index;
@@ -280,16 +280,7 @@ remote def buildBlockFromCfg(cfg, config)
     return building;
 end;
 
-noinit remote var ERROR_FOUND_BLOCK, ERROR_FOUND_TYPE, ERROR_X, ERROR_Y;
-
-inline void buildError(text, block, type, x, y);
-    ERROR = text;
-    ERROR_FOUND_BLOCK = block;
-    ERROR_FOUND_TYPE = type;
-    ERROR_X = x;
-    ERROR_Y = y;
-    stopProcessor();
-end;
+noinit export var ERROR_FOUND_BLOCK, ERROR_FOUND_TYPE, ERROR_X, ERROR_Y;
 
 inline void log(encodedId)
     bank1[--logPosition] = encodedId + TIME * 1000;
@@ -303,7 +294,7 @@ inline void logBlock(block, index)
     end;
 end;
 
-remote def buildBlockAt(block, x, y, rotation, config, index)
+export def buildBlockAt(block, x, y, rotation, config, index)
     moveTo(x, y);
 
     var type;
@@ -311,7 +302,7 @@ remote def buildBlockAt(block, x, y, rotation, config, index)
     if building != null then
         // The block is already there
         if type == block then return building; end;
-        buildError("Cannot build at position", block, type, x, y);
+        error("Cannot build $block at position ($x, $y): $type is already there.");
     end;
 
     build(x, y, block, rotation, config);
@@ -321,7 +312,7 @@ remote def buildBlockAt(block, x, y, rotation, config, index)
         build(x, y, block, rotation, config);
         building = getBlock(x, y, out type);
         if building == null and !success then
-            buildError("Error while building", block, type, x, y);
+            error("Error while building $block at $x, $y: $type was found.");
         else
             success = true;
         end;
@@ -344,7 +335,7 @@ remote def buildBlockAt(block, x, y, rotation, config, index)
     return building;
 end;
 
-remote def buildFirstTitaniumDrillAt(x, y)
+export def buildFirstTitaniumDrillAt(x, y)
     var drill = buildBlockAt(@pneumatic-drill, x, y, 0, null, -1);
     flareController.addTitaniumDrill(drill);
     return drill;
@@ -398,7 +389,7 @@ def buildTitaniumDrill(x, y, in out count, in out tiles)
     return 0;
 end;
 
-remote void buildTitaniumDrills(current)
+export void buildTitaniumDrills(current)
     // The base is already autonomous. The drill needs copper and graphite.
     // Both are provided in abundance at this moment
 

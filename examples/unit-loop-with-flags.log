@@ -1,12 +1,12 @@
     68 instructions before optimizations.
-     4 instructions eliminated by Temp Variables Elimination.
-    15 instructions eliminated by Dead Code Elimination (4 iterations).
-     1 instructions eliminated by Jump Normalization (3 iterations).
-     5 instructions eliminated by Jump Optimization (3 iterations).
-     3 instructions eliminated by Single Step Elimination (4 iterations).
-     1 instructions eliminated by Jump Straightening (3 iterations).
-     4 instructions updated by JumpThreading.
-     2 instructions eliminated by Unreachable Code Elimination.
+     4 instructions eliminated by Temp Variables Elimination (5 iterations).
+    15 instructions eliminated by Dead Code Elimination (5 iterations).
+     1 instructions eliminated by Jump Normalization (4 iterations).
+     5 instructions eliminated by Jump Optimization (4 iterations).
+     3 instructions eliminated by Single Step Elimination (5 iterations).
+     1 instructions eliminated by Jump Straightening (4 iterations).
+     4 instructions updated by Jump Threading.
+     2 instructions eliminated by Unreachable Code Elimination (2 iterations).
     37 instructions after optimizations.
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-9 instructions):
@@ -228,63 +228,106 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
     55 label *label14
     56 remark "We found an active unit, count it"
 
-Modifications by Final phase, Jump Straightening, iteration 1 (-1 instructions):
+Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
  
-    38 jump *label8 always
-    39 label *label7
-    40 remark "If not our unit, skip it"
--    * jump *label11 equal :unitFlag myFlag
--    * jump *label1 always
-+   41 jump *label1 notEqual :unitFlag myFlag
+    21 remark "Counts active units. Contains valid value when completing the loop."
+    22 set :active 0
+    23 label *label5
+-    * label *label6
+    24 label *label4
+    25 sensor :unitFlag @unit @flag
+    26 jump *label7 notEqual :unitFlag 0
+ 
+    40 jump *label11 equal :unitFlag myFlag
+    41 jump *label1 always
     42 label *label11
-    43 label *label12
-    44 label *label8
-
-Modifications by Final phase, Jump Threading, iteration 1:
+-    * label *label12
+    43 label *label8
+    44 remark "This is our unit."
+    45 jump *label13 greaterThanEq :change 0
  
-    30 remark "We're acquiring a new unit"
-    31 op sub :change :change 1
-    32 ucontrol flag myFlag
--    * jump *label10 always
-+   33 jump *label8 always
-    34 label *label9
-    35 remark "We don't need a new unit, skip it"
--    * jump *label1 always
-+   36 jump *label0 always
-    37 label *label10
-    38 jump *label8 always
-    39 label *label7
-    40 remark "If not our unit, skip it"
--    * jump *label1 notEqual :unitFlag myFlag
-+   41 jump *label0 notEqual :unitFlag myFlag
-    42 label *label11
-    43 label *label12
-    44 label *label8
- 
-    49 ucontrol unbind
-    50 op add :change :change 1
-    51 remark "Skip processing for this unit"
--    * jump *label1 always
-+   52 jump *label0 always
-    53 label *label13
-    54 label *label14
-    55 remark "We found an active unit, count it"
-
-Modifications by Final phase, Unreachable Code Elimination, iteration 1 (-2 instructions):
- 
-    34 label *label9
-    35 remark "We don't need a new unit, skip it"
-    36 jump *label0 always
--    * label *label10
--    * jump *label8 always
-    37 label *label7
-    38 remark "If not our unit, skip it"
-    39 jump *label0 notEqual :unitFlag myFlag
+    50 remark "Skip processing for this unit"
+    51 jump *label1 always
+    52 label *label13
+-    * label *label14
+    53 remark "We found an active unit, count it"
+    54 op add :active :active 1
+    55 remark "Handle your unit here"
  
     65 remark "End of unit handling"
     66 label *label1
     67 jump *label0 always
 -    * label *label2
+    68 end
+
+Modifications by Jumps phase, Jump Straightening, pass 3, iteration 1 (-1 instructions):
+ 
+    37 jump *label8 always
+    38 label *label7
+    39 remark "If not our unit, skip it"
+-    * jump *label11 equal :unitFlag myFlag
+-    * jump *label1 always
++   40 jump *label1 notEqual :unitFlag myFlag
+    41 label *label11
+    42 label *label8
+    43 remark "This is our unit."
+
+Modifications by Jumps phase, Jump Optimization, pass 3, iteration 1:
+ 
+    38 label *label7
+    39 remark "If not our unit, skip it"
+    40 jump *label1 notEqual :unitFlag myFlag
+-    * label *label11
+    41 label *label8
+    42 remark "This is our unit."
+    43 jump *label13 greaterThanEq :change 0
+
+Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
+ 
+    29 remark "We're acquiring a new unit"
+    30 op sub :change :change 1
+    31 ucontrol flag myFlag
+-    * jump *label10 always
++   32 jump *label8 always
+    33 label *label9
+    34 remark "We don't need a new unit, skip it"
+-    * jump *label1 always
++   35 jump *label0 always
+    36 label *label10
+    37 jump *label8 always
+    38 label *label7
+    39 remark "If not our unit, skip it"
+-    * jump *label1 notEqual :unitFlag myFlag
++   40 jump *label0 notEqual :unitFlag myFlag
+    41 label *label8
+    42 remark "This is our unit."
+    43 jump *label13 greaterThanEq :change 0
+ 
+    46 ucontrol unbind
+    47 op add :change :change 1
+    48 remark "Skip processing for this unit"
+-    * jump *label1 always
++   49 jump *label0 always
+    50 label *label13
+    51 remark "We found an active unit, count it"
+    52 op add :active :active 1
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-2 instructions):
+ 
+    33 label *label9
+    34 remark "We don't need a new unit, skip it"
+    35 jump *label0 always
+-    * label *label10
+-    * jump *label8 always
+    36 label *label7
+    37 remark "If not our unit, skip it"
+    38 jump *label0 notEqual :unitFlag myFlag
+ 
+    59 op add *tmp25 @thisy *tmp24
+    60 ucontrol move *tmp22 *tmp25
+    61 remark "End of unit handling"
+-    * label *label1
+    62 jump *label0 always
 -    * end
 
 Final code before resolving virtual instructions:
@@ -354,13 +397,17 @@ Final code before resolving virtual instructions:
    36:  jump *label0 always 0 0                                      while true do
 
 
-Performance: parsed in 108 ms, compiled in 168 ms, optimized in 87 ms, run in 4 ms.
+Code size and number of instantiations by function:
+  Size  Times  AvgSize  Function
+    38     1x     38,0  <no function>
+
+Performance: parsed in 133 ms, compiled in 206 ms, optimized in 103 ms, run in 2 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992
 
-Program output (7 steps):
+Program output (4 steps):
 The program didn't generate any output.
-Execution exception at instruction 6: ubind type:
+Execution exception at instruction 3: ubind type:
 Instruction not supported by Mindcode emulator.
 (Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

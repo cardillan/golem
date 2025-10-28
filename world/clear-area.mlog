@@ -2,40 +2,37 @@
 # You can safely add/remove instructions, in most parts of the program
 # Pay closer attention to sections of the program manipulating @counter
 label_0:
-    read *tmp0 processor1 "*mainProcessor"
-    jump label_0 equal *tmp0 null
-    write @this processor1 "*mainProcessor"
-    read :clearArea0*address processor1 ":clearArea0*address"
+    read *tmp0 processor1 "*signature"
+    jump label_0 notEqual *tmp0 "8bd373c6df37009f:v1"
+label_2:
+    read *tmp1 processor2 "*signature"
+    jump label_2 notEqual *tmp1 "8bd37276df37009f:v1"
 label_4:
-    read *tmp1 processor2 "*mainProcessor"
-    jump label_4 equal *tmp1 null
-    write @this processor2 "*mainProcessor"
-    read :clearArea1*address processor2 ":clearArea1*address"
-label_8:
-    read *tmp2 processor3 "*mainProcessor"
-    jump label_8 equal *tmp2 null
-    write @this processor3 "*mainProcessor"
-    read :clearArea2*address processor3 ":clearArea2*address"
+    read *tmp2 processor3 "*signature"
+    jump label_4 notEqual *tmp2 "8bd370a6df37009f:v1"
     control enabled switch1 false 0 0 0
-label_13:
+label_7:
         sensor *tmp4 switch1 @enabled
-        jump label_13 equal *tmp4 false
+        jump label_7 equal *tmp4 false
             control enabled switch1 false 0 0 0
-            set :clearArea0*finished false
-            write :clearArea0*address processor1 "@counter"
-            set :clearArea1*finished false
-            write :clearArea1*address processor2 "@counter"
-            set :clearArea2*finished false
-            write :clearArea2*address processor3 "@counter"
+            write false processor1 ":clearArea0*finished"
+            write 1 processor1 "@counter"
+            write false processor2 ":clearArea1*finished"
+            write 1 processor2 "@counter"
+            write false processor3 ":clearArea2*finished"
+            write 1 processor3 "@counter"
+        label_16:
+            wait 1e-15
+            read *tmp7 processor1 ":clearArea0*finished"
+            jump label_16 equal *tmp7 false
+        label_19:
+            wait 1e-15
+            read *tmp9 processor2 ":clearArea1*finished"
+            jump label_19 equal *tmp9 false
         label_22:
             wait 1e-15
-            jump label_22 equal :clearArea0*finished false
-        label_24:
-            wait 1e-15
-            jump label_24 equal :clearArea1*finished false
-        label_26:
-            wait 1e-15
-            jump label_26 equal :clearArea2*finished false
-        jump label_13 always 0 0
+            read *tmp11 processor3 ":clearArea2*finished"
+            jump label_22 equal *tmp11 false
+        jump label_7 always 0 0
         print "Compiled by Mindcode - github.com/cardillan/mindcode"
 
