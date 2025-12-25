@@ -22,77 +22,66 @@ printflush message1
 sensor :moveTo:x .core @x
 sensor :moveTo:y .core @y
 ucontrol approach :moveTo:x :moveTo:y 5 0 0
-sensor *tmp42 @unit @dead
-sensor *tmp43 @unit @controller
-op notEqual *tmp44 *tmp43 @this
-op or *tmp45 *tmp42 *tmp44
-jump 30 equal *tmp45 false
+sensor *tmp38 @unit @dead
+jump 0 notEqual *tmp38 false
+sensor *tmp39 @unit @controller
+jump 29 equal *tmp39 @this
 end
-ucontrol within :moveTo:x :moveTo:y 5 *tmp49 0
-jump 23 equal *tmp49 false
+ucontrol within :moveTo:x :moveTo:y 5 *tmp44 0
+jump 23 equal *tmp44 false
 sensor :moveItems:item sorter1 @config
 select *tmp14 equal :moveItems:item null "Please select item to transport" "Taking items"
 print *tmp14
 printflush message1
 sensor *tmp15 @unit @firstItem
-op notEqual *tmp16 *tmp15 null
+jump 40 equal *tmp15 null
 sensor *tmp17 @unit @firstItem
-op notEqual *tmp18 *tmp17 :moveItems:item
-op land *tmp19 *tmp16 *tmp18
-jump 43 equal *tmp19 false
+jump 40 equal *tmp17 :moveItems:item
 ucontrol itemDrop @air :moveItems:capacity 0 0 0
 ucontrol itemTake .core :moveItems:item :moveItems:capacity 0 0
-sensor *tmp42 @unit @dead
-sensor *tmp43 @unit @controller
-op notEqual *tmp44 *tmp43 @this
-op or *tmp45 *tmp42 *tmp44
-jump 50 equal *tmp45 false
+sensor *tmp38 @unit @dead
+jump 0 notEqual *tmp38 false
+sensor *tmp39 @unit @controller
+jump 46 equal *tmp39 @this
 end
-sensor *tmp21 @unit @totalItems
-jump 32 notEqual *tmp21 :moveItems:capacity
+sensor *tmp20 @unit @totalItems
+jump 31 notEqual *tmp20 :moveItems:capacity
 print "Moving to vault"
 printflush message1
 sensor :moveTo:x vault1 @x
 sensor :moveTo:y vault1 @y
 ucontrol approach :moveTo:x :moveTo:y 5 0 0
-sensor *tmp42 @unit @dead
-sensor *tmp43 @unit @controller
-op notEqual *tmp44 *tmp43 @this
-op or *tmp45 *tmp42 *tmp44
-jump 63 equal *tmp45 false
+sensor *tmp38 @unit @dead
+jump 0 notEqual *tmp38 false
+sensor *tmp39 @unit @controller
+jump 58 equal *tmp39 @this
 end
-ucontrol within :moveTo:x :moveTo:y 5 *tmp49 0
-jump 56 equal *tmp49 false
+ucontrol within :moveTo:x :moveTo:y 5 *tmp44 0
+jump 52 equal *tmp44 false
 print "Dropping items"
 printflush message1
 ucontrol itemDrop vault1 :moveItems:capacity 0 0 0
-sensor *tmp42 @unit @dead
-sensor *tmp43 @unit @controller
-op notEqual *tmp44 *tmp43 @this
-op or *tmp45 *tmp42 *tmp44
-jump 74 equal *tmp45 false
+sensor *tmp38 @unit @dead
+jump 0 notEqual *tmp38 false
+sensor *tmp39 @unit @controller
+jump 68 equal *tmp39 @this
 end
-sensor *tmp23 sorter1 @config
-op equal *tmp24 :moveItems:item *tmp23
-sensor *tmp25 @unit @totalItems
-op greaterThan *tmp26 *tmp25 0
-op land *tmp27 *tmp24 *tmp26
-jump 67 notEqual *tmp27 false
-read *tmp28 processor1 ":findUnit*finished"
-jump 18 equal *tmp28 false
+sensor *tmp22 sorter1 @config
+jump 72 notEqual :moveItems:item *tmp22
+sensor *tmp24 @unit @totalItems
+jump 62 greaterThan *tmp24 0
+read *tmp26 processor1 ":findUnit*finished"
+jump 18 equal *tmp26 false
 wait 1e-15
-read *tmp30 processor1 ":findUnit*finished"
-jump 82 equal *tmp30 false
+read *tmp28 processor1 ":findUnit*finished"
+jump 74 equal *tmp28 false
 read :unit.1 processor1 ":findUnit*retval"
-sensor *tmp32 :unit.1 @dead
-op equal *tmp33 *tmp32 false
-sensor *tmp34 :unit.1 @controller
-op equal *tmp35 *tmp34 processor1
-sensor *tmp36 :unit.1 @controlled
-op equal *tmp37 *tmp36 false
-op or *tmp38 *tmp35 *tmp37
-op land *tmp39 *tmp33 *tmp38
-jump 99 equal *tmp39 false
+sensor *tmp30 :unit.1 @dead
+jump 88 notEqual *tmp30 false
+sensor *tmp32 :unit.1 @controller
+jump 84 equal *tmp32 processor1
+sensor *tmp34 :unit.1 @controlled
+jump 88 notEqual *tmp34 false
 ucontrol flag null 0 0 0 0
 ucontrol unbind 0 0 0 0 0
 ubind :unit.1

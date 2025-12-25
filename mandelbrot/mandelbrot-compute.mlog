@@ -836,11 +836,15 @@ sensor *tmp148 .display @bufferSize
 jump 833 greaterThan *tmp148 250
 drawflush .display
 jump 27 always 0 0
-jump 874 equal .SMOOTH false
+jump 872 equal .SMOOTH false
 set :drawPixel:color %[black]
-jump 875 equal :drawPixel:iterations 63
-jump 854 notEqual .PALETTE 2
-op sub *tmp91 32 :drawPixel:iterations
+jump 873 equal :drawPixel:iterations 63
+read @counter "͎͚͊͊ͣ" .PALETTE
+op div *tmp126 :drawPixel:iterations 63.75 # Origin: 841, keys: 0, 1
+op sub :drawPixel:r 1 *tmp126
+packcolor :drawPixel:color :drawPixel:r :drawPixel:r 0 1
+jump 873 always 0 0
+op sub *tmp91 32 :drawPixel:iterations  # Origin: 841, keys: 2
 op abs *tmp92 *tmp91 0
 op div *tmp94 *tmp92 36.42857142857143
 op sub :drawPixel:r 1 *tmp94
@@ -851,9 +855,8 @@ op sub :drawPixel:g 0.9411764705882353 *tmp99
 op div *tmp104 *tmp92 63.75
 op add :drawPixel:b 0.47058823529411764 *tmp104
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g :drawPixel:b 1
-jump 875 always 0 0
-jump 864 notEqual .PALETTE 3
-op div *tmp108 :drawPixel:iterations 0.175
+jump 873 always 0 0
+op div *tmp108 :drawPixel:iterations 0.175 # Origin: 841, keys: 3
 op sin :drawPixel:r *tmp108 0
 op cos :drawPixel:g *tmp108 0
 op sub *tmp113 :drawPixel:iterations 32
@@ -861,25 +864,20 @@ op abs *tmp114 *tmp113 0
 op div *tmp116 *tmp114 63.75
 op add :drawPixel:b 0.39215686274509803 *tmp116
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g :drawPixel:b 1
-jump 875 always 0 0
-jump 870 notEqual .PALETTE 4
-op div :drawPixel:r :drawPixel:iterations 63.75
+jump 873 always 0 0
+op div :drawPixel:r :drawPixel:iterations 63.75 # Origin: 841, keys: 4
 op div *tmp122 :drawPixel:iterations 170
 op add :drawPixel:g 96 *tmp122
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g 0 1
-jump 875 always 0 0
-op div *tmp126 :drawPixel:iterations 63.75
-op sub :drawPixel:r 1 *tmp126
-packcolor :drawPixel:color :drawPixel:r :drawPixel:r 0 1
-jump 875 always 0 0
+jump 873 always 0 0
 read :drawPixel:color .memory :drawPixel:iterations
-jump 884 lessThan .localBuffer 254
+jump 882 lessThan .localBuffer 254
 sensor *tmp144 .display @enabled
-jump 876 equal *tmp144 false
-jump 882 lessThanEq .localBuffer 4
+jump 874 equal *tmp144 false
+jump 880 lessThanEq .localBuffer 4
 wait 0.0001
 sensor *tmp148 .display @bufferSize
-jump 879 greaterThan *tmp148 250
+jump 877 greaterThan *tmp148 250
 drawflush .display
 set .localBuffer 0
 draw col :drawPixel:color 0 0 0 0 0
@@ -890,12 +888,12 @@ op sub :drawPixel:disabled 1 *tmp134
 sensor *tmp136 .display @bufferSize
 op mul *tmp137 :drawPixel:disabled 900
 op add :drawPixel:usage *tmp136 *tmp137
-jump 896 greaterThanEq :drawPixel:usage 100
+jump 894 greaterThanEq :drawPixel:usage 100
 drawflush .display
 set .localBuffer 0
 set @counter :drawPixel*retaddr
 op div *tmp141 1800 .localBuffer
-jump 900 greaterThanEq :drawPixel:usage *tmp141
+jump 898 greaterThanEq :drawPixel:usage *tmp141
 drawflush .display
 set .localBuffer 0
 set @counter :drawPixel*retaddr

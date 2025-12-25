@@ -1,21 +1,21 @@
    253 instructions before optimizations.
      2 instructions eliminated by Temp Variables Elimination (5 iterations).
      1 instructions eliminated by Case Expression Optimization.
-    13 instructions eliminated by Dead Code Elimination (2 passes, 6 iterations).
+    12 instructions eliminated by Dead Code Elimination (5 iterations).
      1 instructions eliminated by Jump Normalization (4 iterations).
-     1 instructions eliminated by Jump Optimization (4 iterations).
+     1 instructions eliminated by Condition Optimization (5 iterations).
      2 instructions eliminated by Single Step Elimination (5 iterations).
      1 instructions eliminated by If Expression Optimization (2 iterations).
-     1 instructions modified by Data Flow Optimization (4 iterations).
+     1 instructions eliminated by Data Flow Optimization (5 iterations).
      2 instructions added by Case Switching (3 iterations).
-     1 case expressions converted to switched jumps Case Switching.
-     7 instructions eliminated by Jump Straightening (4 iterations).
+     1 case expressions converted to switched jumps by Case Switching.
+     7 instructions eliminated by Jump Straightening (5 iterations).
      9 instructions updated by Jump Threading.
      1 instructions eliminated by Unreachable Code Elimination (2 iterations).
     52 instructions eliminated by Print Merging.
    174 instructions after optimizations.
 
-Pass 1: speed optimization selection (cost limit 774):
+Pass 1: speed optimization selection (cost limit 775):
   o Convert case at line 9:9 (segments: 4)                       size    +1, benefit        5.4, efficiency      5.357
   * Convert case at line 9:9 (segments: 7)                       size    +2, benefit       10.7, efficiency      5.357 (+2 instructions)
 
@@ -273,7 +273,7 @@ Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-7 ins
    197 print "other:"
    198 print "\n"
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-1 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-1 instructions):
  
    235 printflush message1
    236 sensor *tmp54 switch1 @enabled
@@ -314,22 +314,32 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
    207 sensor *tmp49 :block @flag
    208 print "flag: "
 
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1 instructions):
+ 
+   200 print "team: "
+   201 print *tmp47
+   202 print "\n"
+-    * sensor *tmp48 :block @type
+   203 print "type: "
+   204 print *tmp4
+   205 print "\n"
+
 Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-1 instructions):
  
-   235 sensor *tmp54 switch1 @enabled
-   236 jump *label20 equal *tmp54 false
-   237 jump *label22 notEqual :page 7
+   234 sensor *tmp54 switch1 @enabled
+   235 jump *label20 equal *tmp54 false
+   236 jump *label22 notEqual :page 7
 -    * set *tmp57 1
-+  238 set :page 1
-   239 jump *label23 always
-   240 label *label22
++  237 set :page 1
+   238 jump *label23 always
+   239 label *label22
 -    * op add *tmp57 :page 1
-+  241 op add :page :page 1
-   242 label *label23
++  240 op add :page :page 1
+   241 label *label23
 -    * set :page *tmp57
-   243 control enabled switch1 false
-   244 label *label20
-   245 label *label21
+   242 control enabled switch1 false
+   243 label *label20
+   244 label *label21
 
 Modifications by Convert case at line 9:9 (segments: 7) (+2 instructions):
  
@@ -544,15 +554,15 @@ Modifications by Convert case at line 9:9 (segments: 7) (+2 instructions):
    202 print "other:"
    203 print "\n"
  
-   230 print *tmp53
-   231 print "\n"
-   232 label *label18
-+  233 label *label24
-   234 label *label5
-   235 jump *label4 always
-   236 label *label3
+   229 print *tmp53
+   230 print "\n"
+   231 label *label18
++  232 label *label24
+   233 label *label5
+   234 jump *label4 always
+   235 label *label3
 
-Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
  
     14 jump *label25 greaterThanEq :page 4
     15 jump *label26 greaterThanEq :page 2
@@ -612,22 +622,22 @@ Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
    193 print "other:"
    194 print "\n"
  
-   220 print "solid: "
-   221 print *tmp53
-   222 print "\n"
+   219 print "solid: "
+   220 print *tmp53
+   221 print "\n"
 -    * label *label18
-   223 label *label24
-   224 label *label5
-   225 jump *label4 always
+   222 label *label24
+   223 label *label5
+   224 jump *label4 always
  
-   238 label *label23
-   239 control enabled switch1 false
-   240 label *label20
+   237 label *label23
+   238 control enabled switch1 false
+   239 label *label20
 -    * label *label21
 -    * label *label1
-   241 jump *label0 always
+   240 jump *label0 always
 -    * label *label2
-   242 end
+-    * end
 
 Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
  
@@ -699,42 +709,14 @@ Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
    193 print "other:"
    194 print "\n"
  
-   229 label *label4
-   230 printflush message1
-   231 sensor *tmp54 switch1 @enabled
+   228 label *label4
+   229 printflush message1
+   230 sensor *tmp54 switch1 @enabled
 -    * jump *label20 equal *tmp54 false
-+  232 jump *label0 equal *tmp54 false
-   233 jump *label22 notEqual :page 7
-   234 set :page 1
-   235 jump *label23 always
-
-Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
- 
-   220 print "solid: "
-   221 print *tmp53
-   222 print "\n"
--    * label *label24
--    * label *label5
-   223 jump *label4 always
-   224 label *label3
-   225 print "No linked block found."
- 
-   235 op add :page :page 1
-   236 label *label23
-   237 control enabled switch1 false
--    * label *label20
-   238 jump *label0 always
--    * end
-
-Modifications by Jumps phase, Dead Code Elimination, pass 3, iteration 1 (-1 instructions):
- 
-   196 print "team: "
-   197 print *tmp47
-   198 print "\n"
--    * sensor *tmp48 :block @type
-   199 print "type: "
-   200 print *tmp4
-   201 print "\n"
++  231 jump *label0 equal *tmp54 false
+   232 jump *label22 notEqual :page 7
+   233 set :page 1
+   234 jump *label23 always
 
 Modifications by Final phase, Print Merging, iteration 1 (-52 instructions):
  
@@ -1201,7 +1183,7 @@ Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
    175     1x    175,0  <no function>
 
-Performance: parsed in 160 ms, compiled in 209 ms, optimized in 255 ms, run in 3 ms.
+Performance: parsed in 162 ms, compiled in 224 ms, optimized in 278 ms, run in 2 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

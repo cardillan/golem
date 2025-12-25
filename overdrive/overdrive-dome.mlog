@@ -15,19 +15,19 @@ printflush message1
 set .CORE null
 set :locateCore:type @flare
 set :locateCore*retaddr 18
-jump 934 always 0 0
+jump 877 always 0 0
 jump 31 notEqual :locateCore*retval false
 set :locateCore:type @poly
 set :locateCore*retaddr 22
-jump 934 always 0 0
+jump 877 always 0 0
 jump 31 notEqual :locateCore*retval false
 set :locateCore:type @mega
 set :locateCore*retaddr 26
-jump 934 always 0 0
+jump 877 always 0 0
 jump 31 notEqual :locateCore*retval false
 set :locateCore:type @mono
 set :locateCore*retaddr 30
-jump 934 always 0 0
+jump 877 always 0 0
 jump 15 equal :locateCore*retval false
 sensor .CORE_X .CORE @x
 sensor .CORE_Y .CORE @y
@@ -46,7 +46,7 @@ set :areUnitsAvailable:occupied 0
 set :areUnitsAvailable:needed 0
 ubind UNIT_TYPE
 set :areUnitsAvailable:firstUnit @unit
-jump 77 equal :areUnitsAvailable:firstUnit null
+jump 73 equal :areUnitsAvailable:firstUnit null
 set *tmp21 2
 set :needsFourUnits:unit @unit
 op sub *tmp14 .DOME_X .CORE_X
@@ -59,227 +59,207 @@ jump 59 lessThan :needsFourUnits:travel_time 47
 set *tmp21 4
 set :areUnitsAvailable:needed *tmp21
 sensor *tmp22 @unit @controlled
-op equal *tmp23 *tmp22 0
+jump 64 equal *tmp22 0
 sensor *tmp24 @unit @controller
-op equal *tmp25 *tmp24 @this
-op or *tmp26 *tmp23 *tmp25
-jump 70 equal *tmp26 false
+jump 68 notEqual *tmp24 @this
 op add :areUnitsAvailable:free :areUnitsAvailable:free 1
-jump 71 lessThan :areUnitsAvailable:free *tmp21
+jump 69 lessThan :areUnitsAvailable:free *tmp21
 set *tmp10 true
-jump 87 always 0 0
+jump 83 always 0 0
 op add :areUnitsAvailable:occupied :areUnitsAvailable:occupied 1
 ubind UNIT_TYPE
-op notEqual *tmp31 @unit :areUnitsAvailable:firstUnit
-sensor *tmp32 :areUnitsAvailable:firstUnit @dead
-op equal *tmp33 *tmp32 0
-op land *tmp34 *tmp31 *tmp33
-jump 60 notEqual *tmp34 false
+jump 73 equal @unit :areUnitsAvailable:firstUnit
+sensor *tmp31 :areUnitsAvailable:firstUnit @dead
+jump 60 equal *tmp31 0
 print UNIT_TYPE
 print ": occupied: "
 print :areUnitsAvailable:occupied
 print ", free: "
 print :areUnitsAvailable:free
-jump 85 lessThanEq :areUnitsAvailable:needed 0
+jump 81 lessThanEq :areUnitsAvailable:needed 0
 print ", needed: "
 print :areUnitsAvailable:needed
 print "\n"
 set *tmp10 false
-jump 90 equal *tmp10 false
+jump 86 equal *tmp10 false
 set *tmp9 UNIT_TYPE
-jump 284 always 0 0
-jump 138 equal @flare UNIT_TYPE
+jump 264 always 0 0
+jump 130 equal @flare UNIT_TYPE
 set :areUnitsAvailable.1:free 0
 set :areUnitsAvailable.1:occupied 0
 set :areUnitsAvailable.1:needed 0
 ubind @flare
 set :areUnitsAvailable.1:firstUnit @unit
-jump 125 equal :areUnitsAvailable.1:firstUnit null
-set *tmp53 2
+jump 117 equal :areUnitsAvailable.1:firstUnit null
+set *tmp51 2
 set :needsFourUnits.1:unit @unit
-op sub *tmp46 .DOME_X .CORE_X
-op sub *tmp47 .DOME_Y .CORE_Y
-op len *tmp48 *tmp46 *tmp47
-op mul *tmp49 2 *tmp48
-sensor *tmp50 :needsFourUnits.1:unit @speed
-op div :needsFourUnits.1:travel_time *tmp49 *tmp50
-jump 107 lessThan :needsFourUnits.1:travel_time 47
-set *tmp53 4
-set :areUnitsAvailable.1:needed *tmp53
-sensor *tmp54 @unit @controlled
-op equal *tmp55 *tmp54 0
-sensor *tmp56 @unit @controller
-op equal *tmp57 *tmp56 @this
-op or *tmp58 *tmp55 *tmp57
-jump 118 equal *tmp58 false
+op sub *tmp44 .DOME_X .CORE_X
+op sub *tmp45 .DOME_Y .CORE_Y
+op len *tmp46 *tmp44 *tmp45
+op mul *tmp47 2 *tmp46
+sensor *tmp48 :needsFourUnits.1:unit @speed
+op div :needsFourUnits.1:travel_time *tmp47 *tmp48
+jump 103 lessThan :needsFourUnits.1:travel_time 47
+set *tmp51 4
+set :areUnitsAvailable.1:needed *tmp51
+sensor *tmp52 @unit @controlled
+jump 108 equal *tmp52 0
+sensor *tmp54 @unit @controller
+jump 112 notEqual *tmp54 @this
 op add :areUnitsAvailable.1:free :areUnitsAvailable.1:free 1
-jump 119 lessThan :areUnitsAvailable.1:free *tmp53
-set *tmp42 true
-jump 134 always 0 0
+jump 113 lessThan :areUnitsAvailable.1:free *tmp51
+set *tmp40 true
+jump 126 always 0 0
 op add :areUnitsAvailable.1:occupied :areUnitsAvailable.1:occupied 1
 ubind @flare
-op notEqual *tmp63 @unit :areUnitsAvailable.1:firstUnit
-sensor *tmp64 :areUnitsAvailable.1:firstUnit @dead
-op equal *tmp65 *tmp64 0
-op land *tmp66 *tmp63 *tmp65
-jump 108 notEqual *tmp66 false
+jump 117 equal @unit :areUnitsAvailable.1:firstUnit
+sensor *tmp61 :areUnitsAvailable.1:firstUnit @dead
+jump 104 equal *tmp61 0
 print "flare: occupied: "
 print :areUnitsAvailable.1:occupied
 print ", free: "
 print :areUnitsAvailable.1:free
-jump 132 lessThanEq :areUnitsAvailable.1:needed 0
+jump 124 lessThanEq :areUnitsAvailable.1:needed 0
 print ", needed: "
 print :areUnitsAvailable.1:needed
 print "\n"
-set *tmp42 false
-jump 138 equal *tmp42 false
+set *tmp40 false
+jump 130 equal *tmp40 false
 printflush null
 set *tmp9 @flare
-jump 284 always 0 0
-jump 186 equal @poly UNIT_TYPE
+jump 264 always 0 0
+jump 174 equal @poly UNIT_TYPE
 set :areUnitsAvailable.1:free 0
 set :areUnitsAvailable.1:occupied 0
 set :areUnitsAvailable.1:needed 0
 ubind @poly
 set :areUnitsAvailable.1:firstUnit @unit
-jump 173 equal :areUnitsAvailable.1:firstUnit null
-set *tmp53 2
+jump 161 equal :areUnitsAvailable.1:firstUnit null
+set *tmp51 2
 set :needsFourUnits.1:unit @unit
-op sub *tmp46 .DOME_X .CORE_X
-op sub *tmp47 .DOME_Y .CORE_Y
-op len *tmp48 *tmp46 *tmp47
-op mul *tmp49 2 *tmp48
-sensor *tmp50 :needsFourUnits.1:unit @speed
-op div :needsFourUnits.1:travel_time *tmp49 *tmp50
-jump 155 lessThan :needsFourUnits.1:travel_time 47
-set *tmp53 4
-set :areUnitsAvailable.1:needed *tmp53
-sensor *tmp54 @unit @controlled
-op equal *tmp55 *tmp54 0
-sensor *tmp56 @unit @controller
-op equal *tmp57 *tmp56 @this
-op or *tmp58 *tmp55 *tmp57
-jump 166 equal *tmp58 false
+op sub *tmp44 .DOME_X .CORE_X
+op sub *tmp45 .DOME_Y .CORE_Y
+op len *tmp46 *tmp44 *tmp45
+op mul *tmp47 2 *tmp46
+sensor *tmp48 :needsFourUnits.1:unit @speed
+op div :needsFourUnits.1:travel_time *tmp47 *tmp48
+jump 147 lessThan :needsFourUnits.1:travel_time 47
+set *tmp51 4
+set :areUnitsAvailable.1:needed *tmp51
+sensor *tmp52 @unit @controlled
+jump 152 equal *tmp52 0
+sensor *tmp54 @unit @controller
+jump 156 notEqual *tmp54 @this
 op add :areUnitsAvailable.1:free :areUnitsAvailable.1:free 1
-jump 167 lessThan :areUnitsAvailable.1:free *tmp53
-set *tmp42 true
-jump 182 always 0 0
+jump 157 lessThan :areUnitsAvailable.1:free *tmp51
+set *tmp40 true
+jump 170 always 0 0
 op add :areUnitsAvailable.1:occupied :areUnitsAvailable.1:occupied 1
 ubind @poly
-op notEqual *tmp63 @unit :areUnitsAvailable.1:firstUnit
-sensor *tmp64 :areUnitsAvailable.1:firstUnit @dead
-op equal *tmp65 *tmp64 0
-op land *tmp66 *tmp63 *tmp65
-jump 156 notEqual *tmp66 false
+jump 161 equal @unit :areUnitsAvailable.1:firstUnit
+sensor *tmp61 :areUnitsAvailable.1:firstUnit @dead
+jump 148 equal *tmp61 0
 print "poly: occupied: "
 print :areUnitsAvailable.1:occupied
 print ", free: "
 print :areUnitsAvailable.1:free
-jump 180 lessThanEq :areUnitsAvailable.1:needed 0
+jump 168 lessThanEq :areUnitsAvailable.1:needed 0
 print ", needed: "
 print :areUnitsAvailable.1:needed
 print "\n"
-set *tmp42 false
-jump 186 equal *tmp42 false
+set *tmp40 false
+jump 174 equal *tmp40 false
 printflush null
 set *tmp9 @poly
-jump 284 always 0 0
-jump 234 equal @mega UNIT_TYPE
+jump 264 always 0 0
+jump 218 equal @mega UNIT_TYPE
 set :areUnitsAvailable.1:free 0
 set :areUnitsAvailable.1:occupied 0
 set :areUnitsAvailable.1:needed 0
 ubind @mega
 set :areUnitsAvailable.1:firstUnit @unit
-jump 221 equal :areUnitsAvailable.1:firstUnit null
-set *tmp53 2
+jump 205 equal :areUnitsAvailable.1:firstUnit null
+set *tmp51 2
 set :needsFourUnits.1:unit @unit
-op sub *tmp46 .DOME_X .CORE_X
-op sub *tmp47 .DOME_Y .CORE_Y
-op len *tmp48 *tmp46 *tmp47
-op mul *tmp49 2 *tmp48
-sensor *tmp50 :needsFourUnits.1:unit @speed
-op div :needsFourUnits.1:travel_time *tmp49 *tmp50
-jump 203 lessThan :needsFourUnits.1:travel_time 47
-set *tmp53 4
-set :areUnitsAvailable.1:needed *tmp53
-sensor *tmp54 @unit @controlled
-op equal *tmp55 *tmp54 0
-sensor *tmp56 @unit @controller
-op equal *tmp57 *tmp56 @this
-op or *tmp58 *tmp55 *tmp57
-jump 214 equal *tmp58 false
+op sub *tmp44 .DOME_X .CORE_X
+op sub *tmp45 .DOME_Y .CORE_Y
+op len *tmp46 *tmp44 *tmp45
+op mul *tmp47 2 *tmp46
+sensor *tmp48 :needsFourUnits.1:unit @speed
+op div :needsFourUnits.1:travel_time *tmp47 *tmp48
+jump 191 lessThan :needsFourUnits.1:travel_time 47
+set *tmp51 4
+set :areUnitsAvailable.1:needed *tmp51
+sensor *tmp52 @unit @controlled
+jump 196 equal *tmp52 0
+sensor *tmp54 @unit @controller
+jump 200 notEqual *tmp54 @this
 op add :areUnitsAvailable.1:free :areUnitsAvailable.1:free 1
-jump 215 lessThan :areUnitsAvailable.1:free *tmp53
-set *tmp42 true
-jump 230 always 0 0
+jump 201 lessThan :areUnitsAvailable.1:free *tmp51
+set *tmp40 true
+jump 214 always 0 0
 op add :areUnitsAvailable.1:occupied :areUnitsAvailable.1:occupied 1
 ubind @mega
-op notEqual *tmp63 @unit :areUnitsAvailable.1:firstUnit
-sensor *tmp64 :areUnitsAvailable.1:firstUnit @dead
-op equal *tmp65 *tmp64 0
-op land *tmp66 *tmp63 *tmp65
-jump 204 notEqual *tmp66 false
+jump 205 equal @unit :areUnitsAvailable.1:firstUnit
+sensor *tmp61 :areUnitsAvailable.1:firstUnit @dead
+jump 192 equal *tmp61 0
 print "mega: occupied: "
 print :areUnitsAvailable.1:occupied
 print ", free: "
 print :areUnitsAvailable.1:free
-jump 228 lessThanEq :areUnitsAvailable.1:needed 0
+jump 212 lessThanEq :areUnitsAvailable.1:needed 0
 print ", needed: "
 print :areUnitsAvailable.1:needed
 print "\n"
-set *tmp42 false
-jump 234 equal *tmp42 false
+set *tmp40 false
+jump 218 equal *tmp40 false
 printflush null
 set *tmp9 @mega
-jump 284 always 0 0
-jump 282 equal @mono UNIT_TYPE
+jump 264 always 0 0
+jump 262 equal @mono UNIT_TYPE
 set :areUnitsAvailable.1:free 0
 set :areUnitsAvailable.1:occupied 0
 set :areUnitsAvailable.1:needed 0
 ubind @mono
 set :areUnitsAvailable.1:firstUnit @unit
-jump 269 equal :areUnitsAvailable.1:firstUnit null
-set *tmp53 2
+jump 249 equal :areUnitsAvailable.1:firstUnit null
+set *tmp51 2
 set :needsFourUnits.1:unit @unit
-op sub *tmp46 .DOME_X .CORE_X
-op sub *tmp47 .DOME_Y .CORE_Y
-op len *tmp48 *tmp46 *tmp47
-op mul *tmp49 2 *tmp48
-sensor *tmp50 :needsFourUnits.1:unit @speed
-op div :needsFourUnits.1:travel_time *tmp49 *tmp50
-jump 251 lessThan :needsFourUnits.1:travel_time 47
-set *tmp53 4
-set :areUnitsAvailable.1:needed *tmp53
-sensor *tmp54 @unit @controlled
-op equal *tmp55 *tmp54 0
-sensor *tmp56 @unit @controller
-op equal *tmp57 *tmp56 @this
-op or *tmp58 *tmp55 *tmp57
-jump 262 equal *tmp58 false
+op sub *tmp44 .DOME_X .CORE_X
+op sub *tmp45 .DOME_Y .CORE_Y
+op len *tmp46 *tmp44 *tmp45
+op mul *tmp47 2 *tmp46
+sensor *tmp48 :needsFourUnits.1:unit @speed
+op div :needsFourUnits.1:travel_time *tmp47 *tmp48
+jump 235 lessThan :needsFourUnits.1:travel_time 47
+set *tmp51 4
+set :areUnitsAvailable.1:needed *tmp51
+sensor *tmp52 @unit @controlled
+jump 240 equal *tmp52 0
+sensor *tmp54 @unit @controller
+jump 244 notEqual *tmp54 @this
 op add :areUnitsAvailable.1:free :areUnitsAvailable.1:free 1
-jump 263 lessThan :areUnitsAvailable.1:free *tmp53
-set *tmp42 true
-jump 278 always 0 0
+jump 245 lessThan :areUnitsAvailable.1:free *tmp51
+set *tmp40 true
+jump 258 always 0 0
 op add :areUnitsAvailable.1:occupied :areUnitsAvailable.1:occupied 1
 ubind @mono
-op notEqual *tmp63 @unit :areUnitsAvailable.1:firstUnit
-sensor *tmp64 :areUnitsAvailable.1:firstUnit @dead
-op equal *tmp65 *tmp64 0
-op land *tmp66 *tmp63 *tmp65
-jump 252 notEqual *tmp66 false
+jump 249 equal @unit :areUnitsAvailable.1:firstUnit
+sensor *tmp61 :areUnitsAvailable.1:firstUnit @dead
+jump 236 equal *tmp61 0
 print "mono: occupied: "
 print :areUnitsAvailable.1:occupied
 print ", free: "
 print :areUnitsAvailable.1:free
-jump 276 lessThanEq :areUnitsAvailable.1:needed 0
+jump 256 lessThanEq :areUnitsAvailable.1:needed 0
 print ", needed: "
 print :areUnitsAvailable.1:needed
 print "\n"
-set *tmp42 false
-jump 282 equal *tmp42 false
+set *tmp40 false
+jump 262 equal *tmp40 false
 printflush null
 set *tmp9 @mono
-jump 284 always 0 0
+jump 264 always 0 0
 printflush message1
 jump 41 always 0 0
 print "[gold]Binding units..."
@@ -291,156 +271,140 @@ set .UNIT_S1 null
 set :rebindUnits:count 0
 ubind *tmp9
 set :rebindUnits:firstUnit @unit
-jump 295 notEqual :rebindUnits:firstUnit null
+jump 275 notEqual :rebindUnits:firstUnit null
 end
-sensor *tmp74 @unit @controller
-jump 304 notEqual *tmp74 @this
+sensor *tmp70 @unit @controller
+jump 284 notEqual *tmp70 @this
 op add :rebindUnits:count :rebindUnits:count 1
 ucontrol flag 1 0 0 0 0
 set .UNIT_S2 .UNIT_P2
 set .UNIT_P2 .UNIT_S1
 set .UNIT_S1 .UNIT_P1
 set .UNIT_P1 @unit
-jump 310 notEqual .UNIT_S2 null
+jump 288 notEqual .UNIT_S2 null
 ubind *tmp9
-op notEqual *tmp81 @unit :rebindUnits:firstUnit
-sensor *tmp82 :rebindUnits:firstUnit @dead
-op equal *tmp83 *tmp82 0
-op land *tmp84 *tmp81 *tmp83
-jump 295 notEqual *tmp84 false
-jump 318 equal .UNIT_S1 null
+jump 288 equal @unit :rebindUnits:firstUnit
+sensor *tmp78 :rebindUnits:firstUnit @dead
+jump 275 equal *tmp78 0
+jump 296 equal .UNIT_S1 null
 ubind .UNIT_S1
-sensor *tmp89 @unit @dead
-op equal *tmp90 *tmp89 0
-sensor *tmp91 @unit @controller
-op equal *tmp92 *tmp91 @this
-op land *tmp93 *tmp90 *tmp92
-jump 330 notEqual *tmp93 false
+sensor *tmp84 @unit @dead
+op equal *tmp85 *tmp84 0
+sensor *tmp86 @unit @controller
+op equal *tmp87 *tmp86 @this
+op land *tmp88 *tmp85 *tmp87
+jump 306 notEqual *tmp88 false
 ubind *tmp9
 set :rebindUnit:firstUnit @unit
 jump 0 equal :rebindUnit:firstUnit null
-sensor *tmp97 @unit @controlled
-jump 330 equal *tmp97 0
+sensor *tmp92 @unit @controlled
+jump 306 equal *tmp92 0
 ubind *tmp9
-op notEqual *tmp100 @unit :rebindUnit:firstUnit
-sensor *tmp101 :rebindUnit:firstUnit @dead
-op equal *tmp102 *tmp101 0
-op land *tmp103 *tmp100 *tmp102
-jump 321 notEqual *tmp103 false
+jump 0 equal @unit :rebindUnit:firstUnit
+sensor *tmp96 :rebindUnit:firstUnit @dead
+jump 299 equal *tmp96 0
 end
 ucontrol flag 1 0 0 0 0
-set *tmp85 @unit
-set .UNIT_S1 *tmp85
-jump 341 equal .UNIT_P1 null
+set *tmp80 @unit
+set .UNIT_S1 *tmp80
+jump 317 equal .UNIT_P1 null
 ubind .UNIT_P1
-sensor *tmp108 @unit @dead
-op equal *tmp109 *tmp108 0
-sensor *tmp110 @unit @controller
-op equal *tmp111 *tmp110 @this
-op land *tmp112 *tmp109 *tmp111
-jump 353 notEqual *tmp112 false
+sensor *tmp102 @unit @dead
+op equal *tmp103 *tmp102 0
+sensor *tmp104 @unit @controller
+op equal *tmp105 *tmp104 @this
+op land *tmp106 *tmp103 *tmp105
+jump 327 notEqual *tmp106 false
 ubind *tmp9
 set :rebindUnit.1:firstUnit @unit
 jump 0 equal :rebindUnit.1:firstUnit null
-sensor *tmp116 @unit @controlled
-jump 353 equal *tmp116 0
+sensor *tmp110 @unit @controlled
+jump 327 equal *tmp110 0
 ubind *tmp9
-op notEqual *tmp119 @unit :rebindUnit.1:firstUnit
-sensor *tmp120 :rebindUnit.1:firstUnit @dead
-op equal *tmp121 *tmp120 0
-op land *tmp122 *tmp119 *tmp121
-jump 344 notEqual *tmp122 false
+jump 0 equal @unit :rebindUnit.1:firstUnit
+sensor *tmp114 :rebindUnit.1:firstUnit @dead
+jump 320 equal *tmp114 0
 end
 ucontrol flag 1 0 0 0 0
-set *tmp104 @unit
-set .UNIT_P1 *tmp104
-sensor *tmp123 *tmp85 @firstItem
-op equal *tmp124 *tmp123 @phase-fabric
-sensor *tmp125 *tmp104 @firstItem
-op equal *tmp126 *tmp125 @silicon
-op or *tmp127 *tmp124 *tmp126
-jump 364 equal *tmp127 false
-set .UNIT_S1 *tmp104
-set .UNIT_P1 *tmp85
+set *tmp98 @unit
+set .UNIT_P1 *tmp98
+sensor *tmp116 *tmp80 @firstItem
+jump 334 equal *tmp116 @phase-fabric
+sensor *tmp118 *tmp98 @firstItem
+jump 336 notEqual *tmp118 @silicon
+set .UNIT_S1 *tmp98
+set .UNIT_P1 *tmp80
 sensor .UNIT_CAPACITY .UNIT_S1 @itemCapacity
 sensor .SPEED .UNIT_S1 @speed
 op div .SPEED_TENTHS .SPEED 10
-op strictEqual *tmp132 .SPEED null
-jump 370 equal *tmp132 false
+op strictEqual *tmp124 .SPEED null
+jump 342 equal *tmp124 false
 stop
-op sub *tmp135 .DOME_X .CORE_X
-op sub *tmp136 .DOME_Y .CORE_Y
-op len *tmp137 *tmp135 *tmp136
-op mul *tmp138 2 *tmp137
-op div :needsFourUnits.2:travel_time *tmp138 .SPEED
-op greaterThanEq *tmp134 :needsFourUnits.2:travel_time 47
-jump 443 equal *tmp134 false
-jump 385 equal .UNIT_S2 null
+op sub *tmp127 .DOME_X .CORE_X
+op sub *tmp128 .DOME_Y .CORE_Y
+op len *tmp129 *tmp127 *tmp128
+op mul *tmp130 2 *tmp129
+op div :needsFourUnits.2:travel_time *tmp130 .SPEED
+op greaterThanEq *tmp126 :needsFourUnits.2:travel_time 47
+jump 407 lessThan :needsFourUnits.2:travel_time 47
+jump 357 equal .UNIT_S2 null
 ubind .UNIT_S2
-sensor *tmp147 @unit @dead
-op equal *tmp148 *tmp147 0
-sensor *tmp149 @unit @controller
-op equal *tmp150 *tmp149 @this
-op land *tmp151 *tmp148 *tmp150
-jump 397 notEqual *tmp151 false
+sensor *tmp139 @unit @dead
+op equal *tmp140 *tmp139 0
+sensor *tmp141 @unit @controller
+op equal *tmp142 *tmp141 @this
+op land *tmp143 *tmp140 *tmp142
+jump 367 notEqual *tmp143 false
 ubind *tmp9
 set :rebindUnit.2:firstUnit @unit
 jump 0 equal :rebindUnit.2:firstUnit null
-sensor *tmp155 @unit @controlled
-jump 397 equal *tmp155 0
+sensor *tmp147 @unit @controlled
+jump 367 equal *tmp147 0
 ubind *tmp9
-op notEqual *tmp158 @unit :rebindUnit.2:firstUnit
-sensor *tmp159 :rebindUnit.2:firstUnit @dead
-op equal *tmp160 *tmp159 0
-op land *tmp161 *tmp158 *tmp160
-jump 388 notEqual *tmp161 false
+jump 0 equal @unit :rebindUnit.2:firstUnit
+sensor *tmp151 :rebindUnit.2:firstUnit @dead
+jump 360 equal *tmp151 0
 end
 ucontrol flag 1 0 0 0 0
-set *tmp143 @unit
-set .UNIT_S2 *tmp143
-jump 408 equal .UNIT_P2 null
+set *tmp135 @unit
+set .UNIT_S2 *tmp135
+jump 378 equal .UNIT_P2 null
 ubind .UNIT_P2
-sensor *tmp166 @unit @dead
-op equal *tmp167 *tmp166 0
-sensor *tmp168 @unit @controller
-op equal *tmp169 *tmp168 @this
-op land *tmp170 *tmp167 *tmp169
-jump 420 notEqual *tmp170 false
+sensor *tmp157 @unit @dead
+op equal *tmp158 *tmp157 0
+sensor *tmp159 @unit @controller
+op equal *tmp160 *tmp159 @this
+op land *tmp161 *tmp158 *tmp160
+jump 388 notEqual *tmp161 false
 ubind *tmp9
 set :rebindUnit.3:firstUnit @unit
 jump 0 equal :rebindUnit.3:firstUnit null
-sensor *tmp174 @unit @controlled
-jump 420 equal *tmp174 0
+sensor *tmp165 @unit @controlled
+jump 388 equal *tmp165 0
 ubind *tmp9
-op notEqual *tmp177 @unit :rebindUnit.3:firstUnit
-sensor *tmp178 :rebindUnit.3:firstUnit @dead
-op equal *tmp179 *tmp178 0
-op land *tmp180 *tmp177 *tmp179
-jump 411 notEqual *tmp180 false
+jump 0 equal @unit :rebindUnit.3:firstUnit
+sensor *tmp169 :rebindUnit.3:firstUnit @dead
+jump 381 equal *tmp169 0
 end
 ucontrol flag 1 0 0 0 0
-set *tmp162 @unit
-set .UNIT_P2 *tmp162
-sensor *tmp181 .UNIT_S1 @firstItem
-op equal *tmp182 *tmp181 @phase-fabric
-sensor *tmp183 *tmp162 @firstItem
-op notEqual *tmp184 *tmp183 @phase-fabric
-op land *tmp185 *tmp182 *tmp184
-jump 432 equal *tmp185 false
+set *tmp153 @unit
+set .UNIT_P2 *tmp153
+sensor *tmp171 .UNIT_S1 @firstItem
+jump 398 notEqual *tmp171 @phase-fabric
+sensor *tmp173 *tmp153 @firstItem
+jump 398 equal *tmp173 @phase-fabric
 set :swap.1:t .UNIT_S1
-set .UNIT_S1 *tmp162
+set .UNIT_S1 *tmp153
 set .UNIT_P2 :swap.1:t
-sensor *tmp187 *tmp143 @firstItem
-op equal *tmp188 *tmp187 @phase-fabric
-sensor *tmp189 .UNIT_P2 @firstItem
-op equal *tmp190 *tmp189 @silicon
-op or *tmp191 *tmp188 *tmp190
-jump 440 equal *tmp191 false
+sensor *tmp176 *tmp135 @firstItem
+jump 402 equal *tmp176 @phase-fabric
+sensor *tmp178 .UNIT_P2 @firstItem
+jump 404 notEqual *tmp178 @silicon
 set .UNIT_S2 .UNIT_P2
-set .UNIT_P2 *tmp143
+set .UNIT_P2 *tmp135
 set .GROUP1 "unit  1"
 set .GROUP2 "unit 2"
-jump 450 always 0 0
+jump 414 always 0 0
 ubind .UNIT_S2
 ucontrol unbind 0 0 0 0 0
 set .UNIT_S2 null
@@ -448,497 +412,474 @@ ubind .UNIT_P2
 ucontrol unbind 0 0 0 0 0
 set .UNIT_P2 null
 set .GROUP1 "unit"
-op equal *tmp193 *tmp134 false
-sensor *tmp194 .UNIT_S1 @totalItems
-sensor *tmp195 .UNIT_S2 @totalItems
-op lessThan *tmp196 *tmp194 *tmp195
-op or .SUPPLY_S_FIRST *tmp193 *tmp196
-sensor *tmp199 .UNIT_P1 @totalItems
-sensor *tmp200 .UNIT_P2 @totalItems
-op lessThan *tmp201 *tmp199 *tmp200
-op or .SUPPLY_P_FIRST *tmp193 *tmp201
+jump 417 notEqual *tmp126 false
+set .SUPPLY_S_FIRST true
+jump 420 always 0 0
+sensor *tmp182 .UNIT_S1 @totalItems
+sensor *tmp183 .UNIT_S2 @totalItems
+op lessThan .SUPPLY_S_FIRST *tmp182 *tmp183
+jump 423 notEqual *tmp126 false
+set .SUPPLY_P_FIRST true
+jump 426 always 0 0
+sensor *tmp187 .UNIT_P1 @totalItems
+sensor *tmp188 .UNIT_P2 @totalItems
+op lessThan .SUPPLY_P_FIRST *tmp187 *tmp188
 op add :unitCheck @time 5000
-sensor *tmp204 switch1 @enabled
-jump 0 equal *tmp204 false
+sensor *tmp192 switch1 @enabled
+jump 0 equal *tmp192 false
 set :start @time
 print " === [gold]Supplying Overdrive Dome[] === \n\nUnit type: [green]"
 print *tmp9
 print "[]\n\n[green]Silicon[] status:\n"
 sensor :printDomeStatus:level .DOME @silicon
-jump 472 lessThanEq :printDomeStatus:level 3
+jump 439 lessThanEq :printDomeStatus:level 3
 print "  dome:  [green]"
 print :printDomeStatus:level
 print "[]\n"
-jump 475 always 0 0
+jump 442 always 0 0
 print "  dome:  [coral]"
 print :printDomeStatus:level
 print "[]\n"
-jump 483 equal .UNIT_S1 null
+jump 450 equal .UNIT_S1 null
 ubind .UNIT_S1
-sensor *tmp211 @unit @dead
-op equal *tmp212 *tmp211 0
-sensor *tmp213 @unit @controller
-op equal *tmp214 *tmp213 @this
-op land *tmp215 *tmp212 *tmp214
-jump 495 notEqual *tmp215 false
+sensor *tmp199 @unit @dead
+op equal *tmp200 *tmp199 0
+sensor *tmp201 @unit @controller
+op equal *tmp202 *tmp201 @this
+op land *tmp203 *tmp200 *tmp202
+jump 460 notEqual *tmp203 false
 ubind *tmp9
 set :rebindUnit.4:firstUnit @unit
 jump 0 equal :rebindUnit.4:firstUnit null
-sensor *tmp219 @unit @controlled
-jump 495 equal *tmp219 0
+sensor *tmp207 @unit @controlled
+jump 460 equal *tmp207 0
 ubind *tmp9
-op notEqual *tmp222 @unit :rebindUnit.4:firstUnit
-sensor *tmp223 :rebindUnit.4:firstUnit @dead
-op equal *tmp224 *tmp223 0
-op land *tmp225 *tmp222 *tmp224
-jump 486 notEqual *tmp225 false
+jump 0 equal @unit :rebindUnit.4:firstUnit
+sensor *tmp211 :rebindUnit.4:firstUnit @dead
+jump 453 equal *tmp211 0
 end
 sensor :processUnit:state @unit @flag
 set :processUnit:distance -1
-op lessThan *tmp227 :processUnit:state 2
-op greaterThan *tmp228 :processUnit:state 3
-op or *tmp229 *tmp227 *tmp228
-jump 514 equal *tmp229 false
-sensor *tmp231 @unit @firstItem
-jump 505 notEqual *tmp231 @silicon
+jump 464 lessThan :processUnit:state 2
+jump 477 lessThanEq :processUnit:state 3
+sensor *tmp217 @unit @firstItem
+jump 468 notEqual *tmp217 @silicon
 set :processUnit:state 3
-jump 514 always 0 0
-sensor *tmp234 @unit @totalItems
-jump 509 notEqual *tmp234 0
+jump 477 always 0 0
+sensor *tmp220 @unit @totalItems
+jump 472 notEqual *tmp220 0
 set :processUnit:state 2
-jump 514 always 0 0
+jump 477 always 0 0
 set .MSG ", initializing\n"
 ucontrol approach .CORE_X .CORE_Y 6 0 0
-ucontrol within .CORE_X .CORE_Y 8 *tmp237 0
-jump 514 equal *tmp237 false
+ucontrol within .CORE_X .CORE_Y 8 *tmp223 0
+jump 477 equal *tmp223 false
 ucontrol itemDrop .CORE .UNIT_CAPACITY 0 0 0
-jump 534 notEqual :processUnit:state 2
-ucontrol within .CORE_X .CORE_Y 8 *tmp241 0
-jump 525 equal *tmp241 false
+jump 497 notEqual :processUnit:state 2
+ucontrol within .CORE_X .CORE_Y 8 *tmp227 0
+jump 488 equal *tmp227 false
 ucontrol itemTake .CORE @silicon .UNIT_CAPACITY 0 0
-sensor *tmp243 @unit @totalItems
-jump 523 lessThan *tmp243 .UNIT_CAPACITY
+sensor *tmp229 @unit @totalItems
+jump 486 lessThan *tmp229 .UNIT_CAPACITY
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set :processUnit:state 3
-jump 534 always 0 0
+jump 497 always 0 0
 set .MSG ", loading\n"
-jump 534 always 0 0
+jump 497 always 0 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set .MSG ", fetching in [gold]"
-sensor *tmp246 @unit @x
-op sub *tmp247 .CORE_X *tmp246
-sensor *tmp248 @unit @y
-op sub *tmp249 .CORE_Y *tmp248
-op len *tmp250 *tmp247 *tmp249
-op idiv *tmp251 *tmp250 .SPEED_TENTHS
-op div :processUnit:distance *tmp251 10
-jump 557 notEqual :processUnit:state 3
-ucontrol within .DOME_X .DOME_Y 8 *tmp255 0
-jump 548 equal *tmp255 false
-jump 541 equal .SUPPLY_S_FIRST false
+sensor *tmp232 @unit @x
+op sub *tmp233 .CORE_X *tmp232
+sensor *tmp234 @unit @y
+op sub *tmp235 .CORE_Y *tmp234
+op len *tmp236 *tmp233 *tmp235
+op idiv *tmp237 *tmp236 .SPEED_TENTHS
+op div :processUnit:distance *tmp237 10
+jump 520 notEqual :processUnit:state 3
+ucontrol within .DOME_X .DOME_Y 8 *tmp241 0
+jump 511 equal *tmp241 false
+jump 504 equal .SUPPLY_S_FIRST false
 ucontrol itemDrop .DOME .UNIT_CAPACITY 0 0 0
 set .MSG ", supplying\n"
-jump 543 always 0 0
+jump 506 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", waiting\n"
-sensor *tmp258 @unit @totalItems
-jump 557 greaterThan *tmp258 0
+sensor *tmp244 @unit @totalItems
+jump 520 greaterThan *tmp244 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set :processUnit:state 2
-jump 557 always 0 0
+jump 520 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", returning in [gold]"
-sensor *tmp261 @unit @x
-op sub *tmp262 .DOME_X *tmp261
-sensor *tmp263 @unit @y
-op sub *tmp264 .DOME_Y *tmp263
-op len *tmp265 *tmp262 *tmp264
-op idiv *tmp266 *tmp265 .SPEED_TENTHS
-op div :processUnit:distance *tmp266 10
+sensor *tmp247 @unit @x
+op sub *tmp248 .DOME_X *tmp247
+sensor *tmp249 @unit @y
+op sub *tmp250 .DOME_Y *tmp249
+op len *tmp251 *tmp248 *tmp250
+op idiv *tmp252 *tmp251 .SPEED_TENTHS
+op div :processUnit:distance *tmp252 10
 ucontrol flag :processUnit:state 0 0 0 0
-sensor *tmp268 @unit @totalItems
+sensor *tmp254 @unit @totalItems
 print "  "
 print .GROUP1
 print ": [gold]"
-print *tmp268
+print *tmp254
 print "[]"
-jump 569 lessThan :processUnit:distance 0
+jump 532 lessThan :processUnit:distance 0
 print .MSG
 print :processUnit:distance
 print "[] sec\n"
-jump 570 always 0 0
+jump 533 always 0 0
 print .MSG
 set :processUnit:unit @unit
 set .UNIT_S1 :processUnit:unit
-jump 677 equal *tmp134 false
-op equal *tmp273 .SUPPLY_S_FIRST false
-jump 582 equal .UNIT_S2 null
+jump 635 equal *tmp126 false
+jump 544 equal .UNIT_S2 null
 ubind .UNIT_S2
-sensor *tmp277 @unit @dead
-op equal *tmp278 *tmp277 0
-sensor *tmp279 @unit @controller
-op equal *tmp280 *tmp279 @this
-op land *tmp281 *tmp278 *tmp280
-jump 594 notEqual *tmp281 false
+sensor *tmp263 @unit @dead
+op equal *tmp264 *tmp263 0
+sensor *tmp265 @unit @controller
+op equal *tmp266 *tmp265 @this
+op land *tmp267 *tmp264 *tmp266
+jump 554 notEqual *tmp267 false
 ubind *tmp9
 set :rebindUnit.5:firstUnit @unit
 jump 0 equal :rebindUnit.5:firstUnit null
-sensor *tmp285 @unit @controlled
-jump 594 equal *tmp285 0
+sensor *tmp271 @unit @controlled
+jump 554 equal *tmp271 0
 ubind *tmp9
-op notEqual *tmp288 @unit :rebindUnit.5:firstUnit
-sensor *tmp289 :rebindUnit.5:firstUnit @dead
-op equal *tmp290 *tmp289 0
-op land *tmp291 *tmp288 *tmp290
-jump 585 notEqual *tmp291 false
+jump 0 equal @unit :rebindUnit.5:firstUnit
+sensor *tmp275 :rebindUnit.5:firstUnit @dead
+jump 547 equal *tmp275 0
 end
 sensor :processUnit.1:state @unit @flag
 set :processUnit.1:distance -1
-op lessThan *tmp293 :processUnit.1:state 2
-op greaterThan *tmp294 :processUnit.1:state 3
-op or *tmp295 *tmp293 *tmp294
-jump 613 equal *tmp295 false
-sensor *tmp297 @unit @firstItem
-jump 604 notEqual *tmp297 @silicon
+jump 558 lessThan :processUnit.1:state 2
+jump 571 lessThanEq :processUnit.1:state 3
+sensor *tmp281 @unit @firstItem
+jump 562 notEqual *tmp281 @silicon
 set :processUnit.1:state 3
-jump 613 always 0 0
-sensor *tmp300 @unit @totalItems
-jump 608 notEqual *tmp300 0
+jump 571 always 0 0
+sensor *tmp284 @unit @totalItems
+jump 566 notEqual *tmp284 0
 set :processUnit.1:state 2
-jump 613 always 0 0
+jump 571 always 0 0
 set .MSG ", initializing\n"
 ucontrol approach .CORE_X .CORE_Y 6 0 0
-ucontrol within .CORE_X .CORE_Y 8 *tmp303 0
-jump 613 equal *tmp303 false
+ucontrol within .CORE_X .CORE_Y 8 *tmp287 0
+jump 571 equal *tmp287 false
 ucontrol itemDrop .CORE .UNIT_CAPACITY 0 0 0
-jump 633 notEqual :processUnit.1:state 2
-ucontrol within .CORE_X .CORE_Y 8 *tmp307 0
-jump 624 equal *tmp307 false
+jump 591 notEqual :processUnit.1:state 2
+ucontrol within .CORE_X .CORE_Y 8 *tmp291 0
+jump 582 equal *tmp291 false
 ucontrol itemTake .CORE @silicon .UNIT_CAPACITY 0 0
-sensor *tmp309 @unit @totalItems
-jump 622 lessThan *tmp309 .UNIT_CAPACITY
+sensor *tmp293 @unit @totalItems
+jump 580 lessThan *tmp293 .UNIT_CAPACITY
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set :processUnit.1:state 3
-jump 633 always 0 0
+jump 591 always 0 0
 set .MSG ", loading\n"
-jump 633 always 0 0
+jump 591 always 0 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set .MSG ", fetching in [gold]"
-sensor *tmp312 @unit @x
-op sub *tmp313 .CORE_X *tmp312
-sensor *tmp314 @unit @y
-op sub *tmp315 .CORE_Y *tmp314
-op len *tmp316 *tmp313 *tmp315
-op idiv *tmp317 *tmp316 .SPEED_TENTHS
-op div :processUnit.1:distance *tmp317 10
-jump 656 notEqual :processUnit.1:state 3
-ucontrol within .DOME_X .DOME_Y 8 *tmp321 0
-jump 647 equal *tmp321 false
-jump 640 equal *tmp273 false
+sensor *tmp296 @unit @x
+op sub *tmp297 .CORE_X *tmp296
+sensor *tmp298 @unit @y
+op sub *tmp299 .CORE_Y *tmp298
+op len *tmp300 *tmp297 *tmp299
+op idiv *tmp301 *tmp300 .SPEED_TENTHS
+op div :processUnit.1:distance *tmp301 10
+jump 614 notEqual :processUnit.1:state 3
+ucontrol within .DOME_X .DOME_Y 8 *tmp305 0
+jump 605 equal *tmp305 false
+jump 598 notEqual .SUPPLY_S_FIRST false
 ucontrol itemDrop .DOME .UNIT_CAPACITY 0 0 0
 set .MSG ", supplying\n"
-jump 642 always 0 0
+jump 600 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", waiting\n"
-sensor *tmp324 @unit @totalItems
-jump 656 greaterThan *tmp324 0
+sensor *tmp308 @unit @totalItems
+jump 614 greaterThan *tmp308 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set :processUnit.1:state 2
-jump 656 always 0 0
+jump 614 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", returning in [gold]"
-sensor *tmp327 @unit @x
-op sub *tmp328 .DOME_X *tmp327
-sensor *tmp329 @unit @y
-op sub *tmp330 .DOME_Y *tmp329
-op len *tmp331 *tmp328 *tmp330
-op idiv *tmp332 *tmp331 .SPEED_TENTHS
-op div :processUnit.1:distance *tmp332 10
+sensor *tmp311 @unit @x
+op sub *tmp312 .DOME_X *tmp311
+sensor *tmp313 @unit @y
+op sub *tmp314 .DOME_Y *tmp313
+op len *tmp315 *tmp312 *tmp314
+op idiv *tmp316 *tmp315 .SPEED_TENTHS
+op div :processUnit.1:distance *tmp316 10
 ucontrol flag :processUnit.1:state 0 0 0 0
-sensor *tmp334 @unit @totalItems
+sensor *tmp318 @unit @totalItems
 print "  "
 print .GROUP2
 print ": [gold]"
-print *tmp334
+print *tmp318
 print "[]"
-jump 668 lessThan :processUnit.1:distance 0
+jump 626 lessThan :processUnit.1:distance 0
 print .MSG
 print :processUnit.1:distance
 print "[] sec\n"
-jump 669 always 0 0
+jump 627 always 0 0
 print .MSG
 set :processUnit.1:unit @unit
 set .UNIT_S2 :processUnit.1:unit
-jump 675 equal .SUPPLY_S_FIRST false
-sensor *tmp339 :processUnit:unit @totalItems
-op greaterThan .SUPPLY_S_FIRST *tmp339 0
-jump 677 always 0 0
-sensor *tmp341 :processUnit.1:unit @totalItems
-op equal .SUPPLY_S_FIRST *tmp341 0
+jump 633 equal .SUPPLY_S_FIRST false
+sensor *tmp323 :processUnit:unit @totalItems
+op greaterThan .SUPPLY_S_FIRST *tmp323 0
+jump 635 always 0 0
+sensor *tmp325 :processUnit.1:unit @totalItems
+op equal .SUPPLY_S_FIRST *tmp325 0
 print "\n[green]Phase fabric[] status:\n"
 sensor :printDomeStatus.1:level .DOME @phase-fabric
-jump 684 lessThanEq :printDomeStatus.1:level 3
+jump 642 lessThanEq :printDomeStatus.1:level 3
 print "  dome:  [green]"
 print :printDomeStatus.1:level
 print "[]\n"
-jump 687 always 0 0
+jump 645 always 0 0
 print "  dome:  [coral]"
 print :printDomeStatus.1:level
 print "[]\n"
-jump 695 equal .UNIT_P1 null
+jump 653 equal .UNIT_P1 null
 ubind .UNIT_P1
-sensor *tmp349 @unit @dead
-op equal *tmp350 *tmp349 0
-sensor *tmp351 @unit @controller
-op equal *tmp352 *tmp351 @this
-op land *tmp353 *tmp350 *tmp352
-jump 707 notEqual *tmp353 false
+sensor *tmp333 @unit @dead
+op equal *tmp334 *tmp333 0
+sensor *tmp335 @unit @controller
+op equal *tmp336 *tmp335 @this
+op land *tmp337 *tmp334 *tmp336
+jump 663 notEqual *tmp337 false
 ubind *tmp9
 set :rebindUnit.6:firstUnit @unit
 jump 0 equal :rebindUnit.6:firstUnit null
-sensor *tmp357 @unit @controlled
-jump 707 equal *tmp357 0
+sensor *tmp341 @unit @controlled
+jump 663 equal *tmp341 0
 ubind *tmp9
-op notEqual *tmp360 @unit :rebindUnit.6:firstUnit
-sensor *tmp361 :rebindUnit.6:firstUnit @dead
-op equal *tmp362 *tmp361 0
-op land *tmp363 *tmp360 *tmp362
-jump 698 notEqual *tmp363 false
+jump 0 equal @unit :rebindUnit.6:firstUnit
+sensor *tmp345 :rebindUnit.6:firstUnit @dead
+jump 656 equal *tmp345 0
 end
 sensor :processUnit.2:state @unit @flag
 set :processUnit.2:distance -1
-op lessThan *tmp365 :processUnit.2:state 2
-op greaterThan *tmp366 :processUnit.2:state 3
-op or *tmp367 *tmp365 *tmp366
-jump 726 equal *tmp367 false
-sensor *tmp369 @unit @firstItem
-jump 717 notEqual *tmp369 @phase-fabric
+jump 667 lessThan :processUnit.2:state 2
+jump 680 lessThanEq :processUnit.2:state 3
+sensor *tmp351 @unit @firstItem
+jump 671 notEqual *tmp351 @phase-fabric
 set :processUnit.2:state 3
-jump 726 always 0 0
-sensor *tmp372 @unit @totalItems
-jump 721 notEqual *tmp372 0
+jump 680 always 0 0
+sensor *tmp354 @unit @totalItems
+jump 675 notEqual *tmp354 0
 set :processUnit.2:state 2
-jump 726 always 0 0
+jump 680 always 0 0
 set .MSG ", initializing\n"
 ucontrol approach .CORE_X .CORE_Y 6 0 0
-ucontrol within .CORE_X .CORE_Y 8 *tmp375 0
-jump 726 equal *tmp375 false
+ucontrol within .CORE_X .CORE_Y 8 *tmp357 0
+jump 680 equal *tmp357 false
 ucontrol itemDrop .CORE .UNIT_CAPACITY 0 0 0
-jump 746 notEqual :processUnit.2:state 2
-ucontrol within .CORE_X .CORE_Y 8 *tmp379 0
-jump 737 equal *tmp379 false
+jump 700 notEqual :processUnit.2:state 2
+ucontrol within .CORE_X .CORE_Y 8 *tmp361 0
+jump 691 equal *tmp361 false
 ucontrol itemTake .CORE @phase-fabric .UNIT_CAPACITY 0 0
-sensor *tmp381 @unit @totalItems
-jump 735 lessThan *tmp381 .UNIT_CAPACITY
+sensor *tmp363 @unit @totalItems
+jump 689 lessThan *tmp363 .UNIT_CAPACITY
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set :processUnit.2:state 3
-jump 746 always 0 0
+jump 700 always 0 0
 set .MSG ", loading\n"
-jump 746 always 0 0
+jump 700 always 0 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set .MSG ", fetching in [gold]"
-sensor *tmp384 @unit @x
-op sub *tmp385 .CORE_X *tmp384
-sensor *tmp386 @unit @y
-op sub *tmp387 .CORE_Y *tmp386
-op len *tmp388 *tmp385 *tmp387
-op idiv *tmp389 *tmp388 .SPEED_TENTHS
-op div :processUnit.2:distance *tmp389 10
-jump 769 notEqual :processUnit.2:state 3
-ucontrol within .DOME_X .DOME_Y 8 *tmp393 0
-jump 760 equal *tmp393 false
-jump 753 equal .SUPPLY_P_FIRST false
+sensor *tmp366 @unit @x
+op sub *tmp367 .CORE_X *tmp366
+sensor *tmp368 @unit @y
+op sub *tmp369 .CORE_Y *tmp368
+op len *tmp370 *tmp367 *tmp369
+op idiv *tmp371 *tmp370 .SPEED_TENTHS
+op div :processUnit.2:distance *tmp371 10
+jump 723 notEqual :processUnit.2:state 3
+ucontrol within .DOME_X .DOME_Y 8 *tmp375 0
+jump 714 equal *tmp375 false
+jump 707 equal .SUPPLY_P_FIRST false
 ucontrol itemDrop .DOME .UNIT_CAPACITY 0 0 0
 set .MSG ", supplying\n"
-jump 755 always 0 0
+jump 709 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", waiting\n"
-sensor *tmp396 @unit @totalItems
-jump 769 greaterThan *tmp396 0
+sensor *tmp378 @unit @totalItems
+jump 723 greaterThan *tmp378 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set :processUnit.2:state 2
-jump 769 always 0 0
+jump 723 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", returning in [gold]"
-sensor *tmp399 @unit @x
-op sub *tmp400 .DOME_X *tmp399
-sensor *tmp401 @unit @y
-op sub *tmp402 .DOME_Y *tmp401
-op len *tmp403 *tmp400 *tmp402
-op idiv *tmp404 *tmp403 .SPEED_TENTHS
-op div :processUnit.2:distance *tmp404 10
+sensor *tmp381 @unit @x
+op sub *tmp382 .DOME_X *tmp381
+sensor *tmp383 @unit @y
+op sub *tmp384 .DOME_Y *tmp383
+op len *tmp385 *tmp382 *tmp384
+op idiv *tmp386 *tmp385 .SPEED_TENTHS
+op div :processUnit.2:distance *tmp386 10
 ucontrol flag :processUnit.2:state 0 0 0 0
-sensor *tmp406 @unit @totalItems
+sensor *tmp388 @unit @totalItems
 print "  "
 print .GROUP1
 print ": [gold]"
-print *tmp406
+print *tmp388
 print "[]"
-jump 781 lessThan :processUnit.2:distance 0
+jump 735 lessThan :processUnit.2:distance 0
 print .MSG
 print :processUnit.2:distance
 print "[] sec\n"
-jump 782 always 0 0
+jump 736 always 0 0
 print .MSG
 set :processUnit.2:unit @unit
 set .UNIT_P1 :processUnit.2:unit
-jump 889 equal *tmp134 false
-op equal *tmp411 .SUPPLY_P_FIRST false
-jump 794 equal .UNIT_P2 null
+jump 838 equal *tmp126 false
+jump 747 equal .UNIT_P2 null
 ubind .UNIT_P2
-sensor *tmp415 @unit @dead
-op equal *tmp416 *tmp415 0
-sensor *tmp417 @unit @controller
-op equal *tmp418 *tmp417 @this
-op land *tmp419 *tmp416 *tmp418
-jump 806 notEqual *tmp419 false
+sensor *tmp397 @unit @dead
+op equal *tmp398 *tmp397 0
+sensor *tmp399 @unit @controller
+op equal *tmp400 *tmp399 @this
+op land *tmp401 *tmp398 *tmp400
+jump 757 notEqual *tmp401 false
 ubind *tmp9
 set :rebindUnit.7:firstUnit @unit
 jump 0 equal :rebindUnit.7:firstUnit null
-sensor *tmp423 @unit @controlled
-jump 806 equal *tmp423 0
+sensor *tmp405 @unit @controlled
+jump 757 equal *tmp405 0
 ubind *tmp9
-op notEqual *tmp426 @unit :rebindUnit.7:firstUnit
-sensor *tmp427 :rebindUnit.7:firstUnit @dead
-op equal *tmp428 *tmp427 0
-op land *tmp429 *tmp426 *tmp428
-jump 797 notEqual *tmp429 false
+jump 0 equal @unit :rebindUnit.7:firstUnit
+sensor *tmp409 :rebindUnit.7:firstUnit @dead
+jump 750 equal *tmp409 0
 end
 sensor :processUnit.3:state @unit @flag
 set :processUnit.3:distance -1
-op lessThan *tmp431 :processUnit.3:state 2
-op greaterThan *tmp432 :processUnit.3:state 3
-op or *tmp433 *tmp431 *tmp432
-jump 825 equal *tmp433 false
-sensor *tmp435 @unit @firstItem
-jump 816 notEqual *tmp435 @phase-fabric
+jump 761 lessThan :processUnit.3:state 2
+jump 774 lessThanEq :processUnit.3:state 3
+sensor *tmp415 @unit @firstItem
+jump 765 notEqual *tmp415 @phase-fabric
 set :processUnit.3:state 3
-jump 825 always 0 0
-sensor *tmp438 @unit @totalItems
-jump 820 notEqual *tmp438 0
+jump 774 always 0 0
+sensor *tmp418 @unit @totalItems
+jump 769 notEqual *tmp418 0
 set :processUnit.3:state 2
-jump 825 always 0 0
+jump 774 always 0 0
 set .MSG ", initializing\n"
 ucontrol approach .CORE_X .CORE_Y 6 0 0
-ucontrol within .CORE_X .CORE_Y 8 *tmp441 0
-jump 825 equal *tmp441 false
+ucontrol within .CORE_X .CORE_Y 8 *tmp421 0
+jump 774 equal *tmp421 false
 ucontrol itemDrop .CORE .UNIT_CAPACITY 0 0 0
-jump 845 notEqual :processUnit.3:state 2
-ucontrol within .CORE_X .CORE_Y 8 *tmp445 0
-jump 836 equal *tmp445 false
+jump 794 notEqual :processUnit.3:state 2
+ucontrol within .CORE_X .CORE_Y 8 *tmp425 0
+jump 785 equal *tmp425 false
 ucontrol itemTake .CORE @phase-fabric .UNIT_CAPACITY 0 0
-sensor *tmp447 @unit @totalItems
-jump 834 lessThan *tmp447 .UNIT_CAPACITY
+sensor *tmp427 @unit @totalItems
+jump 783 lessThan *tmp427 .UNIT_CAPACITY
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set :processUnit.3:state 3
-jump 845 always 0 0
+jump 794 always 0 0
 set .MSG ", loading\n"
-jump 845 always 0 0
+jump 794 always 0 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set .MSG ", fetching in [gold]"
-sensor *tmp450 @unit @x
-op sub *tmp451 .CORE_X *tmp450
-sensor *tmp452 @unit @y
-op sub *tmp453 .CORE_Y *tmp452
-op len *tmp454 *tmp451 *tmp453
-op idiv *tmp455 *tmp454 .SPEED_TENTHS
-op div :processUnit.3:distance *tmp455 10
-jump 868 notEqual :processUnit.3:state 3
-ucontrol within .DOME_X .DOME_Y 8 *tmp459 0
-jump 859 equal *tmp459 false
-jump 852 equal *tmp411 false
+sensor *tmp430 @unit @x
+op sub *tmp431 .CORE_X *tmp430
+sensor *tmp432 @unit @y
+op sub *tmp433 .CORE_Y *tmp432
+op len *tmp434 *tmp431 *tmp433
+op idiv *tmp435 *tmp434 .SPEED_TENTHS
+op div :processUnit.3:distance *tmp435 10
+jump 817 notEqual :processUnit.3:state 3
+ucontrol within .DOME_X .DOME_Y 8 *tmp439 0
+jump 808 equal *tmp439 false
+jump 801 notEqual .SUPPLY_P_FIRST false
 ucontrol itemDrop .DOME .UNIT_CAPACITY 0 0 0
 set .MSG ", supplying\n"
-jump 854 always 0 0
+jump 803 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", waiting\n"
-sensor *tmp462 @unit @totalItems
-jump 868 greaterThan *tmp462 0
+sensor *tmp442 @unit @totalItems
+jump 817 greaterThan *tmp442 0
 ucontrol approach .CORE_X .CORE_Y 6 0 0
 set :processUnit.3:state 2
-jump 868 always 0 0
+jump 817 always 0 0
 ucontrol approach .DOME_X .DOME_Y 6 0 0
 set .MSG ", returning in [gold]"
-sensor *tmp465 @unit @x
-op sub *tmp466 .DOME_X *tmp465
-sensor *tmp467 @unit @y
-op sub *tmp468 .DOME_Y *tmp467
-op len *tmp469 *tmp466 *tmp468
-op idiv *tmp470 *tmp469 .SPEED_TENTHS
-op div :processUnit.3:distance *tmp470 10
+sensor *tmp445 @unit @x
+op sub *tmp446 .DOME_X *tmp445
+sensor *tmp447 @unit @y
+op sub *tmp448 .DOME_Y *tmp447
+op len *tmp449 *tmp446 *tmp448
+op idiv *tmp450 *tmp449 .SPEED_TENTHS
+op div :processUnit.3:distance *tmp450 10
 ucontrol flag :processUnit.3:state 0 0 0 0
-sensor *tmp472 @unit @totalItems
+sensor *tmp452 @unit @totalItems
 print "  "
 print .GROUP2
 print ": [gold]"
-print *tmp472
+print *tmp452
 print "[]"
-jump 880 lessThan :processUnit.3:distance 0
+jump 829 lessThan :processUnit.3:distance 0
 print .MSG
 print :processUnit.3:distance
 print "[] sec\n"
-jump 881 always 0 0
+jump 830 always 0 0
 print .MSG
 set :processUnit.3:unit @unit
 set .UNIT_P2 :processUnit.3:unit
-jump 887 equal .SUPPLY_P_FIRST false
-sensor *tmp477 :processUnit.2:unit @totalItems
-op greaterThan .SUPPLY_P_FIRST *tmp477 0
-jump 889 always 0 0
-sensor *tmp479 :processUnit.3:unit @totalItems
-op equal .SUPPLY_P_FIRST *tmp479 0
-op sub *tmp481 @time :start
-op floor *tmp482 *tmp481 0
+jump 836 equal .SUPPLY_P_FIRST false
+sensor *tmp457 :processUnit.2:unit @totalItems
+op greaterThan .SUPPLY_P_FIRST *tmp457 0
+jump 838 always 0 0
+sensor *tmp459 :processUnit.3:unit @totalItems
+op equal .SUPPLY_P_FIRST *tmp459 0
+op sub *tmp461 @time :start
+op floor *tmp462 *tmp461 0
 print "\n[lightgray]Loop time: "
-print *tmp482
+print *tmp462
 print " ms"
 printflush message1
-op notEqual *tmp483 *tmp9 UNIT_TYPE
-op greaterThan *tmp484 :unitCheck @time
-op land *tmp485 *tmp483 *tmp484
-jump 931 equal *tmp485 false
+jump 874 equal *tmp9 UNIT_TYPE
+jump 874 lessThanEq :unitCheck @time
 set :areUnitsAvailable.2:free 0
 set :areUnitsAvailable.2:occupied 0
 ubind UNIT_TYPE
 set :areUnitsAvailable.2:firstUnit @unit
-jump 927 equal :areUnitsAvailable.2:firstUnit null
-set *tmp498 2
+jump 870 equal :areUnitsAvailable.2:firstUnit null
+set *tmp477 2
 set :needsFourUnits.3:unit @unit
-sensor *tmp495 :needsFourUnits.3:unit @speed
-op div :needsFourUnits.3:travel_time *tmp138 *tmp495
-jump 910 lessThan :needsFourUnits.3:travel_time 47
-set *tmp498 4
-sensor *tmp499 @unit @controlled
-op equal *tmp500 *tmp499 0
-sensor *tmp501 @unit @controller
-op equal *tmp502 *tmp501 @this
-op or *tmp503 *tmp500 *tmp502
-jump 920 equal *tmp503 false
+sensor *tmp474 :needsFourUnits.3:unit @speed
+op div :needsFourUnits.3:travel_time *tmp130 *tmp474
+jump 857 lessThan :needsFourUnits.3:travel_time 47
+set *tmp477 4
+sensor *tmp478 @unit @controlled
+jump 861 equal *tmp478 0
+sensor *tmp480 @unit @controller
+jump 865 notEqual *tmp480 @this
 op add :areUnitsAvailable.2:free :areUnitsAvailable.2:free 1
-jump 921 lessThan :areUnitsAvailable.2:free *tmp498
-set *tmp487 true
-jump 928 always 0 0
+jump 866 lessThan :areUnitsAvailable.2:free *tmp477
+set *tmp466 true
+jump 871 always 0 0
 op add :areUnitsAvailable.2:occupied :areUnitsAvailable.2:occupied 1
 ubind UNIT_TYPE
-op notEqual *tmp508 @unit :areUnitsAvailable.2:firstUnit
-sensor *tmp509 :areUnitsAvailable.2:firstUnit @dead
-op equal *tmp510 *tmp509 0
-op land *tmp511 *tmp508 *tmp510
-jump 910 notEqual *tmp511 false
-set *tmp487 false
-jump 930 equal *tmp487 false
+jump 870 equal @unit :areUnitsAvailable.2:firstUnit
+sensor *tmp487 :areUnitsAvailable.2:firstUnit @dead
+jump 857 equal *tmp487 0
+set *tmp466 false
+jump 873 equal *tmp466 false
 end
 op add :unitCheck @time 5000
-sensor *tmp204 switch1 @enabled
-jump 462 notEqual *tmp204 false
+sensor *tmp192 switch1 @enabled
+jump 429 notEqual *tmp192 false
 end
 ubind :locateCore:type
-sensor *tmp517 @unit @controlled
-op equal *tmp518 *tmp517 0
-sensor *tmp519 @unit @controller
-op equal *tmp520 *tmp519 @this
-op or *tmp521 *tmp518 *tmp520
-jump 942 equal *tmp521 false
+sensor *tmp494 @unit @controlled
+jump 882 equal *tmp494 0
+sensor *tmp496 @unit @controller
+jump 883 notEqual *tmp496 @this
 ulocate building core false @copper 0 0 0 .CORE
 set :locateCore*retval .CORE
 set @counter :locateCore*retaddr

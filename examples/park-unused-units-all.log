@@ -1,9 +1,9 @@
     55 instructions before optimizations.
-     2 instructions eliminated by Temp Variables Elimination (6 iterations).
+     2 instructions eliminated by Temp Variables Elimination (5 iterations).
     10 instructions eliminated by Dead Code Elimination (5 iterations).
-     6 instructions eliminated by Jump Optimization (2 passes, 5 iterations).
-     5 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
-     3 instructions eliminated by Data Flow Optimization (5 iterations).
+     6 instructions eliminated by Condition Optimization (5 iterations).
+     5 instructions eliminated by Single Step Elimination (2 passes, 6 iterations).
+     3 instructions eliminated by Data Flow Optimization (4 iterations).
      2 instructions eliminated by Jump Straightening (5 iterations).
     27 instructions after optimizations.
 
@@ -35,15 +35,15 @@ Modifications by Initial phase, Dead Code Elimination, iteration 1 (-6 instructi
     42 ucontrol flag 2435345345
     43 ucontrol pathfind x y
 -    * set *tmp16 null
-    44 jump *label11 always
-    45 label *label10
+    44 jump *label10 always
+    45 label *label9
     46 sensor *tmp17 @unit @flag
  
     54 label *label12
     55 set *tmp19 null
     56 label *label13
 -    * set *tmp16 *tmp19
-    57 label *label11
+    57 label *label10
     58 label *label1
     59 op add :i :i 1
 
@@ -68,7 +68,7 @@ Modifications by Initial phase, Dead Code Elimination, iteration 2 (-4 instructi
     51 label *label12
 -    * set *tmp19 null
     52 label *label13
-    53 label *label11
+    53 label *label10
     54 label *label1
 
 Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 instructions):
@@ -89,11 +89,11 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 inst
 -    * op lessThan *tmp14 *tmp13 :inRadius:radius
 -    * set *tmp8 *tmp14
 +   33 op lessThan *tmp8 *tmp13 :inRadius:radius
-    34 label *label9
+    34 label *label11
     35 op equal *tmp15 *tmp8 false
-    36 jump *label10 equal *tmp15 false
+    36 jump *label9 equal *tmp15 false
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-5 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-6 instructions):
  
      3 label *label0
      4 lookup unit :type :i
@@ -115,33 +115,35 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-5 inst
     16 jump *label8 always
     17 label *label7
  
+    28 sensor *tmp11 @unit @y
+    29 op sub *tmp12 :inRadius:y *tmp11
     30 op len *tmp13 *tmp10 *tmp12
-    31 op lessThan *tmp8 *tmp13 :inRadius:radius
-    32 label *label9
+-    * op lessThan *tmp8 *tmp13 :inRadius:radius
+    31 label *label11
 -    * op equal *tmp15 *tmp8 false
--    * jump *label10 equal *tmp15 false
-+   33 jump *label10 notEqual *tmp8 false
-    34 ucontrol boost true
-    35 ucontrol flag 2435345345
-    36 ucontrol pathfind x y
-    37 jump *label11 always
-    38 label *label10
-    39 sensor *tmp17 @unit @flag
+-    * jump *label9 equal *tmp15 false
++   32 jump *label9 lessThan *tmp13 :inRadius:radius
+    33 ucontrol boost true
+    34 ucontrol flag 2435345345
+    35 ucontrol pathfind x y
+    36 jump *label10 always
+    37 label *label9
+    38 sensor *tmp17 @unit @flag
 -    * op notEqual *tmp18 *tmp17 0
 -    * jump *label12 equal *tmp18 false
-+   40 jump *label12 equal *tmp17 0
-    41 ucontrol boost false
-    42 ucontrol flag 0
-    43 ucontrol unbind
++   39 jump *label12 equal *tmp17 0
+    40 ucontrol boost false
+    41 ucontrol flag 0
+    42 ucontrol unbind
  
-    47 label *label11
-    48 label *label1
-    49 op add :i :i 1
+    46 label *label10
+    47 label *label1
+    48 op add :i :i 1
 -    * op lessThan *tmp20 :i @unitCount
 -    * jump *label0 notEqual *tmp20 false
-+   50 jump *label0 lessThan :i @unitCount
-    51 label *label2
-    52 end
++   49 jump *label0 lessThan :i @unitCount
+    50 label *label2
+    51 end
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-4 instructions):
  
@@ -164,13 +166,13 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
     18 label *label6
     19 # "Function: def inRadius(in x, in y, in radius)"
  
-    38 ucontrol boost false
-    39 ucontrol flag 0
-    40 ucontrol unbind
+    37 ucontrol boost false
+    38 ucontrol flag 0
+    39 ucontrol unbind
 -    * jump *label13 always
-    41 label *label12
-    42 label *label13
-    43 label *label11
+    40 label *label12
+    41 label *label13
+    42 label *label10
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
  
@@ -183,11 +185,12 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
 -    * op sub *tmp12 :inRadius:y *tmp11
 +   26 op sub *tmp12 y *tmp11
     27 op len *tmp13 *tmp10 *tmp12
--    * op lessThan *tmp8 *tmp13 :inRadius:radius
-+   28 op lessThan *tmp8 *tmp13 8
-    29 label *label9
-    30 jump *label10 notEqual *tmp8 false
-    31 ucontrol boost true
+    28 label *label11
+-    * jump *label9 lessThan *tmp13 :inRadius:radius
++   29 jump *label9 lessThan *tmp13 8
+    30 ucontrol boost true
+    31 ucontrol flag 2435345345
+    32 ucontrol pathfind x y
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3 instructions):
  
@@ -201,57 +204,7 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3
     21 op sub *tmp10 x *tmp9
     22 sensor *tmp11 @unit @y
 
-Modifications by Iterated phase, Jump Optimization, pass 2, iteration 1 (-1 instructions):
- 
-    22 sensor *tmp11 @unit @y
-    23 op sub *tmp12 y *tmp11
-    24 op len *tmp13 *tmp10 *tmp12
--    * op lessThan *tmp8 *tmp13 8
-    25 label *label9
--    * jump *label10 notEqual *tmp8 false
-+   26 jump *label10 lessThan *tmp13 8
-    27 ucontrol boost true
-    28 ucontrol flag 2435345345
-    29 ucontrol pathfind x y
-
-Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
- 
-     6 jump *label3 notEqual @unit null
-     7 jump *label1 always
-     8 label *label3
--    * label *label4
-     9 sensor *tmp3 @unit @controlled
-    10 jump *label5 equal *tmp3 false
-    11 sensor *tmp5 @unit @controller
-    12 jump *label7 equal *tmp5 @this
-    13 jump *label1 always
-    14 label *label7
--    * label *label8
-    15 label *label5
--    * label *label6
-    16 # "Function: def inRadius(in x, in y, in radius)"
-    17 sensor *tmp9 @unit @x
-    18 op sub *tmp10 x *tmp9
-    19 sensor *tmp11 @unit @y
-    20 op sub *tmp12 y *tmp11
-    21 op len *tmp13 *tmp10 *tmp12
--    * label *label9
-    22 jump *label10 lessThan *tmp13 8
-    23 ucontrol boost true
-    24 ucontrol flag 2435345345
- 
-    31 ucontrol flag 0
-    32 ucontrol unbind
-    33 label *label12
--    * label *label13
-    34 label *label11
-    35 label *label1
-    36 op add :i :i 1
-    37 jump *label0 lessThan :i @unitCount
--    * label *label2
-    38 end
-
-Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-2 instructions):
+Modifications by Jumps phase, Jump Straightening, pass 3, iteration 1 (-2 instructions):
  
      3 label *label0
      4 lookup unit :type :i
@@ -270,22 +223,7 @@ Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-2 instru
     13 label *label5
     14 # "Function: def inRadius(in x, in y, in radius)"
 
-Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
- 
-     4 lookup unit :type :i
-     5 ubind :type
-     6 jump *label1 equal @unit null
--    * label *label3
-     7 sensor *tmp3 @unit @controlled
-     8 jump *label5 equal *tmp3 false
-     9 sensor *tmp5 @unit @controller
-    10 jump *label1 notEqual *tmp5 @this
--    * label *label7
-    11 label *label5
-    12 # "Function: def inRadius(in x, in y, in radius)"
-    13 sensor *tmp9 @unit @x
-
-Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
+Modifications by Jumps phase, Single Step Elimination, pass 3, iteration 1 (-1 instructions):
  
     31 label *label1
     32 op add :i :i 1
@@ -312,19 +250,19 @@ Final code before resolving virtual instructions:
    12:  sensor *tmp11 @unit @y                                       ...
    13:  op sub *tmp12 y *tmp11                                       ...
    14:  op len *tmp13 *tmp10 *tmp12                                  ...
-   15:  jump *label10 lessThan *tmp13 8                              if !inRadius(x, y, RADIUS) then
+   15:  jump *label9 lessThan *tmp13 8                               if !inRadius(x, y, RADIUS) then
    16:  ucontrol boost true 0 0 0 0                                  boost(true);
    17:  ucontrol flag 2435345345 0 0 0 0                             flag(FLAG);
    18:  ucontrol pathfind x y 0 0 0                                  pathfind(x, y);
-   19:  jump *label11 always 0 0                                     if !inRadius(x, y, RADIUS) then
-        label *label10                                               ...
+   19:  jump *label10 always 0 0                                     if !inRadius(x, y, RADIUS) then
+        label *label9                                                ...
    20:  sensor *tmp17 @unit @flag                                    elsif @unit.@flag != 0 then
    21:  jump *label12 equal *tmp17 0                                 ...
    22:  ucontrol boost false 0 0 0 0                                 boost(false);
    23:  ucontrol flag 0 0 0 0 0                                      flag(0);
    24:  ucontrol unbind 0 0 0 0 0                                    unbind();
         label *label12                                               elsif @unit.@flag != 0 then
-        label *label11                                               if !inRadius(x, y, RADIUS) then
+        label *label10                                               if !inRadius(x, y, RADIUS) then
         label *label1                                                do
    25:  op add :i :i 1                                               while ++i < @unitCount;
    26:  jump *label0 lessThan :i @unitCount                          do
@@ -335,7 +273,7 @@ Code size and number of instantiations by function:
     22     1x     22,0  <no function>
      5     1x      5,0  def inRadius(in x, in y, in radius)
 
-Performance: parsed in 127 ms, compiled in 203 ms, optimized in 112 ms, run in 3 ms.
+Performance: parsed in 128 ms, compiled in 194 ms, optimized in 114 ms, run in 3 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

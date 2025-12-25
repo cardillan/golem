@@ -2,15 +2,16 @@
     16 instructions eliminated by Temp Variables Elimination (2 passes, 6 iterations).
     39 instructions eliminated by Dead Code Elimination (6 iterations).
      1 instructions eliminated by Jump Normalization (5 iterations).
-    21 instructions eliminated by Jump Optimization (5 iterations).
+    21 instructions eliminated by Condition Optimization (6 iterations).
     11 instructions eliminated by Single Step Elimination (6 iterations).
-    10 instructions eliminated by If Expression Optimization (5 iterations).
-     5 instructions eliminated by Data Flow Optimization (2 passes, 7 iterations).
-     1 instructions eliminated by Jump Straightening (5 iterations).
+    10 instructions eliminated by Boolean Optimization (7 iterations).
+       5 fully-evaluated expressions optimized using selects.
+     4 instructions eliminated by Data Flow Optimization (2 passes, 6 iterations).
+     1 instructions eliminated by Jump Straightening (6 iterations).
      6 instructions updated by Jump Threading.
      3 instructions eliminated by Unreachable Code Elimination (2 iterations).
     13 instructions eliminated by Print Merging.
-   132 instructions after optimizations.
+   133 instructions after optimizations.
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-21 instructions):
  
@@ -375,7 +376,7 @@ Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 ins
     19 sensor *tmp4 :backgroundProcess:firstUnit @dead
     20 jump *label9 equal *tmp4 false
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-21 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-21 instructions):
  
     10 set :backgroundProcess:firstUnit @unit
     11 ulocate building core false @copper .coreX .coreY *tmp2 .core
@@ -721,7 +722,7 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-4
    141 jump *label40 equal :mine:ore @scrap
    142 sensor *tmp66 .core :mine:ore
 
-Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-7 instructions):
+Modifications by Iterated phase, Boolean Optimization, pass 1, iteration 1 (-7 instructions):
  
     15 set :backgroundProcess:runningCount 0
     16 label *label6
@@ -769,13 +770,13 @@ Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1
 -    * label *label36
 -    * set *tmp60 20
 -    * label *label37
-+  123 op sub *tmp86 20 .count
-+  124 select *tmp60 equal :mine:ore @scrap *tmp86 20
++  123 op sub *tmp85 20 .count
++  124 select *tmp60 equal :mine:ore @scrap *tmp85 20
    125 jump *label38 equal :mine:ore .minOre
    126 jump *label40 equal :mine:ore @scrap
    127 sensor *tmp66 .core :mine:ore
 
-Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 2 (-3 instructions):
+Modifications by Iterated phase, Boolean Optimization, pass 1, iteration 2 (-3 instructions):
  
     29 op sub :backgroundProcess:copper *tmp15 .copperTarget
     30 op min *tmp17 :backgroundProcess:lead :backgroundProcess:sand
@@ -787,43 +788,24 @@ Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 2
 -    * select *tmp21 equal *tmp17 :backgroundProcess:lead @lead @copper
 -    * set *tmp19 *tmp21
 -    * label *label14
-+   32 select *tmp88 equal *tmp17 :backgroundProcess:lead @lead @copper
-+   33 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp88
++   32 select *tmp21 equal *tmp17 :backgroundProcess:lead @lead @copper
++   33 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp21
     34 set .minOre *tmp19
--    * jump *label17 equal .scrap false
--    * select .minOre equal *tmp19 @sand @scrap .minOre
--    * label *label17
--    * label *label18
-+   35 select *tmp89 equal *tmp19 @sand @scrap .minOre
-+   36 select .minOre notEqual .scrap false *tmp89 .minOre
-    37 print "minOre:"
-    38 print .minOre
-    39 print "\n"
+    35 jump *label17 equal .scrap false
+    36 select .minOre equal *tmp19 @sand @scrap .minOre
 
 Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1:
  
-    32 select *tmp88 equal *tmp17 :backgroundProcess:lead @lead @copper
-    33 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp88
+    33 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp21
     34 set .minOre *tmp19
--    * select *tmp89 equal *tmp19 @sand @scrap .minOre
--    * select .minOre notEqual .scrap false *tmp89 .minOre
-+   35 select *tmp89 equal *tmp19 @sand @scrap *tmp19
-+   36 select .minOre notEqual .scrap false *tmp89 *tmp19
-    37 print "minOre:"
-    38 print .minOre
-    39 print "\n"
+    35 jump *label17 equal .scrap false
+-    * select .minOre equal *tmp19 @sand @scrap .minOre
++   36 select .minOre equal *tmp19 @sand @scrap *tmp19
+    37 label *label17
+    38 label *label18
+    39 print "minOre:"
 
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2 (-1 instructions):
- 
-    31 op min *tmp17 *tmp17 :backgroundProcess:copper
-    32 select *tmp88 equal *tmp17 :backgroundProcess:lead @lead @copper
-    33 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp88
--    * set .minOre *tmp19
-    34 select *tmp89 equal *tmp19 @sand @scrap *tmp19
-    35 select .minOre notEqual .scrap false *tmp89 *tmp19
-    36 print "minOre:"
-
-Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-3 instructions):
  
      9 ubind @mono
     10 set :backgroundProcess:firstUnit @unit
@@ -835,189 +817,140 @@ Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
     14 label *label6
     15 ubind @mono
  
-    41 sensor .sandX .sandContainer @x
-    42 sensor .sandY .sandContainer @y
-    43 label *label11
+    33 jump *label17 equal .scrap false
+    34 select .minOre equal *tmp19 @sand @scrap *tmp19
+    35 label *label17
+-    * label *label18
+    36 print "minOre:"
+    37 print .minOre
+    38 print "\n"
+ 
+    43 sensor .sandX .sandContainer @x
+    44 sensor .sandY .sandContainer @y
+    45 label *label11
 -    * label *label12
-    44 op add :backgroundProcess:runningCount :backgroundProcess:runningCount 1
-    45 sensor :backgroundProcess:flag @unit @flag
-    46 print "Unit flag: "
+    46 op add :backgroundProcess:runningCount :backgroundProcess:runningCount 1
+    47 sensor :backgroundProcess:flag @unit @flag
+    48 print "Unit flag: "
  
-    54 jump *label26 equal *tmp35 null
-    55 jump *label23 always
-    56 label *label26
+    56 jump *label26 equal *tmp35 null
+    57 jump *label23 always
+    58 label *label26
 -    * label *label27
-    57 label *label24
+    59 label *label24
 -    * label *label25
-    58 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
-    59 ucontrol approach :findOreToMine:x :findOreToMine:y 7
-    60 ucontrol mine :findOreToMine:x :findOreToMine:y
+    60 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
+    61 ucontrol approach :findOreToMine:x :findOreToMine:y 7
+    62 ucontrol mine :findOreToMine:x :findOreToMine:y
  
-    93 print "\n"
-    94 ucontrol flag 0
-    95 label *label33
+    95 print "\n"
+    96 ucontrol flag 0
+    97 label *label33
 -    * label *label34
-    96 print "\n"
+    98 print "\n"
 -    * label *label30
-    97 jump *label29 always
-    98 label *label28
-    99 print "Mining "
+    99 jump *label29 always
+   100 label *label28
+   101 print "Mining "
  
-   115 ucontrol flag 1
-   116 jump *label35 always
-   117 label *label42
+   117 ucontrol flag 1
+   118 jump *label35 always
+   119 label *label42
 -    * label *label43
-   118 label *label40
+   120 label *label40
 -    * label *label41
-   119 label *label38
+   121 label *label38
 -    * label *label39
-   120 sensor :mine:items @unit @totalItems
-   121 print :mine:items
-   122 sensor *tmp70 @unit @firstItem
+   122 sensor :mine:items @unit @totalItems
+   123 print :mine:items
+   124 sensor *tmp70 @unit @firstItem
  
-   124 print " (dropping)"
-   125 ucontrol itemDrop @air 20
-   126 label *label44
+   126 print " (dropping)"
+   127 ucontrol itemDrop @air 20
+   128 label *label44
 -    * label *label45
-   127 jump *label46 lessThan :mine:items *tmp60
-   128 print ", full"
-   129 ucontrol flag 1
+   129 jump *label46 lessThan :mine:items *tmp60
+   130 print ", full"
+   131 ucontrol flag 1
  
-   170 label *label35
-   171 label *label29
-   172 label *label22
+   172 label *label35
+   173 label *label29
+   174 label *label22
 -    * label *label7
-   173 jump *label6 always
+   175 jump *label6 always
 -    * label *label8
 -    * label *label2
-   174 wait 1e12
-   175 jump *label1 always
-   176 end
-
-Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instructions):
- 
-    51 jump *label24 equal *tmp32 null
-    52 ucontrol itemDrop @air 20
-    53 sensor *tmp35 @unit @firstItem
--    * jump *label26 equal *tmp35 null
--    * jump *label23 always
-+   54 jump *label23 notEqual *tmp35 null
-    55 label *label26
-    56 label *label24
-    57 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
-
-Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
- 
-    52 ucontrol itemDrop @air 20
-    53 sensor *tmp35 @unit @firstItem
-    54 jump *label23 notEqual *tmp35 null
--    * label *label26
-    55 label *label24
-    56 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
-    57 ucontrol approach :findOreToMine:x :findOreToMine:y 7
-
-Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
- 
-    51 jump *label24 equal *tmp32 null
-    52 ucontrol itemDrop @air 20
-    53 sensor *tmp35 @unit @firstItem
--    * jump *label23 notEqual *tmp35 null
-+   54 jump *label6 notEqual *tmp35 null
-    55 label *label24
-    56 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
-    57 ucontrol approach :findOreToMine:x :findOreToMine:y 7
- 
-    72 print :findOreToMine:y
-    73 print "\n"
-    74 label *label23
--    * jump *label22 always
-+   75 jump *label6 always
-    76 label *label21
-    77 jump *label28 notEqual :backgroundProcess:flag 1
-    78 print "Returning ore"
- 
-    92 ucontrol flag 0
-    93 label *label33
-    94 print "\n"
--    * jump *label29 always
-+   95 jump *label6 always
-    96 label *label28
-    97 print "Mining "
-    98 op mod *tmp53 :backgroundProcess:flag 16
- 
-   111 jump *label42 lessThanEq *tmp66 .min
-   112 print ", switching to a more needed ore"
-   113 ucontrol flag 1
--    * jump *label35 always
-+  114 jump *label6 always
-   115 label *label42
-   116 label *label40
-   117 label *label38
- 
-   128 jump *label48 notEqual :mine:ore @scrap
-   129 ucontrol approach .sandX .sandY 7
-   130 ucontrol itemDrop .sandContainer 20
--    * jump *label49 always
-+  131 jump *label47 always
-   132 label *label48
-   133 ucontrol approach .coreX .coreY 7
-   134 ucontrol itemDrop .core 20
- 
-   146 jump *label52 notEqual :mine:floor null
-   147 print ": too far"
-   148 print "\n"
--    * jump *label53 always
-+  149 jump *label51 always
-   150 label *label52
-   151 ucontrol flag 1
-   152 print ": no ore!"
-
-Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-3 instructions):
- 
-    71 print " "
-    72 print :findOreToMine:y
-    73 print "\n"
--    * label *label23
-    74 jump *label6 always
-    75 label *label21
-    76 jump *label28 notEqual :backgroundProcess:flag 1
- 
-   131 label *label48
-   132 ucontrol approach .coreX .coreY 7
-   133 ucontrol itemDrop .core 20
--    * label *label49
-   134 jump *label47 always
-   135 label *label46
-   136 print " at "
- 
-   149 ucontrol flag 1
-   150 print ": no ore!"
-   151 print "\n"
--    * label *label53
-   152 jump *label51 always
-   153 label *label50
-   154 jump *label54 notEqual :mine:block null
- 
-   162 label *label51
-   163 label *label47
-   164 print "\n"
--    * label *label35
--    * label *label29
--    * label *label22
-   165 jump *label6 always
 -    * wait 1e12
 -    * jump *label1 always
 -    * end
 
-Modifications by Jumps phase, Dead Code Elimination, pass 4, iteration 1:
+Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instructions):
  
-     4 set lead @ore-lead
-     5 set sand @sand-floor
-     6 set *signature "0:v1"
--    * label *label1
-     7 label *label3
-     8 ubind @mono
-     9 set :backgroundProcess:firstUnit @unit
+    52 jump *label24 equal *tmp32 null
+    53 ucontrol itemDrop @air 20
+    54 sensor *tmp35 @unit @firstItem
+-    * jump *label26 equal *tmp35 null
+-    * jump *label23 always
++   55 jump *label23 notEqual *tmp35 null
+    56 label *label26
+    57 label *label24
+    58 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
+
+Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
+ 
+    52 jump *label24 equal *tmp32 null
+    53 ucontrol itemDrop @air 20
+    54 sensor *tmp35 @unit @firstItem
+-    * jump *label23 notEqual *tmp35 null
++   55 jump *label6 notEqual *tmp35 null
+    56 label *label24
+    57 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
+    58 ucontrol approach :findOreToMine:x :findOreToMine:y 7
+ 
+    73 print :findOreToMine:y
+    74 print "\n"
+    75 label *label23
+-    * jump *label22 always
++   76 jump *label6 always
+    77 label *label21
+    78 jump *label28 notEqual :backgroundProcess:flag 1
+    79 print "Returning ore"
+ 
+    93 ucontrol flag 0
+    94 label *label33
+    95 print "\n"
+-    * jump *label29 always
++   96 jump *label6 always
+    97 label *label28
+    98 print "Mining "
+    99 op mod *tmp53 :backgroundProcess:flag 16
+ 
+   112 jump *label42 lessThanEq *tmp66 .min
+   113 print ", switching to a more needed ore"
+   114 ucontrol flag 1
+-    * jump *label35 always
++  115 jump *label6 always
+   116 label *label42
+   117 label *label40
+   118 label *label38
+ 
+   129 jump *label48 notEqual :mine:ore @scrap
+   130 ucontrol approach .sandX .sandY 7
+   131 ucontrol itemDrop .sandContainer 20
+-    * jump *label49 always
++  132 jump *label47 always
+   133 label *label48
+   134 ucontrol approach .coreX .coreY 7
+   135 ucontrol itemDrop .core 20
+ 
+   147 jump *label52 notEqual :mine:floor null
+   148 print ": too far"
+   149 print "\n"
+-    * jump *label53 always
++  150 jump *label51 always
+   151 label *label52
+   152 ucontrol flag 1
+   153 print ": no ore!"
 
 Modifications by Final phase, Temp Variables Elimination, iteration 1:
  
@@ -1030,53 +963,53 @@ Modifications by Final phase, Temp Variables Elimination, iteration 1:
     12 set :backgroundProcess:runningCount 0
     13 label *label6
  
-    52 sensor *tmp35 @unit @firstItem
-    53 jump *label6 notEqual *tmp35 null
-    54 label *label24
+    54 sensor *tmp35 @unit @firstItem
+    55 jump *label6 notEqual *tmp35 null
+    56 label *label24
 -    * ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y *tmp38 *tmp39
-+   55 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y 0 0
-    56 ucontrol approach :findOreToMine:x :findOreToMine:y 7
-    57 ucontrol mine :findOreToMine:x :findOreToMine:y
-    58 op mul *tmp40 :findOreToMine:x 1000
++   57 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y 0 0
+    58 ucontrol approach :findOreToMine:x :findOreToMine:y 7
+    59 ucontrol mine :findOreToMine:x :findOreToMine:y
+    60 op mul *tmp40 :findOreToMine:x 1000
  
-   138 print " "
-   139 print :mine:y
-   140 ucontrol approach :mine:x :mine:y 7
+   140 print " "
+   141 print :mine:y
+   142 ucontrol approach :mine:x :mine:y 7
 -    * ucontrol getBlock :mine:x :mine:y *tmp78 :mine:block :mine:floor
-+  141 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
-   142 jump *label50 equal :mine:floor :mine:floorOre
-   143 jump *label52 notEqual :mine:floor null
-   144 print ": too far"
++  143 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
+   144 jump *label50 equal :mine:floor :mine:floorOre
+   145 jump *label52 notEqual :mine:floor null
+   146 print ": too far"
 
 Modifications by Final phase, Print Merging, iteration 1 (-13 instructions):
  
-    30 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp88
-    31 select *tmp89 equal *tmp19 @sand @scrap *tmp19
-    32 select .minOre notEqual .scrap false *tmp89 *tmp19
+    32 jump *label17 equal .scrap false
+    33 select .minOre equal *tmp19 @sand @scrap *tmp19
+    34 label *label17
 -    * print "minOre:"
 -    * print .minOre
 -    * print "\n"
-+   33 print "minOre:{0}\n"
-+   34 format .minOre
-    35 op mul *tmp25 10 :backgroundProcess:runningCount
-    36 op add .min *tmp17 *tmp25
-    37 set .count :backgroundProcess:runningCount
++   35 print "minOre:{0}\n"
++   36 format .minOre
+    37 op mul *tmp25 10 :backgroundProcess:runningCount
+    38 op add .min *tmp17 *tmp25
+    39 set .count :backgroundProcess:runningCount
  
-    41 label *label11
-    42 op add :backgroundProcess:runningCount :backgroundProcess:runningCount 1
-    43 sensor :backgroundProcess:flag @unit @flag
+    43 label *label11
+    44 op add :backgroundProcess:runningCount :backgroundProcess:runningCount 1
+    45 sensor :backgroundProcess:flag @unit @flag
 -    * print "Unit flag: "
 -    * print :backgroundProcess:flag
 -    * print "\n"
-+   44 print "Unit flag: {0}\n"
-+   45 format :backgroundProcess:flag
-    46 jump *label21 notEqual :backgroundProcess:flag 0
-    47 sensor *tmp32 @unit @firstItem
-    48 jump *label24 equal *tmp32 null
++   46 print "Unit flag: {0}\n"
++   47 format :backgroundProcess:flag
+    48 jump *label21 notEqual :backgroundProcess:flag 0
+    49 sensor *tmp32 @unit @firstItem
+    50 jump *label24 equal *tmp32 null
  
-    59 sensor *tmp43 .minOre @id
-    60 op add *tmp44 *tmp42 *tmp43
-    61 ucontrol flag *tmp44
+    61 sensor *tmp43 .minOre @id
+    62 op add *tmp44 *tmp42 *tmp43
+    63 ucontrol flag *tmp44
 -    * print "Found "
 -    * print .minOre
 -    * print " "
@@ -1086,60 +1019,60 @@ Modifications by Final phase, Print Merging, iteration 1 (-13 instructions):
 -    * print " "
 -    * print :findOreToMine:y
 -    * print "\n"
-+   62 print "Found {0} at {0}, {0}\n"
-+   63 format .minOre
-+   64 format :findOreToMine:x
-+   65 format :findOreToMine:y
-    66 jump *label6 always
-    67 label *label21
-    68 jump *label28 notEqual :backgroundProcess:flag 1
++   64 print "Found {0} at {0}, {0}\n"
++   65 format .minOre
++   66 format :findOreToMine:x
++   67 format :findOreToMine:y
+    68 jump *label6 always
+    69 label *label21
+    70 jump *label28 notEqual :backgroundProcess:flag 1
  
-    78 label *label32
-    79 sensor *tmp50 @unit @firstItem
-    80 jump *label33 notEqual *tmp50 null
+    80 label *label32
+    81 sensor *tmp50 @unit @firstItem
+    82 jump *label33 notEqual *tmp50 null
 -    * print " (finished)"
 -    * print "\n"
-+   81 print " (finished)\n"
-    82 ucontrol flag 0
-    83 label *label33
-    84 print "\n"
++   83 print " (finished)\n"
+    84 ucontrol flag 0
+    85 label *label33
+    86 print "\n"
  
-   124 ucontrol itemDrop .core 20
-   125 jump *label47 always
-   126 label *label46
+   126 ucontrol itemDrop .core 20
+   127 jump *label47 always
+   128 label *label46
 -    * print " at "
 -    * print :mine:x
 -    * print ","
 -    * print " "
-+  127 print " at {0}, "
-+  128 format :mine:x
-   129 print :mine:y
-   130 ucontrol approach :mine:x :mine:y 7
-   131 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
-   132 jump *label50 equal :mine:floor :mine:floorOre
-   133 jump *label52 notEqual :mine:floor null
++  129 print " at {0}, "
++  130 format :mine:x
+   131 print :mine:y
+   132 ucontrol approach :mine:x :mine:y 7
+   133 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
+   134 jump *label50 equal :mine:floor :mine:floorOre
+   135 jump *label52 notEqual :mine:floor null
 -    * print ": too far"
 -    * print "\n"
-+  134 print ": too far\n"
-   135 jump *label51 always
-   136 label *label52
-   137 ucontrol flag 1
++  136 print ": too far\n"
+   137 jump *label51 always
+   138 label *label52
+   139 ucontrol flag 1
 -    * print ": no ore!"
 -    * print "\n"
-+  138 print ": no ore!\n"
-   139 jump *label51 always
-   140 label *label50
-   141 jump *label54 notEqual :mine:block null
++  140 print ": no ore!\n"
+   141 jump *label51 always
+   142 label *label50
+   143 jump *label54 notEqual :mine:block null
  
-   143 jump *label55 always
-   144 label *label54
-   145 ucontrol flag 1
+   145 jump *label55 always
+   146 label *label54
+   147 ucontrol flag 1
 -    * print ": blocked!"
 -    * print "\n"
-+  146 print ": blocked!\n"
-   147 label *label55
-   148 label *label51
-   149 label *label47
++  148 print ": blocked!\n"
+   149 label *label55
+   150 label *label51
+   151 label *label47
 
 Final code before resolving virtual instructions:
 
@@ -1172,140 +1105,142 @@ Final code before resolving virtual instructions:
    24:  op sub :backgroundProcess:copper *tmp15 .copperTarget        ...
    25:  op min *tmp17 :backgroundProcess:lead :backgroundProcess:san min = min(lead, sand, copper);
    26:  op min *tmp17 *tmp17 :backgroundProcess:copper               ...
-   27:  select *tmp88 equal *tmp17 :backgroundProcess:lead @lead @co minOre = min == sand ? @sand : min == lead ? @lead : @copper;
+   27:  select *tmp21 equal *tmp17 :backgroundProcess:lead @lead @co minOre = min == sand ? @sand : min == lead ? @lead : @copper;
    28:  select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tm ...
-   29:  select *tmp89 equal *tmp19 @sand @scrap *tmp19               if scrap then
-   30:  select .minOre notEqual .scrap false *tmp89 *tmp19           ...
-   31:  print "minOre:{0}\n"                                         println("minOre:", minOre);
-   32:  format .minOre                                               ...
-   33:  op mul *tmp25 10 :backgroundProcess:runningCount             min += 10 * runningCount;
-   34:  op add .min *tmp17 *tmp25                                    ...
-   35:  set .count :backgroundProcess:runningCount                   count = runningCount;
-   36:  set :backgroundProcess:runningCount 2                        runningCount = 2;
-   37:  sensor .sandX .sandContainer @x                              sandX = sandContainer.@x;
-   38:  sensor .sandY .sandContainer @y                              sandY = sandContainer.@y;
+   29:  set .minOre *tmp19                                           ...
+   30:  jump *label17 equal .scrap false                             if scrap then
+   31:  select .minOre equal *tmp19 @sand @scrap *tmp19              if minOre == @sand then minOre = @scrap; end;
+        label *label17                                               if scrap then
+   32:  print "minOre:{0}\n"                                         println("minOre:", minOre);
+   33:  format .minOre                                               ...
+   34:  op mul *tmp25 10 :backgroundProcess:runningCount             min += 10 * runningCount;
+   35:  op add .min *tmp17 *tmp25                                    ...
+   36:  set .count :backgroundProcess:runningCount                   count = runningCount;
+   37:  set :backgroundProcess:runningCount 2                        runningCount = 2;
+   38:  sensor .sandX .sandContainer @x                              sandX = sandContainer.@x;
+   39:  sensor .sandY .sandContainer @y                              sandY = sandContainer.@y;
         label *label11                                               if @unit == firstUnit then
-   39:  op add :backgroundProcess:runningCount :backgroundProcess:ru while true do
-   40:  sensor :backgroundProcess:flag @unit @flag                   var flag = @unit.@flag;
-   41:  print "Unit flag: {0}\n"                                     println("Unit flag: ", flag);
-   42:  format :backgroundProcess:flag                               ...
-   43:  jump *label21 notEqual :backgroundProcess:flag 0             if flag == 0 then
-   44:  sensor *tmp32 @unit @firstItem                               if @unit.@firstItem != null then
-   45:  jump *label24 equal *tmp32 null                              ...
-   46:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
-   47:  sensor *tmp35 @unit @firstItem                               if @unit.@firstItem != null then return; end;
-   48:  jump *label6 notEqual *tmp35 null                            ...
+   40:  op add :backgroundProcess:runningCount :backgroundProcess:ru while true do
+   41:  sensor :backgroundProcess:flag @unit @flag                   var flag = @unit.@flag;
+   42:  print "Unit flag: {0}\n"                                     println("Unit flag: ", flag);
+   43:  format :backgroundProcess:flag                               ...
+   44:  jump *label21 notEqual :backgroundProcess:flag 0             if flag == 0 then
+   45:  sensor *tmp32 @unit @firstItem                               if @unit.@firstItem != null then
+   46:  jump *label24 equal *tmp32 null                              ...
+   47:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
+   48:  sensor *tmp35 @unit @firstItem                               if @unit.@firstItem != null then return; end;
+   49:  jump *label6 notEqual *tmp35 null                            ...
         label *label24                                               if @unit.@firstItem != null then
-   49:  ulocate ore core true .minOre :findOreToMine:x :findOreToMin ulocate(:ore, ore, out x, out y);
-   50:  ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0    approach(x, y, RADIUS);
-   51:  ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0        mine(x, y);
-   52:  op mul *tmp40 :findOreToMine:x 1000                          flag((x * 1000 + y) * 16 + ore.@id);
-   53:  op add *tmp41 *tmp40 :findOreToMine:y                        ...
-   54:  op mul *tmp42 *tmp41 16                                      ...
-   55:  sensor *tmp43 .minOre @id                                    ...
-   56:  op add *tmp44 *tmp42 *tmp43                                  ...
-   57:  ucontrol flag *tmp44 0 0 0 0                                 ...
-   58:  print "Found {0} at {0}, {0}\n"                              println($"Found $ore at $x, $y");
-   59:  format .minOre                                               ...
-   60:  format :findOreToMine:x                                      ...
-   61:  format :findOreToMine:y                                      ...
-   62:  jump *label6 always 0 0                                      if flag == 0 then
+   50:  ulocate ore core true .minOre :findOreToMine:x :findOreToMin ulocate(:ore, ore, out x, out y);
+   51:  ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0    approach(x, y, RADIUS);
+   52:  ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0        mine(x, y);
+   53:  op mul *tmp40 :findOreToMine:x 1000                          flag((x * 1000 + y) * 16 + ore.@id);
+   54:  op add *tmp41 *tmp40 :findOreToMine:y                        ...
+   55:  op mul *tmp42 *tmp41 16                                      ...
+   56:  sensor *tmp43 .minOre @id                                    ...
+   57:  op add *tmp44 *tmp42 *tmp43                                  ...
+   58:  ucontrol flag *tmp44 0 0 0 0                                 ...
+   59:  print "Found {0} at {0}, {0}\n"                              println($"Found $ore at $x, $y");
+   60:  format .minOre                                               ...
+   61:  format :findOreToMine:x                                      ...
+   62:  format :findOreToMine:y                                      ...
+   63:  jump *label6 always 0 0                                      if flag == 0 then
         label *label21                                               ...
-   63:  jump *label28 notEqual :backgroundProcess:flag 1             elsif flag == 1 then
-   64:  print "Returning ore"                                        print("Returning ore");
-   65:  sensor *tmp47 @unit @firstItem                               if @unit.@firstItem == @scrap then
-   66:  jump *label31 notEqual *tmp47 @scrap                         ...
-   67:  ucontrol approach .sandX .sandY 7 0 0                        approach(sandX, sandY, RADIUS);
-   68:  ucontrol itemDrop .sandContainer 20 0 0 0                    itemDrop(sandContainer, capacity);
-   69:  jump *label32 always 0 0                                     if @unit.@firstItem == @scrap then
+   64:  jump *label28 notEqual :backgroundProcess:flag 1             elsif flag == 1 then
+   65:  print "Returning ore"                                        print("Returning ore");
+   66:  sensor *tmp47 @unit @firstItem                               if @unit.@firstItem == @scrap then
+   67:  jump *label31 notEqual *tmp47 @scrap                         ...
+   68:  ucontrol approach .sandX .sandY 7 0 0                        approach(sandX, sandY, RADIUS);
+   69:  ucontrol itemDrop .sandContainer 20 0 0 0                    itemDrop(sandContainer, capacity);
+   70:  jump *label32 always 0 0                                     if @unit.@firstItem == @scrap then
         label *label31                                               ...
-   70:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
-   71:  ucontrol itemDrop .core 20 0 0 0                             itemDrop(core, capacity);
+   71:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
+   72:  ucontrol itemDrop .core 20 0 0 0                             itemDrop(core, capacity);
         label *label32                                               if @unit.@firstItem == @scrap then
-   72:  sensor *tmp50 @unit @firstItem                               if @unit.@firstItem == null then
-   73:  jump *label33 notEqual *tmp50 null                           ...
-   74:  print " (finished)\n"                                        println(" (finished)");
-   75:  ucontrol flag 0 0 0 0 0                                      flag(0);
+   73:  sensor *tmp50 @unit @firstItem                               if @unit.@firstItem == null then
+   74:  jump *label33 notEqual *tmp50 null                           ...
+   75:  print " (finished)\n"                                        println(" (finished)");
+   76:  ucontrol flag 0 0 0 0 0                                      flag(0);
         label *label33                                               if @unit.@firstItem == null then
-   76:  print "\n"                                                   println();
-   77:  jump *label6 always 0 0                                      elsif flag == 1 then
+   77:  print "\n"                                                   println();
+   78:  jump *label6 always 0 0                                      elsif flag == 1 then
         label *label28                                               ...
-   78:  print "Mining "                                              print("Mining ");
-   79:  op mod *tmp53 :backgroundProcess:flag 16                     var ore = lookup(:item, flag % 16);
-   80:  lookup item :mine:ore *tmp53                                 ...
-   81:  printchar :mine:ore                                          printchar(ore);
-   82:  op idiv :mine:flag :backgroundProcess:flag 16                flag \= 16;
-   83:  op mod :mine:y :mine:flag 1000                               var y = flag % 1000;
-   84:  op idiv :mine:x :mine:flag 1000                              var x = flag \ 1000;
-   85:  sensor *tmp57 :mine:ore @name                                var floorOre = @this.read(ore.@name);
-   86:  read :mine:floorOre @this *tmp57                             ...
-   87:  op sub *tmp86 20 .count                                      var oreCapacity = ore == @scrap ? capacity - count : capacity;
-   88:  select *tmp60 equal :mine:ore @scrap *tmp86 20               ...
-   89:  jump *label38 equal :mine:ore .minOre                        if ore != minOre then
-   90:  jump *label40 equal :mine:ore @scrap                         if ore != @scrap then
-   91:  sensor *tmp66 .core :mine:ore                                if core.sensor(ore) > min then
-   92:  jump *label42 lessThanEq *tmp66 .min                         ...
-   93:  print ", switching to a more needed ore"                     print(", switching to a more needed ore");
-   94:  ucontrol flag 1 0 0 0 0                                      flag(1);
-   95:  jump *label6 always 0 0                                      return;
+   79:  print "Mining "                                              print("Mining ");
+   80:  op mod *tmp53 :backgroundProcess:flag 16                     var ore = lookup(:item, flag % 16);
+   81:  lookup item :mine:ore *tmp53                                 ...
+   82:  printchar :mine:ore                                          printchar(ore);
+   83:  op idiv :mine:flag :backgroundProcess:flag 16                flag \= 16;
+   84:  op mod :mine:y :mine:flag 1000                               var y = flag % 1000;
+   85:  op idiv :mine:x :mine:flag 1000                              var x = flag \ 1000;
+   86:  sensor *tmp57 :mine:ore @name                                var floorOre = @this.read(ore.@name);
+   87:  read :mine:floorOre @this *tmp57                             ...
+   88:  op sub *tmp85 20 .count                                      var oreCapacity = ore == @scrap ? capacity - count : capacity;
+   89:  select *tmp60 equal :mine:ore @scrap *tmp85 20               ...
+   90:  jump *label38 equal :mine:ore .minOre                        if ore != minOre then
+   91:  jump *label40 equal :mine:ore @scrap                         if ore != @scrap then
+   92:  sensor *tmp66 .core :mine:ore                                if core.sensor(ore) > min then
+   93:  jump *label42 lessThanEq *tmp66 .min                         ...
+   94:  print ", switching to a more needed ore"                     print(", switching to a more needed ore");
+   95:  ucontrol flag 1 0 0 0 0                                      flag(1);
+   96:  jump *label6 always 0 0                                      return;
         label *label42                                               if core.sensor(ore) > min then
         label *label40                                               if ore != @scrap then
         label *label38                                               if ore != minOre then
-   96:  sensor :mine:items @unit @totalItems                         var items = @unit.@totalItems;
-   97:  print :mine:items                                            print(items);
-   98:  sensor *tmp70 @unit @firstItem                               if @unit.@firstItem != ore then
-   99:  jump *label44 equal *tmp70 :mine:ore                         ...
-  100:  print " (dropping)"                                          print(" (dropping)");
-  101:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
+   97:  sensor :mine:items @unit @totalItems                         var items = @unit.@totalItems;
+   98:  print :mine:items                                            print(items);
+   99:  sensor *tmp70 @unit @firstItem                               if @unit.@firstItem != ore then
+  100:  jump *label44 equal *tmp70 :mine:ore                         ...
+  101:  print " (dropping)"                                          print(" (dropping)");
+  102:  ucontrol itemDrop @air 20 0 0 0                              itemDrop(@air, capacity);
         label *label44                                               if @unit.@firstItem != ore then
-  102:  jump *label46 lessThan :mine:items *tmp60                    if items >= oreCapacity then
-  103:  print ", full"                                               print(", full");
-  104:  ucontrol flag 1 0 0 0 0                                      flag(1);
-  105:  jump *label48 notEqual :mine:ore @scrap                      if ore == @scrap then
-  106:  ucontrol approach .sandX .sandY 7 0 0                        approach(sandX, sandY, RADIUS);
-  107:  ucontrol itemDrop .sandContainer 20 0 0 0                    itemDrop(sandContainer, capacity);
-  108:  jump *label47 always 0 0                                     if ore == @scrap then
+  103:  jump *label46 lessThan :mine:items *tmp60                    if items >= oreCapacity then
+  104:  print ", full"                                               print(", full");
+  105:  ucontrol flag 1 0 0 0 0                                      flag(1);
+  106:  jump *label48 notEqual :mine:ore @scrap                      if ore == @scrap then
+  107:  ucontrol approach .sandX .sandY 7 0 0                        approach(sandX, sandY, RADIUS);
+  108:  ucontrol itemDrop .sandContainer 20 0 0 0                    itemDrop(sandContainer, capacity);
+  109:  jump *label47 always 0 0                                     if ore == @scrap then
         label *label48                                               ...
-  109:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
-  110:  ucontrol itemDrop .core 20 0 0 0                             itemDrop(core, capacity);
-  111:  jump *label47 always 0 0                                     if items >= oreCapacity then
+  110:  ucontrol approach .coreX .coreY 7 0 0                        approach(coreX, coreY, RADIUS);
+  111:  ucontrol itemDrop .core 20 0 0 0                             itemDrop(core, capacity);
+  112:  jump *label47 always 0 0                                     if items >= oreCapacity then
         label *label46                                               ...
-  112:  print " at {0}, "                                            print($" at $x, $y");
-  113:  format :mine:x                                               ...
-  114:  print :mine:y                                                ...
-  115:  ucontrol approach :mine:x :mine:y 7 0 0                      approach(x, y, RADIUS);
-  116:  ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor  var block = getBlock(x, y, , out floor);
-  117:  jump *label50 equal :mine:floor :mine:floorOre               if floor != floorOre then
-  118:  jump *label52 notEqual :mine:floor null                      if floor == null then
-  119:  print ": too far\n"                                          println(": too far");
-  120:  jump *label51 always 0 0                                     if floor == null then
+  113:  print " at {0}, "                                            print($" at $x, $y");
+  114:  format :mine:x                                               ...
+  115:  print :mine:y                                                ...
+  116:  ucontrol approach :mine:x :mine:y 7 0 0                      approach(x, y, RADIUS);
+  117:  ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor  var block = getBlock(x, y, , out floor);
+  118:  jump *label50 equal :mine:floor :mine:floorOre               if floor != floorOre then
+  119:  jump *label52 notEqual :mine:floor null                      if floor == null then
+  120:  print ": too far\n"                                          println(": too far");
+  121:  jump *label51 always 0 0                                     if floor == null then
         label *label52                                               ...
-  121:  ucontrol flag 1 0 0 0 0                                      flag(1);
-  122:  print ": no ore!\n"                                          println(": no ore!");
-  123:  jump *label51 always 0 0                                     if floor != floorOre then
+  122:  ucontrol flag 1 0 0 0 0                                      flag(1);
+  123:  print ": no ore!\n"                                          println(": no ore!");
+  124:  jump *label51 always 0 0                                     if floor != floorOre then
         label *label50                                               ...
-  124:  jump *label54 notEqual :mine:block null                      elsif block == null then
-  125:  ucontrol mine :mine:x :mine:y 0 0 0                          mine(x, y);
-  126:  jump *label55 always 0 0                                     elsif block == null then
+  125:  jump *label54 notEqual :mine:block null                      elsif block == null then
+  126:  ucontrol mine :mine:x :mine:y 0 0 0                          mine(x, y);
+  127:  jump *label55 always 0 0                                     elsif block == null then
         label *label54                                               ...
-  127:  ucontrol flag 1 0 0 0 0                                      flag(1);
-  128:  print ": blocked!\n"                                         println(": blocked!");
+  128:  ucontrol flag 1 0 0 0 0                                      flag(1);
+  129:  print ": blocked!\n"                                         println(": blocked!");
         label *label55                                               elsif block == null then
         label *label51                                               if floor != floorOre then
         label *label47                                               if items >= oreCapacity then
-  129:  print "\n"                                                   println();
-  130:  jump *label6 always 0 0                                      while true do
+  130:  print "\n"                                                   println();
+  131:  jump *label6 always 0 0                                      while true do
 
 
 Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
     52     1x     52,0  void mine(in flag)
-    42     1x     42,0  void backgroundProcess()
+    43     1x     43,0  void backgroundProcess()
     18     1x     18,0  void findOreToMine(in ore)
     13     1x     13,0  void returnItems()
      7     1x      7,0  <no function>
 
-Performance: parsed in 229 ms, compiled in 213 ms, optimized in 282 ms, run in 5 ms.
+Performance: parsed in 222 ms, compiled in 288 ms, optimized in 301 ms, run in 7 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

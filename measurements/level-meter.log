@@ -1,23 +1,24 @@
    248 instructions before optimizations.
     34 instructions eliminated by Temp Variables Elimination (5 iterations).
      1 instructions eliminated by Case Expression Optimization.
-    17 instructions eliminated by Dead Code Elimination (4 iterations).
-     1 instructions eliminated by Jump Normalization (4 iterations).
-     7 instructions eliminated by Jump Optimization (4 iterations).
-     6 instructions eliminated by Single Step Elimination (2 passes, 6 iterations).
+    17 instructions eliminated by Dead Code Elimination (5 iterations).
+     1 instructions eliminated by Jump Normalization (5 iterations).
+     6 instructions eliminated by Condition Optimization (6 iterations).
+     6 instructions eliminated by Single Step Elimination (3 passes, 8 iterations).
+     1 instructions eliminated by Expression Optimization (2 iterations).
     10 instructions eliminated by Data Flow Optimization (6 iterations).
-     1 instructions added by Loop Optimization (2 iterations).
-     3 loops improved by Loop Optimization.
+     1 instructions added by Loop Rotation (2 iterations).
+       3 loop conditions were partially rotated.
    136 instructions added by Case Switching (4 iterations).
-     1 case expressions converted to switched jumps Case Switching.
-     8 instructions eliminated by Jump Straightening (4 iterations).
+     1 case expressions converted to switched jumps by Case Switching.
+     8 instructions eliminated by Jump Straightening (6 iterations).
      2 instructions updated by Jump Threading.
-     1 instructions eliminated by Unreachable Code Elimination (2 iterations).
+     1 instructions eliminated by Unreachable Code Elimination (3 iterations).
      5 instructions eliminated by Print Merging.
    295 instructions after optimizations.
 
 Pass 1: speed optimization selection (cost limit 834):
-  * Replicate loop condition at line 119:1                       size    +1, benefit       25.0, efficiency     25.000 (+1 instructions)
+  * Partial loop rotation at line 119:1                          size    +1, benefit       25.0, efficiency     25.000 (+1 instructions)
   o Convert case at line 31:9 (segments: 15)                     size    +5, benefit      576.9, efficiency    115.385
   o Convert case at line 31:9 (segments: 6)                      size    +7, benefit      817.3, efficiency    116.758
   o Convert case at line 31:9 (segments: 5)                      size   +12, benefit     1009.6, efficiency     84.135
@@ -184,51 +185,51 @@ Modifications by Initial phase, Dead Code Elimination, iteration 1 (-17 instruct
    140 label *label4
    141 jump *label3 always
  
-   155 jump *label23 equal *tmp17 false
-   156 print "\nNo memory or container."
-   157 printflush .MESSAGE
--    * set *tmp19 null
-   158 jump *label24 always
-   159 label *label23
-   160 printflush .MESSAGE
-   161 jump *label2 always
--    * set *tmp19 null
-   162 label *label24
-   163 label *label1
-   164 jump *label0 always
+   154 jump *label23 equal *tmp17 false
+   155 print "\nNo memory or container."
+   156 printflush .MESSAGE
+-    * set *tmp18 null
+   157 jump *label24 always
+   158 label *label23
+   159 printflush .MESSAGE
+   160 jump *label2 always
+-    * set *tmp18 null
+   161 label *label24
+   162 label *label1
+   163 jump *label0 always
  
-   204 set :prevTick *tmp50
-   205 op add *tmp51 :prevTick .TICKS
-   206 set :nextTick *tmp51
--    * set *tmp49 :nextTick
-   207 jump *label29 always
-   208 label *label28
--    * set *tmp49 null
-   209 label *label29
-   210 label *label30
-   211 op lessThan *tmp52 @tick :nextTick
+   203 set :prevTick *tmp49
+   204 op add *tmp50 :prevTick .TICKS
+   205 set :nextTick *tmp50
+-    * set *tmp48 :nextTick
+   206 jump *label29 always
+   207 label *label28
+-    * set *tmp48 null
+   208 label *label29
+   209 label *label30
+   210 op lessThan *tmp51 @tick :nextTick
  
-   213 op lessThan *tmp53 @tick :prevTick
-   214 jump *label33 equal *tmp53 false
-   215 end
--    * set *tmp54 null
-   216 jump *label34 always
-   217 label *label33
--    * set *tmp54 null
-   218 label *label34
-   219 label *label31
-   220 jump *label30 always
+   212 op lessThan *tmp52 @tick :prevTick
+   213 jump *label33 equal *tmp52 false
+   214 end
+-    * set *tmp53 null
+   215 jump *label34 always
+   216 label *label33
+-    * set *tmp53 null
+   217 label *label34
+   218 label *label31
+   219 jump *label30 always
  
-   232 op greaterThan *tmp61 :index .END_INDEX
-   233 jump *label35 equal *tmp61 false
-   234 set :index .START_INDEX
--    * set *tmp62 :index
-   235 jump *label36 always
-   236 label *label35
--    * set *tmp62 null
-   237 label *label36
-   238 set *tmp63 .M_START_INDEX
-   239 write :index .MEMORY *tmp63
+   231 op greaterThan *tmp60 :index .END_INDEX
+   232 jump *label35 equal *tmp60 false
+   233 set :index .START_INDEX
+-    * set *tmp61 :index
+   234 jump *label36 always
+   235 label *label35
+-    * set *tmp61 null
+   236 label *label36
+   237 set *tmp62 .M_START_INDEX
+   238 write :index .MEMORY *tmp62
 
 Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-34 instructions):
      0 set .TICKS 60
@@ -280,106 +281,105 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-34 ins
     35 print :block
     36 sensor *tmp13 :block @type
  
-   152 label *label1
-   153 jump *label0 always
-   154 label *label2
--    * set *tmp20 .M_START_INDEX
--    * write .START_INDEX .MEMORY *tmp20
--    * set *tmp22 .M_END_INDEX
--    * write .END_INDEX .MEMORY *tmp22
--    * set *tmp24 .M_R0
--    * write .R0 .MEMORY *tmp24
--    * set *tmp26 .M_G0
--    * write .G0 .MEMORY *tmp26
--    * set *tmp28 .M_B0
--    * write .B0 .MEMORY *tmp28
--    * set *tmp30 .M_R1
--    * write .R1 .MEMORY *tmp30
--    * set *tmp32 .M_G1
--    * write .G1 .MEMORY *tmp32
--    * set *tmp34 .M_B1
--    * write .B1 .MEMORY *tmp34
--    * set *tmp36 .M_CURRENT_INDEX
--    * read *tmp37 .MEMORY *tmp36
-+  155 write .START_INDEX .MEMORY .M_START_INDEX
-+  156 write .END_INDEX .MEMORY .M_END_INDEX
-+  157 write .R0 .MEMORY .M_R0
-+  158 write .G0 .MEMORY .M_G0
-+  159 write .B0 .MEMORY .M_B0
-+  160 write .R1 .MEMORY .M_R1
-+  161 write .G1 .MEMORY .M_G1
-+  162 write .B1 .MEMORY .M_B1
-+  163 read *tmp37 .MEMORY .M_CURRENT_INDEX
-   164 op max *tmp38 .START_INDEX *tmp37
--    * op min *tmp39 *tmp38 .END_INDEX
--    * set :index *tmp39
--    * set *tmp40 @tick
--    * set :nextTick *tmp40
--    * set *tmp41 .SWITCH
--    * control enabled *tmp41 0
-+  165 op min :index *tmp38 .END_INDEX
-+  166 set :nextTick @tick
-+  167 control enabled .SWITCH 0
-   168 label *label25
-   169 sensor *tmp43 .SWITCH @enabled
-   170 op equal *tmp44 *tmp43 0
-   171 jump *label27 equal *tmp44 false
--    * set *tmp45 @time
--    * set :startTime *tmp45
-+  172 set :startTime @time
-   173 set :prevTick :nextTick
--    * op add *tmp46 :nextTick .TICKS
--    * set :nextTick *tmp46
-+  174 op add :nextTick :nextTick .TICKS
-   175 op add *tmp47 :nextTick .TICKS
-   176 op greaterThan *tmp48 @tick *tmp47
-   177 jump *label28 equal *tmp48 false
--    * set *tmp50 @tick
--    * set :prevTick *tmp50
--    * op add *tmp51 :prevTick .TICKS
--    * set :nextTick *tmp51
-+  178 set :prevTick @tick
-+  179 op add :nextTick :prevTick .TICKS
-   180 jump *label29 always
-   181 label *label28
-   182 label *label29
+   151 label *label1
+   152 jump *label0 always
+   153 label *label2
+-    * set *tmp19 .M_START_INDEX
+-    * write .START_INDEX .MEMORY *tmp19
+-    * set *tmp21 .M_END_INDEX
+-    * write .END_INDEX .MEMORY *tmp21
+-    * set *tmp23 .M_R0
+-    * write .R0 .MEMORY *tmp23
+-    * set *tmp25 .M_G0
+-    * write .G0 .MEMORY *tmp25
+-    * set *tmp27 .M_B0
+-    * write .B0 .MEMORY *tmp27
+-    * set *tmp29 .M_R1
+-    * write .R1 .MEMORY *tmp29
+-    * set *tmp31 .M_G1
+-    * write .G1 .MEMORY *tmp31
+-    * set *tmp33 .M_B1
+-    * write .B1 .MEMORY *tmp33
+-    * set *tmp35 .M_CURRENT_INDEX
+-    * read *tmp36 .MEMORY *tmp35
++  154 write .START_INDEX .MEMORY .M_START_INDEX
++  155 write .END_INDEX .MEMORY .M_END_INDEX
++  156 write .R0 .MEMORY .M_R0
++  157 write .G0 .MEMORY .M_G0
++  158 write .B0 .MEMORY .M_B0
++  159 write .R1 .MEMORY .M_R1
++  160 write .G1 .MEMORY .M_G1
++  161 write .B1 .MEMORY .M_B1
++  162 read *tmp36 .MEMORY .M_CURRENT_INDEX
+   163 op max *tmp37 .START_INDEX *tmp36
+-    * op min *tmp38 *tmp37 .END_INDEX
+-    * set :index *tmp38
+-    * set *tmp39 @tick
+-    * set :nextTick *tmp39
+-    * set *tmp40 .SWITCH
+-    * control enabled *tmp40 0
++  164 op min :index *tmp37 .END_INDEX
++  165 set :nextTick @tick
++  166 control enabled .SWITCH 0
+   167 label *label25
+   168 sensor *tmp42 .SWITCH @enabled
+   169 op equal *tmp43 *tmp42 0
+   170 jump *label27 equal *tmp43 false
+-    * set *tmp44 @time
+-    * set :startTime *tmp44
++  171 set :startTime @time
+   172 set :prevTick :nextTick
+-    * op add *tmp45 :nextTick .TICKS
+-    * set :nextTick *tmp45
++  173 op add :nextTick :nextTick .TICKS
+   174 op add *tmp46 :nextTick .TICKS
+   175 op greaterThan *tmp47 @tick *tmp46
+   176 jump *label28 equal *tmp47 false
+-    * set *tmp49 @tick
+-    * set :prevTick *tmp49
+-    * op add *tmp50 :prevTick .TICKS
+-    * set :nextTick *tmp50
++  177 set :prevTick @tick
++  178 op add :nextTick :prevTick .TICKS
+   179 jump *label29 always
+   180 label *label28
+   181 label *label29
  
-   192 label *label31
-   193 jump *label30 always
-   194 label *label32
--    * sensor *tmp55 .CONTAINER .SENSOR
--    * set :amount *tmp55
--    * sensor *tmp56 .CONTAINER .MAXIMUM
--    * set :max *tmp56
-+  195 sensor :amount .CONTAINER .SENSOR
-+  196 sensor :max .CONTAINER .MAXIMUM
-   197 op mul *tmp57 :amount 150
-   198 op div *tmp58 *tmp57 :max
--    * op add *tmp59 10 *tmp58
--    * set :scaled *tmp59
--    * op add *tmp60 :index 1
--    * set :index *tmp60
-+  199 op add :scaled 10 *tmp58
-+  200 op add :index :index 1
-   201 op greaterThan *tmp61 :index .END_INDEX
-   202 jump *label35 equal *tmp61 false
-   203 set :index .START_INDEX
-   204 jump *label36 always
-   205 label *label35
-   206 label *label36
--    * set *tmp63 .M_START_INDEX
--    * write :index .MEMORY *tmp63
--    * set *tmp65 :index
--    * write :scaled .MEMORY *tmp65
-+  207 write :index .MEMORY .M_START_INDEX
-+  208 write :scaled .MEMORY :index
-   209 op sub *tmp67 :index .SIZE
--    * set *tmp68 *tmp67
--    * write :scaled .MEMORY *tmp68
-+  210 write :scaled .MEMORY *tmp67
-   211 print "Item/Liquid/Energy Level Meter\n"
-   212 print "StartIndex: "
-   213 print .START_INDEX
+   191 label *label31
+   192 jump *label30 always
+   193 label *label32
+-    * sensor *tmp54 .CONTAINER .SENSOR
+-    * set :amount *tmp54
+-    * sensor *tmp55 .CONTAINER .MAXIMUM
+-    * set :max *tmp55
++  194 sensor :amount .CONTAINER .SENSOR
++  195 sensor :max .CONTAINER .MAXIMUM
+   196 op mul *tmp56 :amount 150
+   197 op div *tmp57 *tmp56 :max
+-    * op add *tmp58 10 *tmp57
+-    * set :scaled *tmp58
+-    * op add *tmp59 :index 1
+-    * set :index *tmp59
++  198 op add :scaled 10 *tmp57
++  199 op add :index :index 1
+   200 op greaterThan *tmp60 :index .END_INDEX
+   201 jump *label35 equal *tmp60 false
+   202 set :index .START_INDEX
+   203 jump *label36 always
+   204 label *label35
+   205 label *label36
+-    * set *tmp62 .M_START_INDEX
+-    * write :index .MEMORY *tmp62
+-    * set *tmp64 :index
+-    * write :scaled .MEMORY *tmp64
+-    * op sub *tmp66 :index .SIZE
+-    * set *tmp67 *tmp66
++  206 write :index .MEMORY .M_START_INDEX
++  207 write :scaled .MEMORY :index
++  208 op sub *tmp67 :index .SIZE
+   209 write :scaled .MEMORY *tmp67
+   210 print "Item/Liquid/Energy Level Meter\n"
+   211 print "StartIndex: "
 
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
  
@@ -467,7 +467,7 @@ Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-8 ins
    108 set .CONTAINER :block
    109 set .SENSOR @powerNetStored
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-7 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-6 instructions):
  
     26 set .MEMORY null
     27 set :n @links
@@ -479,50 +479,40 @@ Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-7 inst
     31 getlink :block :n
     32 print "\nFound: "
  
-   130 op equal *tmp15 .CONTAINER null
-   131 op equal *tmp16 .MEMORY null
-   132 op or *tmp18 *tmp15 *tmp16
--    * op notEqual *tmp17 *tmp18 false
--    * jump *label23 equal *tmp17 false
-+  133 jump *label23 equal *tmp18 false
-   134 print "\nNo memory or container."
-   135 printflush .MESSAGE
-   136 jump *label24 always
- 
    156 control enabled .SWITCH 0
    157 label *label25
-   158 sensor *tmp43 .SWITCH @enabled
--    * op equal *tmp44 *tmp43 0
--    * jump *label27 equal *tmp44 false
-+  159 jump *label27 notEqual *tmp43 0
+   158 sensor *tmp42 .SWITCH @enabled
+-    * op equal *tmp43 *tmp42 0
+-    * jump *label27 equal *tmp43 false
++  159 jump *label27 notEqual *tmp42 0
    160 set :startTime @time
    161 set :prevTick :nextTick
    162 op add :nextTick :nextTick .TICKS
-   163 op add *tmp47 :nextTick .TICKS
--    * op greaterThan *tmp48 @tick *tmp47
--    * jump *label28 equal *tmp48 false
-+  164 jump *label28 lessThanEq @tick *tmp47
+   163 op add *tmp46 :nextTick .TICKS
+-    * op greaterThan *tmp47 @tick *tmp46
+-    * jump *label28 equal *tmp47 false
++  164 jump *label28 lessThanEq @tick *tmp46
    165 set :prevTick @tick
    166 op add :nextTick :prevTick .TICKS
    167 jump *label29 always
    168 label *label28
    169 label *label29
    170 label *label30
--    * op lessThan *tmp52 @tick :nextTick
--    * jump *label32 equal *tmp52 false
--    * op lessThan *tmp53 @tick :prevTick
--    * jump *label33 equal *tmp53 false
+-    * op lessThan *tmp51 @tick :nextTick
+-    * jump *label32 equal *tmp51 false
+-    * op lessThan *tmp52 @tick :prevTick
+-    * jump *label33 equal *tmp52 false
 +  171 jump *label32 greaterThanEq @tick :nextTick
 +  172 jump *label33 greaterThanEq @tick :prevTick
    173 end
    174 jump *label34 always
    175 label *label33
  
-   183 op div *tmp58 *tmp57 :max
-   184 op add :scaled 10 *tmp58
+   183 op div *tmp57 *tmp56 :max
+   184 op add :scaled 10 *tmp57
    185 op add :index :index 1
--    * op greaterThan *tmp61 :index .END_INDEX
--    * jump *label35 equal *tmp61 false
+-    * op greaterThan *tmp60 :index .END_INDEX
+-    * jump *label35 equal *tmp60 false
 +  186 jump *label35 lessThanEq :index .END_INDEX
    187 set :index .START_INDEX
    188 jump *label36 always
@@ -538,7 +528,7 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
    117 label *label6
    118 label *label4
  
-   163 jump *label28 lessThanEq @tick *tmp47
+   163 jump *label28 lessThanEq @tick *tmp46
    164 set :prevTick @tick
    165 op add :nextTick :prevTick .TICKS
 -    * jump *label29 always
@@ -560,6 +550,17 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
    185 label *label35
    186 label *label36
    187 write :index .MEMORY .M_START_INDEX
+
+Modifications by Iterated phase, Expression Optimization, pass 1, iteration 1 (-1 instructions):
+ 
+   128 print .CONTAINER
+   129 op equal *tmp15 .CONTAINER null
+   130 op equal *tmp16 .MEMORY null
+-    * op lor *tmp17 *tmp15 *tmp16
++  131 op or *tmp17 *tmp15 *tmp16
+   132 jump *label23 equal *tmp17 false
+   133 print "\nNo memory or container."
+   134 printflush .MESSAGE
 
 Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
      0 set .TICKS 60
@@ -595,7 +596,7 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
 -    * write .R1 .MEMORY .M_R1
 -    * write .G1 .MEMORY .M_G1
 -    * write .B1 .MEMORY .M_B1
--    * read *tmp37 .MEMORY .M_CURRENT_INDEX
+-    * read *tmp36 .MEMORY .M_CURRENT_INDEX
 +  143 write .START_INDEX .MEMORY 0
 +  144 write .END_INDEX .MEMORY 2
 +  145 write .R0 .MEMORY 3
@@ -604,19 +605,19 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
 +  148 write .R1 .MEMORY 6
 +  149 write .G1 .MEMORY 7
 +  150 write .B1 .MEMORY 8
-+  151 read *tmp37 .MEMORY 1
-   152 op max *tmp38 .START_INDEX *tmp37
-   153 op min :index *tmp38 .END_INDEX
++  151 read *tmp36 .MEMORY 1
+   152 op max *tmp37 .START_INDEX *tmp36
+   153 op min :index *tmp37 .END_INDEX
    154 set :nextTick @tick
  
-   158 jump *label27 notEqual *tmp43 0
+   158 jump *label27 notEqual *tmp42 0
    159 set :startTime @time
    160 set :prevTick :nextTick
 -    * op add :nextTick :nextTick .TICKS
--    * op add *tmp47 :nextTick .TICKS
+-    * op add *tmp46 :nextTick .TICKS
 +  161 op add :nextTick :nextTick 60
-+  162 op add *tmp47 :nextTick 60
-   163 jump *label28 lessThanEq @tick *tmp47
++  162 op add *tmp46 :nextTick 60
+   163 jump *label28 lessThanEq @tick *tmp46
    164 set :prevTick @tick
 -    * op add :nextTick :prevTick .TICKS
 +  165 op add :nextTick :prevTick 60
@@ -648,7 +649,7 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1
      1 set .B1 null
      2 set .END_INDEX null
 
-Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
+Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1:
  
     17 set :n @links
     18 label *label3
@@ -682,11 +683,11 @@ Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
    169 sensor :amount .CONTAINER .SENSOR
    170 sensor :max .CONTAINER .MAXIMUM
 
-Modifications by Replicate loop condition at line 119:1 (+1 instructions):
+Modifications by Partial loop rotation at line 119:1 (+1 instructions):
  
    147 label *label25
-   148 sensor *tmp43 .SWITCH @enabled
-   149 jump *label27 notEqual *tmp43 0
+   148 sensor *tmp42 .SWITCH @enabled
+   149 jump *label27 notEqual *tmp42 0
 +  150 label *label39
    151 set :startTime @time
    152 set :prevTick :nextTick
@@ -696,8 +697,8 @@ Modifications by Replicate loop condition at line 119:1 (+1 instructions):
    201 printflush .MESSAGE
    202 label *label26
 -    * jump *label25 always
-+  203 sensor *tmp43 .SWITCH @enabled
-+  204 jump *label39 equal *tmp43 0
++  203 sensor *tmp42 .SWITCH @enabled
++  204 jump *label39 equal *tmp42 0
    205 label *label27
    206 end
 
@@ -707,9 +708,9 @@ Modifications by Convert case at line 31:9 (segments: 1, padded low) (+136 instr
     24 print :block
     25 sensor *tmp13 :block @type
 -    * jump *label7 notEqual *tmp13 @message
-+   26 sensor *tmp71 *tmp13 @id
-+   27 jump *label40 greaterThanEq *tmp71 147
-+   28 multijump *label42 *tmp71 0 (m:*label41)
++   26 sensor *tmp70 *tmp13 @id
++   27 jump *label40 greaterThanEq *tmp70 147
++   28 multijump *label42 *tmp70 0 (m:*label41)
 +   29 multilabel *label42 (m:*label41)
 +   30 jump *label40 always
 +   31 multilabel *label43 (m:*label41)
@@ -1086,125 +1087,13 @@ Modifications by Convert case at line 31:9 (segments: 1, padded low) (+136 instr
    393 label *label4
    394 jump *label37 greaterThan :n 0
 
-Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
- 
-    15 set .CONTAINER null
-    16 set .MEMORY null
-    17 set :n @links
--    * label *label3
-    18 jump *label5 lessThanEq :n 0
-    19 label *label37
-    20 op sub :n :n 1
- 
-   332 label *label8
-   333 set .MESSAGE :block
-   334 jump *label6 always
--    * label *label7
-   335 label *label10
-   336 set .SWITCH :block
-   337 jump *label6 always
--    * label *label9
-   338 label *label12
-   339 set .MEMORY :block
-   340 set .START_INDEX 264
-   341 set .END_INDEX 511
-   342 set .SIZE 248
-   343 jump *label6 always
--    * label *label11
-   344 label *label14
-   345 set .MEMORY :block
-   346 set .START_INDEX 40
-   347 set .END_INDEX 63
-   348 set .SIZE 24
-   349 jump *label6 always
--    * label *label13
-   350 label *label16
-   351 set .CONTAINER :block
-   352 set .SENSOR @totalItems
- 
-   358 set .G1 255
-   359 set .B1 80
-   360 jump *label6 always
--    * label *label15
-   361 label *label18
-   362 set .CONTAINER :block
-   363 set .SENSOR @totalPower
- 
-   369 set .G1 255
-   370 set .B1 80
-   371 jump *label6 always
--    * label *label17
--    * label *label19
-   372 label *label22
-   373 set .CONTAINER :block
-   374 set .SENSOR @powerNetStored
- 
-   379 set .R1 255
-   380 set .G1 255
-   381 set .B1 80
--    * label *label21
-   382 label *label40
-   383 label *label6
--    * label *label4
-   384 jump *label37 greaterThan :n 0
-   385 label *label5
-   386 print "\nMessage: "
- 
-   402 printflush .MESSAGE
-   403 jump *label2 always
-   404 label *label24
--    * label *label1
-   405 jump *label0 always
-   406 label *label2
-   407 write .START_INDEX .MEMORY 0
- 
-   417 op min :index *tmp38 .END_INDEX
-   418 set :nextTick @tick
-   419 control enabled .SWITCH 0
--    * label *label25
-   420 sensor *tmp43 .SWITCH @enabled
-   421 jump *label27 notEqual *tmp43 0
-   422 label *label39
- 
-   428 set :prevTick @tick
-   429 op add :nextTick :prevTick 60
-   430 label *label28
--    * label *label29
--    * label *label30
-   431 jump *label32 greaterThanEq @tick :nextTick
-   432 label *label38
-   433 jump *label33 greaterThanEq @tick :prevTick
-   434 end
-   435 label *label33
--    * label *label34
--    * label *label31
-   436 jump *label38 lessThan @tick :nextTick
-   437 label *label32
-   438 sensor :amount .CONTAINER .SENSOR
- 
-   444 jump *label35 lessThanEq :index .END_INDEX
-   445 set :index .START_INDEX
-   446 label *label35
--    * label *label36
-   447 write :index .MEMORY 0
-   448 write :scaled .MEMORY :index
-   449 op sub *tmp67 :index .SIZE
- 
-   466 print *tmp70
-   467 print "\n"
-   468 printflush .MESSAGE
--    * label *label26
-   469 sensor *tmp43 .SWITCH @enabled
-   470 jump *label39 equal *tmp43 0
-   471 label *label27
-
 Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
 +    0 label __start__
      1 set .B0 null
      2 set .B1 null
      3 set .END_INDEX null
  
-   398 jump *label23 equal *tmp18 false
+   398 jump *label23 equal *tmp17 false
    399 print "\nNo memory or container."
    400 printflush .MESSAGE
 -    * jump *label24 always
@@ -1215,31 +1104,31 @@ Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
  
    419 set :nextTick @tick
    420 control enabled .SWITCH 0
-   421 sensor *tmp43 .SWITCH @enabled
--    * jump *label27 notEqual *tmp43 0
-+  422 jump __start__ notEqual *tmp43 0
+   421 sensor *tmp42 .SWITCH @enabled
+-    * jump *label27 notEqual *tmp42 0
++  422 jump __start__ notEqual *tmp42 0
    423 label *label39
    424 set :startTime @time
    425 set :prevTick :nextTick
 
-Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
+Modifications by Jumps phase, Single Step Elimination, pass 3, iteration 1 (-1 instructions):
+ 
+   468 printflush .MESSAGE
+   469 sensor *tmp42 .SWITCH @enabled
+   470 jump *label39 equal *tmp42 0
+-    * end
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-1 instructions):
  
    402 label *label23
    403 printflush .MESSAGE
    404 jump *label2 always
--    * label *label24
 -    * jump *label0 always
    405 label *label2
    406 write .START_INDEX .MEMORY 0
    407 write .END_INDEX .MEMORY 2
- 
-   467 printflush .MESSAGE
-   468 sensor *tmp43 .SWITCH @enabled
-   469 jump *label39 equal *tmp43 0
--    * label *label27
-   470 end
 
-Modifications by Jumps phase, Single Step Elimination, pass 3, iteration 1 (-2 instructions):
+Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
  
    401 jump *label0 always
    402 label *label23
@@ -1248,21 +1137,6 @@ Modifications by Jumps phase, Single Step Elimination, pass 3, iteration 1 (-2 i
    404 label *label2
    405 write .START_INDEX .MEMORY 0
    406 write .END_INDEX .MEMORY 2
- 
-   466 printflush .MESSAGE
-   467 sensor *tmp43 .SWITCH @enabled
-   468 jump *label39 equal *tmp43 0
--    * end
-
-Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
- 
-   401 jump *label0 always
-   402 label *label23
-   403 printflush .MESSAGE
--    * label *label2
-   404 write .START_INDEX .MEMORY 0
-   405 write .END_INDEX .MEMORY 2
-   406 write .R0 .MEMORY 3
 
 Modifications by Final phase, Print Merging, iteration 1 (-5 instructions):
  
@@ -1286,17 +1160,17 @@ Modifications by Final phase, Print Merging, iteration 1 (-5 instructions):
 +  454 print "\nScaled: "
    455 print :scaled
 -    * print "\n"
-   456 op sub *tmp70 @time :startTime
+   456 op sub *tmp69 @time :startTime
 -    * print "Elapsed: "
 +  457 print "\nElapsed: "
-   458 print *tmp70
+   458 print *tmp69
    459 print "\n"
    460 printflush .MESSAGE
 
 Final code before resolving virtual instructions:
 
-        label __start__                                              B0 = null; B1 = null; END_INDEX = null; G0 = null; G1 = null; MAXIMUM = null; MESSAGE = null;
-    0:  set .B0 null                                                 ...
+        label __start__
+    0:  set .B0 null                                                 B0 = null; B1 = null; END_INDEX = null; G0 = null; G1 = null; MAXIMUM = null; MESSAGE = null;
     1:  set .B1 null                                                 ...
     2:  set .END_INDEX null                                          ...
     3:  set .G0 null                                                 ...
@@ -1321,9 +1195,9 @@ Final code before resolving virtual instructions:
    20:  print "\nFound: "                                            print("\nFound: ", block);
    21:  print :block                                                 ...
    22:  sensor *tmp13 :block @type                                   case block.@type
-   23:  sensor *tmp71 *tmp13 @id                                     while n > 0 do
-   24:  jump *label40 greaterThanEq *tmp71 147                       case block.@type
-   25:  multijump *label42 *tmp71 0                                  ...
+   23:  sensor *tmp70 *tmp13 @id                                     while n > 0 do
+   24:  jump *label40 greaterThanEq *tmp70 147                       case block.@type
+   25:  multijump *label42 *tmp70 0                                  ...
         multilabel *label42                                          ...
    26:  jump *label40 always 0 0                                     ...
         multilabel *label43                                          ...
@@ -1692,8 +1566,8 @@ Final code before resolving virtual instructions:
   233:  print .CONTAINER                                             ...
   234:  op equal *tmp15 .CONTAINER null                              if CONTAINER == null || MEMORY == null then
   235:  op equal *tmp16 .MEMORY null                                 ...
-  236:  op or *tmp18 *tmp15 *tmp16                                   ...
-  237:  jump *label23 equal *tmp18 false                             ...
+  236:  op or *tmp17 *tmp15 *tmp16                                   ...
+  237:  jump *label23 equal *tmp17 false                             ...
   238:  print "\nNo memory or container."                            print("\nNo memory or container.");
   239:  printflush .MESSAGE                                          printflush(MESSAGE);
   240:  jump *label0 always 0 0                                      if CONTAINER == null || MEMORY == null then
@@ -1707,19 +1581,19 @@ Final code before resolving virtual instructions:
   247:  write .R1 .MEMORY 6                                          MEMORY[M_R1] = R1;
   248:  write .G1 .MEMORY 7                                          MEMORY[M_G1] = G1;
   249:  write .B1 .MEMORY 8                                          MEMORY[M_B1] = B1;
-  250:  read *tmp37 .MEMORY 1                                        index = min(max(START_INDEX, MEMORY[M_CURRENT_INDEX]), END_INDEX);
-  251:  op max *tmp38 .START_INDEX *tmp37                            ...
-  252:  op min :index *tmp38 .END_INDEX                              ...
+  250:  read *tmp36 .MEMORY 1                                        index = min(max(START_INDEX, MEMORY[M_CURRENT_INDEX]), END_INDEX);
+  251:  op max *tmp37 .START_INDEX *tmp36                            ...
+  252:  op min :index *tmp37 .END_INDEX                              ...
   253:  set :nextTick @tick                                          nextTick = @tick;
   254:  control enabled .SWITCH 0 0 0 0                              SWITCH.enabled = 0;
-  255:  sensor *tmp43 .SWITCH @enabled                               while SWITCH.@enabled == 0 do
-  256:  jump __start__ notEqual *tmp43 0                             ...
+  255:  sensor *tmp42 .SWITCH @enabled                               while SWITCH.@enabled == 0 do
+  256:  jump __start__ notEqual *tmp42 0                             ...
         label *label39                                               ...
   257:  set :startTime @time                                         startTime = @time;
   258:  set :prevTick :nextTick                                      prevTick = nextTick;
   259:  op add :nextTick :nextTick 60                                nextTick = nextTick + TICKS;
-  260:  op add *tmp47 :nextTick 60                                   if @tick > nextTick + TICKS then
-  261:  jump *label28 lessThanEq @tick *tmp47                        ...
+  260:  op add *tmp46 :nextTick 60                                   if @tick > nextTick + TICKS then
+  261:  jump *label28 lessThanEq @tick *tmp46                        ...
   262:  set :prevTick @tick                                          prevTick = @tick;
   263:  op add :nextTick :prevTick 60                                nextTick = prevTick + TICKS;
         label *label28                                               if @tick > nextTick + TICKS then
@@ -1732,9 +1606,9 @@ Final code before resolving virtual instructions:
         label *label32                                               ...
   268:  sensor :amount .CONTAINER .SENSOR                            amount = CONTAINER.sensor(SENSOR);
   269:  sensor :max .CONTAINER .MAXIMUM                              max = CONTAINER.sensor(MAXIMUM);
-  270:  op mul *tmp57 :amount 150                                    scaled = 10 + amount * 150 / max;
-  271:  op div *tmp58 *tmp57 :max                                    ...
-  272:  op add :scaled 10 *tmp58                                     ...
+  270:  op mul *tmp56 :amount 150                                    scaled = 10 + amount * 150 / max;
+  271:  op div *tmp57 *tmp56 :max                                    ...
+  272:  op add :scaled 10 *tmp57                                     ...
   273:  op add :index :index 1                                       index = index + 1;
   274:  jump *label35 lessThanEq :index .END_INDEX                   if index > END_INDEX then index = START_INDEX; end;
   275:  set :index .START_INDEX                                      ...
@@ -1751,20 +1625,20 @@ Final code before resolving virtual instructions:
   285:  print :amount                                                ...
   286:  print "\nScaled: "                                           print("Scaled: ", scaled, "\n");
   287:  print :scaled                                                ...
-  288:  op sub *tmp70 @time :startTime                               print("Elapsed: ", @time - startTime, "\n");
+  288:  op sub *tmp69 @time :startTime                               print("Elapsed: ", @time - startTime, "\n");
   289:  print "\nElapsed: "                                          ...
-  290:  print *tmp70                                                 ...
+  290:  print *tmp69                                                 ...
   291:  print "\n"                                                   ...
   292:  printflush .MESSAGE                                          printflush(MESSAGE);
-  293:  sensor *tmp43 .SWITCH @enabled                               while SWITCH.@enabled == 0 do
-  294:  jump *label39 equal *tmp43 0                                 ...
+  293:  sensor *tmp42 .SWITCH @enabled                               while SWITCH.@enabled == 0 do
+  294:  jump *label39 equal *tmp42 0                                 ...
 
 
 Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
    295     1x    295,0  <no function>
 
-Performance: parsed in 208 ms, compiled in 238 ms, optimized in 330 ms, run in 40 ms.
+Performance: parsed in 208 ms, compiled in 260 ms, optimized in 338 ms, run in 47 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

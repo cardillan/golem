@@ -2,15 +2,14 @@
     53 instructions eliminated by Temp Variables Elimination (6 iterations).
      2 instructions eliminated by Case Expression Optimization.
     24 instructions eliminated by Dead Code Elimination (5 iterations).
-    11 instructions eliminated by Jump Optimization (5 iterations).
+    11 instructions eliminated by Condition Optimization (6 iterations).
     10 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
      3 instructions eliminated by Expression Optimization (3 iterations).
     10 instructions eliminated by Data Flow Optimization (3 passes, 9 iterations).
-     3 instructions modified by Loop Optimization (3 iterations).
-     3 loops improved by Loop Optimization.
+       3 loop conditions were partially rotated.
     10 instructions added by Function Inlining (4 iterations).
      3 function calls inlined by Function Inlining.
-     6 instructions eliminated by Jump Straightening (2 passes, 5 iterations).
+     6 instructions eliminated by Jump Straightening (2 passes, 7 iterations).
      1 instructions updated by Jump Threading.
     24 instructions eliminated by Print Merging.
    173 instructions after optimizations.
@@ -488,7 +487,7 @@ Modifications by Iterated phase, Jump Straightening, pass 1, iteration 1 (-5 ins
    264 set *tmp106 512
    265 jump *label46 always
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-11 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-11 instructions):
  
     51 print "Target memory: "
     52 print .secondaryMem
@@ -770,7 +769,7 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-3
    105 label *label22
    106 jump *label24 greaterThanEq :i .cacheSize
 
-Modifications by Iterated phase, Loop Optimization, pass 1, iteration 1:
+Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1:
  
     12 op sub :init:n @links 1
     13 label *label5
@@ -1066,176 +1065,6 @@ Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-1
    108 sensor *tmp107 .secondaryMem @type
    109 jump *label70 notEqual *tmp107 @memory-cell
 
-Modifications by Jumps phase, Jump Normalization, pass 4, iteration 1:
- 
-    10 print "[salmon]Initializing...[]"
-    11 print "\n"
-    12 op sub :init:n @links 1
--    * label *label5
-    13 jump *label7 lessThan :init:n 0
-    14 label *label51
-    15 getlink :init:block :init:n
- 
-    18 print "\n"
-    19 sensor *tmp2 :init:block @type
-    20 jump *label9 notEqual *tmp2 @message
--    * label *label10
-    21 set .message :init:block
-    22 jump *label8 always
-    23 label *label9
-    24 jump *label11 notEqual *tmp2 @switch
--    * label *label12
-    25 set .switch :init:block
-    26 jump *label8 always
-    27 label *label11
- 
-    32 set .secondaryMem :init:block
-    33 label *label13
-    34 label *label8
--    * label *label6
-    35 op sub :init:n :init:n 1
-    36 jump *label51 greaterThanEq :init:n 0
-    37 label *label7
- 
-    51 print "No memory."
-    52 print "\n"
-    53 label *label15
--    * label *label16
-    54 printflush .message
--    * label *label3
-    55 jump *label2 equal .secondaryMem null
--    * label *label4
-    56 jump *label17 notEqual .primaryMem null
-    57 set .primaryMem .secondaryMem
--    * label *label54
-    58 sensor *tmp107 .secondaryMem @type
-    59 jump *label56 notEqual *tmp107 @memory-cell
--    * label *label55
-    60 set *tmp106 64
-    61 jump *label59 always
-    62 label *label56
-    63 jump *label58 notEqual *tmp107 @memory-bank
--    * label *label57
-    64 set *tmp106 512
-    65 jump *label59 always
-    66 label *label58
-    67 set *tmp106 null
-    68 label *label59
--    * label *label60
-    69 set .cacheSize 50
-    70 set .bufferStart 50
-    71 op sub .bufferEnd *tmp106 7
- 
-    78 op sub .totalIndex *tmp106 1
-    79 jump *label18 always
-    80 label *label17
--    * label *label61
-    81 sensor *tmp107 .primaryMem @type
-    82 jump *label63 notEqual *tmp107 @memory-cell
--    * label *label62
-    83 set :init:primarySize 64
-    84 jump *label66 always
-    85 label *label63
-    86 jump *label65 notEqual *tmp107 @memory-bank
--    * label *label64
-    87 set :init:primarySize 512
-    88 jump *label66 always
-    89 label *label65
-    90 set :init:primarySize null
-    91 label *label66
--    * label *label67
--    * label *label68
-    92 sensor *tmp107 .secondaryMem @type
-    93 jump *label70 notEqual *tmp107 @memory-cell
--    * label *label69
-    94 set *tmp106 64
-    95 jump *label73 always
-    96 label *label70
-    97 jump *label72 notEqual *tmp107 @memory-bank
--    * label *label71
-    98 set *tmp106 512
-    99 jump *label73 always
-   100 label *label72
-   101 set *tmp106 null
-   102 label *label73
--    * label *label74
-   103 op sub .cacheSize :init:primarySize 2
-   104 op sub .valueIndex :init:primarySize 2
-   105 op sub .totalIndex :init:primarySize 1
- 
-   113 label *label18
-   114 write .bufferStart .secondaryMem .bufferStartIndex
-   115 write .bufferEnd .secondaryMem .bufferEndIndex
--    * label *label1
-   116 op min .cacheSize SMOOTHING .cacheSize
-   117 set :i 0
--    * label *label22
-   118 jump *label24 greaterThanEq 0 .cacheSize
-   119 label *label52
-   120 write 0 .primaryMem :i
--    * label *label23
-   121 op add :i :i 1
-   122 jump *label52 lessThan :i .cacheSize
-   123 label *label24
- 
-   140 op add :nextTick @tick MEASUREMENT
-   141 read :prev .primaryMem .totalIndex
-   142 label *label28
--    * label *label29
-   143 set :waits 0
--    * label *label30
-   144 jump *label32 greaterThanEq @tick :nextTick
-   145 label *label53
-   146 jump *label33 greaterThanEq @tick :prevTick
-   147 jump *label27 always
-   148 label *label33
--    * label *label34
-   149 op add :waits :waits 1
-   150 wait 0.000000000000001
--    * label *label31
-   151 jump *label53 lessThan @tick :nextTick
-   152 label *label32
-   153 op min :minWaits :waits :minWaits
- 
-   163 jump *label35 greaterThanEq :samples .cacheSize
-   164 op add :samples :samples 1
-   165 label *label35
--    * label *label36
-   166 op add :iteration :iteration MEASUREMENT
-   167 jump *label37 lessThan :iteration UPDATE
-   168 op div *tmp71 :total :samples
- 
-   171 jump *label39 lessThan :head .bufferEnd
-   172 set :head .bufferStart
-   173 label *label39
--    * label *label40
-   174 jump *label41 equal :first false
-   175 write :rate .secondaryMem .minIndex
-   176 write :rate .secondaryMem .maxIndex
-   177 set :first false
-   178 label *label41
--    * label *label42
-   179 write :rate .primaryMem .valueIndex
-   180 write :head .secondaryMem .headIndex
-   181 write :rate .secondaryMem :head
- 
-   193 print "[salmon]Initializing...[]"
-   194 print "\n"
-   195 label *label43
--    * label *label44
-   196 print "Total items: [gold]"
-   197 print :curr
-   198 print "["
- 
-   225 printflush .message
-   226 op sub :iteration :iteration UPDATE
-   227 label *label37
--    * label *label38
--    * label *label26
-   228 sensor *tmp104 .switch @enabled
-   229 jump *label25 equal *tmp104 false
-   230 label *label27
-
 Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instructions):
  
    143 set :waits 0
@@ -1247,16 +1076,6 @@ Modifications by Jumps phase, Jump Straightening, pass 4, iteration 1 (-1 instru
    147 label *label33
    148 op add :waits :waits 1
    149 wait 0.000000000000001
-
-Modifications by Jumps phase, Jump Optimization, pass 4, iteration 1:
- 
-   144 jump *label32 greaterThanEq @tick :nextTick
-   145 label *label53
-   146 jump *label27 lessThan @tick :prevTick
--    * label *label33
-   147 op add :waits :waits 1
-   148 wait 0.000000000000001
-   149 jump *label53 lessThan @tick :nextTick
 
 Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
 +    0 label __start__
@@ -1272,14 +1091,6 @@ Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
    148 op add :waits :waits 1
    149 wait 0.000000000000001
    150 jump *label53 lessThan @tick :nextTick
-
-Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1:
- 
-   226 label *label37
-   227 sensor *tmp104 .switch @enabled
-   228 jump *label25 equal *tmp104 false
--    * label *label27
-   229 end
 
 Modifications by Jumps phase, Single Step Elimination, pass 4, iteration 1 (-1 instructions):
  
@@ -1377,8 +1188,8 @@ Modifications by Final phase, Print Merging, iteration 1 (-24 instructions):
 
 Final code before resolving virtual instructions:
 
-        label __start__                                              item-rate-meter.mnd: param MEASUREMENT = 15;         // Measurement interval in ticks
-    0:  set MEASUREMENT 15                                           ...
+        label __start__
+    0:  set MEASUREMENT 15                                           item-rate-meter.mnd: param MEASUREMENT = 15;         // Measurement interval in ticks
     1:  set UPDATE 60                                                item-rate-meter.mnd: param UPDATE = 60;              // Update interval in ticks
     2:  set SMOOTHING 20                                             item-rate-meter.mnd: param SMOOTHING = 20;           // Size of averaging window
         label *label2                                                item-rate-meter-init.mnd: do
@@ -1590,7 +1401,7 @@ Code size and number of instantiations by function:
     62     1x     62,0  void init()
     24     3x      8,0  def memorySize(in block)
 
-Performance: parsed in 264 ms, compiled in 252 ms, optimized in 304 ms, run in 19 ms.
+Performance: parsed in 261 ms, compiled in 322 ms, optimized in 320 ms, run in 19 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

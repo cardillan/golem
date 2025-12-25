@@ -1,6 +1,6 @@
 jump 3 always 0 0
-jump 174 always 0 0
-jump 167 always 0 0
+jump 169 always 0 0
+jump 162 always 0 0
 set .thoriumContainer null
 set .thoriumLimit 100
 set .thoriumContainerX 0
@@ -17,7 +17,7 @@ set .builder @unit
 ulocate building core false @copper .coreX .coreY 0 .core
 jump 14 equal .core null
 set *signature "2bc8cecff9ae5b38:v1"
-jump 165 equal .core null
+jump 160 equal .core null
 ubind @poly
 jump 25 notEqual @unit .builder
 print "Found builder unit.\n"
@@ -26,66 +26,64 @@ jump 20 always 0 0
 jump 28 notEqual .thoriumDrone null
 set .thoriumDrone @unit
 jump 20 always 0 0
-op equal *tmp11 @unit .thoriumDrone
+jump 42 notEqual @unit .thoriumDrone
 sensor *tmp12 .thoriumContainer @thorium
-op greaterThan *tmp13 *tmp12 .thoriumLimit
-op land *tmp14 *tmp11 *tmp13
-jump 44 equal *tmp14 false
+jump 42 lessThanEq *tmp12 .thoriumLimit
 sensor :serviceThoriumDrill:item @unit @firstItem
-jump 38 notEqual :serviceThoriumDrill:item @thorium
+jump 36 notEqual :serviceThoriumDrill:item @thorium
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
 jump 20 always 0 0
-jump 42 notEqual :serviceThoriumDrill:item null
+jump 40 notEqual :serviceThoriumDrill:item null
 ucontrol approach .thoriumContainerX .thoriumContainerY 6 0 0
 ucontrol itemTake .thoriumContainer @thorium 30 0 0
 jump 20 always 0 0
 ucontrol itemDrop @air 30 0 0 0
 jump 20 always 0 0
-jump 48 equal .container false
+jump 46 equal .container false
 sensor :backgroundProcess:coal .core @coal
-select *tmp108 greaterThan :backgroundProcess:coal 220 @scrap .ore
-select .ore lessThan :backgroundProcess:coal 120 @coal *tmp108
+select *tmp25 greaterThan :backgroundProcess:coal 220 @scrap .ore
+select .ore lessThan :backgroundProcess:coal 120 @coal *tmp25
 sensor :backgroundProcess:flag @unit @flag
 print "Unit flag: {0}\n"
 format :backgroundProcess:flag
-jump 79 notEqual :backgroundProcess:flag 0
-sensor *tmp30 @unit @firstItem
-jump 59 equal *tmp30 null
+read @counter "3No" :backgroundProcess:flag
+jump 20 always 0 0
+sensor *tmp29 @unit @firstItem          # Origin: 49, keys: 0
+jump 58 equal *tmp29 null
 ucontrol itemDrop @air 30 0 0 0
-sensor *tmp33 @unit @firstItem
-jump 59 equal *tmp33 null
+sensor *tmp32 @unit @firstItem
+jump 58 equal *tmp32 null
 print "Holding wrong item.\n"
 jump 20 always 0 0
-select *tmp37 equal .ore @coal 1 2
-ucontrol flag *tmp37 0 0 0 0
-select *tmp39 equal .ore @coal .coreX .containerX
-select *tmp41 equal .ore @coal .coreY .containerY
-select *tmp43 equal .ore @coal .coalDistance .scrapDistance
+select *tmp36 equal .ore @coal 1 2
+ucontrol flag *tmp36 0 0 0 0
+select *tmp38 equal .ore @coal .coreX .containerX
+select *tmp40 equal .ore @coal .coreY .containerY
+select *tmp42 equal .ore @coal .coalDistance .scrapDistance
 ulocate ore core true .ore :findOreToMine:x :findOreToMine:y 0 0
-op sub *tmp46 :findOreToMine:x *tmp39
-op sub *tmp47 :findOreToMine:y *tmp41
-op len :findOreToMine:dist *tmp46 *tmp47
-jump 77 greaterThanEq :findOreToMine:dist *tmp43
-jump 74 notEqual .ore @coal
+op sub *tmp45 :findOreToMine:x *tmp38
+op sub *tmp46 :findOreToMine:y *tmp40
+op len :findOreToMine:dist *tmp45 *tmp46
+jump 76 greaterThanEq :findOreToMine:dist *tmp42
+jump 73 notEqual .ore @coal
 set .coalX :findOreToMine:x
 set .coalY :findOreToMine:y
 set .coalDistance :findOreToMine:dist
-jump 77 always 0 0
+jump 76 always 0 0
 set .scrapX :findOreToMine:x
 set .scrapY :findOreToMine:y
 set .scrapDistance :findOreToMine:dist
 ucontrol approach :findOreToMine:x :findOreToMine:y 6 0 0
 jump 20 always 0 0
-jump 113 notEqual :backgroundProcess:flag 1
-print "Mining "
-jump 86 equal .ore @coal
+print "Mining "                        # Origin: 49, keys: 1
+jump 84 equal .ore @coal
 print ", switching"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
 ucontrol flag 3 0 0 0 0
-sensor *tmp55 @unit @firstItem
-jump 90 equal *tmp55 @coal
+sensor *tmp54 @unit @firstItem
+jump 88 equal *tmp54 @coal
 print " (dropping)"
 ucontrol itemDrop @air 30 0 0 0
 print " at {0}, "
@@ -93,17 +91,17 @@ format .coalX
 print .coalY
 ucontrol approach .coalX .coalY 6 0 0
 ucontrol mine .coalX .coalY 0 0 0
-sensor *tmp58 @unit @totalItems
-jump 102 lessThan *tmp58 30
+sensor *tmp57 @unit @totalItems
+jump 100 lessThan *tmp57 30
 print ", full"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
 ucontrol flag 3 0 0 0 0
-jump 111 always 0 0
-ucontrol within .coalX .coalY 6.5 *tmp61 0
-jump 111 equal *tmp61 false
-sensor *tmp63 @unit @mining
-jump 111 notEqual *tmp63 false
+jump 109 always 0 0
+ucontrol within .coalX .coalY 6.5 *tmp60 0
+jump 109 equal *tmp60 false
+sensor *tmp62 @unit @mining
+jump 109 notEqual *tmp62 false
 print ", ore lost"
 set .coalDistance 1000000000
 ucontrol approach .coreX .coreY 6 0 0
@@ -111,15 +109,14 @@ ucontrol itemDrop .core 30 0 0 0
 ucontrol flag 3 0 0 0 0
 print "\n"
 jump 20 always 0 0
-jump 147 notEqual :backgroundProcess:flag 2
-print "Mining "
-jump 120 equal .ore @scrap
+print "Mining "                        # Origin: 49, keys: 2
+jump 117 equal .ore @scrap
 print ", switching"
 ucontrol approach .containerX .containerY 6 0 0
 ucontrol itemDrop .container 30 0 0 0
 ucontrol flag 4 0 0 0 0
-sensor *tmp68 @unit @firstItem
-jump 124 equal *tmp68 @scrap
+sensor *tmp67 @unit @firstItem
+jump 121 equal *tmp67 @scrap
 print " (dropping)"
 ucontrol itemDrop @air 30 0 0 0
 print " at {0}, "
@@ -127,17 +124,17 @@ format .scrapX
 print .scrapY
 ucontrol approach .scrapX .scrapY 6 0 0
 ucontrol mine .scrapX .scrapY 0 0 0
-sensor *tmp71 @unit @totalItems
-jump 136 lessThan *tmp71 25
+sensor *tmp70 @unit @totalItems
+jump 133 lessThan *tmp70 25
 print ", full"
 ucontrol approach .containerX .containerY 6 0 0
 ucontrol itemDrop .container 30 0 0 0
 ucontrol flag 4 0 0 0 0
-jump 145 always 0 0
-ucontrol within .scrapX .scrapY 6.5 *tmp74 0
-jump 145 equal *tmp74 false
-sensor *tmp76 @unit @mining
-jump 145 notEqual *tmp76 false
+jump 142 always 0 0
+ucontrol within .scrapX .scrapY 6.5 *tmp73 0
+jump 142 equal *tmp73 false
+sensor *tmp75 @unit @mining
+jump 142 notEqual *tmp75 false
 print ", ore lost"
 set .scrapDistance 1000000000
 ucontrol approach .containerX .containerY 6 0 0
@@ -145,21 +142,19 @@ ucontrol itemDrop .container 30 0 0 0
 ucontrol flag 4 0 0 0 0
 print "\n"
 jump 20 always 0 0
-jump 156 notEqual :backgroundProcess:flag 3
-print "Returning\n"
+print "Returning\n"                     # Origin: 49, keys: 3
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
-sensor *tmp79 @unit @firstItem
-jump 20 notEqual *tmp79 null
+sensor *tmp78 @unit @firstItem
+jump 20 notEqual *tmp78 null
 print "    Finished\n"
 ucontrol flag 0 0 0 0 0
 jump 20 always 0 0
-jump 20 notEqual :backgroundProcess:flag 4
-print "Returning\n"
+print "Returning\n"                     # Origin: 49, keys: 4
 ucontrol approach .containerX .containerY 6 0 0
 ucontrol itemDrop .container 30 0 0 0
-sensor *tmp82 @unit @firstItem
-jump 20 notEqual *tmp82 null
+sensor *tmp81 @unit @firstItem
+jump 20 notEqual *tmp81 null
 print "    Finished\n"
 ucontrol flag 0 0 0 0 0
 jump 20 always 0 0
@@ -168,8 +163,8 @@ jump 19 always 0 0
 set .thoriumContainer :setThoriumContainer:container
 sensor .thoriumContainerX :setThoriumContainer:container @x
 sensor .thoriumContainerY :setThoriumContainer:container @y
-sensor *tmp87 .thoriumContainer @itemCapacity
-select .thoriumLimit greaterThan *tmp87 10 100 0
+sensor *tmp86 .thoriumContainer @itemCapacity
+select .thoriumLimit greaterThan *tmp86 10 100 0
 set :setThoriumContainer*finished true
 jump 19 always 0 0
 set .container :setScrapContainer:scrapContainer

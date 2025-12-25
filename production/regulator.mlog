@@ -4,15 +4,15 @@ set :initialize:repeat false
 print "Configuring regulator...\n"
 set .links @links
 op sub :initialize:n .links 1
-jump 188 lessThan :initialize:n 0
+jump 188 lessThan .links 1
 getlink :initialize:block :initialize:n
 print "Found: "
 print :initialize:block
 print "\n"
 sensor *tmp3 :initialize:block @type
-sensor *tmp88 *tmp3 @id
-jump 186 greaterThanEq *tmp88 147
-op add @counter *tmp88 15
+sensor *tmp84 *tmp3 @id
+jump 186 greaterThanEq *tmp84 147
+op add @counter *tmp84 15
 jump 186 always 0 0
 jump 186 always 0 0
 jump 186 always 0 0
@@ -209,102 +209,99 @@ set :initialize:repeat true
 printflush .message
 jump 2 notEqual :initialize:repeat false
 printflush null
-op greaterThanEq *tmp15 PCT_LOW 0
-op lessThanEq *tmp16 PCT_LOW 100
-op land *tmp17 *tmp15 *tmp16
-op floor *tmp18 PCT_LOW 0
-op strictEqual *tmp19 PCT_LOW *tmp18
-op land :validate:condition *tmp17 *tmp19
-jump 221 notEqual :validate:condition false
+set *tmp19 false
+jump 216 lessThan PCT_LOW 0
+jump 216 greaterThan PCT_LOW 100
+op floor *tmp17 PCT_LOW 0
+op strictEqual *tmp19 PCT_LOW *tmp17
+jump 220 notEqual *tmp19 false
 print "PCT_LOW must be an integer between 0 to 100."
 printflush .message
 stop
-op greaterThanEq *tmp23 PCT_HIGH 0
-op lessThanEq *tmp24 PCT_HIGH 100
-op land *tmp25 *tmp23 *tmp24
-op floor *tmp26 PCT_HIGH 0
-op strictEqual *tmp27 PCT_HIGH *tmp26
-op land :validate.1:condition *tmp25 *tmp27
-jump 231 notEqual :validate.1:condition false
+set *tmp26 false
+jump 225 lessThan PCT_HIGH 0
+jump 225 greaterThan PCT_HIGH 100
+op floor *tmp24 PCT_HIGH 0
+op strictEqual *tmp26 PCT_HIGH *tmp24
+jump 229 notEqual *tmp26 false
 print "PCT_HIGH must be an integer between 0 to 100."
 printflush .message
 stop
-op lessThan :validate.2:condition PCT_LOW PCT_HIGH
-jump 236 notEqual :validate.2:condition false
+jump 233 lessThan PCT_LOW PCT_HIGH
 print "PCT_LOW must be less than PCT_HIGH."
 printflush .message
 stop
-sensor *tmp34 .sorter @type
-op equal .inverted *tmp34 @inverted-sorter
+sensor *tmp32 .sorter @type
+op equal .inverted *tmp32 @inverted-sorter
 set .state true
 op add .cycles .cycles 1
 op xor .active .inverted true
 set .activeText "\nCurrently inactive:[salmon]"
-jump 244 equal .active false
+jump 241 equal .active false
 set .activeText "\nCurrently active:[green]"
 control enabled .switch 0 0 0 0
-sensor *tmp43 .switch @enabled
-jump 0 notEqual *tmp43 0
+sensor *tmp41 .switch @enabled
+jump 0 notEqual *tmp41 0
 set :start @time
-sensor *tmp45 .container @dead
+sensor *tmp43 .container @dead
+jump 248 equal *tmp43 false
+end
+sensor *tmp45 .message @dead
 jump 251 equal *tmp45 false
 end
-sensor *tmp47 .message @dead
+sensor *tmp47 .switch @dead
 jump 254 equal *tmp47 false
 end
-sensor *tmp49 .switch @dead
-jump 257 equal *tmp49 false
+jump 258 equal .sorter false
+sensor *tmp49 .sorter @dead
+jump 258 equal *tmp49 false
 end
-sensor *tmp51 .sorter @dead
-op land *tmp52 .sorter *tmp51
-jump 261 equal *tmp52 false
-end
-jump 263 equal .links @links
+jump 260 equal .links @links
 end
 sensor :item .sorter @config
-op equal *tmp57 :item null
-op notEqual *tmp58 .measure @totalItems
-op or *tmp60 *tmp57 *tmp58
-jump 272 equal *tmp60 false
+op equal *tmp54 :item null
+op notEqual *tmp55 .measure @totalItems
+op or *tmp56 *tmp54 *tmp55
+jump 269 equal *tmp56 false
 print "Measuring [gold]total[] in "
 print .container
 sensor :amount .container .measure
-jump 277 always 0 0
+jump 274 always 0 0
 print "Measuring [gold]"
 print :item
 print "[] in "
 print .container
 sensor :amount .container :item
-op mul *tmp64 100 :amount
-sensor *tmp65 .container .maximum
-op idiv :pct *tmp64 *tmp65
-jump 289 greaterThan :pct PCT_LOW
-jump 297 equal .state true
+op mul *tmp60 100 :amount
+sensor *tmp61 .container .maximum
+op idiv :pct *tmp60 *tmp61
+jump 286 greaterThan :pct PCT_LOW
+jump 294 equal .state true
 set .state true
 op add .cycles .cycles 1
 op xor .active .inverted true
 set .activeText "\nCurrently inactive:[salmon]"
-jump 297 equal .active false
+jump 294 equal .active false
 set .activeText "\nCurrently active:[green]"
-jump 297 always 0 0
-jump 297 lessThan :pct PCT_HIGH
-jump 297 equal .state false
+jump 294 always 0 0
+jump 294 lessThan :pct PCT_HIGH
+jump 294 equal .state false
 set .state false
 op add .cycles .cycles 1
 set .active .inverted
 set .activeText "\nCurrently inactive:[salmon]"
-jump 297 equal .inverted false
+jump 294 notEqual *tmp32 @inverted-sorter
 set .activeText "\nCurrently active:[green]"
 print "\nLevel: [gold]"
 print :pct
 print "%[]"
-jump 307 equal .inverted false
+jump 304 notEqual *tmp32 @inverted-sorter
 print "\nActivate above [green]"
 print PCT_HIGH
 print "%[]\nDeactivate below [salmon]"
 print PCT_LOW
 print "%[]"
-jump 312 always 0 0
+jump 309 always 0 0
 print "\nActivate below [green]"
 print PCT_LOW
 print "%[]\nDeactivate above [salmon]"
@@ -312,21 +309,21 @@ print PCT_HIGH
 print "%[]"
 print .activeText
 set :n .first
-jump 321 greaterThanEq .first .links
+jump 318 greaterThanEq .first .links
 getlink :block :n
 control enabled :block .active 0 0 0
 print "\n    "
 print :block
 op add :n :n 1
-jump 315 lessThan :n .links
+jump 312 lessThan :n .links
 print "[]\n# of cycles: "
 print .cycles
-op sub *tmp86 @time :start
-op floor *tmp87 *tmp86 0
+op sub *tmp82 @time :start
+op floor *tmp83 *tmp82 0
 print "\n[lightgray]Loop: "
-print *tmp87
+print *tmp83
 print " ms"
 printflush .message
-sensor *tmp43 .switch @enabled
-jump 247 equal *tmp43 0
+sensor *tmp41 .switch @enabled
+jump 244 equal *tmp41 0
 

@@ -1,12 +1,12 @@
     68 instructions before optimizations.
      4 instructions eliminated by Temp Variables Elimination (5 iterations).
-    15 instructions eliminated by Dead Code Elimination (5 iterations).
-     1 instructions eliminated by Jump Normalization (4 iterations).
-     5 instructions eliminated by Jump Optimization (4 iterations).
-     3 instructions eliminated by Single Step Elimination (5 iterations).
-     1 instructions eliminated by Jump Straightening (4 iterations).
+    15 instructions eliminated by Dead Code Elimination (6 iterations).
+     1 instructions eliminated by Jump Normalization (5 iterations).
+     5 instructions eliminated by Condition Optimization (6 iterations).
+     3 instructions eliminated by Single Step Elimination (6 iterations).
+     1 instructions eliminated by Jump Straightening (6 iterations).
      4 instructions updated by Jump Threading.
-     2 instructions eliminated by Unreachable Code Elimination (2 iterations).
+     2 instructions eliminated by Unreachable Code Elimination (2 passes, 3 iterations).
     37 instructions after optimizations.
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-9 instructions):
@@ -157,7 +157,7 @@ Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 ins
      8 remark "Remember first unit we found to be aware we're looping again"
      9 sensor *tmp0 :firstUnit @dead
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-5 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-5 instructions):
  
     13 set :change 0
     14 jump *label4 always
@@ -228,7 +228,7 @@ Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-
     55 label *label14
     56 remark "We found an active unit, count it"
 
-Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
  
     21 remark "Counts active units. Contains valid value when completing the loop."
     22 set :active 0
@@ -258,7 +258,7 @@ Modifications by Jumps phase, Jump Normalization, pass 3, iteration 1:
     66 label *label1
     67 jump *label0 always
 -    * label *label2
-    68 end
+-    * end
 
 Modifications by Jumps phase, Jump Straightening, pass 3, iteration 1 (-1 instructions):
  
@@ -271,16 +271,6 @@ Modifications by Jumps phase, Jump Straightening, pass 3, iteration 1 (-1 instru
     41 label *label11
     42 label *label8
     43 remark "This is our unit."
-
-Modifications by Jumps phase, Jump Optimization, pass 3, iteration 1:
- 
-    38 label *label7
-    39 remark "If not our unit, skip it"
-    40 jump *label1 notEqual :unitFlag myFlag
--    * label *label11
-    41 label *label8
-    42 remark "This is our unit."
-    43 jump *label13 greaterThanEq :change 0
 
 Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
  
@@ -312,23 +302,15 @@ Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
     51 remark "We found an active unit, count it"
     52 op add :active :active 1
 
-Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-2 instructions):
+Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-1 instructions):
  
     33 label *label9
     34 remark "We don't need a new unit, skip it"
     35 jump *label0 always
--    * label *label10
 -    * jump *label8 always
     36 label *label7
     37 remark "If not our unit, skip it"
     38 jump *label0 notEqual :unitFlag myFlag
- 
-    59 op add *tmp25 @thisy *tmp24
-    60 ucontrol move *tmp22 *tmp25
-    61 remark "End of unit handling"
--    * label *label1
-    62 jump *label0 always
--    * end
 
 Final code before resolving virtual instructions:
 
@@ -401,7 +383,7 @@ Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
     38     1x     38,0  <no function>
 
-Performance: parsed in 133 ms, compiled in 206 ms, optimized in 103 ms, run in 2 ms.
+Performance: parsed in 130 ms, compiled in 197 ms, optimized in 118 ms, run in 3 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992

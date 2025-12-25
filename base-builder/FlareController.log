@@ -2,15 +2,16 @@
      6 instructions eliminated by Temp Variables Elimination (2 passes, 7 iterations).
     22 instructions eliminated by Dead Code Elimination (5 iterations).
      1 instructions eliminated by Jump Normalization (6 iterations).
-    12 instructions eliminated by Jump Optimization (6 iterations).
+    12 instructions eliminated by Condition Optimization (7 iterations).
     17 instructions eliminated by Single Step Elimination (2 passes, 8 iterations).
      1 instructions modified by Expression Optimization (4 iterations).
-     1 instructions eliminated by If Expression Optimization (5 iterations).
+     1 instructions eliminated by Boolean Optimization (7 iterations).
+       1 fully-evaluated expressions optimized using selects.
      5 instructions eliminated by Data Flow Optimization (2 passes, 8 iterations).
    331 instructions added by Loop Unrolling (5 iterations).
      1 loops unrolled by Loop Unrolling.
      1 instructions eliminated by Array Optimization (5 iterations).
-    20 instructions eliminated by Jump Straightening (6 iterations).
+    20 instructions eliminated by Jump Straightening (7 iterations).
     14 instructions eliminated by Unreachable Code Elimination (2 iterations).
    403 instructions after optimizations.
 
@@ -220,7 +221,7 @@ Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 ins
     26 set :backgroundProcess:drill water
     27 set :backgroundProcess:unit .units*0
 
-Modifications by Iterated phase, Jump Optimization, pass 1, iteration 1 (-12 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-12 instructions):
  
      7 set *signature "880295ee1d8ade1d:v1"
      8 label *label9
@@ -477,7 +478,7 @@ Modifications by Iterated phase, Array Optimization, pass 1, iteration 1 (-13 in
    162 label *label54
    163 label *label55
 
-Modifications by Iterated phase, If Expression Optimization, pass 1, iteration 1 (-1 instructions):
+Modifications by Iterated phase, Boolean Optimization, pass 1, iteration 1 (-1 instructions):
  
    102 jump *label36 always
    103 jump *label43 always
@@ -1386,14 +1387,14 @@ Modifications by Virtual Instruction Expansion:
    673 # "Function: export void addTitaniumDrill(in drill)"
    674 jump *label54 greaterThanEq .drills 9
 -    * writearr<lookup:liquid> :addTitaniumDrill:drill .titaniumDrills[] .drills
-+  675 lookup liquid *tmp159 .drills
-+  676 sensor .titaniumDrills*elem *tmp159 @name
++  675 lookup liquid *tmp72 .drills
++  676 sensor .titaniumDrills*elem *tmp72 @name
 +  677 write :addTitaniumDrill:drill @this .titaniumDrills*elem
    678 op add .drills .drills 1
    679 label *label54
    680 label *label55
 
-Modifications by Jumps phase, Jump Normalization, pass 5, iteration 1:
+Modifications by Jumps phase, Unreachable Code Elimination, pass 5, iteration 1 (-14 instructions):
  
     11 label *label13
     12 ubind @flare
@@ -1426,445 +1427,508 @@ Modifications by Jumps phase, Jump Normalization, pass 5, iteration 1:
     36 label *label61
     37 sensor *tmp50 @unit @controlled
  
-    45 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-    46 label *label63
-    47 ubind @flare
+    39 ucontrol flag 0
+    40 set *tmp47 @unit
+    41 jump *label66 always
+-    * jump *label63 always
+    42 label *label62
+    43 sensor *tmp53 :findFreeUnit:first_unit @dead
+    44 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+    45 label *label63
+    46 ubind @flare
 -    * label *label64
-    48 jump *label61 notEqual :findFreeUnit:first_unit @unit
+    47 jump *label61 notEqual :findFreeUnit:first_unit @unit
 -    * label *label65
-    49 set *tmp47 null
-    50 label *label66
-    51 set :backgroundProcess:unit *tmp47
-    52 jump *label67 notEqual *tmp47 null
-    53 jump *label76 always
-    54 label *label67
+    48 set *tmp47 null
+    49 label *label66
+    50 set :backgroundProcess:unit *tmp47
+    51 jump *label67 notEqual *tmp47 null
+    52 jump *label76 always
+    53 label *label67
 -    * label *label68
-    55 label *label69
+    54 label *label69
 -    * label *label70
-    56 # "Function: void serviceDrill(in drill, in unit)"
-    57 ubind :backgroundProcess:unit
-    58 sensor :serviceDrill:item @unit @firstItem
+    55 # "Function: void serviceDrill(in drill, in unit)"
+    56 ubind :backgroundProcess:unit
+    57 sensor :serviceDrill:item @unit @firstItem
  
-    71 ucontrol itemDrop @air 10
-    72 label *label73
-    73 label *label74
+    70 ucontrol itemDrop @air 10
+    71 label *label73
+    72 label *label74
 -    * label *label75
-    74 label *label76
-    75 set .units*0 :backgroundProcess:unit
-    76 set :backgroundProcess:drill slag
-    77 set :backgroundProcess:unit .units*1
+    73 label *label76
+    74 set .units*0 :backgroundProcess:unit
+    75 set :backgroundProcess:drill slag
+    76 set :backgroundProcess:unit .units*1
 -    * label *label79
-    78 jump *label80 notEqual :backgroundProcess:drill null
-    79 jump *label21 always
-    80 label *label80
+    77 jump *label80 notEqual :backgroundProcess:drill null
+    78 jump *label21 always
+    79 label *label80
 -    * label *label81
-    81 sensor *tmp43 :backgroundProcess:drill @titanium
-    82 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-    83 sensor *tmp44 :backgroundProcess:unit @controller
+    80 sensor *tmp43 :backgroundProcess:drill @titanium
+    81 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+    82 sensor *tmp44 :backgroundProcess:unit @controller
  
-    88 set *tmp47 null
-    89 jump *label89 always
-    90 label *label82
+    87 set *tmp47 null
+    88 jump *label89 always
+    89 label *label82
 -    * label *label83
-    91 set :findFreeUnit:first_unit @unit
-    92 label *label84
-    93 sensor *tmp50 @unit @controlled
+    90 set :findFreeUnit:first_unit @unit
+    91 label *label84
+    92 sensor *tmp50 @unit @controlled
  
-   101 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   102 label *label86
-   103 ubind @flare
+    94 ucontrol flag 0
+    95 set *tmp47 @unit
+    96 jump *label89 always
+-    * jump *label86 always
+    97 label *label85
+    98 sensor *tmp53 :findFreeUnit:first_unit @dead
+    99 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   100 label *label86
+   101 ubind @flare
 -    * label *label87
-   104 jump *label84 notEqual :findFreeUnit:first_unit @unit
+   102 jump *label84 notEqual :findFreeUnit:first_unit @unit
 -    * label *label88
-   105 set *tmp47 null
-   106 label *label89
-   107 set :backgroundProcess:unit *tmp47
-   108 jump *label90 notEqual *tmp47 null
-   109 jump *label99 always
-   110 label *label90
+   103 set *tmp47 null
+   104 label *label89
+   105 set :backgroundProcess:unit *tmp47
+   106 jump *label90 notEqual *tmp47 null
+   107 jump *label99 always
+   108 label *label90
 -    * label *label91
-   111 label *label92
+   109 label *label92
 -    * label *label93
-   112 # "Function: void serviceDrill(in drill, in unit)"
-   113 ubind :backgroundProcess:unit
-   114 sensor :serviceDrill:item @unit @firstItem
+   110 # "Function: void serviceDrill(in drill, in unit)"
+   111 ubind :backgroundProcess:unit
+   112 sensor :serviceDrill:item @unit @firstItem
  
-   127 ucontrol itemDrop @air 10
-   128 label *label96
-   129 label *label97
+   125 ucontrol itemDrop @air 10
+   126 label *label96
+   127 label *label97
 -    * label *label98
-   130 label *label99
-   131 set .units*1 :backgroundProcess:unit
-   132 set :backgroundProcess:drill oil
-   133 set :backgroundProcess:unit .units*2
+   128 label *label99
+   129 set .units*1 :backgroundProcess:unit
+   130 set :backgroundProcess:drill oil
+   131 set :backgroundProcess:unit .units*2
 -    * label *label102
-   134 jump *label103 notEqual :backgroundProcess:drill null
-   135 jump *label21 always
-   136 label *label103
+   132 jump *label103 notEqual :backgroundProcess:drill null
+   133 jump *label21 always
+   134 label *label103
 -    * label *label104
-   137 sensor *tmp43 :backgroundProcess:drill @titanium
-   138 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   139 sensor *tmp44 :backgroundProcess:unit @controller
+   135 sensor *tmp43 :backgroundProcess:drill @titanium
+   136 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   137 sensor *tmp44 :backgroundProcess:unit @controller
  
-   144 set *tmp47 null
-   145 jump *label112 always
-   146 label *label105
+   142 set *tmp47 null
+   143 jump *label112 always
+   144 label *label105
 -    * label *label106
-   147 set :findFreeUnit:first_unit @unit
-   148 label *label107
-   149 sensor *tmp50 @unit @controlled
+   145 set :findFreeUnit:first_unit @unit
+   146 label *label107
+   147 sensor *tmp50 @unit @controlled
  
-   157 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   158 label *label109
-   159 ubind @flare
+   149 ucontrol flag 0
+   150 set *tmp47 @unit
+   151 jump *label112 always
+-    * jump *label109 always
+   152 label *label108
+   153 sensor *tmp53 :findFreeUnit:first_unit @dead
+   154 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   155 label *label109
+   156 ubind @flare
 -    * label *label110
-   160 jump *label107 notEqual :findFreeUnit:first_unit @unit
+   157 jump *label107 notEqual :findFreeUnit:first_unit @unit
 -    * label *label111
-   161 set *tmp47 null
-   162 label *label112
-   163 set :backgroundProcess:unit *tmp47
-   164 jump *label113 notEqual *tmp47 null
-   165 jump *label122 always
-   166 label *label113
+   158 set *tmp47 null
+   159 label *label112
+   160 set :backgroundProcess:unit *tmp47
+   161 jump *label113 notEqual *tmp47 null
+   162 jump *label122 always
+   163 label *label113
 -    * label *label114
-   167 label *label115
+   164 label *label115
 -    * label *label116
-   168 # "Function: void serviceDrill(in drill, in unit)"
-   169 ubind :backgroundProcess:unit
-   170 sensor :serviceDrill:item @unit @firstItem
+   165 # "Function: void serviceDrill(in drill, in unit)"
+   166 ubind :backgroundProcess:unit
+   167 sensor :serviceDrill:item @unit @firstItem
  
-   183 ucontrol itemDrop @air 10
-   184 label *label119
-   185 label *label120
+   180 ucontrol itemDrop @air 10
+   181 label *label119
+   182 label *label120
 -    * label *label121
-   186 label *label122
-   187 set .units*2 :backgroundProcess:unit
-   188 set :backgroundProcess:drill cryofluid
-   189 set :backgroundProcess:unit .units*3
+   183 label *label122
+   184 set .units*2 :backgroundProcess:unit
+   185 set :backgroundProcess:drill cryofluid
+   186 set :backgroundProcess:unit .units*3
 -    * label *label125
-   190 jump *label126 notEqual :backgroundProcess:drill null
-   191 jump *label21 always
-   192 label *label126
+   187 jump *label126 notEqual :backgroundProcess:drill null
+   188 jump *label21 always
+   189 label *label126
 -    * label *label127
-   193 sensor *tmp43 :backgroundProcess:drill @titanium
-   194 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   195 sensor *tmp44 :backgroundProcess:unit @controller
+   190 sensor *tmp43 :backgroundProcess:drill @titanium
+   191 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   192 sensor *tmp44 :backgroundProcess:unit @controller
  
-   200 set *tmp47 null
-   201 jump *label135 always
-   202 label *label128
+   197 set *tmp47 null
+   198 jump *label135 always
+   199 label *label128
 -    * label *label129
-   203 set :findFreeUnit:first_unit @unit
-   204 label *label130
-   205 sensor *tmp50 @unit @controlled
+   200 set :findFreeUnit:first_unit @unit
+   201 label *label130
+   202 sensor *tmp50 @unit @controlled
  
-   213 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   214 label *label132
-   215 ubind @flare
+   204 ucontrol flag 0
+   205 set *tmp47 @unit
+   206 jump *label135 always
+-    * jump *label132 always
+   207 label *label131
+   208 sensor *tmp53 :findFreeUnit:first_unit @dead
+   209 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   210 label *label132
+   211 ubind @flare
 -    * label *label133
-   216 jump *label130 notEqual :findFreeUnit:first_unit @unit
+   212 jump *label130 notEqual :findFreeUnit:first_unit @unit
 -    * label *label134
-   217 set *tmp47 null
-   218 label *label135
-   219 set :backgroundProcess:unit *tmp47
-   220 jump *label136 notEqual *tmp47 null
-   221 jump *label145 always
-   222 label *label136
+   213 set *tmp47 null
+   214 label *label135
+   215 set :backgroundProcess:unit *tmp47
+   216 jump *label136 notEqual *tmp47 null
+   217 jump *label145 always
+   218 label *label136
 -    * label *label137
-   223 label *label138
+   219 label *label138
 -    * label *label139
-   224 # "Function: void serviceDrill(in drill, in unit)"
-   225 ubind :backgroundProcess:unit
-   226 sensor :serviceDrill:item @unit @firstItem
+   220 # "Function: void serviceDrill(in drill, in unit)"
+   221 ubind :backgroundProcess:unit
+   222 sensor :serviceDrill:item @unit @firstItem
  
-   239 ucontrol itemDrop @air 10
-   240 label *label142
-   241 label *label143
+   235 ucontrol itemDrop @air 10
+   236 label *label142
+   237 label *label143
 -    * label *label144
-   242 label *label145
-   243 set .units*3 :backgroundProcess:unit
-   244 set :backgroundProcess:drill neoplasm
-   245 set :backgroundProcess:unit .units*4
+   238 label *label145
+   239 set .units*3 :backgroundProcess:unit
+   240 set :backgroundProcess:drill neoplasm
+   241 set :backgroundProcess:unit .units*4
 -    * label *label148
-   246 jump *label149 notEqual :backgroundProcess:drill null
-   247 jump *label21 always
-   248 label *label149
+   242 jump *label149 notEqual :backgroundProcess:drill null
+   243 jump *label21 always
+   244 label *label149
 -    * label *label150
-   249 sensor *tmp43 :backgroundProcess:drill @titanium
-   250 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   251 sensor *tmp44 :backgroundProcess:unit @controller
+   245 sensor *tmp43 :backgroundProcess:drill @titanium
+   246 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   247 sensor *tmp44 :backgroundProcess:unit @controller
  
-   256 set *tmp47 null
-   257 jump *label158 always
-   258 label *label151
+   252 set *tmp47 null
+   253 jump *label158 always
+   254 label *label151
 -    * label *label152
-   259 set :findFreeUnit:first_unit @unit
-   260 label *label153
-   261 sensor *tmp50 @unit @controlled
+   255 set :findFreeUnit:first_unit @unit
+   256 label *label153
+   257 sensor *tmp50 @unit @controlled
  
-   269 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   270 label *label155
-   271 ubind @flare
+   259 ucontrol flag 0
+   260 set *tmp47 @unit
+   261 jump *label158 always
+-    * jump *label155 always
+   262 label *label154
+   263 sensor *tmp53 :findFreeUnit:first_unit @dead
+   264 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   265 label *label155
+   266 ubind @flare
 -    * label *label156
-   272 jump *label153 notEqual :findFreeUnit:first_unit @unit
+   267 jump *label153 notEqual :findFreeUnit:first_unit @unit
 -    * label *label157
-   273 set *tmp47 null
-   274 label *label158
-   275 set :backgroundProcess:unit *tmp47
-   276 jump *label159 notEqual *tmp47 null
-   277 jump *label168 always
-   278 label *label159
+   268 set *tmp47 null
+   269 label *label158
+   270 set :backgroundProcess:unit *tmp47
+   271 jump *label159 notEqual *tmp47 null
+   272 jump *label168 always
+   273 label *label159
 -    * label *label160
-   279 label *label161
+   274 label *label161
 -    * label *label162
-   280 # "Function: void serviceDrill(in drill, in unit)"
-   281 ubind :backgroundProcess:unit
-   282 sensor :serviceDrill:item @unit @firstItem
+   275 # "Function: void serviceDrill(in drill, in unit)"
+   276 ubind :backgroundProcess:unit
+   277 sensor :serviceDrill:item @unit @firstItem
  
-   295 ucontrol itemDrop @air 10
-   296 label *label165
-   297 label *label166
+   290 ucontrol itemDrop @air 10
+   291 label *label165
+   292 label *label166
 -    * label *label167
-   298 label *label168
-   299 set .units*4 :backgroundProcess:unit
-   300 set :backgroundProcess:drill hydrogen
-   301 set :backgroundProcess:unit .units*5
+   293 label *label168
+   294 set .units*4 :backgroundProcess:unit
+   295 set :backgroundProcess:drill hydrogen
+   296 set :backgroundProcess:unit .units*5
 -    * label *label171
-   302 jump *label172 notEqual :backgroundProcess:drill null
-   303 jump *label21 always
-   304 label *label172
+   297 jump *label172 notEqual :backgroundProcess:drill null
+   298 jump *label21 always
+   299 label *label172
 -    * label *label173
-   305 sensor *tmp43 :backgroundProcess:drill @titanium
-   306 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   307 sensor *tmp44 :backgroundProcess:unit @controller
+   300 sensor *tmp43 :backgroundProcess:drill @titanium
+   301 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   302 sensor *tmp44 :backgroundProcess:unit @controller
  
-   312 set *tmp47 null
-   313 jump *label181 always
-   314 label *label174
+   307 set *tmp47 null
+   308 jump *label181 always
+   309 label *label174
 -    * label *label175
-   315 set :findFreeUnit:first_unit @unit
-   316 label *label176
-   317 sensor *tmp50 @unit @controlled
+   310 set :findFreeUnit:first_unit @unit
+   311 label *label176
+   312 sensor *tmp50 @unit @controlled
  
-   325 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   326 label *label178
-   327 ubind @flare
+   314 ucontrol flag 0
+   315 set *tmp47 @unit
+   316 jump *label181 always
+-    * jump *label178 always
+   317 label *label177
+   318 sensor *tmp53 :findFreeUnit:first_unit @dead
+   319 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   320 label *label178
+   321 ubind @flare
 -    * label *label179
-   328 jump *label176 notEqual :findFreeUnit:first_unit @unit
+   322 jump *label176 notEqual :findFreeUnit:first_unit @unit
 -    * label *label180
-   329 set *tmp47 null
-   330 label *label181
-   331 set :backgroundProcess:unit *tmp47
-   332 jump *label182 notEqual *tmp47 null
-   333 jump *label191 always
-   334 label *label182
+   323 set *tmp47 null
+   324 label *label181
+   325 set :backgroundProcess:unit *tmp47
+   326 jump *label182 notEqual *tmp47 null
+   327 jump *label191 always
+   328 label *label182
 -    * label *label183
-   335 label *label184
+   329 label *label184
 -    * label *label185
-   336 # "Function: void serviceDrill(in drill, in unit)"
-   337 ubind :backgroundProcess:unit
-   338 sensor :serviceDrill:item @unit @firstItem
+   330 # "Function: void serviceDrill(in drill, in unit)"
+   331 ubind :backgroundProcess:unit
+   332 sensor :serviceDrill:item @unit @firstItem
  
-   351 ucontrol itemDrop @air 10
-   352 label *label188
-   353 label *label189
+   345 ucontrol itemDrop @air 10
+   346 label *label188
+   347 label *label189
 -    * label *label190
-   354 label *label191
-   355 set .units*5 :backgroundProcess:unit
-   356 set :backgroundProcess:drill ozone
-   357 set :backgroundProcess:unit .units*6
+   348 label *label191
+   349 set .units*5 :backgroundProcess:unit
+   350 set :backgroundProcess:drill ozone
+   351 set :backgroundProcess:unit .units*6
 -    * label *label194
-   358 jump *label195 notEqual :backgroundProcess:drill null
-   359 jump *label21 always
-   360 label *label195
+   352 jump *label195 notEqual :backgroundProcess:drill null
+   353 jump *label21 always
+   354 label *label195
 -    * label *label196
-   361 sensor *tmp43 :backgroundProcess:drill @titanium
-   362 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   363 sensor *tmp44 :backgroundProcess:unit @controller
+   355 sensor *tmp43 :backgroundProcess:drill @titanium
+   356 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   357 sensor *tmp44 :backgroundProcess:unit @controller
  
-   368 set *tmp47 null
-   369 jump *label204 always
-   370 label *label197
+   362 set *tmp47 null
+   363 jump *label204 always
+   364 label *label197
 -    * label *label198
-   371 set :findFreeUnit:first_unit @unit
-   372 label *label199
-   373 sensor *tmp50 @unit @controlled
+   365 set :findFreeUnit:first_unit @unit
+   366 label *label199
+   367 sensor *tmp50 @unit @controlled
  
-   381 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   382 label *label201
-   383 ubind @flare
+   369 ucontrol flag 0
+   370 set *tmp47 @unit
+   371 jump *label204 always
+-    * jump *label201 always
+   372 label *label200
+   373 sensor *tmp53 :findFreeUnit:first_unit @dead
+   374 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   375 label *label201
+   376 ubind @flare
 -    * label *label202
-   384 jump *label199 notEqual :findFreeUnit:first_unit @unit
+   377 jump *label199 notEqual :findFreeUnit:first_unit @unit
 -    * label *label203
-   385 set *tmp47 null
-   386 label *label204
-   387 set :backgroundProcess:unit *tmp47
-   388 jump *label205 notEqual *tmp47 null
-   389 jump *label214 always
-   390 label *label205
+   378 set *tmp47 null
+   379 label *label204
+   380 set :backgroundProcess:unit *tmp47
+   381 jump *label205 notEqual *tmp47 null
+   382 jump *label214 always
+   383 label *label205
 -    * label *label206
-   391 label *label207
+   384 label *label207
 -    * label *label208
-   392 # "Function: void serviceDrill(in drill, in unit)"
-   393 ubind :backgroundProcess:unit
-   394 sensor :serviceDrill:item @unit @firstItem
+   385 # "Function: void serviceDrill(in drill, in unit)"
+   386 ubind :backgroundProcess:unit
+   387 sensor :serviceDrill:item @unit @firstItem
  
-   407 ucontrol itemDrop @air 10
-   408 label *label211
-   409 label *label212
+   400 ucontrol itemDrop @air 10
+   401 label *label211
+   402 label *label212
 -    * label *label213
-   410 label *label214
-   411 set .units*6 :backgroundProcess:unit
-   412 set :backgroundProcess:drill cyanogen
-   413 set :backgroundProcess:unit .units*7
+   403 label *label214
+   404 set .units*6 :backgroundProcess:unit
+   405 set :backgroundProcess:drill cyanogen
+   406 set :backgroundProcess:unit .units*7
 -    * label *label217
-   414 jump *label218 notEqual :backgroundProcess:drill null
-   415 jump *label21 always
-   416 label *label218
+   407 jump *label218 notEqual :backgroundProcess:drill null
+   408 jump *label21 always
+   409 label *label218
 -    * label *label219
-   417 sensor *tmp43 :backgroundProcess:drill @titanium
-   418 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   419 sensor *tmp44 :backgroundProcess:unit @controller
+   410 sensor *tmp43 :backgroundProcess:drill @titanium
+   411 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   412 sensor *tmp44 :backgroundProcess:unit @controller
  
-   424 set *tmp47 null
-   425 jump *label227 always
-   426 label *label220
+   417 set *tmp47 null
+   418 jump *label227 always
+   419 label *label220
 -    * label *label221
-   427 set :findFreeUnit:first_unit @unit
-   428 label *label222
-   429 sensor *tmp50 @unit @controlled
+   420 set :findFreeUnit:first_unit @unit
+   421 label *label222
+   422 sensor *tmp50 @unit @controlled
  
-   437 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   438 label *label224
-   439 ubind @flare
+   424 ucontrol flag 0
+   425 set *tmp47 @unit
+   426 jump *label227 always
+-    * jump *label224 always
+   427 label *label223
+   428 sensor *tmp53 :findFreeUnit:first_unit @dead
+   429 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   430 label *label224
+   431 ubind @flare
 -    * label *label225
-   440 jump *label222 notEqual :findFreeUnit:first_unit @unit
+   432 jump *label222 notEqual :findFreeUnit:first_unit @unit
 -    * label *label226
-   441 set *tmp47 null
-   442 label *label227
-   443 set :backgroundProcess:unit *tmp47
-   444 jump *label228 notEqual *tmp47 null
-   445 jump *label237 always
-   446 label *label228
+   433 set *tmp47 null
+   434 label *label227
+   435 set :backgroundProcess:unit *tmp47
+   436 jump *label228 notEqual *tmp47 null
+   437 jump *label237 always
+   438 label *label228
 -    * label *label229
-   447 label *label230
+   439 label *label230
 -    * label *label231
-   448 # "Function: void serviceDrill(in drill, in unit)"
-   449 ubind :backgroundProcess:unit
-   450 sensor :serviceDrill:item @unit @firstItem
+   440 # "Function: void serviceDrill(in drill, in unit)"
+   441 ubind :backgroundProcess:unit
+   442 sensor :serviceDrill:item @unit @firstItem
  
-   463 ucontrol itemDrop @air 10
-   464 label *label234
-   465 label *label235
+   455 ucontrol itemDrop @air 10
+   456 label *label234
+   457 label *label235
 -    * label *label236
-   466 label *label237
-   467 set .units*7 :backgroundProcess:unit
-   468 set :backgroundProcess:drill gallium
-   469 set :backgroundProcess:unit .units*8
+   458 label *label237
+   459 set .units*7 :backgroundProcess:unit
+   460 set :backgroundProcess:drill gallium
+   461 set :backgroundProcess:unit .units*8
 -    * label *label240
-   470 jump *label241 notEqual :backgroundProcess:drill null
-   471 jump *label21 always
-   472 label *label241
+   462 jump *label241 notEqual :backgroundProcess:drill null
+   463 jump *label21 always
+   464 label *label241
 -    * label *label242
-   473 sensor *tmp43 :backgroundProcess:drill @titanium
-   474 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   475 sensor *tmp44 :backgroundProcess:unit @controller
+   465 sensor *tmp43 :backgroundProcess:drill @titanium
+   466 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   467 sensor *tmp44 :backgroundProcess:unit @controller
  
-   480 set *tmp47 null
-   481 jump *label250 always
-   482 label *label243
+   472 set *tmp47 null
+   473 jump *label250 always
+   474 label *label243
 -    * label *label244
-   483 set :findFreeUnit:first_unit @unit
-   484 label *label245
-   485 sensor *tmp50 @unit @controlled
+   475 set :findFreeUnit:first_unit @unit
+   476 label *label245
+   477 sensor *tmp50 @unit @controlled
  
-   493 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   494 label *label247
-   495 ubind @flare
+   479 ucontrol flag 0
+   480 set *tmp47 @unit
+   481 jump *label250 always
+-    * jump *label247 always
+   482 label *label246
+   483 sensor *tmp53 :findFreeUnit:first_unit @dead
+   484 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   485 label *label247
+   486 ubind @flare
 -    * label *label248
-   496 jump *label245 notEqual :findFreeUnit:first_unit @unit
+   487 jump *label245 notEqual :findFreeUnit:first_unit @unit
 -    * label *label249
-   497 set *tmp47 null
-   498 label *label250
-   499 set :backgroundProcess:unit *tmp47
-   500 jump *label251 notEqual *tmp47 null
-   501 jump *label260 always
-   502 label *label251
+   488 set *tmp47 null
+   489 label *label250
+   490 set :backgroundProcess:unit *tmp47
+   491 jump *label251 notEqual *tmp47 null
+   492 jump *label260 always
+   493 label *label251
 -    * label *label252
-   503 label *label253
+   494 label *label253
 -    * label *label254
-   504 # "Function: void serviceDrill(in drill, in unit)"
-   505 ubind :backgroundProcess:unit
-   506 sensor :serviceDrill:item @unit @firstItem
+   495 # "Function: void serviceDrill(in drill, in unit)"
+   496 ubind :backgroundProcess:unit
+   497 sensor :serviceDrill:item @unit @firstItem
  
-   519 ucontrol itemDrop @air 10
-   520 label *label257
-   521 label *label258
+   510 ucontrol itemDrop @air 10
+   511 label *label257
+   512 label *label258
 -    * label *label259
-   522 label *label260
-   523 set .units*8 :backgroundProcess:unit
-   524 set :backgroundProcess:drill nitrogen
-   525 set :backgroundProcess:unit .units*9
+   513 label *label260
+   514 set .units*8 :backgroundProcess:unit
+   515 set :backgroundProcess:drill nitrogen
+   516 set :backgroundProcess:unit .units*9
 -    * label *label263
-   526 jump *label264 notEqual :backgroundProcess:drill null
-   527 jump *label21 always
-   528 label *label264
+   517 jump *label264 notEqual :backgroundProcess:drill null
+   518 jump *label21 always
+   519 label *label264
 -    * label *label265
-   529 sensor *tmp43 :backgroundProcess:drill @titanium
-   530 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   531 sensor *tmp44 :backgroundProcess:unit @controller
+   520 sensor *tmp43 :backgroundProcess:drill @titanium
+   521 op add :backgroundProcess:count :backgroundProcess:count *tmp43
+   522 sensor *tmp44 :backgroundProcess:unit @controller
  
-   536 set *tmp47 null
-   537 jump *label273 always
-   538 label *label266
+   527 set *tmp47 null
+   528 jump *label273 always
+   529 label *label266
 -    * label *label267
-   539 set :findFreeUnit:first_unit @unit
-   540 label *label268
-   541 sensor *tmp50 @unit @controlled
+   530 set :findFreeUnit:first_unit @unit
+   531 label *label268
+   532 sensor *tmp50 @unit @controlled
  
-   549 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
-   550 label *label270
-   551 ubind @flare
+   534 ucontrol flag 0
+   535 set *tmp47 @unit
+   536 jump *label273 always
+-    * jump *label270 always
+   537 label *label269
+   538 sensor *tmp53 :findFreeUnit:first_unit @dead
+   539 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
+   540 label *label270
+   541 ubind @flare
 -    * label *label271
-   552 jump *label268 notEqual :findFreeUnit:first_unit @unit
+   542 jump *label268 notEqual :findFreeUnit:first_unit @unit
 -    * label *label272
-   553 set *tmp47 null
-   554 label *label273
-   555 set :backgroundProcess:unit *tmp47
-   556 jump *label274 notEqual *tmp47 null
-   557 jump *label283 always
-   558 label *label274
+   543 set *tmp47 null
+   544 label *label273
+   545 set :backgroundProcess:unit *tmp47
+   546 jump *label274 notEqual *tmp47 null
+   547 jump *label283 always
+   548 label *label274
 -    * label *label275
-   559 label *label276
+   549 label *label276
 -    * label *label277
-   560 # "Function: void serviceDrill(in drill, in unit)"
-   561 ubind :backgroundProcess:unit
-   562 sensor :serviceDrill:item @unit @firstItem
+   550 # "Function: void serviceDrill(in drill, in unit)"
+   551 ubind :backgroundProcess:unit
+   552 sensor :serviceDrill:item @unit @firstItem
  
-   575 ucontrol itemDrop @air 10
-   576 label *label280
-   577 label *label281
+   565 ucontrol itemDrop @air 10
+   566 label *label280
+   567 label *label281
 -    * label *label282
-   578 label *label283
-   579 set .units*9 :backgroundProcess:unit
-   580 label *label21
-   581 write :backgroundProcess:count processor2 ".titaniumDrillCount"
+   568 label *label283
+   569 set .units*9 :backgroundProcess:unit
+   570 label *label21
+   571 write :backgroundProcess:count processor2 ".titaniumDrillCount"
 -    * label *label17
-   582 jump *label16 always
+   572 jump *label16 always
 -    * label *label18
 -    * label *label10
-   583 wait 1e12
-   584 jump *label9 always
-   585 end
+-    * wait 1e12
+-    * jump *label9 always
+-    * end
+   573 label *label0
+   574 # "Function: export void addTitaniumDrill(in drill)"
+   575 jump *label54 greaterThanEq .drills 9
  
-   591 write :addTitaniumDrill:drill @this .titaniumDrills*elem
-   592 op add .drills .drills 1
-   593 label *label54
+   578 write :addTitaniumDrill:drill @this .titaniumDrills*elem
+   579 op add .drills .drills 1
+   580 label *label54
 -    * label *label55
 -    * label *label53
-   594 set :addTitaniumDrill*finished true
-   595 jump *label9 always
-   596 end
+   581 set :addTitaniumDrill*finished true
+   582 jump *label9 always
+-    * end
 
 Modifications by Jumps phase, Jump Straightening, pass 5, iteration 1 (-20 instructions):
  
@@ -1878,536 +1942,195 @@ Modifications by Jumps phase, Jump Straightening, pass 5, iteration 1 (-20 instr
     24 sensor *tmp43 :backgroundProcess:drill @titanium
     25 set :backgroundProcess:count *tmp43
  
-    48 set *tmp47 null
-    49 label *label66
-    50 set :backgroundProcess:unit *tmp47
+    46 set *tmp47 null
+    47 label *label66
+    48 set :backgroundProcess:unit *tmp47
 -    * jump *label67 notEqual *tmp47 null
 -    * jump *label76 always
-+   51 jump *label76 equal *tmp47 null
-    52 label *label67
-    53 label *label69
-    54 # "Function: void serviceDrill(in drill, in unit)"
- 
-    73 set .units*0 :backgroundProcess:unit
-    74 set :backgroundProcess:drill slag
-    75 set :backgroundProcess:unit .units*1
--    * jump *label80 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+   76 jump *label21 equal :backgroundProcess:drill null
-    77 label *label80
-    78 sensor *tmp43 :backgroundProcess:drill @titanium
-    79 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   102 set *tmp47 null
-   103 label *label89
-   104 set :backgroundProcess:unit *tmp47
--    * jump *label90 notEqual *tmp47 null
--    * jump *label99 always
-+  105 jump *label99 equal *tmp47 null
-   106 label *label90
-   107 label *label92
-   108 # "Function: void serviceDrill(in drill, in unit)"
- 
-   127 set .units*1 :backgroundProcess:unit
-   128 set :backgroundProcess:drill oil
-   129 set :backgroundProcess:unit .units*2
--    * jump *label103 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  130 jump *label21 equal :backgroundProcess:drill null
-   131 label *label103
-   132 sensor *tmp43 :backgroundProcess:drill @titanium
-   133 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   156 set *tmp47 null
-   157 label *label112
-   158 set :backgroundProcess:unit *tmp47
--    * jump *label113 notEqual *tmp47 null
--    * jump *label122 always
-+  159 jump *label122 equal *tmp47 null
-   160 label *label113
-   161 label *label115
-   162 # "Function: void serviceDrill(in drill, in unit)"
- 
-   181 set .units*2 :backgroundProcess:unit
-   182 set :backgroundProcess:drill cryofluid
-   183 set :backgroundProcess:unit .units*3
--    * jump *label126 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  184 jump *label21 equal :backgroundProcess:drill null
-   185 label *label126
-   186 sensor *tmp43 :backgroundProcess:drill @titanium
-   187 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   210 set *tmp47 null
-   211 label *label135
-   212 set :backgroundProcess:unit *tmp47
--    * jump *label136 notEqual *tmp47 null
--    * jump *label145 always
-+  213 jump *label145 equal *tmp47 null
-   214 label *label136
-   215 label *label138
-   216 # "Function: void serviceDrill(in drill, in unit)"
- 
-   235 set .units*3 :backgroundProcess:unit
-   236 set :backgroundProcess:drill neoplasm
-   237 set :backgroundProcess:unit .units*4
--    * jump *label149 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  238 jump *label21 equal :backgroundProcess:drill null
-   239 label *label149
-   240 sensor *tmp43 :backgroundProcess:drill @titanium
-   241 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   264 set *tmp47 null
-   265 label *label158
-   266 set :backgroundProcess:unit *tmp47
--    * jump *label159 notEqual *tmp47 null
--    * jump *label168 always
-+  267 jump *label168 equal *tmp47 null
-   268 label *label159
-   269 label *label161
-   270 # "Function: void serviceDrill(in drill, in unit)"
- 
-   289 set .units*4 :backgroundProcess:unit
-   290 set :backgroundProcess:drill hydrogen
-   291 set :backgroundProcess:unit .units*5
--    * jump *label172 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  292 jump *label21 equal :backgroundProcess:drill null
-   293 label *label172
-   294 sensor *tmp43 :backgroundProcess:drill @titanium
-   295 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   318 set *tmp47 null
-   319 label *label181
-   320 set :backgroundProcess:unit *tmp47
--    * jump *label182 notEqual *tmp47 null
--    * jump *label191 always
-+  321 jump *label191 equal *tmp47 null
-   322 label *label182
-   323 label *label184
-   324 # "Function: void serviceDrill(in drill, in unit)"
- 
-   343 set .units*5 :backgroundProcess:unit
-   344 set :backgroundProcess:drill ozone
-   345 set :backgroundProcess:unit .units*6
--    * jump *label195 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  346 jump *label21 equal :backgroundProcess:drill null
-   347 label *label195
-   348 sensor *tmp43 :backgroundProcess:drill @titanium
-   349 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   372 set *tmp47 null
-   373 label *label204
-   374 set :backgroundProcess:unit *tmp47
--    * jump *label205 notEqual *tmp47 null
--    * jump *label214 always
-+  375 jump *label214 equal *tmp47 null
-   376 label *label205
-   377 label *label207
-   378 # "Function: void serviceDrill(in drill, in unit)"
- 
-   397 set .units*6 :backgroundProcess:unit
-   398 set :backgroundProcess:drill cyanogen
-   399 set :backgroundProcess:unit .units*7
--    * jump *label218 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  400 jump *label21 equal :backgroundProcess:drill null
-   401 label *label218
-   402 sensor *tmp43 :backgroundProcess:drill @titanium
-   403 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   426 set *tmp47 null
-   427 label *label227
-   428 set :backgroundProcess:unit *tmp47
--    * jump *label228 notEqual *tmp47 null
--    * jump *label237 always
-+  429 jump *label237 equal *tmp47 null
-   430 label *label228
-   431 label *label230
-   432 # "Function: void serviceDrill(in drill, in unit)"
- 
-   451 set .units*7 :backgroundProcess:unit
-   452 set :backgroundProcess:drill gallium
-   453 set :backgroundProcess:unit .units*8
--    * jump *label241 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  454 jump *label21 equal :backgroundProcess:drill null
-   455 label *label241
-   456 sensor *tmp43 :backgroundProcess:drill @titanium
-   457 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   480 set *tmp47 null
-   481 label *label250
-   482 set :backgroundProcess:unit *tmp47
--    * jump *label251 notEqual *tmp47 null
--    * jump *label260 always
-+  483 jump *label260 equal *tmp47 null
-   484 label *label251
-   485 label *label253
-   486 # "Function: void serviceDrill(in drill, in unit)"
- 
-   505 set .units*8 :backgroundProcess:unit
-   506 set :backgroundProcess:drill nitrogen
-   507 set :backgroundProcess:unit .units*9
--    * jump *label264 notEqual :backgroundProcess:drill null
--    * jump *label21 always
-+  508 jump *label21 equal :backgroundProcess:drill null
-   509 label *label264
-   510 sensor *tmp43 :backgroundProcess:drill @titanium
-   511 op add :backgroundProcess:count :backgroundProcess:count *tmp43
- 
-   534 set *tmp47 null
-   535 label *label273
-   536 set :backgroundProcess:unit *tmp47
--    * jump *label274 notEqual *tmp47 null
--    * jump *label283 always
-+  537 jump *label283 equal *tmp47 null
-   538 label *label274
-   539 label *label276
-   540 # "Function: void serviceDrill(in drill, in unit)"
-
-Modifications by Jumps phase, Jump Optimization, pass 5, iteration 1:
- 
-    20 set :backgroundProcess:drill water
-    21 set :backgroundProcess:unit .units*0
-    22 jump *label21 equal :backgroundProcess:drill null
--    * label *label57
-    23 sensor *tmp43 :backgroundProcess:drill @titanium
-    24 set :backgroundProcess:count *tmp43
-    25 sensor *tmp44 :backgroundProcess:unit @controller
- 
-    48 label *label66
-    49 set :backgroundProcess:unit *tmp47
-    50 jump *label76 equal *tmp47 null
--    * label *label67
++   49 jump *label76 equal *tmp47 null
+    50 label *label67
     51 label *label69
     52 # "Function: void serviceDrill(in drill, in unit)"
-    53 ubind :backgroundProcess:unit
  
+    71 set .units*0 :backgroundProcess:unit
     72 set :backgroundProcess:drill slag
     73 set :backgroundProcess:unit .units*1
-    74 jump *label21 equal :backgroundProcess:drill null
--    * label *label80
-    75 sensor *tmp43 :backgroundProcess:drill @titanium
-    76 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-    77 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label80 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++   74 jump *label21 equal :backgroundProcess:drill null
+    75 label *label80
+    76 sensor *tmp43 :backgroundProcess:drill @titanium
+    77 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   100 label *label89
-   101 set :backgroundProcess:unit *tmp47
-   102 jump *label99 equal *tmp47 null
--    * label *label90
+    98 set *tmp47 null
+    99 label *label89
+   100 set :backgroundProcess:unit *tmp47
+-    * jump *label90 notEqual *tmp47 null
+-    * jump *label99 always
++  101 jump *label99 equal *tmp47 null
+   102 label *label90
    103 label *label92
    104 # "Function: void serviceDrill(in drill, in unit)"
-   105 ubind :backgroundProcess:unit
  
+   123 set .units*1 :backgroundProcess:unit
    124 set :backgroundProcess:drill oil
    125 set :backgroundProcess:unit .units*2
-   126 jump *label21 equal :backgroundProcess:drill null
--    * label *label103
-   127 sensor *tmp43 :backgroundProcess:drill @titanium
-   128 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   129 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label103 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  126 jump *label21 equal :backgroundProcess:drill null
+   127 label *label103
+   128 sensor *tmp43 :backgroundProcess:drill @titanium
+   129 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   152 label *label112
-   153 set :backgroundProcess:unit *tmp47
-   154 jump *label122 equal *tmp47 null
--    * label *label113
+   150 set *tmp47 null
+   151 label *label112
+   152 set :backgroundProcess:unit *tmp47
+-    * jump *label113 notEqual *tmp47 null
+-    * jump *label122 always
++  153 jump *label122 equal *tmp47 null
+   154 label *label113
    155 label *label115
    156 # "Function: void serviceDrill(in drill, in unit)"
-   157 ubind :backgroundProcess:unit
  
+   175 set .units*2 :backgroundProcess:unit
    176 set :backgroundProcess:drill cryofluid
    177 set :backgroundProcess:unit .units*3
-   178 jump *label21 equal :backgroundProcess:drill null
--    * label *label126
-   179 sensor *tmp43 :backgroundProcess:drill @titanium
-   180 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   181 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label126 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  178 jump *label21 equal :backgroundProcess:drill null
+   179 label *label126
+   180 sensor *tmp43 :backgroundProcess:drill @titanium
+   181 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   204 label *label135
-   205 set :backgroundProcess:unit *tmp47
-   206 jump *label145 equal *tmp47 null
--    * label *label136
+   202 set *tmp47 null
+   203 label *label135
+   204 set :backgroundProcess:unit *tmp47
+-    * jump *label136 notEqual *tmp47 null
+-    * jump *label145 always
++  205 jump *label145 equal *tmp47 null
+   206 label *label136
    207 label *label138
    208 # "Function: void serviceDrill(in drill, in unit)"
-   209 ubind :backgroundProcess:unit
  
+   227 set .units*3 :backgroundProcess:unit
    228 set :backgroundProcess:drill neoplasm
    229 set :backgroundProcess:unit .units*4
-   230 jump *label21 equal :backgroundProcess:drill null
--    * label *label149
-   231 sensor *tmp43 :backgroundProcess:drill @titanium
-   232 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   233 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label149 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  230 jump *label21 equal :backgroundProcess:drill null
+   231 label *label149
+   232 sensor *tmp43 :backgroundProcess:drill @titanium
+   233 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   256 label *label158
-   257 set :backgroundProcess:unit *tmp47
-   258 jump *label168 equal *tmp47 null
--    * label *label159
+   254 set *tmp47 null
+   255 label *label158
+   256 set :backgroundProcess:unit *tmp47
+-    * jump *label159 notEqual *tmp47 null
+-    * jump *label168 always
++  257 jump *label168 equal *tmp47 null
+   258 label *label159
    259 label *label161
    260 # "Function: void serviceDrill(in drill, in unit)"
-   261 ubind :backgroundProcess:unit
  
+   279 set .units*4 :backgroundProcess:unit
    280 set :backgroundProcess:drill hydrogen
    281 set :backgroundProcess:unit .units*5
-   282 jump *label21 equal :backgroundProcess:drill null
--    * label *label172
-   283 sensor *tmp43 :backgroundProcess:drill @titanium
-   284 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   285 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label172 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  282 jump *label21 equal :backgroundProcess:drill null
+   283 label *label172
+   284 sensor *tmp43 :backgroundProcess:drill @titanium
+   285 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   308 label *label181
-   309 set :backgroundProcess:unit *tmp47
-   310 jump *label191 equal *tmp47 null
--    * label *label182
+   306 set *tmp47 null
+   307 label *label181
+   308 set :backgroundProcess:unit *tmp47
+-    * jump *label182 notEqual *tmp47 null
+-    * jump *label191 always
++  309 jump *label191 equal *tmp47 null
+   310 label *label182
    311 label *label184
    312 # "Function: void serviceDrill(in drill, in unit)"
-   313 ubind :backgroundProcess:unit
  
+   331 set .units*5 :backgroundProcess:unit
    332 set :backgroundProcess:drill ozone
    333 set :backgroundProcess:unit .units*6
-   334 jump *label21 equal :backgroundProcess:drill null
--    * label *label195
-   335 sensor *tmp43 :backgroundProcess:drill @titanium
-   336 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   337 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label195 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  334 jump *label21 equal :backgroundProcess:drill null
+   335 label *label195
+   336 sensor *tmp43 :backgroundProcess:drill @titanium
+   337 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   360 label *label204
-   361 set :backgroundProcess:unit *tmp47
-   362 jump *label214 equal *tmp47 null
--    * label *label205
+   358 set *tmp47 null
+   359 label *label204
+   360 set :backgroundProcess:unit *tmp47
+-    * jump *label205 notEqual *tmp47 null
+-    * jump *label214 always
++  361 jump *label214 equal *tmp47 null
+   362 label *label205
    363 label *label207
    364 # "Function: void serviceDrill(in drill, in unit)"
-   365 ubind :backgroundProcess:unit
  
+   383 set .units*6 :backgroundProcess:unit
    384 set :backgroundProcess:drill cyanogen
    385 set :backgroundProcess:unit .units*7
-   386 jump *label21 equal :backgroundProcess:drill null
--    * label *label218
-   387 sensor *tmp43 :backgroundProcess:drill @titanium
-   388 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   389 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label218 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  386 jump *label21 equal :backgroundProcess:drill null
+   387 label *label218
+   388 sensor *tmp43 :backgroundProcess:drill @titanium
+   389 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   412 label *label227
-   413 set :backgroundProcess:unit *tmp47
-   414 jump *label237 equal *tmp47 null
--    * label *label228
+   410 set *tmp47 null
+   411 label *label227
+   412 set :backgroundProcess:unit *tmp47
+-    * jump *label228 notEqual *tmp47 null
+-    * jump *label237 always
++  413 jump *label237 equal *tmp47 null
+   414 label *label228
    415 label *label230
    416 # "Function: void serviceDrill(in drill, in unit)"
-   417 ubind :backgroundProcess:unit
  
+   435 set .units*7 :backgroundProcess:unit
    436 set :backgroundProcess:drill gallium
    437 set :backgroundProcess:unit .units*8
-   438 jump *label21 equal :backgroundProcess:drill null
--    * label *label241
-   439 sensor *tmp43 :backgroundProcess:drill @titanium
-   440 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   441 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label241 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  438 jump *label21 equal :backgroundProcess:drill null
+   439 label *label241
+   440 sensor *tmp43 :backgroundProcess:drill @titanium
+   441 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   464 label *label250
-   465 set :backgroundProcess:unit *tmp47
-   466 jump *label260 equal *tmp47 null
--    * label *label251
+   462 set *tmp47 null
+   463 label *label250
+   464 set :backgroundProcess:unit *tmp47
+-    * jump *label251 notEqual *tmp47 null
+-    * jump *label260 always
++  465 jump *label260 equal *tmp47 null
+   466 label *label251
    467 label *label253
    468 # "Function: void serviceDrill(in drill, in unit)"
-   469 ubind :backgroundProcess:unit
  
+   487 set .units*8 :backgroundProcess:unit
    488 set :backgroundProcess:drill nitrogen
    489 set :backgroundProcess:unit .units*9
-   490 jump *label21 equal :backgroundProcess:drill null
--    * label *label264
-   491 sensor *tmp43 :backgroundProcess:drill @titanium
-   492 op add :backgroundProcess:count :backgroundProcess:count *tmp43
-   493 sensor *tmp44 :backgroundProcess:unit @controller
+-    * jump *label264 notEqual :backgroundProcess:drill null
+-    * jump *label21 always
++  490 jump *label21 equal :backgroundProcess:drill null
+   491 label *label264
+   492 sensor *tmp43 :backgroundProcess:drill @titanium
+   493 op add :backgroundProcess:count :backgroundProcess:count *tmp43
  
-   516 label *label273
-   517 set :backgroundProcess:unit *tmp47
-   518 jump *label283 equal *tmp47 null
--    * label *label274
+   514 set *tmp47 null
+   515 label *label273
+   516 set :backgroundProcess:unit *tmp47
+-    * jump *label274 notEqual *tmp47 null
+-    * jump *label283 always
++  517 jump *label283 equal *tmp47 null
+   518 label *label274
    519 label *label276
    520 # "Function: void serviceDrill(in drill, in unit)"
-   521 ubind :backgroundProcess:unit
-
-Modifications by Jumps phase, Unreachable Code Elimination, pass 5, iteration 1 (-14 instructions):
- 
-    37 ucontrol flag 0
-    38 set *tmp47 @unit
-    39 jump *label66 always
--    * jump *label63 always
-    40 label *label62
-    41 sensor *tmp53 :findFreeUnit:first_unit @dead
-    42 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-    88 ucontrol flag 0
-    89 set *tmp47 @unit
-    90 jump *label89 always
--    * jump *label86 always
-    91 label *label85
-    92 sensor *tmp53 :findFreeUnit:first_unit @dead
-    93 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   139 ucontrol flag 0
-   140 set *tmp47 @unit
-   141 jump *label112 always
--    * jump *label109 always
-   142 label *label108
-   143 sensor *tmp53 :findFreeUnit:first_unit @dead
-   144 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   190 ucontrol flag 0
-   191 set *tmp47 @unit
-   192 jump *label135 always
--    * jump *label132 always
-   193 label *label131
-   194 sensor *tmp53 :findFreeUnit:first_unit @dead
-   195 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   241 ucontrol flag 0
-   242 set *tmp47 @unit
-   243 jump *label158 always
--    * jump *label155 always
-   244 label *label154
-   245 sensor *tmp53 :findFreeUnit:first_unit @dead
-   246 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   292 ucontrol flag 0
-   293 set *tmp47 @unit
-   294 jump *label181 always
--    * jump *label178 always
-   295 label *label177
-   296 sensor *tmp53 :findFreeUnit:first_unit @dead
-   297 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   343 ucontrol flag 0
-   344 set *tmp47 @unit
-   345 jump *label204 always
--    * jump *label201 always
-   346 label *label200
-   347 sensor *tmp53 :findFreeUnit:first_unit @dead
-   348 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   394 ucontrol flag 0
-   395 set *tmp47 @unit
-   396 jump *label227 always
--    * jump *label224 always
-   397 label *label223
-   398 sensor *tmp53 :findFreeUnit:first_unit @dead
-   399 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   445 ucontrol flag 0
-   446 set *tmp47 @unit
-   447 jump *label250 always
--    * jump *label247 always
-   448 label *label246
-   449 sensor *tmp53 :findFreeUnit:first_unit @dead
-   450 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   496 ucontrol flag 0
-   497 set *tmp47 @unit
-   498 jump *label273 always
--    * jump *label270 always
-   499 label *label269
-   500 sensor *tmp53 :findFreeUnit:first_unit @dead
-   501 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
- 
-   530 label *label21
-   531 write :backgroundProcess:count processor2 ".titaniumDrillCount"
-   532 jump *label16 always
--    * wait 1e12
--    * jump *label9 always
--    * end
-   533 label *label0
-   534 # "Function: export void addTitaniumDrill(in drill)"
-   535 jump *label54 greaterThanEq .drills 9
- 
-   540 label *label54
-   541 set :addTitaniumDrill*finished true
-   542 jump *label9 always
--    * end
-
-Modifications by Jumps phase, Dead Code Elimination, pass 5, iteration 1:
- 
-    40 label *label62
-    41 sensor *tmp53 :findFreeUnit:first_unit @dead
-    42 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label63
-    43 ubind @flare
-    44 jump *label61 notEqual :findFreeUnit:first_unit @unit
-    45 set *tmp47 null
- 
-    90 label *label85
-    91 sensor *tmp53 :findFreeUnit:first_unit @dead
-    92 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label86
-    93 ubind @flare
-    94 jump *label84 notEqual :findFreeUnit:first_unit @unit
-    95 set *tmp47 null
- 
-   140 label *label108
-   141 sensor *tmp53 :findFreeUnit:first_unit @dead
-   142 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label109
-   143 ubind @flare
-   144 jump *label107 notEqual :findFreeUnit:first_unit @unit
-   145 set *tmp47 null
- 
-   190 label *label131
-   191 sensor *tmp53 :findFreeUnit:first_unit @dead
-   192 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label132
-   193 ubind @flare
-   194 jump *label130 notEqual :findFreeUnit:first_unit @unit
-   195 set *tmp47 null
- 
-   240 label *label154
-   241 sensor *tmp53 :findFreeUnit:first_unit @dead
-   242 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label155
-   243 ubind @flare
-   244 jump *label153 notEqual :findFreeUnit:first_unit @unit
-   245 set *tmp47 null
- 
-   290 label *label177
-   291 sensor *tmp53 :findFreeUnit:first_unit @dead
-   292 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label178
-   293 ubind @flare
-   294 jump *label176 notEqual :findFreeUnit:first_unit @unit
-   295 set *tmp47 null
- 
-   340 label *label200
-   341 sensor *tmp53 :findFreeUnit:first_unit @dead
-   342 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label201
-   343 ubind @flare
-   344 jump *label199 notEqual :findFreeUnit:first_unit @unit
-   345 set *tmp47 null
- 
-   390 label *label223
-   391 sensor *tmp53 :findFreeUnit:first_unit @dead
-   392 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label224
-   393 ubind @flare
-   394 jump *label222 notEqual :findFreeUnit:first_unit @unit
-   395 set *tmp47 null
- 
-   440 label *label246
-   441 sensor *tmp53 :findFreeUnit:first_unit @dead
-   442 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label247
-   443 ubind @flare
-   444 jump *label245 notEqual :findFreeUnit:first_unit @unit
-   445 set *tmp47 null
- 
-   490 label *label269
-   491 sensor *tmp53 :findFreeUnit:first_unit @dead
-   492 select :findFreeUnit:first_unit equal *tmp53 1 @unit :findFreeUnit:first_unit
--    * label *label270
-   493 ubind @flare
-   494 jump *label268 notEqual :findFreeUnit:first_unit @unit
-   495 set *tmp47 null
 
 Modifications by Final phase, Temp Variables Elimination, iteration 1:
  
@@ -2948,8 +2671,8 @@ Final code before resolving virtual instructions:
         label *label0                                                FlareController.mnd: export void addTitaniumDrill(drill)
         # "Function: export void addTitaniumDrill(in drill)"         ...
   395:  jump *label54 greaterThanEq .drills 9                        FlareController.mnd: if drills < length(titaniumDrills) - 1 then
-  396:  lookup liquid *tmp159 .drills                                FlareController.mnd: titaniumDrills[drills] = drill;
-  397:  sensor .titaniumDrills*elem *tmp159 @name                    ...
+  396:  lookup liquid *tmp72 .drills                                 FlareController.mnd: titaniumDrills[drills] = drill;
+  397:  sensor .titaniumDrills*elem *tmp72 @name                     ...
   398:  write :addTitaniumDrill:drill @this .titaniumDrills*elem     ...
   399:  op add .drills .drills 1                                     FlareController.mnd: if drills < length(titaniumDrills) - 1 then
         label *label54                                               ...
@@ -2965,7 +2688,7 @@ Code size and number of instantiations by function:
      8     1x      8,0  export void addTitaniumDrill(in drill)
      6     1x      6,0  <no function>
 
-Performance: parsed in 556 ms, compiled in 346 ms, optimized in 473 ms, run in 14 ms.
+Performance: parsed in 523 ms, compiled in 258 ms, optimized in 457 ms, run in 14 ms.
 Error connecting to Mlog Watcher: Connection refused: connect
   - make sure Mindustry with active Mlog Watcher mod is running
   - verify Mlog Watcher listens on port 9992
