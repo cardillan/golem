@@ -1,0 +1,43 @@
+jump 0 equal bank1 null
+jump 1 equal display1 null
+jump 2 equal switch1 null
+sensor *tmp3 bank1 @x
+op sub *tmp4 @thisx *tmp3
+op sub *tmp5 *tmp4 1.5
+op round .px *tmp5 0
+sensor *tmp7 bank1 @y
+op sub *tmp8 @thisy *tmp7
+op add *tmp9 *tmp8 0.5
+op round .py *tmp9 0
+op mul *tmp11 .px 30
+op add .x 17 *tmp11
+op mul *tmp13 .py 30
+op add .y 17 *tmp13
+draw reset 0 0 0 0 0 0
+drawflush display1
+set :count 0
+sensor *tmp15 switch1 @enabled
+jump 18 equal *tmp15 false
+wait 0.033334                           # 2,00 ticks for atomic execution of 4 steps at 2 ipt
+read *tmp17 bank1 511
+op add *tmp18 *tmp17 1
+write *tmp18 bank1 511                  # The last atomic block instruction
+op sub *tmp19 .x 15
+op sub *tmp20 .y 15
+print *tmp18
+draw color 0 0 80 255 0 0
+draw rect *tmp19 *tmp20 30 30 0 0
+draw color 0 255 0 255 0 0
+draw print .x .y @center 0 0 0
+drawflush display1
+read *tmp22 bank1 :count
+jump 37 lessThanEq *tmp22 0
+op add :count :count 1
+read *tmp22 bank1 :count
+jump 34 greaterThan *tmp22 0
+print "Found {0} active processors."
+format :count
+printflush message1
+jump 26 always 0 0
+print "Compiled by Mindcode - github.com/cardillan/mindcode"
+

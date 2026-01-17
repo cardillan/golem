@@ -1,0 +1,294 @@
+    58 instructions before optimizations.
+     5 instructions eliminated by Temp Variables Elimination (5 iterations).
+     5 instructions eliminated by Dead Code Elimination (7 iterations).
+C:\Home\golem\benchmarks\atomic\atomic.mnd:6:5 Variable 'ID' is not used.
+     1 instructions eliminated by Jump Normalization (4 iterations).
+     2 instructions eliminated by Condition Optimization (5 iterations).
+     2 instructions eliminated by Data Flow Optimization (5 iterations).
+     1 loops improved by Loop Hoisting.
+     1 instructions added by Loop Rotation (2 iterations).
+       1 loop conditions were partially rotated.
+     1 instructions eliminated by Unreachable Code Elimination (2 iterations).
+     2 instructions eliminated by Print Merging.
+    41 instructions after optimizations.
+
+Pass 1: speed optimization selection (cost limit 957):
+  * Full loop rotation at line 36:9                              size    +1, benefit      650.0, efficiency    650.000 (+1 instructions)
+
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-2 instructions):
+     0 op mul *tmp0 @mapw @thisy
+     1 op add *tmp1 @thisx *tmp0
+     2 op add *tmp2 *tmp1 1
+-    * set .ID *tmp2
+     3 set .slot 0
+     4 label *label0
+     5 jump *label0 equal bank1 null
+ 
+    52 read *tmp22 bank1 *tmp21
+    53 op greaterThan *tmp23 *tmp22 0
+    54 jump *label11 equal *tmp23 false
+-    * set *tmp24 :count
+    55 op add :count :count 1
+    56 label *label10
+    57 jump *label9 always
+
+Modifications by Initial phase, Dead Code Elimination, iteration 2 (-1 instructions):
+     0 op mul *tmp0 @mapw @thisy
+     1 op add *tmp1 @thisx *tmp0
+-    * op add *tmp2 *tmp1 1
+     2 set .slot 0
+     3 label *label0
+     4 jump *label0 equal bank1 null
+
+Modifications by Initial phase, Dead Code Elimination, iteration 3 (-1 instructions):
+     0 op mul *tmp0 @mapw @thisy
+-    * op add *tmp1 @thisx *tmp0
+     1 set .slot 0
+     2 label *label0
+     3 jump *label0 equal bank1 null
+
+Modifications by Initial phase, Dead Code Elimination, iteration 4 (-1 instructions):
+-    * op mul *tmp0 @mapw @thisy
+     0 set .slot 0
+     1 label *label0
+     2 jump *label0 equal bank1 null
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-5 instructions):
+ 
+     7 sensor *tmp3 bank1 @x
+     8 op sub *tmp4 @thisx *tmp3
+     9 op sub *tmp5 *tmp4 1.5
+-    * op round *tmp6 *tmp5
+-    * set .px *tmp6
++   10 op round .px *tmp5
+    11 sensor *tmp7 bank1 @y
+    12 op sub *tmp8 @thisy *tmp7
+    13 op add *tmp9 *tmp8 0.5
+-    * op round *tmp10 *tmp9
+-    * set .py *tmp10
++   14 op round .py *tmp9
+    15 op mul *tmp11 .px 30
+-    * op add *tmp12 17 *tmp11
+-    * set .x *tmp12
++   16 op add .x 17 *tmp11
+    17 op mul *tmp13 .py 30
+-    * op add *tmp14 17 *tmp13
+-    * set .y *tmp14
++   18 op add .y 17 *tmp13
+    19 draw reset
+    20 drawflush display1
+    21 set :count 0
+ 
+    41 draw print .x .y @center
+    42 drawflush display1
+    43 label *label9
+-    * set *tmp21 :count
+-    * read *tmp22 bank1 *tmp21
++   44 read *tmp22 bank1 :count
+    45 op greaterThan *tmp23 *tmp22 0
+    46 jump *label11 equal *tmp23 false
+    47 op add :count :count 1
+
+Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+ 
+    31 write *tmp18 bank1 511
+    32 set .slot *tmp18
+    33 label *label6
+-    * jump *label8 equal true false
+    34 print .slot
+    35 draw color 0 0 80 255
+    36 op sub *tmp19 .x 15
+
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-2 instructions):
+ 
+    22 label *label3
+    23 label *label4
+    24 sensor *tmp15 switch1 @enabled
+-    * op equal *tmp16 *tmp15 false
+-    * jump *label3 notEqual *tmp16 false
++   25 jump *label3 equal *tmp15 false
+    26 label *label5
+    27 wait 0
+    28 read *tmp17 bank1 511
+ 
+    40 drawflush display1
+    41 label *label9
+    42 read *tmp22 bank1 :count
+-    * op greaterThan *tmp23 *tmp22 0
+-    * jump *label11 equal *tmp23 false
++   43 jump *label11 lessThanEq *tmp22 0
+    44 op add :count :count 1
+    45 label *label10
+    46 jump *label9 always
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1 (-1 instructions):
+-    * set .slot 0
+     0 label *label0
+     1 jump *label0 equal bank1 null
+     2 label *label1
+ 
+    29 write *tmp18 bank1 511
+    30 set .slot *tmp18
+    31 label *label6
+-    * print .slot
++   32 print *tmp18
+    33 draw color 0 0 80 255
+    34 op sub *tmp19 .x 15
+    35 op sub *tmp20 .y 15
+
+Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1 instructions):
+ 
+    27 read *tmp17 bank1 511
+    28 op add *tmp18 *tmp17 1
+    29 write *tmp18 bank1 511
+-    * set .slot *tmp18
+    30 label *label6
+    31 print *tmp18
+    32 draw color 0 0 80 255
+
+Modifications by Iterated phase, Loop Hoisting, pass 1, iteration 1:
+ 
+    27 read *tmp17 bank1 511
+    28 op add *tmp18 *tmp17 1
+    29 write *tmp18 bank1 511
++   30 op sub *tmp19 .x 15
++   31 op sub *tmp20 .y 15
+    32 label *label6
+    33 print *tmp18
+    34 draw color 0 0 80 255
+-    * op sub *tmp19 .x 15
+-    * op sub *tmp20 .y 15
+    35 draw rect *tmp19 *tmp20 30 30
+    36 draw color 0 255 0 255
+    37 draw print .x .y @center
+
+Modifications by Full loop rotation at line 36:9 (+1 instructions):
+ 
+    39 label *label9
+    40 read *tmp22 bank1 :count
+    41 jump *label11 lessThanEq *tmp22 0
++   42 label *label12
+    43 op add :count :count 1
+    44 label *label10
+-    * jump *label9 always
++   45 read *tmp22 bank1 :count
++   46 jump *label12 greaterThan *tmp22 0
+    47 label *label11
+    48 print "Found "
+    49 print :count
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
+ 
+    19 drawflush display1
+    20 set :count 0
+    21 label *label3
+-    * label *label4
+    22 sensor *tmp15 switch1 @enabled
+    23 jump *label3 equal *tmp15 false
+-    * label *label5
+    24 wait 0
+    25 read *tmp17 bank1 511
+    26 op add *tmp18 *tmp17 1
+ 
+    34 draw color 0 255 0 255
+    35 draw print .x .y @center
+    36 drawflush display1
+-    * label *label9
+    37 read *tmp22 bank1 :count
+    38 jump *label11 lessThanEq *tmp22 0
+    39 label *label12
+    40 op add :count :count 1
+-    * label *label10
+    41 read *tmp22 bank1 :count
+    42 jump *label12 greaterThan *tmp22 0
+    43 label *label11
+ 
+    46 print " "
+    47 print "active processors."
+    48 printflush message1
+-    * label *label7
+    49 jump *label6 always
+-    * label *label8
+-    * end
+
+Modifications by Final phase, Print Merging, iteration 1 (-2 instructions):
+ 
+    41 read *tmp22 bank1 :count
+    42 jump *label12 greaterThan *tmp22 0
+    43 label *label11
+-    * print "Found "
+-    * print :count
+-    * print " "
+-    * print "active processors."
++   44 print "Found {0} active processors."
++   45 format :count
+    46 printflush message1
+    47 jump *label6 always
+
+Final code before resolving virtual instructions:
+
+        label *label0                                                guarded linked memory = bank1, display1, switch1;
+    0:  jump *label0 equal bank1 null                                ...
+        label *label1                                                ...
+    1:  jump *label1 equal display1 null                             ...
+        label *label2                                                ...
+    2:  jump *label2 equal switch1 null                              ...
+    3:  sensor *tmp3 bank1 @x                                        var px = round(@thisx - memory.@x - 1.5);
+    4:  op sub *tmp4 @thisx *tmp3                                    ...
+    5:  op sub *tmp5 *tmp4 1.5                                       ...
+    6:  op round .px *tmp5 0                                         ...
+    7:  sensor *tmp7 bank1 @y                                        var py = round(@thisy - memory.@y + 0.5);
+    8:  op sub *tmp8 @thisy *tmp7                                    ...
+    9:  op add *tmp9 *tmp8 0.5                                       ...
+   10:  op round .py *tmp9 0                                         ...
+   11:  op mul *tmp11 .px 30                                         var x = 17 + px * 30;
+   12:  op add .x 17 *tmp11                                          ...
+   13:  op mul *tmp13 .py 30                                         var y = 17 + py * 30;
+   14:  op add .y 17 *tmp13                                          ...
+   15:  draw reset 0 0 0 0 0 0                                       reset();
+   16:  drawflush display1                                           drawflush(display1);
+   17:  set :count 0                                                 var count = 0;
+        label *label3                                                do while !switch1.enabled;
+   18:  sensor *tmp15 switch1 @enabled                               ...
+   19:  jump *label3 equal *tmp15 false                              ...
+   20:  wait 0.033334                           # 2,00 ticks for ato atomic
+   21:  read *tmp17 bank1 511                                        slot = ++memory[511];
+   22:  op add *tmp18 *tmp17 1                                       ...
+   23:  write *tmp18 bank1 511                  # The last atomic bl ...
+   24:  op sub *tmp19 .x 15                                          while true do
+   25:  op sub *tmp20 .y 15                                          ...
+        label *label6                                                ...
+   26:  print *tmp18                                                 print(slot);
+   27:  draw color 0 0 80 255 0 0                                    color(0, 0, 80, 255);
+   28:  draw rect *tmp19 *tmp20 30 30 0 0                            rect(x - 15, y - 15, 30, 30);
+   29:  draw color 0 255 0 255 0 0                                   color(0, 255, 0, 255);
+   30:  draw print .x .y @center 0 0 0                               drawPrint(x, y, @center);
+   31:  drawflush display1                                           drawflush(display1);
+   32:  read *tmp22 bank1 :count                                     while memory[count] > 0 do count++; end;
+   33:  jump *label11 lessThanEq *tmp22 0                            ...
+        label *label12                                               ...
+   34:  op add :count :count 1                                       ...
+   35:  read *tmp22 bank1 :count                                     ...
+   36:  jump *label12 greaterThan *tmp22 0                           ...
+        label *label11                                               ...
+   37:  print "Found {0} active processors."                         print($"Found $count active processors.");
+   38:  format :count                                                ...
+   39:  printflush message1                                          printflush(message1);
+   40:  jump *label6 always 0 0                                      while true do
+
+
+Code size and number of instantiations by function:
+  Size  Times  AvgSize  Function
+    42     1x     42,0  <no function>
+Runtime error at instruction #2: 'jump 2 equal switch1 null':
+Execution step limit of 100,000 exceeded.
+Use the '#set err-execution-limit-exceeded = false;' directive to ignore this error.
+
+Performance: parsed in 166 ms, compiled in 285 ms, optimized in 153 ms, run in 55 ms.
+
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
+
+Program output (100,000 steps):
+The program didn't generate any output.
