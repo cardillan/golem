@@ -1,13 +1,9 @@
-op mul *tmp11 10000 @thisy
-op add .PROCESSOR_ID @thisx *tmp11
-set .PROC_ID_INDEX 334
-set .PROC_STATE_INDEX 335
 set .start 0
 set .display null
 set .memory null
 print "Mandelbrot Generator"
 set :findLinkedBlocks:n @links
-jump 20 lessThanEq :findLinkedBlocks:n 0
+jump 16 lessThanEq :findLinkedBlocks:n 0
 op sub :findLinkedBlocks:n :findLinkedBlocks:n 1
 getlink :findLinkedBlocks:block :findLinkedBlocks:n
 print "\nFound: "
@@ -17,883 +13,858 @@ select :findLinkedBlocks:variable equal @large-logic-display :findLinkedBlocks:t
 set .display :findLinkedBlocks:variable
 select :findLinkedBlocks:variable equal @memory-bank :findLinkedBlocks:type :findLinkedBlocks:block .memory
 set .memory :findLinkedBlocks:variable
-jump 10 greaterThan :findLinkedBlocks:n 0
+jump 6 greaterThan :findLinkedBlocks:n 0
 print "\nDisplay: {0}\nMemory: "
 format .display
 op and :findLinkedBlocks:foundAll 1 .display
 print .memory
 op and :findLinkedBlocks:foundAll :findLinkedBlocks:foundAll .memory
 printflush null
-jump 5 equal :findLinkedBlocks:foundAll false
+jump 1 equal :findLinkedBlocks:foundAll false
+set :drawPixel*retaddr 792
 set .localBuffer 0
 drawflush null
-jump 42 greaterThanEq .PROC_STATE_INDEX 512
-read *tmp152 .memory .PROC_ID_INDEX
-jump 34 notEqual *tmp152 .PROCESSOR_ID
-write 0 .memory .PROC_STATE_INDEX
-jump 42 always 0 0
-read *tmp158 .memory .PROC_ID_INDEX
-jump 39 notEqual *tmp158 0
-write .PROCESSOR_ID .memory .PROC_ID_INDEX
-write 0 .memory .PROC_STATE_INDEX
-jump 42 always 0 0
-op add .PROC_ID_INDEX .PROC_ID_INDEX 2
-op add .PROC_STATE_INDEX .PROC_STATE_INDEX 2
-jump 30 lessThan .PROC_STATE_INDEX 512
-read *tmp0 .memory 64
-jump 29 equal .start *tmp0
-read *tmp0 .memory 64
-set .start *tmp0
-read *tmp1 .memory 65
-set .stop *tmp1
-jump 61 greaterThanEq .PROC_STATE_INDEX 512
-read *tmp152 .memory .PROC_ID_INDEX
-jump 53 notEqual *tmp152 .PROCESSOR_ID
-write *tmp0 .memory .PROC_STATE_INDEX
-jump 61 always 0 0
-read *tmp158 .memory .PROC_ID_INDEX
-jump 58 notEqual *tmp158 0
-write .PROCESSOR_ID .memory .PROC_ID_INDEX
-write *tmp0 .memory .PROC_STATE_INDEX
-jump 61 always 0 0
-op add .PROC_ID_INDEX .PROC_ID_INDEX 2
-op add .PROC_STATE_INDEX .PROC_STATE_INDEX 2
-jump 49 lessThan .PROC_STATE_INDEX 512
-read .ZOOM .memory 68
-op div *tmp26 -88 .ZOOM
-read *tmp2 .memory 66
-op add .OFFSET_X *tmp26 *tmp2
-read *tmp3 .memory 67
-op add .OFFSET_Y *tmp26 *tmp3
-read .JULIA .memory 69
-read .JULIA_X .memory 70
-read .JULIA_Y .memory 71
-read .PALETTE .memory 72
+wait 0
+read *tmp24 .memory 66
+jump 26 equal .start *tmp24
+read .start .memory 66
+read .stop .memory 67
+read .ZOOM .memory 70
+op div *tmp28 -88 .ZOOM
+read *tmp30 .memory 68
+op add .OFFSET_X *tmp28 *tmp30
+read *tmp33 .memory 69
+op add .OFFSET_Y *tmp28 *tmp33
+read .JULIA .memory 71
+read .JULIA_X .memory 72
+read .JULIA_Y .memory 73
+read .PALETTE .memory 74
 op greaterThan .SMOOTH .PALETTE 1
-set :line 8
-set :increment 8
-set :next_increment 16
-op rand *tmp31 0.1 0
-wait *tmp31
-set :lines 0
-op mul *tmp32 17 :line
-op mod :x *tmp32 176
-op add :position :x 158
-read *tmp36 .memory :position
-jump 823 notEqual *tmp36 0
-write .PROCESSOR_ID .memory :position
+wait 0.004                              # 0.240 ticks for atomic execution of 6 steps at 25 ipt
+read *tmp40 .memory 67
+jump 24 notEqual .stop *tmp40
+read *tmp42 .memory 64
+op add *tmp0 *tmp42 1
+write *tmp0 .memory 64                  # The last atomic block instruction
+jump 24 greaterThanEq *tmp42 176
+read @counter "55555555555555555555557777777777777777777777::::::::::::::::::::::::::::::::::::::::::::" *tmp42
+op mul *tmp55 2 *tmp42
+op sub *tmp46 *tmp55 175
+jump 60 always 0 0
+op mul *tmp46 8 *tmp42                  # Origin: 49, keys: 0 .. 21
+jump 60 always 0 0
+op mul *tmp49 8 *tmp42                  # Origin: 49, keys: 22 .. 43
+op sub *tmp46 *tmp49 172
+jump 60 always 0 0
+op mul *tmp52 4 *tmp42                  # Origin: 49, keys: 44 .. 87
+op sub *tmp46 *tmp52 174
 set :y 0
-set :drawPixel:x :x
-set :drawPixel*retaddr 817
-op div *tmp42 :x .ZOOM
-op add :compute:zx *tmp42 .OFFSET_X
-op div *tmp44 :y .ZOOM
-op add :compute:zy *tmp44 .OFFSET_Y
-jump 95 equal .JULIA false
+set :drawPixel:x *tmp46
+op div *tmp59 *tmp46 .ZOOM
+op add :compute:zx *tmp59 .OFFSET_X
+op div *tmp61 :y .ZOOM
+op add :compute:zy *tmp61 .OFFSET_Y
+jump 70 equal .JULIA false
 set :compute:cx .JULIA_X
 set :compute:cy .JULIA_Y
-jump 111 always 0 0
+jump 86 always 0 0
 set :compute:cx :compute:zx
 set :compute:cy :compute:zy
-op sub *tmp47 :compute:zx 0.25
-op len :compute:p *tmp47 :compute:zy
-op mul *tmp49 2 :compute:p
-op mul *tmp50 *tmp49 :compute:p
-op sub *tmp51 :compute:p *tmp50
-op add *tmp52 *tmp51 0.25
-jump 106 greaterThan :compute:zx *tmp52
-set *tmp41 63
-jump 814 always 0 0
-op add *tmp55 :compute:zx 1
-op len *tmp56 *tmp55 :compute:zy
-jump 111 greaterThan *tmp56 0.25
-set *tmp41 63
-jump 814 always 0 0
+op sub *tmp64 :compute:zx 0.25
+op len :compute:p *tmp64 :compute:zy
+op mul *tmp66 2 :compute:p
+op mul *tmp67 *tmp66 :compute:p
+op sub *tmp68 :compute:p *tmp67
+op add *tmp69 *tmp68 0.25
+jump 81 greaterThan :compute:zx *tmp69
+set *tmp58 63
+jump 789 always 0 0
+op add *tmp72 :compute:zx 1
+op len *tmp73 *tmp72 :compute:zy
+jump 86 greaterThan *tmp73 0.25
+set *tmp58 63
+jump 789 always 0 0
 set :compute:i 0
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 set :compute:i 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 1 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 2 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 3 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 4 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 5 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 6 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 7 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 8 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 9 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 10 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 11 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 12 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 13 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 14 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 15 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 16 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 17 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 18 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 19 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 20 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 21 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 22 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 23 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 24 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 25 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 26 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 27 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 28 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 29 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 30 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 31 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 32 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 33 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 34 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 35 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 36 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 37 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 38 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 39 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 40 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 41 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 42 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 43 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 44 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 45 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 46 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 47 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 48 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 49 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 50 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 51 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 52 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 53 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 54 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 55 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 56 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 57 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 58 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 59 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 60 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 61 1
 set :compute:x1 :compute:zx
-op mul *tmp59 :compute:zx :compute:zx
-op mul *tmp60 :compute:zy :compute:zy
-op sub *tmp61 *tmp59 *tmp60
-op add :compute:zx *tmp61 :compute:cx
-op mul *tmp63 2 :compute:x1
-op mul *tmp64 *tmp63 :compute:zy
-op add :compute:zy *tmp64 :compute:cy
+op mul *tmp76 :compute:zx :compute:zx
+op mul *tmp77 :compute:zy :compute:zy
+op sub *tmp78 *tmp76 *tmp77
+op add :compute:zx *tmp78 :compute:cx
+op mul *tmp80 2 :compute:x1
+op mul *tmp81 *tmp80 :compute:zy
+op add :compute:zy *tmp81 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 805 greaterThanEq :compute:dist 64
+jump 780 greaterThanEq :compute:dist 64
 op add :compute:i 62 1
-op mul *tmp69 .SMOOTH 63
-jump 813 greaterThanEq :compute:i *tmp69
-op log *tmp72 :compute:dist 0
-op mul *tmp73 *tmp72 0.36067376022224085
-op log *tmp74 *tmp73 0
-op mul *tmp75 *tmp74 1.4426950408889634
-op sub :compute:correction 4 *tmp75
+op mul *tmp86 .SMOOTH 63
+jump 788 greaterThanEq :compute:i *tmp86
+op log *tmp89 :compute:dist 0
+op mul *tmp90 *tmp89 0.36067376022224085
+op log *tmp91 *tmp90 0
+op mul *tmp92 *tmp91 1.4426950408889634
+op sub :compute:correction 4 *tmp92
 op add :compute:i :compute:i :compute:correction
-set *tmp41 :compute:i
+set *tmp58 :compute:i
 set :drawPixel:y :y
-set :drawPixel:iterations *tmp41
-jump 838 always 0 0
-read *tmp78 .memory :position
-jump 823 notEqual *tmp78 .PROCESSOR_ID
-read *tmp1 .memory 65
-jump 27 notEqual .stop *tmp1
+set :drawPixel:iterations *tmp58
+jump 809 always 0 0
+wait 0.002667                           # 0.160 ticks for atomic execution of 4 steps at 25 ipt
+read *tmp94 .memory 65
+op add *tmp1 *tmp94 1
+write *tmp1 .memory 65                  # The last atomic block instruction
+read *tmp97 .memory 67
+jump 24 notEqual .stop *tmp97
 op add :y :y 1
-jump 87 lessThan :y 176
-op add :line :line :increment
-jump 828 lessThanEq :line 176
-op div :next_increment :next_increment 2
-set :increment :next_increment
-op div :line :next_increment 2
-op add :lines :lines 1
-jump 78 lessThan :lines 176
-sensor *tmp144 .display @enabled
-jump 830 equal *tmp144 false
-jump 836 lessThanEq .localBuffer 4
+jump 62 lessThan :y 176
+sensor *tmp158 .display @enabled
+jump 800 equal *tmp158 false
+jump 806 lessThanEq .localBuffer 4
 wait 0.0001
-sensor *tmp148 .display @bufferSize
-jump 833 greaterThan *tmp148 250
+sensor *tmp162 .display @bufferSize
+jump 803 greaterThan *tmp162 250
 drawflush .display
-jump 27 always 0 0
-jump 872 equal .SMOOTH false
+set .localBuffer 0
+jump 42 always 0 0
+jump 843 equal .SMOOTH false
 set :drawPixel:color %[black]
-jump 873 equal :drawPixel:iterations 63
-read @counter "͎͚͊͊ͣ" .PALETTE
-op div *tmp126 :drawPixel:iterations 63.75 # Origin: 841, keys: 0, 1
-op sub :drawPixel:r 1 *tmp126
+jump 844 equal :drawPixel:iterations 63
+read @counter "̭̭̱̽͆" .PALETTE
+op div *tmp139 :drawPixel:iterations 63.75 # Origin: 812, keys: 0, 1
+op sub :drawPixel:r 1 *tmp139
 packcolor :drawPixel:color :drawPixel:r :drawPixel:r 0 1
-jump 873 always 0 0
-op sub *tmp91 32 :drawPixel:iterations  # Origin: 841, keys: 2
-op abs *tmp92 *tmp91 0
-op div *tmp94 *tmp92 36.42857142857143
-op sub :drawPixel:r 1 *tmp94
-op sub *tmp96 :drawPixel:iterations 32
-op abs *tmp97 *tmp96 0
-op div *tmp99 *tmp97 42.5
-op sub :drawPixel:g 0.9411764705882353 *tmp99
-op div *tmp104 *tmp92 63.75
-op add :drawPixel:b 0.47058823529411764 *tmp104
+jump 844 always 0 0
+op sub *tmp104 32 :drawPixel:iterations # Origin: 812, keys: 2
+op abs *tmp105 *tmp104 0
+op div *tmp107 *tmp105 36.42857142857143
+op sub :drawPixel:r 1 *tmp107
+op sub *tmp109 :drawPixel:iterations 32
+op abs *tmp110 *tmp109 0
+op div *tmp112 *tmp110 42.5
+op sub :drawPixel:g 0.9411764705882353 *tmp112
+op div *tmp117 *tmp105 63.75
+op add :drawPixel:b 0.47058823529411764 *tmp117
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g :drawPixel:b 1
-jump 873 always 0 0
-op div *tmp108 :drawPixel:iterations 0.175 # Origin: 841, keys: 3
-op sin :drawPixel:r *tmp108 0
-op cos :drawPixel:g *tmp108 0
-op sub *tmp113 :drawPixel:iterations 32
-op abs *tmp114 *tmp113 0
-op div *tmp116 *tmp114 63.75
-op add :drawPixel:b 0.39215686274509803 *tmp116
+jump 844 always 0 0
+op div *tmp121 :drawPixel:iterations 0.175 # Origin: 812, keys: 3
+op sin :drawPixel:r *tmp121 0
+op cos :drawPixel:g *tmp121 0
+op sub *tmp126 :drawPixel:iterations 32
+op abs *tmp127 *tmp126 0
+op div *tmp129 *tmp127 63.75
+op add :drawPixel:b 0.39215686274509803 *tmp129
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g :drawPixel:b 1
-jump 873 always 0 0
-op div :drawPixel:r :drawPixel:iterations 63.75 # Origin: 841, keys: 4
-op div *tmp122 :drawPixel:iterations 170
-op add :drawPixel:g 96 *tmp122
+jump 844 always 0 0
+op div :drawPixel:r :drawPixel:iterations 63.75 # Origin: 812, keys: 4
+op div *tmp135 :drawPixel:iterations 170
+op add :drawPixel:g 96 *tmp135
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g 0 1
-jump 873 always 0 0
+jump 844 always 0 0
 read :drawPixel:color .memory :drawPixel:iterations
-jump 882 lessThan .localBuffer 254
-sensor *tmp144 .display @enabled
-jump 874 equal *tmp144 false
-jump 880 lessThanEq .localBuffer 4
+jump 853 lessThan .localBuffer 254
+sensor *tmp158 .display @enabled
+jump 845 equal *tmp158 false
+jump 851 lessThanEq .localBuffer 4
 wait 0.0001
-sensor *tmp148 .display @bufferSize
-jump 877 greaterThan *tmp148 250
+sensor *tmp162 .display @bufferSize
+jump 848 greaterThan *tmp162 250
 drawflush .display
 set .localBuffer 0
 draw col :drawPixel:color 0 0 0 0 0
 draw rect :drawPixel:x :drawPixel:y 1 1 0 0
 op add .localBuffer .localBuffer 2
-sensor *tmp134 .display @enabled
-op sub :drawPixel:disabled 1 *tmp134
-sensor *tmp136 .display @bufferSize
-op mul *tmp137 :drawPixel:disabled 900
-op add :drawPixel:usage *tmp136 *tmp137
-jump 894 greaterThanEq :drawPixel:usage 100
+sensor *tmp148 .display @enabled
+op sub :drawPixel:disabled 1 *tmp148
+sensor *tmp150 .display @bufferSize
+op mul *tmp151 :drawPixel:disabled 900
+op add :drawPixel:usage *tmp150 *tmp151
+jump 865 greaterThanEq :drawPixel:usage 100
 drawflush .display
 set .localBuffer 0
 set @counter :drawPixel*retaddr
-op div *tmp141 1800 .localBuffer
-jump 898 greaterThanEq :drawPixel:usage *tmp141
+op div *tmp155 1800 .localBuffer
+jump 869 greaterThanEq :drawPixel:usage *tmp155
 drawflush .display
 set .localBuffer 0
 set @counter :drawPixel*retaddr

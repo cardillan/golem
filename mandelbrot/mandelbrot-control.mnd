@@ -1,3 +1,5 @@
+#set target = 8L;
+#set syntax = strict;
 #set instruction-limit = 1500;
 require "mandelbrot-common.mnd";
 
@@ -18,9 +20,8 @@ allocate heap in memory[VARIABLES ... BOOKMARKS];
 // Amount of pixels to move the center when direction button is clicked
 const SHIFT = 44;
 
-const RUNNING_TEXT = "Rendering...\n-------------------------\n";
-const FINISHED_TEXT = "Finished.\n-------------------------\n";
-
+external LINE;                     // Current line
+external COMPLETED;                // Number of completed lines
 noinit external cached START;
 noinit external cached STOP;
 noinit external cached X;
@@ -32,7 +33,7 @@ noinit external cached JULIA_Y;
 noinit external cached PALETTE;
 
 var CHANGE = false;
-var text0 = RUNNING_TEXT;
+var PERCENT = 0;
 var text1 = "";
 var text2 = "";
 
@@ -50,7 +51,6 @@ var palette_clr = -1;
 begin
     initialize();
 
-    var checking = 511 + 20;
     var updateBookmarks = true;
     var print = true;
 
@@ -91,12 +91,10 @@ begin
         end;
 
         // Computation progress
-        if memory[checking] == 0 then
-            checking -= 2;
-            if checking <= PROCESSORS then
-                text0 = FINISHED_TEXT;
-                print = true;
-            end;
+        var completed = (100 * COMPLETED) \ TOTAL;
+        if completed != PERCENT then
+            PERCENT = completed;
+            print = true;
         end;
 
         // Parameters changed, recompute
@@ -106,19 +104,7 @@ begin
 
             // Sent signal to stop all processors
             STOP++;
-
-            // Waiting for all processors to actually stop
-            for var i = 511; i > PROCESSORS; i -= 2 do
-                do while memory[i] > 0;
-            end;
-
             CHANGE = false;
-
-            // Clearing slots means processors will allocate them again
-            // This fixes a situation where a processor gets destroyed or nonfunctional
-            for var i in SLOTS ... PROCESSORS do
-                memory[i] = 0;
-            end;
 
             // Dim the current display
             color(86, 86, 102, 204);
@@ -126,15 +112,11 @@ begin
             drawflush(display1);
 
             // Signal next round of computing to processors
-            START++;
+            atomic
+                LINE = COMPLETED = 0;
+                START++;
+            end;
 
-            // Actual processors start at 511 at the highest.
-            // Assigning 999 means we'll spend loops before processing the region where processors are,
-            // giving them time to start computation and set the flag accordingly.
-            // Otherwise we might consider some stopped even if they weren't.
-            checking = 999;
-
-            text0 = RUNNING_TEXT;
             text1 = text2 = "";
             print = true;
         end;
@@ -146,19 +128,20 @@ end;
 
 inline void printInfo()
     println("Mandelbrot Mania! v3.0");
-    print(text0);
+    println($"Completed: $PERCENT%");
+    //println($"($COMPLETED out of $TOTAL)");
     if JULIA then
         println("Julia set of Mandelbrot");
         println("fractal at coordinates");
-        print($"   X: $JULIA_X\n");
-        print($"   Y: $JULIA_Y\n");
+        println($"   X: $JULIA_X");
+        println($"   Y: $JULIA_Y");
     else
         println("Mandelbrot set");
     end;
     println("-------------------------");
-    print($"X: $X\n");
-    print($"Y: $Y\n");
-    print($"Zoom: $ZOOM\n");
+    println($"X: $X");
+    println($"Y: $Y");
+    println($"Zoom: $ZOOM");
     println(text1, text2);
     printflush(message1);
 end;
@@ -320,7 +303,7 @@ inline void initializeBookmarks()
     bookmarkJulia(memory, out i, -0.14375,    1.03125,     3200,  -0.14375,   1.0);
     bookmarkJulia(memory, out i, -1.403547,   -0.02734831, 5000,  -1.408547, -0.03734831);
 
-    while i < SLOTS do
+    while i < BOOKMARK_END do
         bookmark(memory, out i, X, Y, ZOOM);
     end;
 end;

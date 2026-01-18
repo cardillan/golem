@@ -13,7 +13,7 @@ jump 11 equal switch7 null
 jump 12 equal switch8 null
 jump 13 equal switch9 null
 set .CHANGE false
-set .text0 "Rendering...\n-------------------------\n"
+set .PERCENT 0
 set .text1 ""
 set .text2 ""
 sensor .bookmark_x message2 @x
@@ -148,597 +148,231 @@ write true bank1 155
 write -1.408547 bank1 156
 write -0.03734831 bank1 157
 set .STOP 1
-write 1 bank1 65
+write 1 bank1 67
 set .X -0.8
-write -0.8 bank1 66
+write -0.8 bank1 68
 set .Y 0
-write 0 bank1 67
+write 0 bank1 69
 set .ZOOM 50
-write 50 bank1 68
+write 50 bank1 70
 set .JULIA false
-write false bank1 69
+write false bank1 71
 set .JULIA_X 0
-write 0 bank1 70
+write 0 bank1 72
 set .JULIA_Y 0
-write 0 bank1 71
+write 0 bank1 73
 set .PALETTE 1
-write 1 bank1 72
+write 1 bank1 74
 print "Palette #1"
 printflush message3
-set :checking 531
 set :updateBookmarks true
 set :print true
 set .START 1
-write 1 bank1 64
-jump 195 equal :print false
-print "Mandelbrot Mania! v3.0\n"
-print .text0
-jump 182 equal .JULIA false
-print "Julia set of Mandelbrot\nfractal at coordinates\n   X: "
-print .JULIA_X
-print "\n   Y: "
-print .JULIA_Y
-print "\n"
-jump 183 always 0 0
+write 1 bank1 66
+jump 188 equal :print false
+print "Mandelbrot Mania! v3.0\nCompleted: {0}%\n"
+format .PERCENT
+jump 179 equal .JULIA false
+print "Julia set of Mandelbrot\nfractal at coordinates\n   X: {0}\n   Y: {0}\n"
+format .JULIA_X
+format .JULIA_Y
+jump 180 always 0 0
 print "Mandelbrot set\n"
-print "-------------------------\nX: "
-print .X
-print "\nY: "
-print .Y
-print "\nZoom: "
-print .ZOOM
-print "\n"
-print .text1
-print .text2
-print "\n"
+print "-------------------------\nX: {0}\nY: {0}\nZoom: {0}\n{0}{0}\n"
+format .X
+format .Y
+format .ZOOM
+format .text1
+format .text2
 printflush message1
 set :print false
-sensor *tmp210 switch1 @enabled
-jump 202 equal *tmp210 false
+sensor *tmp212 switch1 @enabled
+jump 195 equal *tmp212 false
 set .CHANGE true
-op div *tmp220 44 .ZOOM
-op add .Y .Y *tmp220
-write .Y bank1 67
+op div *tmp222 44 .ZOOM
+op add .Y .Y *tmp222
+write .Y bank1 69
 control enabled switch1 false 0 0 0
-sensor *tmp228 switch2 @enabled
-jump 209 equal *tmp228 false
+sensor *tmp230 switch2 @enabled
+jump 202 equal *tmp230 false
 set .CHANGE true
-op div *tmp233 -44 .ZOOM
-op add .X .X *tmp233
-write .X bank1 66
+op div *tmp235 -44 .ZOOM
+op add .X .X *tmp235
+write .X bank1 68
 control enabled switch2 false 0 0 0
-sensor *tmp246 switch3 @enabled
-jump 216 equal *tmp246 false
+sensor *tmp248 switch3 @enabled
+jump 209 equal *tmp248 false
 set .CHANGE true
-op div *tmp251 44 .ZOOM
-op add .X .X *tmp251
-write .X bank1 66
+op div *tmp253 44 .ZOOM
+op add .X .X *tmp253
+write .X bank1 68
 control enabled switch3 false 0 0 0
-sensor *tmp264 switch4 @enabled
-jump 223 equal *tmp264 false
+sensor *tmp266 switch4 @enabled
+jump 216 equal *tmp266 false
 set .CHANGE true
-op div *tmp274 -44 .ZOOM
-op add .Y .Y *tmp274
-write .Y bank1 67
+op div *tmp276 -44 .ZOOM
+op add .Y .Y *tmp276
+write .Y bank1 69
 control enabled switch4 false 0 0 0
-sensor *tmp282 switch5 @enabled
-jump 229 equal *tmp282 false
+sensor *tmp284 switch5 @enabled
+jump 222 equal *tmp284 false
 set .CHANGE true
 op mul .ZOOM .ZOOM 2
-write .ZOOM bank1 68
+write .ZOOM bank1 70
 control enabled switch5 false 0 0 0
-sensor *tmp300 switch6 @enabled
-jump 235 equal *tmp300 false
+sensor *tmp302 switch6 @enabled
+jump 228 equal *tmp302 false
 set .CHANGE true
 op mul .ZOOM .ZOOM 0.5
-write .ZOOM bank1 68
+write .ZOOM bank1 70
 control enabled switch6 false 0 0 0
-sensor *tmp317 switch7 @enabled
-jump 245 equal *tmp317 .JULIA
+sensor *tmp319 switch7 @enabled
+jump 238 equal *tmp319 .JULIA
 set .CHANGE true
 sensor .JULIA switch7 @enabled
-write .JULIA bank1 69
-jump 245 equal .JULIA false
+write .JULIA bank1 71
+jump 238 equal .JULIA false
 set .JULIA_X .X
-write .X bank1 70
+write .X bank1 72
 set .JULIA_Y .Y
-write .Y bank1 71
-sensor *tmp322 switch8 @enabled
-jump 269 equal *tmp322 false
+write .Y bank1 73
+sensor *tmp324 switch8 @enabled
+jump 262 equal *tmp324 false
 read .X bank1 .position
-write .X bank1 66
-op add *tmp326 .position 1
-read .Y bank1 *tmp326
-write .Y bank1 67
-op add *tmp330 .position 2
-read .ZOOM bank1 *tmp330
-write .ZOOM bank1 68
-op add *tmp332 .position 3
-read .JULIA bank1 *tmp332
-write .JULIA bank1 69
-op add *tmp335 .position 4
-read .JULIA_X bank1 *tmp335
-write .JULIA_X bank1 70
-op add *tmp339 .position 5
-read .JULIA_Y bank1 *tmp339
-write .JULIA_Y bank1 71
+write .X bank1 68
+op add *tmp330 .position 1
+read .Y bank1 *tmp330
+write .Y bank1 69
+op add *tmp333 .position 2
+read .ZOOM bank1 *tmp333
+write .ZOOM bank1 70
+op add *tmp337 .position 3
+read .JULIA bank1 *tmp337
+write .JULIA bank1 71
+op add *tmp342 .position 4
+read .JULIA_X bank1 *tmp342
+write .JULIA_X bank1 72
+op add *tmp345 .position 5
+read .JULIA_Y bank1 *tmp345
+write .JULIA_Y bank1 73
 control enabled switch7 .JULIA 0 0 0
 control enabled switch8 false 0 0 0
 set .text1 "\nLoaded from #"
 set .text2 .bookmark
 set .CHANGE true
-sensor *tmp343 switch9 @enabled
-jump 286 equal *tmp343 false
+sensor *tmp351 switch9 @enabled
+jump 279 equal *tmp351 false
 write .X bank1 .position
-op add *tmp347 .position 1
-write .Y bank1 *tmp347
-op add *tmp350 .position 2
-write .ZOOM bank1 *tmp350
-op add *tmp353 .position 3
-write .JULIA bank1 *tmp353
-op add *tmp356 .position 4
-write .JULIA_X bank1 *tmp356
-op add *tmp359 .position 5
-write .JULIA_Y bank1 *tmp359
+op add *tmp355 .position 1
+write .Y bank1 *tmp355
+op add *tmp358 .position 2
+write .ZOOM bank1 *tmp358
+op add *tmp361 .position 3
+write .JULIA bank1 *tmp361
+op add *tmp364 .position 4
+write .JULIA_X bank1 *tmp364
+op add *tmp367 .position 5
+write .JULIA_Y bank1 *tmp367
 control enabled switch9 false 0 0 0
 set .text1 "\nSaved to #"
 set .text2 .bookmark
 set :updateBookmarks true
 set :handleTopRowButtons:updateBookmarks :updateBookmarks
 set :handleTopRowButtons:n 0
-jump 332 greaterThanEq 0 @links
+jump 325 greaterThanEq 0 @links
 getlink :handleTopRowButtons:switch :handleTopRowButtons:n
-sensor *tmp364 :handleTopRowButtons:switch @type
-jump 330 notEqual *tmp364 @switch
-sensor *tmp366 :handleTopRowButtons:switch @y
-jump 330 notEqual *tmp366 .bookmark_y
+sensor *tmp372 :handleTopRowButtons:switch @type
+jump 323 notEqual *tmp372 @switch
+sensor *tmp374 :handleTopRowButtons:switch @y
+jump 323 notEqual *tmp374 .bookmark_y
 sensor :handleTopRowButtons:button_x :handleTopRowButtons:switch @x
-jump 314 lessThan :handleTopRowButtons:button_x .palette_x
+jump 307 lessThan :handleTopRowButtons:button_x .palette_x
 op sub :handleTopRowButtons:index :handleTopRowButtons:button_x .palette_x
-jump 300 notEqual :handleTopRowButtons:index .PALETTE
+jump 293 notEqual :handleTopRowButtons:index .PALETTE
 control enabled :handleTopRowButtons:switch true 0 0 0
-jump 330 always 0 0
-jump 304 notEqual :handleTopRowButtons:index .palette_clr
+jump 323 always 0 0
+jump 297 notEqual :handleTopRowButtons:index .palette_clr
 control enabled :handleTopRowButtons:switch false 0 0 0
 set .palette_clr -1
-jump 330 always 0 0
-sensor *tmp381 :handleTopRowButtons:switch @enabled
-jump 330 equal *tmp381 false
+jump 323 always 0 0
+sensor *tmp389 :handleTopRowButtons:switch @enabled
+jump 323 equal *tmp389 false
 set .palette_clr .PALETTE
 set .PALETTE :handleTopRowButtons:index
-write :handleTopRowButtons:index bank1 72
+write :handleTopRowButtons:index bank1 74
 print "Palette #"
 print :handleTopRowButtons:index
 printflush message3
 set .CHANGE true
-jump 330 always 0 0
+jump 323 always 0 0
 op sub :handleTopRowButtons:index.1 :handleTopRowButtons:button_x .bookmark_x
-jump 318 notEqual :handleTopRowButtons:index.1 .bookmark
+jump 311 notEqual :handleTopRowButtons:index.1 .bookmark
 control enabled :handleTopRowButtons:switch true 0 0 0
-jump 330 always 0 0
-jump 322 notEqual :handleTopRowButtons:index.1 .bookmark_clr
+jump 323 always 0 0
+jump 315 notEqual :handleTopRowButtons:index.1 .bookmark_clr
 control enabled :handleTopRowButtons:switch false 0 0 0
 set .bookmark_clr -1
-jump 330 always 0 0
-sensor *tmp393 :handleTopRowButtons:switch @enabled
-jump 330 equal *tmp393 false
+jump 323 always 0 0
+sensor *tmp401 :handleTopRowButtons:switch @enabled
+jump 323 equal *tmp401 false
 set .bookmark_clr .bookmark
 set .bookmark :handleTopRowButtons:index.1
-op sub *tmp395 :handleTopRowButtons:index.1 1
-op mul *tmp396 6 *tmp395
-op add .position 80 *tmp396
+op sub *tmp403 :handleTopRowButtons:index.1 1
+op mul *tmp404 6 *tmp403
+op add .position 80 *tmp404
 set :handleTopRowButtons:updateBookmarks true
 op add :handleTopRowButtons:n :handleTopRowButtons:n 1
-jump 289 lessThan :handleTopRowButtons:n @links
+jump 282 lessThan :handleTopRowButtons:n @links
 set :updateBookmarks :handleTopRowButtons:updateBookmarks
-jump 365 equal :handleTopRowButtons:updateBookmarks false
-print "BOOKMARKS\n[o] [o] [o] [o] ...\n      [o] Load\n      [o] Save\n-------------------------\nSelected bookmark #"
-print .bookmark
-print ":\n"
-op add *tmp399 .position 3
-read *tmp401 bank1 *tmp399
-jump 350 equal *tmp401 false
-op add *tmp404 .position 4
-print "Julia set of Mandelbrot\nfractal at coordinates\n   X: "
-read *tmp405 bank1 *tmp404
-print *tmp405
-op add *tmp407 .position 5
-print "\n   Y: "
-read *tmp408 bank1 *tmp407
-print *tmp408
-print "\n"
-jump 351 always 0 0
+jump 352 equal :handleTopRowButtons:updateBookmarks false
+print "BOOKMARKS\n[o] [o] [o] [o] ...\n      [o] Load\n      [o] Save\n-------------------------\nSelected bookmark #{0}:\n"
+format .bookmark
+op add *tmp407 .position 3
+read *tmp410 bank1 *tmp407
+jump 340 equal *tmp410 false
+print "Julia set of Mandelbrot\nfractal at coordinates\n   X: {0}\n   Y: {0}\n"
+op add *tmp413 .position 4
+read *tmp415 bank1 *tmp413
+format *tmp415
+op add *tmp417 .position 5
+read *tmp419 bank1 *tmp417
+format *tmp419
+jump 341 always 0 0
 print "Mandelbrot set\n"
-print "-------------------------\nX: "
-read *tmp410 bank1 .position
-print *tmp410
-op add *tmp412 .position 1
-print "\nY: "
-read *tmp413 bank1 *tmp412
-print *tmp413
-op add *tmp415 .position 2
-print "\nZoom: "
-read *tmp416 bank1 *tmp415
-print *tmp416
-print "\n"
+print "-------------------------\nX: {0}\nY: {0}\nZoom: {0}\n"
+read *tmp422 bank1 .position
+format *tmp422
+op add *tmp424 .position 1
+read *tmp426 bank1 *tmp424
+format *tmp426
+op add *tmp428 .position 2
+read *tmp430 bank1 *tmp428
+format *tmp430
 printflush message2
 set :updateBookmarks false
-read *tmp418 bank1 :checking
-jump 371 notEqual *tmp418 0
-op sub :checking :checking 2
-jump 371 greaterThan :checking 334
-set .text0 "Finished.\n-------------------------\n"
+read *tmp432 bank1 65
+op mul *tmp431 100 *tmp432
+op idiv :completed *tmp431 30976
+jump 358 equal :completed .PERCENT
+set .PERCENT :completed
 set :print true
-jump 172 equal .CHANGE false
+jump 171 equal .CHANGE false
 print "Initializing..."
 printflush message1
 op add .STOP .STOP 1
-write .STOP bank1 65
-read *tmp427 bank1 511
-jump 376 greaterThan *tmp427 0
-read *tmp427 bank1 509
-jump 378 greaterThan *tmp427 0
-read *tmp427 bank1 507
-jump 380 greaterThan *tmp427 0
-read *tmp427 bank1 505
-jump 382 greaterThan *tmp427 0
-read *tmp427 bank1 503
-jump 384 greaterThan *tmp427 0
-read *tmp427 bank1 501
-jump 386 greaterThan *tmp427 0
-read *tmp427 bank1 499
-jump 388 greaterThan *tmp427 0
-read *tmp427 bank1 497
-jump 390 greaterThan *tmp427 0
-read *tmp427 bank1 495
-jump 392 greaterThan *tmp427 0
-read *tmp427 bank1 493
-jump 394 greaterThan *tmp427 0
-read *tmp427 bank1 491
-jump 396 greaterThan *tmp427 0
-read *tmp427 bank1 489
-jump 398 greaterThan *tmp427 0
-read *tmp427 bank1 487
-jump 400 greaterThan *tmp427 0
-read *tmp427 bank1 485
-jump 402 greaterThan *tmp427 0
-read *tmp427 bank1 483
-jump 404 greaterThan *tmp427 0
-read *tmp427 bank1 481
-jump 406 greaterThan *tmp427 0
-read *tmp427 bank1 479
-jump 408 greaterThan *tmp427 0
-read *tmp427 bank1 477
-jump 410 greaterThan *tmp427 0
-read *tmp427 bank1 475
-jump 412 greaterThan *tmp427 0
-read *tmp427 bank1 473
-jump 414 greaterThan *tmp427 0
-read *tmp427 bank1 471
-jump 416 greaterThan *tmp427 0
-read *tmp427 bank1 469
-jump 418 greaterThan *tmp427 0
-read *tmp427 bank1 467
-jump 420 greaterThan *tmp427 0
-read *tmp427 bank1 465
-jump 422 greaterThan *tmp427 0
-read *tmp427 bank1 463
-jump 424 greaterThan *tmp427 0
-read *tmp427 bank1 461
-jump 426 greaterThan *tmp427 0
-read *tmp427 bank1 459
-jump 428 greaterThan *tmp427 0
-read *tmp427 bank1 457
-jump 430 greaterThan *tmp427 0
-read *tmp427 bank1 455
-jump 432 greaterThan *tmp427 0
-read *tmp427 bank1 453
-jump 434 greaterThan *tmp427 0
-read *tmp427 bank1 451
-jump 436 greaterThan *tmp427 0
-read *tmp427 bank1 449
-jump 438 greaterThan *tmp427 0
-read *tmp427 bank1 447
-jump 440 greaterThan *tmp427 0
-read *tmp427 bank1 445
-jump 442 greaterThan *tmp427 0
-read *tmp427 bank1 443
-jump 444 greaterThan *tmp427 0
-read *tmp427 bank1 441
-jump 446 greaterThan *tmp427 0
-read *tmp427 bank1 439
-jump 448 greaterThan *tmp427 0
-read *tmp427 bank1 437
-jump 450 greaterThan *tmp427 0
-read *tmp427 bank1 435
-jump 452 greaterThan *tmp427 0
-read *tmp427 bank1 433
-jump 454 greaterThan *tmp427 0
-read *tmp427 bank1 431
-jump 456 greaterThan *tmp427 0
-read *tmp427 bank1 429
-jump 458 greaterThan *tmp427 0
-read *tmp427 bank1 427
-jump 460 greaterThan *tmp427 0
-read *tmp427 bank1 425
-jump 462 greaterThan *tmp427 0
-read *tmp427 bank1 423
-jump 464 greaterThan *tmp427 0
-read *tmp427 bank1 421
-jump 466 greaterThan *tmp427 0
-read *tmp427 bank1 419
-jump 468 greaterThan *tmp427 0
-read *tmp427 bank1 417
-jump 470 greaterThan *tmp427 0
-read *tmp427 bank1 415
-jump 472 greaterThan *tmp427 0
-read *tmp427 bank1 413
-jump 474 greaterThan *tmp427 0
-read *tmp427 bank1 411
-jump 476 greaterThan *tmp427 0
-read *tmp427 bank1 409
-jump 478 greaterThan *tmp427 0
-read *tmp427 bank1 407
-jump 480 greaterThan *tmp427 0
-read *tmp427 bank1 405
-jump 482 greaterThan *tmp427 0
-read *tmp427 bank1 403
-jump 484 greaterThan *tmp427 0
-read *tmp427 bank1 401
-jump 486 greaterThan *tmp427 0
-read *tmp427 bank1 399
-jump 488 greaterThan *tmp427 0
-read *tmp427 bank1 397
-jump 490 greaterThan *tmp427 0
-read *tmp427 bank1 395
-jump 492 greaterThan *tmp427 0
-read *tmp427 bank1 393
-jump 494 greaterThan *tmp427 0
-read *tmp427 bank1 391
-jump 496 greaterThan *tmp427 0
-read *tmp427 bank1 389
-jump 498 greaterThan *tmp427 0
-read *tmp427 bank1 387
-jump 500 greaterThan *tmp427 0
-read *tmp427 bank1 385
-jump 502 greaterThan *tmp427 0
-read *tmp427 bank1 383
-jump 504 greaterThan *tmp427 0
-read *tmp427 bank1 381
-jump 506 greaterThan *tmp427 0
-read *tmp427 bank1 379
-jump 508 greaterThan *tmp427 0
-read *tmp427 bank1 377
-jump 510 greaterThan *tmp427 0
-read *tmp427 bank1 375
-jump 512 greaterThan *tmp427 0
-read *tmp427 bank1 373
-jump 514 greaterThan *tmp427 0
-read *tmp427 bank1 371
-jump 516 greaterThan *tmp427 0
-read *tmp427 bank1 369
-jump 518 greaterThan *tmp427 0
-read *tmp427 bank1 367
-jump 520 greaterThan *tmp427 0
-read *tmp427 bank1 365
-jump 522 greaterThan *tmp427 0
-read *tmp427 bank1 363
-jump 524 greaterThan *tmp427 0
-read *tmp427 bank1 361
-jump 526 greaterThan *tmp427 0
-read *tmp427 bank1 359
-jump 528 greaterThan *tmp427 0
-read *tmp427 bank1 357
-jump 530 greaterThan *tmp427 0
-read *tmp427 bank1 355
-jump 532 greaterThan *tmp427 0
-read *tmp427 bank1 353
-jump 534 greaterThan *tmp427 0
-read *tmp427 bank1 351
-jump 536 greaterThan *tmp427 0
-read *tmp427 bank1 349
-jump 538 greaterThan *tmp427 0
-read *tmp427 bank1 347
-jump 540 greaterThan *tmp427 0
-read *tmp427 bank1 345
-jump 542 greaterThan *tmp427 0
-read *tmp427 bank1 343
-jump 544 greaterThan *tmp427 0
-read *tmp427 bank1 341
-jump 546 greaterThan *tmp427 0
-read *tmp427 bank1 339
-jump 548 greaterThan *tmp427 0
-read *tmp427 bank1 337
-jump 550 greaterThan *tmp427 0
-read *tmp427 bank1 335
-jump 552 greaterThan *tmp427 0
+write .STOP bank1 67
 set .CHANGE false
-write 0 bank1 158
-write 0 bank1 159
-write 0 bank1 160
-write 0 bank1 161
-write 0 bank1 162
-write 0 bank1 163
-write 0 bank1 164
-write 0 bank1 165
-write 0 bank1 166
-write 0 bank1 167
-write 0 bank1 168
-write 0 bank1 169
-write 0 bank1 170
-write 0 bank1 171
-write 0 bank1 172
-write 0 bank1 173
-write 0 bank1 174
-write 0 bank1 175
-write 0 bank1 176
-write 0 bank1 177
-write 0 bank1 178
-write 0 bank1 179
-write 0 bank1 180
-write 0 bank1 181
-write 0 bank1 182
-write 0 bank1 183
-write 0 bank1 184
-write 0 bank1 185
-write 0 bank1 186
-write 0 bank1 187
-write 0 bank1 188
-write 0 bank1 189
-write 0 bank1 190
-write 0 bank1 191
-write 0 bank1 192
-write 0 bank1 193
-write 0 bank1 194
-write 0 bank1 195
-write 0 bank1 196
-write 0 bank1 197
-write 0 bank1 198
-write 0 bank1 199
-write 0 bank1 200
-write 0 bank1 201
-write 0 bank1 202
-write 0 bank1 203
-write 0 bank1 204
-write 0 bank1 205
-write 0 bank1 206
-write 0 bank1 207
-write 0 bank1 208
-write 0 bank1 209
-write 0 bank1 210
-write 0 bank1 211
-write 0 bank1 212
-write 0 bank1 213
-write 0 bank1 214
-write 0 bank1 215
-write 0 bank1 216
-write 0 bank1 217
-write 0 bank1 218
-write 0 bank1 219
-write 0 bank1 220
-write 0 bank1 221
-write 0 bank1 222
-write 0 bank1 223
-write 0 bank1 224
-write 0 bank1 225
-write 0 bank1 226
-write 0 bank1 227
-write 0 bank1 228
-write 0 bank1 229
-write 0 bank1 230
-write 0 bank1 231
-write 0 bank1 232
-write 0 bank1 233
-write 0 bank1 234
-write 0 bank1 235
-write 0 bank1 236
-write 0 bank1 237
-write 0 bank1 238
-write 0 bank1 239
-write 0 bank1 240
-write 0 bank1 241
-write 0 bank1 242
-write 0 bank1 243
-write 0 bank1 244
-write 0 bank1 245
-write 0 bank1 246
-write 0 bank1 247
-write 0 bank1 248
-write 0 bank1 249
-write 0 bank1 250
-write 0 bank1 251
-write 0 bank1 252
-write 0 bank1 253
-write 0 bank1 254
-write 0 bank1 255
-write 0 bank1 256
-write 0 bank1 257
-write 0 bank1 258
-write 0 bank1 259
-write 0 bank1 260
-write 0 bank1 261
-write 0 bank1 262
-write 0 bank1 263
-write 0 bank1 264
-write 0 bank1 265
-write 0 bank1 266
-write 0 bank1 267
-write 0 bank1 268
-write 0 bank1 269
-write 0 bank1 270
-write 0 bank1 271
-write 0 bank1 272
-write 0 bank1 273
-write 0 bank1 274
-write 0 bank1 275
-write 0 bank1 276
-write 0 bank1 277
-write 0 bank1 278
-write 0 bank1 279
-write 0 bank1 280
-write 0 bank1 281
-write 0 bank1 282
-write 0 bank1 283
-write 0 bank1 284
-write 0 bank1 285
-write 0 bank1 286
-write 0 bank1 287
-write 0 bank1 288
-write 0 bank1 289
-write 0 bank1 290
-write 0 bank1 291
-write 0 bank1 292
-write 0 bank1 293
-write 0 bank1 294
-write 0 bank1 295
-write 0 bank1 296
-write 0 bank1 297
-write 0 bank1 298
-write 0 bank1 299
-write 0 bank1 300
-write 0 bank1 301
-write 0 bank1 302
-write 0 bank1 303
-write 0 bank1 304
-write 0 bank1 305
-write 0 bank1 306
-write 0 bank1 307
-write 0 bank1 308
-write 0 bank1 309
-write 0 bank1 310
-write 0 bank1 311
-write 0 bank1 312
-write 0 bank1 313
-write 0 bank1 314
-write 0 bank1 315
-write 0 bank1 316
-write 0 bank1 317
-write 0 bank1 318
-write 0 bank1 319
-write 0 bank1 320
-write 0 bank1 321
-write 0 bank1 322
-write 0 bank1 323
-write 0 bank1 324
-write 0 bank1 325
-write 0 bank1 326
-write 0 bank1 327
-write 0 bank1 328
-write 0 bank1 329
-write 0 bank1 330
-write 0 bank1 331
-write 0 bank1 332
-write 0 bank1 333
 draw color 86 86 102 204 0 0
 draw rect 0 0 176 176 0 0
 drawflush display1
+wait 0.010417                           # 0.625 ticks for atomic execution of 5 steps at 8 ipt
+write 0 bank1 65
+write 0 bank1 64
 op add .START .START 1
-write .START bank1 64
-set :checking 999
-set .text0 "Rendering...\n-------------------------\n"
+write .START bank1 66                   # The last atomic block instruction
 set .text2 ""
 set .text1 ""
 set :print true
-jump 172 always 0 0
+jump 171 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

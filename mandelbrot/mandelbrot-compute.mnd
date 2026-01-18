@@ -1,4 +1,5 @@
-#set target = 8;
+#set syntax = strict;
+#set target = 8H;
 
 require blocks;
 require "mandelbrot-common.mnd";
@@ -8,6 +9,8 @@ const BATCH_SIZE = 4;
 var display, memory;
 allocate heap in memory[VARIABLES ... BOOKMARKS];
 
+external $LINE;         // Current line
+external $COMPLETED;    // Number of completed pixels
 external $START;        // Start signal
 external $STOP;         // Stop signal
 external $X;            // Coordinates and palette
@@ -27,12 +30,6 @@ var PALETTE, SMOOTH;
 const ONE_TO_LOG = 1 / log(2);
 const QUARTER_TO_LOG = 0.25 / log(2);
 
-// Processor ID and processor state indexes
-// Dynamically updated when a conflict with another processor is detected
-var PROCESSOR_ID = @this.@x + 10000 * @this.@y;
-var PROC_ID_INDEX = PROCESSORS;
-var PROC_STATE_INDEX = PROCESSORS + 1;
-
 var start = 0, stop;
 
 // Processor graphics buffer usage
@@ -50,18 +47,11 @@ MainLoop:
         drawflush(null);
 
         // Waiting for a start signal
-        do
-            // setState finds a non-conflicting processor slot
-            // Writing zero state means this processor is not computing.
-            setState(0);
-        while start == $START;
+        do wait(0); while start == $START;
 
         // New computation starts here
         start = $START;
         stop = $STOP;
-
-        // We're on our job
-        setState(start);
 
         // Load positional information
         ZOOM     = $ZOOM;
@@ -73,41 +63,38 @@ MainLoop:
         PALETTE  = $PALETTE;
         SMOOTH   = PALETTE > 1;
 
-        var line = 8;
-        var increment = 8;
-        var next_increment = 16;
-        wait(rand(0.1));
+        while true do
+            var line;
+            atomic
+                if stop != $STOP then
+                    continue MainLoop;      // Break is signalled
+                end;
+                line = $LINE++;
+            end;
+            if line >= DISPLAY_SIZE_LARGE then
+                break;
+            end;
 
-        for var lines in 0 ... DISPLAY_SIZE_LARGE do
-            // Find a line
-            var x = (SKIP * line) % DISPLAY_SIZE_LARGE;
-            var position = x + SLOTS;
+            var strip = case line
+                when 0 ... 22 then 8 * line;
+                when 22 ... 44 then 8 * line - 8 * 22 + 4;
+                when 44 ... 88 then 4 * line - 4 * 44 + 2;
+                else 2 * line - 2 * 88 + 1;
+            end;
 
-            if memory[position] == 0 then
-                memory[position] = PROCESSOR_ID;
+            var x = (SKIP * strip) % DISPLAY_SIZE_LARGE;
 
-                for var y in 0 ... DISPLAY_SIZE_LARGE do
-                    var iterations = compute(x, y);
-                    drawPixel(x, y, iterations);
-
-                    if memory[position] != PROCESSOR_ID then
-                        break;   // Another processor took over this line
-                    end;
-
-                    if stop != $STOP then
-                        continue MainLoop;        // Break is signalled
-                    end;
+            for var y in 0 ... DISPLAY_SIZE_LARGE do
+                var iterations = compute(x, y);
+                drawPixel(x, y, iterations);
+                atomic $COMPLETED++; end;
+                if stop != $STOP then
+                    continue MainLoop;  // Break is signalled
                 end;
             end;
 
-            line += increment;
-            if line > DISPLAY_SIZE_LARGE then
-                increment = next_increment /= 2;
-                line = increment / 2;
-            end;
+            flushLocalBuffer();
         end;
-
-        flushLocalBuffer();
     end;
 end;
 
@@ -215,26 +202,9 @@ void flushLocalBuffer()
     do while !display.@enabled;
     if localBuffer > 4 then
         do
-            wait(1e-4);
+            wait(0);
         while display.@bufferSize > 250;
     end;
     drawflush(display);
     localBuffer = 0;
-end;
-
-void setState(state)
-    // At index 512, we exceed the memory bank capacity
-    while PROC_STATE_INDEX < 512 do
-        if memory[PROC_ID_INDEX] == PROCESSOR_ID then
-            memory[PROC_STATE_INDEX] = state;
-            break;
-        elsif memory[PROC_ID_INDEX] == 0 then
-            memory[PROC_ID_INDEX] = PROCESSOR_ID;
-            memory[PROC_STATE_INDEX] = state;
-            break;
-        else
-            PROC_ID_INDEX += 2;
-            PROC_STATE_INDEX += 2;
-        end;
-    end;
 end;
