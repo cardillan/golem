@@ -3,7 +3,7 @@
 ![Screenshot of the schematics in action](Mandelbrot.png)
 
 > [!NOTE]
-> This schematic uses the [atomic code blocks](doc/syntax/REMOTE-CALLS.markdown#atomic-code-blocks) introduced in Mindcode 3.13, and requires the latest BE version of Mindustry (build 26609 or higher). The latest beta release (v154.3) doesn't provide necessary support for atomic code blocks, and the computation will be wrong.
+> This schematic uses the atomic code blocks introduced in Mindcode 3.13, and requires the latest BE version of Mindustry (build 26609 or higher). The latest beta release (v154.3) doesn't provide necessary support for atomic code blocks, and the computation will be wrong.
 
 
 A schematic displaying the Mandelbrot-set based fractal in a display. Computed in parallel using 24 hyper-processors.
