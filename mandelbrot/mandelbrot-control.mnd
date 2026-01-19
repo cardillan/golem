@@ -3,6 +3,8 @@
 #set instruction-limit = 1500;
 require "mandelbrot-common.mnd";
 
+param FILL_PASS = false;
+
 // As the schematic takes a long time to build, this processor may be built and running before all these blocks
 // are created. 'guarded' here ensures the program will wait for all the blocks to be built.
 guarded linked message1, message2, message3, display1,
@@ -23,6 +25,7 @@ allocate heap in memory[VARIABLES ... BOOKMARKS];
 const SHIFT = 44;
 
 external LINE;                     // Current line
+external ITERATIONS;               // Number of completed lines
 external COMPLETED;                // Number of completed lines
 noinit external cached START;
 noinit external cached STOP;
@@ -34,10 +37,14 @@ noinit external cached JULIA_X;
 noinit external cached JULIA_Y;
 noinit external cached PALETTE;
 
-var CHANGE = false;
+external FILL_PASS_CFG = FILL_PASS;
+
+var CHANGE = true;
 var PERCENT = 0;
 var text1 = "";
 var text2 = "";
+noinit var time;
+var second = @second;
 
 // Bookmark buttons state
 var bookmark_x = message2.@x;
@@ -118,14 +125,16 @@ begin
             // Dim the current display
             color(86, 86, 102, 204);
             rect(0, 0, 176, 176);
+//            clear(86, 86, 102);
             drawflush(display1);
 
             // Signal next round of computing to processors
             atomic
-                LINE = COMPLETED = 0;
+                LINE = ITERATIONS = COMPLETED = 0;
                 START++;
             end;
 
+            second = @second;
             text1 = text2 = "";
             print = true;
         end;
@@ -137,7 +146,8 @@ end;
 
 inline void printInfo()
     println("Mandelbrot Mania! v3.0");
-    println($"Completed: $PERCENT%");
+    if PERCENT < 100 then time = round(@second - second); end;
+    println($"Completed: $PERCENT% in ${time}s");
     //println($"($COMPLETED out of $TOTAL)");
     if JULIA then
         println("Julia set of Mandelbrot");
@@ -151,7 +161,8 @@ inline void printInfo()
     println($"X: $X");
     println($"Y: $Y");
     println($"Zoom: $ZOOM");
-    println(text1, text2);
+    println("Avg. iters: ", round(ITERATIONS / COMPLETED));
+    print(text1, text2);
     printflush(message1);
 end;
 

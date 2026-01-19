@@ -2,11 +2,36 @@
 
 module common;
 
+// Display bufer size, for checking whether there'S capacity for another batch
+const DISPLAY_BUFFER = 1024;
+
+// Display size
 const DISPLAY_SIZE_LARGE = 176;
 const HALF_SIZE = DISPLAY_SIZE_LARGE / 2;
-const MAX_DEPTH = 63;
-const SKIP = 17;
+
+// Total number of pixels
 const TOTAL = DISPLAY_SIZE_LARGE * DISPLAY_SIZE_LARGE;
+
+// Maximum iteration depth
+// Allows the iteration loop to be completely unrolled
+const MAX_DEPTH = 63;
+
+// Work is allocated to individual processors in batches (the size is a number of pixels in a batch)
+const BATCH_SIZE = 11;
+const TOTAL_BATCHES = TOTAL \ BATCH_SIZE;
+
+// Interlacing support
+
+// Size of the smallest interlacing pass
+const PASS_SIZE = TOTAL \ 16;
+
+// 1/16th of the pass size for better case expression
+const PASS_SIZE16 = PASS_SIZE \ 16;
+
+const SIZE4 = DISPLAY_SIZE_LARGE \ 4;
+const SIZE2 = DISPLAY_SIZE_LARGE \ 2;
+const SIZE1 = DISPLAY_SIZE_LARGE;
+
 
 // Indices to the shared memory
 const VARIABLES = MAX_DEPTH + 1;
@@ -14,5 +39,3 @@ const BOOKMARKS = VARIABLES + 16;
 const BOOKMARK_COUNT = 13;
 const BOOKMARK_SIZE = 6;
 const BOOKMARK_END = BOOKMARKS + BOOKMARK_COUNT * BOOKMARK_SIZE;
-
-//println(PROCESSORS);

@@ -2,11 +2,12 @@
 
 ![Screenshot of the schematics in action](Mandelbrot.png)
 
+This schematic serves as an example of using atomic blocks to coordinate multiple processors. 
+
 > [!NOTE]
 > This schematic uses the atomic code blocks introduced in Mindcode 3.13, and requires the latest BE version of Mindustry (build 26609 or higher). The latest beta release (v154.3) doesn't provide necessary support for atomic code blocks, and the computation will be wrong.
 
-
-A schematic displaying the Mandelbrot-set based fractal in a display. Computed in parallel using 24 hyper-processors.
+A schematic displaying the Mandelbrot-set based fractal in a display. Computed in parallel using 24 hyper-processors. An interlacing scheme similar to the one used in PNG file format is employed to provide an overall overview of the fractal as soon as 1/16th of the image is computed.  
 
 Allows navigation inside the picture (movement along the x/y axes, zoom in, zoom out), switching to the Julia set corresponding to the point in the center of the display, bookmarks for storing/loading positions, and five different coloring schemes.
 
