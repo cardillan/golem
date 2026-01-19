@@ -5,11 +5,13 @@ require blocks;
 require "mandelbrot-common.mnd";
 
 const DISPLAY_BUFFER = 1024;
+const BATCH_SIZE = 16;
+const BATCHES_PER_LINE = DISPLAY_SIZE_LARGE \ BATCH_SIZE;
 
 var display, memory;
 allocate heap in memory[VARIABLES ... BOOKMARKS];
 
-external $LINE;         // Current line
+external $LINE;         // Current batch
 external $COMPLETED;    // Number of completed pixels
 external $START;        // Start signal
 external $STOP;         // Stop signal
@@ -34,7 +36,7 @@ var start = 0, stop;
 var lastColor;
 
 // Processor graphics buffer usage
-noinit var localBuffer;
+var localBuffer;
 
 begin
     findLinkedBlocks("Mandelbrot Generator", null,
@@ -66,29 +68,27 @@ MainLoop:
         SMOOTH   = PALETTE > 1;
 
         while true do
-            var line;
+            var batch;
             atomic
                 if stop != $STOP then
                     continue MainLoop;      // Break is signalled
                 end;
-                line = $LINE++;
+                batch = $LINE++;
             end;
-            if line >= DISPLAY_SIZE_LARGE then
+
+            if batch >= DISPLAY_SIZE_LARGE * BATCHES_PER_LINE then
                 break;
             end;
 
-            var strip = case line
-                when 0 ... 22 then 8 * line;
-                when 22 ... 44 then 8 * line - 8 * 22 + 4;
-                when 44 ... 88 then 4 * line - 4 * 44 + 2;
-                else 2 * line - 2 * 88 + 1;
-            end;
+            var x = redistributeLine(batch \ BATCHES_PER_LINE);
+            var y = (batch % BATCHES_PER_LINE) * BATCH_SIZE;
 
-            var x = (SKIP * strip) % DISPLAY_SIZE_LARGE;
+//            var x = redistributeLine(batch % DISPLAY_SIZE_LARGE);
+//            var y = (batch \ DISPLAY_SIZE_LARGE) * BATCH_SIZE;
 
-            for var y in 0 ... DISPLAY_SIZE_LARGE do
-                var iterations = compute(x, y);
-                drawPixel(x, y, iterations);
+            for var i in 0 ... BATCH_SIZE do
+                var iterations = compute(x, y + i);
+                drawPixel(x, y + i, iterations);
                 atomic $COMPLETED++; end;
                 if stop != $STOP then
                     continue MainLoop;  // Break is signalled
@@ -98,6 +98,16 @@ MainLoop:
             emptyLocalBuffer();
         end;
     end;
+end;
+
+inline def redistributeLine(index)
+    var line = case index
+        when 0 ... 22 then 8 * index;
+        when 22 ... 44 then 8 * index - 8 * 22 + 4;
+        when 44 ... 88 then 4 * index - 4 * 44 + 2;
+        else 2 * index - 2 * 88 + 1;
+    end;
+    return (SKIP * line) % DISPLAY_SIZE_LARGE;
 end;
 
 inline def compute(x, y)
@@ -136,7 +146,7 @@ inline def compute(x, y)
         end;
     end;
 
-    if i < SMOOTH * MAX_DEPTH then
+    if SMOOTH and i < MAX_DEPTH then
         // Correction only if we're smoothing and not at max iteration
         var correction = 4 - log(log(dist) * QUARTER_TO_LOG) * ONE_TO_LOG;
         i += correction;
