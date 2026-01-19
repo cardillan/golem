@@ -1,25 +1,25 @@
   1363 instructions before optimizations.
-    83 instructions eliminated by Temp Variables Elimination (2 passes, 6 iterations).
+    83 instructions eliminated by Temp Variables Elimination (2 passes, 8 iterations).
    104 instructions eliminated by Dead Code Elimination (5 iterations).
-    66 instructions eliminated by Condition Optimization (6 iterations).
-    73 instructions eliminated by Single Step Elimination (2 passes, 7 iterations).
-    17 instructions modified by Expression Optimization (2 passes, 3 iterations).
-   460 instructions eliminated by Data Flow Optimization (4 passes, 15 iterations).
+     2 instructions eliminated by Jump Normalization (7 iterations).
+    66 instructions eliminated by Condition Optimization (8 iterations).
+    73 instructions eliminated by Single Step Elimination (2 passes, 9 iterations).
+    17 instructions modified by Expression Optimization (2 passes, 5 iterations).
+   460 instructions eliminated by Data Flow Optimization (5 passes, 19 iterations).
      1 loops improved by Loop Hoisting.
-     2 instructions eliminated by Loop Rotation (3 iterations).
-       2 loop conditions were fully rotated.
-   304 instructions added by Loop Unrolling (5 iterations).
+       2 loop conditions were partially rotated.
+   304 instructions added by Loop Unrolling (7 iterations).
      2 loops unrolled by Loop Unrolling.
      2 instructions updated by Jump Threading.
      3 instructions eliminated by Unreachable Code Elimination (2 iterations).
    876 instructions after optimizations.
 
-Pass 1: speed optimization selection (cost limit 374):
+Pass 3: speed optimization selection (cost limit 397):
     Unroll loop at line 27:5                                     size   +57, benefit      350.0, efficiency      6.140
   * Unroll loop at line 28:9                                     size   +32, benefit     8750.0, efficiency    273.438 (+33 instructions)
 
-Pass 1: speed optimization selection (cost limit 341):
-  * Unroll loop at line 27:5                                     size  +255, benefit      350.0, efficiency      1.373 (+253 instructions)
+Pass 3: speed optimization selection (cost limit 364):
+  * Unroll loop at line 27:5                                     size  +255, benefit      350.0, efficiency      1.373 (+252 instructions)
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-54 instructions):
  
@@ -6240,35 +6240,252 @@ Modifications by Iterated phase, Loop Hoisting, pass 1, iteration 1:
     22 sensor solid type @solid
     23 select :isSolid:result notEqual solid false 1 0
 
-Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1 (-2 instructions):
+Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1:
+ 
+    12 set :createTerrainMask:r 3
+    13 label *label7
+    14 jump *label9 lessThan :createTerrainMask:r -3
++   15 label *label235
+    16 set :createTerrainMask:c 3
+    17 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
+    18 label *label10
+    19 jump *label12 lessThan :createTerrainMask:c -3
++   20 label *label236
+    21 op shl *tmp0 :createTerrainMask:result 1
+    22 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
+    23 ucontrol getBlock *tmp1 *tmp2 type building floor
+ 
+    27 op or :createTerrainMask:result *tmp0 :isSolid:result
+    28 label *label11
+    29 op sub :createTerrainMask:c :createTerrainMask:c 1
+-    * jump *label10 always
++   30 jump *label236 greaterThanEq :createTerrainMask:c -3
+    31 label *label12
+    32 label *label8
+    33 op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * jump *label7 always
++   34 jump *label235 greaterThanEq :createTerrainMask:r -3
+    35 label *label9
+    36 set :createTerrainMask*retval :createTerrainMask:result
+    37 jump *label6 always
+
+Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-23 instructions):
+ 
+    34 jump *label235 greaterThanEq :createTerrainMask:r -3
+    35 label *label9
+    36 set :createTerrainMask*retval :createTerrainMask:result
+-    * jump *label6 always
+    37 label *label6
+    38 set :createTerrainMask*finished true
+    39 jump *label5 always
+ 
+    76 op add *tmp21 :tileValue.2:result :tileValue.3:result
+    77 op add *tmp22 :tileValue.3:result :tileValue.4:result
+    78 packcolor *tmp6 *tmp19 *tmp20 *tmp21 *tmp22
+-    * jump *label15 always
+    79 jump *label22 always
+    80 label *label21
+    81 jump *label23 notEqual :findBestPosition:size 3
+ 
+    85 op add *tmp30 :tileValue.2:result :tileValue.3:result
+    86 op add *tmp31 *tmp30 :tileValue.4:result
+    87 packcolor *tmp6 *tmp27 *tmp29 *tmp31 0
+-    * jump *label15 always
+    88 jump *label24 always
+    89 label *label23
+    90 op sub :tileValue.5:x :findBestPosition:x 3
+ 
+   112 op add *tmp51 *tmp46 :tileValue.6:result
+   113 op min *tmp52 0.09803921568627451 *tmp51
+   114 packcolor *tmp6 *tmp40 *tmp44 *tmp48 *tmp52
+-    * jump *label15 always
+   115 label *label24
+   116 label *label22
+   117 label *label15
+ 
+   147 op add *tmp70 :tileValue.9:result :tileValue.10:result
+   148 op add *tmp71 :tileValue.10:result :tileValue.11:result
+   149 packcolor *tmp55 *tmp68 *tmp69 *tmp70 *tmp71
+-    * jump *label27 always
+   150 jump *label34 always
+   151 label *label33
+   152 jump *label35 notEqual :findBestPosition:size 3
+ 
+   156 op add *tmp79 :tileValue.9:result :tileValue.10:result
+   157 op add *tmp80 *tmp79 :tileValue.11:result
+   158 packcolor *tmp55 *tmp76 *tmp78 *tmp80 0
+-    * jump *label27 always
+   159 jump *label36 always
+   160 label *label35
+   161 op sub :tileValue.12:x :findBestPosition:x 3
+ 
+   183 op add *tmp100 *tmp95 :tileValue.13:result
+   184 op min *tmp101 0.09803921568627451 *tmp100
+   185 packcolor *tmp55 *tmp89 *tmp93 *tmp97 *tmp101
+-    * jump *label27 always
+   186 label *label36
+   187 label *label34
+   188 label *label27
+ 
+   217 op add *tmp119 :tileValue.16:result :tileValue.17:result
+   218 op add *tmp120 :tileValue.17:result :tileValue.18:result
+   219 packcolor *tmp104 *tmp117 *tmp118 *tmp119 *tmp120
+-    * jump *label39 always
+   220 jump *label46 always
+   221 label *label45
+   222 jump *label47 notEqual :findBestPosition:size 3
+ 
+   226 op add *tmp128 :tileValue.16:result :tileValue.17:result
+   227 op add *tmp129 *tmp128 :tileValue.18:result
+   228 packcolor *tmp104 *tmp125 *tmp127 *tmp129 0
+-    * jump *label39 always
+   229 jump *label48 always
+   230 label *label47
+   231 op sub :tileValue.19:x :findBestPosition:x 3
+ 
+   253 op add *tmp149 *tmp144 :tileValue.20:result
+   254 op min *tmp150 0.09803921568627451 *tmp149
+   255 packcolor *tmp104 *tmp138 *tmp142 *tmp146 *tmp150
+-    * jump *label39 always
+   256 label *label48
+   257 label *label46
+   258 label *label39
+ 
+   288 op add *tmp168 :tileValue.23:result :tileValue.24:result
+   289 op add *tmp169 :tileValue.24:result :tileValue.25:result
+   290 packcolor *tmp153 *tmp166 *tmp167 *tmp168 *tmp169
+-    * jump *label51 always
+   291 jump *label58 always
+   292 label *label57
+   293 jump *label59 notEqual :findBestPosition:size 3
+ 
+   297 op add *tmp177 :tileValue.23:result :tileValue.24:result
+   298 op add *tmp178 *tmp177 :tileValue.25:result
+   299 packcolor *tmp153 *tmp174 *tmp176 *tmp178 0
+-    * jump *label51 always
+   300 jump *label60 always
+   301 label *label59
+   302 op sub :tileValue.26:x :findBestPosition:x 3
+ 
+   324 op add *tmp198 *tmp193 :tileValue.27:result
+   325 op min *tmp199 0.09803921568627451 *tmp198
+   326 packcolor *tmp153 *tmp187 *tmp191 *tmp195 *tmp199
+-    * jump *label51 always
+   327 label *label60
+   328 label *label58
+   329 label *label51
+ 
+   359 op add *tmp217 :tileValue.30:result :tileValue.31:result
+   360 op add *tmp218 :tileValue.31:result :tileValue.32:result
+   361 packcolor *tmp202 *tmp215 *tmp216 *tmp217 *tmp218
+-    * jump *label63 always
+   362 jump *label70 always
+   363 label *label69
+   364 jump *label71 notEqual :findBestPosition:size 3
+ 
+   368 op add *tmp226 :tileValue.30:result :tileValue.31:result
+   369 op add *tmp227 *tmp226 :tileValue.32:result
+   370 packcolor *tmp202 *tmp223 *tmp225 *tmp227 0
+-    * jump *label63 always
+   371 jump *label72 always
+   372 label *label71
+   373 op sub :tileValue.33:x :findBestPosition:x 3
+ 
+   395 op add *tmp247 *tmp242 :tileValue.34:result
+   396 op min *tmp248 0.09803921568627451 *tmp247
+   397 packcolor *tmp202 *tmp236 *tmp240 *tmp244 *tmp248
+-    * jump *label63 always
+   398 label *label72
+   399 label *label70
+   400 label *label63
+ 
+   544 op add *tmp319 :tileValue.37:result :tileValue.38:result
+   545 op add *tmp320 :tileValue.38:result :tileValue.39:result
+   546 packcolor *tmp304 *tmp317 *tmp318 *tmp319 *tmp320
+-    * jump *label127 always
+   547 jump *label134 always
+   548 label *label133
+   549 jump *label135 notEqual :findBestPosition:size 3
+ 
+   553 op add *tmp328 :tileValue.37:result :tileValue.38:result
+   554 op add *tmp329 *tmp328 :tileValue.39:result
+   555 packcolor *tmp304 *tmp325 *tmp327 *tmp329 0
+-    * jump *label127 always
+   556 jump *label136 always
+   557 label *label135
+   558 op sub :tileValue.40:x :findBestPosition:x 3
+ 
+   580 op add *tmp349 *tmp344 :tileValue.41:result
+   581 op min *tmp350 0.09803921568627451 *tmp349
+   582 packcolor *tmp304 *tmp338 *tmp342 *tmp346 *tmp350
+-    * jump *label127 always
+   583 label *label136
+   584 label *label134
+   585 label *label127
+ 
+   615 op add *tmp368 :tileValue.44:result :tileValue.45:result
+   616 op add *tmp369 :tileValue.45:result :tileValue.46:result
+   617 packcolor *tmp353 *tmp366 *tmp367 *tmp368 *tmp369
+-    * jump *label139 always
+   618 jump *label146 always
+   619 label *label145
+   620 jump *label147 notEqual :findBestPosition:size 3
+ 
+   624 op add *tmp377 :tileValue.44:result :tileValue.45:result
+   625 op add *tmp378 *tmp377 :tileValue.46:result
+   626 packcolor *tmp353 *tmp374 *tmp376 *tmp378 0
+-    * jump *label139 always
+   627 jump *label148 always
+   628 label *label147
+   629 op sub :tileValue.47:x :findBestPosition:x 3
+ 
+   651 op add *tmp398 *tmp393 :tileValue.48:result
+   652 op min *tmp399 0.09803921568627451 *tmp398
+   653 packcolor *tmp353 *tmp387 *tmp391 *tmp395 *tmp399
+-    * jump *label139 always
+   654 label *label148
+   655 label *label146
+   656 label *label139
+ 
+   833 label *label214
+   834 label *label76
+   835 op mul :findBestPosition*retval :findBestPosition:best 255
+-    * jump *label14 always
+   836 label *label14
+   837 set :findBestPosition*finished true
+   838 jump *label5 always
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1:
  
     11 set :createTerrainMask:result 0
     12 set :createTerrainMask:r 3
     13 label *label7
 -    * jump *label9 lessThan :createTerrainMask:r -3
-+   14 label *label235
++   14 jump *label9 lessThan 3 -3
+    15 label *label235
+    16 set :createTerrainMask:c 3
+    17 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
+    18 label *label10
+-    * jump *label12 lessThan :createTerrainMask:c -3
++   19 jump *label12 lessThan 3 -3
+    20 label *label236
+    21 op shl *tmp0 :createTerrainMask:result 1
+    22 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
+
+Modifications by Iterated phase, Jump Normalization, pass 3, iteration 1 (-2 instructions):
+ 
+    11 set :createTerrainMask:result 0
+    12 set :createTerrainMask:r 3
+    13 label *label7
+-    * jump *label9 lessThan 3 -3
+    14 label *label235
     15 set :createTerrainMask:c 3
     16 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
     17 label *label10
--    * jump *label12 lessThan :createTerrainMask:c -3
-+   18 label *label236
+-    * jump *label12 lessThan 3 -3
+    18 label *label236
     19 op shl *tmp0 :createTerrainMask:result 1
     20 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-    21 ucontrol getBlock *tmp1 *tmp2 type building floor
- 
-    25 op or :createTerrainMask:result *tmp0 :isSolid:result
-    26 label *label11
-    27 op sub :createTerrainMask:c :createTerrainMask:c 1
--    * jump *label10 always
-+   28 jump *label236 greaterThanEq :createTerrainMask:c -3
-    29 label *label12
-    30 label *label8
-    31 op sub :createTerrainMask:r :createTerrainMask:r 1
--    * jump *label7 always
-+   32 jump *label235 greaterThanEq :createTerrainMask:r -3
-    33 label *label9
-    34 set :createTerrainMask*retval :createTerrainMask:result
-    35 jump *label6 always
 
 Modifications by Unroll loop at line 28:9 (+41 instructions):
  
@@ -6293,161 +6510,160 @@ Modifications by Unroll loop at line 28:9 (+41 instructions):
 +   15 set :createTerrainMask:c 3
 +   16 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
 +   17 label *label237
-+   18 label *label238
-+   19 op shl *tmp0 :createTerrainMask:result 1
-+   20 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   21 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   22 sensor solid type @solid
-+   23 select :isSolid:result notEqual solid false 1 0
-+   24 label *label239
-+   25 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   26 label *label240
-+   27 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   28 op shl *tmp0 :createTerrainMask:result 1
-+   29 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   30 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   31 sensor solid type @solid
-+   32 select :isSolid:result notEqual solid false 1 0
-+   33 label *label241
-+   34 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   35 label *label242
-+   36 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   37 op shl *tmp0 :createTerrainMask:result 1
-+   38 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   39 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   40 sensor solid type @solid
-+   41 select :isSolid:result notEqual solid false 1 0
-+   42 label *label243
-+   43 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   44 label *label244
-+   45 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   46 op shl *tmp0 :createTerrainMask:result 1
-+   47 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   48 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   49 sensor solid type @solid
-+   50 select :isSolid:result notEqual solid false 1 0
-+   51 label *label245
-+   52 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   53 label *label246
-+   54 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   55 op shl *tmp0 :createTerrainMask:result 1
-+   56 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   57 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   58 sensor solid type @solid
-+   59 select :isSolid:result notEqual solid false 1 0
-+   60 label *label247
-+   61 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   62 label *label248
-+   63 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   64 op shl *tmp0 :createTerrainMask:result 1
-+   65 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   66 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   67 sensor solid type @solid
-+   68 select :isSolid:result notEqual solid false 1 0
-+   69 label *label249
-+   70 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   71 label *label250
-+   72 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   73 op shl *tmp0 :createTerrainMask:result 1
-+   74 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   75 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   76 sensor solid type @solid
-+   77 select :isSolid:result notEqual solid false 1 0
-+   78 label *label251
-+   79 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   80 label *label252
-+   81 op sub :createTerrainMask:c :createTerrainMask:c 1
-+   82 label *label12
-    83 label *label8
-    84 op sub :createTerrainMask:r :createTerrainMask:r 1
-    85 jump *label235 greaterThanEq :createTerrainMask:r -3
++   18 op shl *tmp0 :createTerrainMask:result 1
++   19 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   20 ucontrol getBlock *tmp1 *tmp2 type building floor
++   21 sensor solid type @solid
++   22 select :isSolid:result notEqual solid false 1 0
++   23 label *label238
++   24 op or :createTerrainMask:result *tmp0 :isSolid:result
++   25 label *label239
++   26 op sub :createTerrainMask:c :createTerrainMask:c 1
++   27 op shl *tmp0 :createTerrainMask:result 1
++   28 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   29 ucontrol getBlock *tmp1 *tmp2 type building floor
++   30 sensor solid type @solid
++   31 select :isSolid:result notEqual solid false 1 0
++   32 label *label240
++   33 op or :createTerrainMask:result *tmp0 :isSolid:result
++   34 label *label241
++   35 op sub :createTerrainMask:c :createTerrainMask:c 1
++   36 op shl *tmp0 :createTerrainMask:result 1
++   37 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   38 ucontrol getBlock *tmp1 *tmp2 type building floor
++   39 sensor solid type @solid
++   40 select :isSolid:result notEqual solid false 1 0
++   41 label *label242
++   42 op or :createTerrainMask:result *tmp0 :isSolid:result
++   43 label *label243
++   44 op sub :createTerrainMask:c :createTerrainMask:c 1
++   45 op shl *tmp0 :createTerrainMask:result 1
++   46 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   47 ucontrol getBlock *tmp1 *tmp2 type building floor
++   48 sensor solid type @solid
++   49 select :isSolid:result notEqual solid false 1 0
++   50 label *label244
++   51 op or :createTerrainMask:result *tmp0 :isSolid:result
++   52 label *label245
++   53 op sub :createTerrainMask:c :createTerrainMask:c 1
++   54 op shl *tmp0 :createTerrainMask:result 1
++   55 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   56 ucontrol getBlock *tmp1 *tmp2 type building floor
++   57 sensor solid type @solid
++   58 select :isSolid:result notEqual solid false 1 0
++   59 label *label246
++   60 op or :createTerrainMask:result *tmp0 :isSolid:result
++   61 label *label247
++   62 op sub :createTerrainMask:c :createTerrainMask:c 1
++   63 op shl *tmp0 :createTerrainMask:result 1
++   64 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   65 ucontrol getBlock *tmp1 *tmp2 type building floor
++   66 sensor solid type @solid
++   67 select :isSolid:result notEqual solid false 1 0
++   68 label *label248
++   69 op or :createTerrainMask:result *tmp0 :isSolid:result
++   70 label *label249
++   71 op sub :createTerrainMask:c :createTerrainMask:c 1
++   72 op shl *tmp0 :createTerrainMask:result 1
++   73 op add *tmp1 :createTerrainMask:x :createTerrainMask:c
++   74 ucontrol getBlock *tmp1 *tmp2 type building floor
++   75 sensor solid type @solid
++   76 select :isSolid:result notEqual solid false 1 0
++   77 label *label250
++   78 op or :createTerrainMask:result *tmp0 :isSolid:result
++   79 label *label251
++   80 op sub :createTerrainMask:c :createTerrainMask:c 1
++   81 label *label12
+    82 label *label8
+    83 op sub :createTerrainMask:r :createTerrainMask:r 1
+    84 jump *label235 greaterThanEq :createTerrainMask:r -3
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 1:
  
+    16 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
     17 label *label237
-    18 label *label238
-    19 op shl *tmp0 :createTerrainMask:result 1
+    18 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   20 op add *tmp1 :createTerrainMask:x 3
-    21 ucontrol getBlock *tmp1 *tmp2 type building floor
-    22 sensor solid type @solid
-    23 select :isSolid:result notEqual solid false 1 0
-    24 label *label239
-    25 op or :createTerrainMask:result *tmp0 :isSolid:result
-    26 label *label240
++   19 op add *tmp1 :createTerrainMask:x 3
+    20 ucontrol getBlock *tmp1 *tmp2 type building floor
+    21 sensor solid type @solid
+    22 select :isSolid:result notEqual solid false 1 0
+    23 label *label238
+    24 op or :createTerrainMask:result *tmp0 :isSolid:result
+    25 label *label239
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   27 op sub :createTerrainMask:c 3 1
-    28 op shl *tmp0 :createTerrainMask:result 1
++   26 op sub :createTerrainMask:c 3 1
+    27 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   29 op add *tmp1 :createTerrainMask:x 2
-    30 ucontrol getBlock *tmp1 *tmp2 type building floor
-    31 sensor solid type @solid
-    32 select :isSolid:result notEqual solid false 1 0
-    33 label *label241
-    34 op or :createTerrainMask:result *tmp0 :isSolid:result
-    35 label *label242
++   28 op add *tmp1 :createTerrainMask:x 2
+    29 ucontrol getBlock *tmp1 *tmp2 type building floor
+    30 sensor solid type @solid
+    31 select :isSolid:result notEqual solid false 1 0
+    32 label *label240
+    33 op or :createTerrainMask:result *tmp0 :isSolid:result
+    34 label *label241
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   36 op sub :createTerrainMask:c 2 1
-    37 op shl *tmp0 :createTerrainMask:result 1
++   35 op sub :createTerrainMask:c 2 1
+    36 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   38 op add *tmp1 :createTerrainMask:x 1
-    39 ucontrol getBlock *tmp1 *tmp2 type building floor
-    40 sensor solid type @solid
-    41 select :isSolid:result notEqual solid false 1 0
-    42 label *label243
-    43 op or :createTerrainMask:result *tmp0 :isSolid:result
-    44 label *label244
++   37 op add *tmp1 :createTerrainMask:x 1
+    38 ucontrol getBlock *tmp1 *tmp2 type building floor
+    39 sensor solid type @solid
+    40 select :isSolid:result notEqual solid false 1 0
+    41 label *label242
+    42 op or :createTerrainMask:result *tmp0 :isSolid:result
+    43 label *label243
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   45 op sub :createTerrainMask:c 1 1
-    46 op shl *tmp0 :createTerrainMask:result 1
++   44 op sub :createTerrainMask:c 1 1
+    45 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   47 op add *tmp1 :createTerrainMask:x 0
-    48 ucontrol getBlock *tmp1 *tmp2 type building floor
-    49 sensor solid type @solid
-    50 select :isSolid:result notEqual solid false 1 0
-    51 label *label245
-    52 op or :createTerrainMask:result *tmp0 :isSolid:result
-    53 label *label246
++   46 op add *tmp1 :createTerrainMask:x 0
+    47 ucontrol getBlock *tmp1 *tmp2 type building floor
+    48 sensor solid type @solid
+    49 select :isSolid:result notEqual solid false 1 0
+    50 label *label244
+    51 op or :createTerrainMask:result *tmp0 :isSolid:result
+    52 label *label245
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   54 op sub :createTerrainMask:c 0 1
-    55 op shl *tmp0 :createTerrainMask:result 1
++   53 op sub :createTerrainMask:c 0 1
+    54 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   56 op add *tmp1 :createTerrainMask:x -1
-    57 ucontrol getBlock *tmp1 *tmp2 type building floor
-    58 sensor solid type @solid
-    59 select :isSolid:result notEqual solid false 1 0
-    60 label *label247
-    61 op or :createTerrainMask:result *tmp0 :isSolid:result
-    62 label *label248
++   55 op add *tmp1 :createTerrainMask:x -1
+    56 ucontrol getBlock *tmp1 *tmp2 type building floor
+    57 sensor solid type @solid
+    58 select :isSolid:result notEqual solid false 1 0
+    59 label *label246
+    60 op or :createTerrainMask:result *tmp0 :isSolid:result
+    61 label *label247
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   63 op sub :createTerrainMask:c -1 1
-    64 op shl *tmp0 :createTerrainMask:result 1
++   62 op sub :createTerrainMask:c -1 1
+    63 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   65 op add *tmp1 :createTerrainMask:x -2
-    66 ucontrol getBlock *tmp1 *tmp2 type building floor
-    67 sensor solid type @solid
-    68 select :isSolid:result notEqual solid false 1 0
-    69 label *label249
-    70 op or :createTerrainMask:result *tmp0 :isSolid:result
-    71 label *label250
++   64 op add *tmp1 :createTerrainMask:x -2
+    65 ucontrol getBlock *tmp1 *tmp2 type building floor
+    66 sensor solid type @solid
+    67 select :isSolid:result notEqual solid false 1 0
+    68 label *label248
+    69 op or :createTerrainMask:result *tmp0 :isSolid:result
+    70 label *label249
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   72 op sub :createTerrainMask:c -2 1
-    73 op shl *tmp0 :createTerrainMask:result 1
++   71 op sub :createTerrainMask:c -2 1
+    72 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x :createTerrainMask:c
-+   74 op add *tmp1 :createTerrainMask:x -3
-    75 ucontrol getBlock *tmp1 *tmp2 type building floor
-    76 sensor solid type @solid
-    77 select :isSolid:result notEqual solid false 1 0
-    78 label *label251
-    79 op or :createTerrainMask:result *tmp0 :isSolid:result
-    80 label *label252
++   73 op add *tmp1 :createTerrainMask:x -3
+    74 ucontrol getBlock *tmp1 *tmp2 type building floor
+    75 sensor solid type @solid
+    76 select :isSolid:result notEqual solid false 1 0
+    77 label *label250
+    78 op or :createTerrainMask:result *tmp0 :isSolid:result
+    79 label *label251
 -    * op sub :createTerrainMask:c :createTerrainMask:c 1
-+   81 op sub :createTerrainMask:c -3 1
-    82 label *label12
-    83 label *label8
-    84 op sub :createTerrainMask:r :createTerrainMask:r 1
++   80 op sub :createTerrainMask:c -3 1
+    81 label *label12
+    82 label *label8
+    83 op sub :createTerrainMask:r :createTerrainMask:r 1
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-8 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 2 (-8 instructions):
  
     12 set :createTerrainMask:r 3
     13 label *label7
@@ -6455,63 +6671,63 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-8
 -    * set :createTerrainMask:c 3
     15 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
     16 label *label237
-    17 label *label238
+    17 op shl *tmp0 :createTerrainMask:result 1
  
-    23 label *label239
-    24 op or :createTerrainMask:result *tmp0 :isSolid:result
-    25 label *label240
+    22 label *label238
+    23 op or :createTerrainMask:result *tmp0 :isSolid:result
+    24 label *label239
 -    * op sub :createTerrainMask:c 3 1
-    26 op shl *tmp0 :createTerrainMask:result 1
-    27 op add *tmp1 :createTerrainMask:x 2
-    28 ucontrol getBlock *tmp1 *tmp2 type building floor
+    25 op shl *tmp0 :createTerrainMask:result 1
+    26 op add *tmp1 :createTerrainMask:x 2
+    27 ucontrol getBlock *tmp1 *tmp2 type building floor
  
-    31 label *label241
-    32 op or :createTerrainMask:result *tmp0 :isSolid:result
-    33 label *label242
+    30 label *label240
+    31 op or :createTerrainMask:result *tmp0 :isSolid:result
+    32 label *label241
 -    * op sub :createTerrainMask:c 2 1
-    34 op shl *tmp0 :createTerrainMask:result 1
-    35 op add *tmp1 :createTerrainMask:x 1
-    36 ucontrol getBlock *tmp1 *tmp2 type building floor
+    33 op shl *tmp0 :createTerrainMask:result 1
+    34 op add *tmp1 :createTerrainMask:x 1
+    35 ucontrol getBlock *tmp1 *tmp2 type building floor
  
-    39 label *label243
-    40 op or :createTerrainMask:result *tmp0 :isSolid:result
-    41 label *label244
+    38 label *label242
+    39 op or :createTerrainMask:result *tmp0 :isSolid:result
+    40 label *label243
 -    * op sub :createTerrainMask:c 1 1
-    42 op shl *tmp0 :createTerrainMask:result 1
-    43 op add *tmp1 :createTerrainMask:x 0
-    44 ucontrol getBlock *tmp1 *tmp2 type building floor
+    41 op shl *tmp0 :createTerrainMask:result 1
+    42 op add *tmp1 :createTerrainMask:x 0
+    43 ucontrol getBlock *tmp1 *tmp2 type building floor
  
-    47 label *label245
-    48 op or :createTerrainMask:result *tmp0 :isSolid:result
-    49 label *label246
+    46 label *label244
+    47 op or :createTerrainMask:result *tmp0 :isSolid:result
+    48 label *label245
 -    * op sub :createTerrainMask:c 0 1
-    50 op shl *tmp0 :createTerrainMask:result 1
-    51 op add *tmp1 :createTerrainMask:x -1
-    52 ucontrol getBlock *tmp1 *tmp2 type building floor
+    49 op shl *tmp0 :createTerrainMask:result 1
+    50 op add *tmp1 :createTerrainMask:x -1
+    51 ucontrol getBlock *tmp1 *tmp2 type building floor
  
-    55 label *label247
-    56 op or :createTerrainMask:result *tmp0 :isSolid:result
-    57 label *label248
+    54 label *label246
+    55 op or :createTerrainMask:result *tmp0 :isSolid:result
+    56 label *label247
 -    * op sub :createTerrainMask:c -1 1
-    58 op shl *tmp0 :createTerrainMask:result 1
-    59 op add *tmp1 :createTerrainMask:x -2
-    60 ucontrol getBlock *tmp1 *tmp2 type building floor
+    57 op shl *tmp0 :createTerrainMask:result 1
+    58 op add *tmp1 :createTerrainMask:x -2
+    59 ucontrol getBlock *tmp1 *tmp2 type building floor
  
-    63 label *label249
-    64 op or :createTerrainMask:result *tmp0 :isSolid:result
-    65 label *label250
+    62 label *label248
+    63 op or :createTerrainMask:result *tmp0 :isSolid:result
+    64 label *label249
 -    * op sub :createTerrainMask:c -2 1
-    66 op shl *tmp0 :createTerrainMask:result 1
-    67 op add *tmp1 :createTerrainMask:x -3
-    68 ucontrol getBlock *tmp1 *tmp2 type building floor
+    65 op shl *tmp0 :createTerrainMask:result 1
+    66 op add *tmp1 :createTerrainMask:x -3
+    67 ucontrol getBlock *tmp1 *tmp2 type building floor
  
-    71 label *label251
-    72 op or :createTerrainMask:result *tmp0 :isSolid:result
-    73 label *label252
+    70 label *label250
+    71 op or :createTerrainMask:result *tmp0 :isSolid:result
+    72 label *label251
 -    * op sub :createTerrainMask:c -3 1
-    74 label *label12
-    75 label *label8
-    76 op sub :createTerrainMask:r :createTerrainMask:r 1
+    73 label *label12
+    74 label *label8
+    75 op sub :createTerrainMask:r :createTerrainMask:r 1
 
 Modifications by Unroll loop at line 27:5 (+263 instructions):
  
@@ -6523,1162 +6739,967 @@ Modifications by Unroll loop at line 27:5 (+263 instructions):
 -    * label *label235
 -    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
 -    * label *label237
--    * label *label238
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x 3
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label239
+-    * label *label238
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label240
+-    * label *label239
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x 2
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label241
+-    * label *label240
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label242
+-    * label *label241
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x 1
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label243
+-    * label *label242
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label244
+-    * label *label243
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x 0
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label245
+-    * label *label244
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label246
+-    * label *label245
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x -1
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label247
+-    * label *label246
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label248
+-    * label *label247
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x -2
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label249
+-    * label *label248
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label250
+-    * label *label249
 -    * op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x -3
 -    * ucontrol getBlock *tmp1 *tmp2 type building floor
 -    * sensor solid type @solid
 -    * select :isSolid:result notEqual solid false 1 0
--    * label *label251
+-    * label *label250
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label252
+-    * label *label251
 -    * label *label12
 -    * label *label8
 -    * op sub :createTerrainMask:r :createTerrainMask:r 1
 -    * jump *label235 greaterThanEq :createTerrainMask:r -3
 -    * label *label9
 +   12 set :createTerrainMask:r 3
-+   13 label *label253
-+   14 label *label254
-+   15 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+   16 label *label255
-+   17 label *label256
-+   18 op shl *tmp0 :createTerrainMask:result 1
-+   19 op add *tmp1 :createTerrainMask:x 3
-+   20 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   21 sensor solid type @solid
-+   22 select :isSolid:result notEqual solid false 1 0
-+   23 label *label257
-+   24 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   25 label *label258
-+   26 op shl *tmp0 :createTerrainMask:result 1
-+   27 op add *tmp1 :createTerrainMask:x 2
-+   28 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   29 sensor solid type @solid
-+   30 select :isSolid:result notEqual solid false 1 0
-+   31 label *label259
-+   32 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   33 label *label260
-+   34 op shl *tmp0 :createTerrainMask:result 1
-+   35 op add *tmp1 :createTerrainMask:x 1
-+   36 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   37 sensor solid type @solid
-+   38 select :isSolid:result notEqual solid false 1 0
-+   39 label *label261
-+   40 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   41 label *label262
-+   42 op shl *tmp0 :createTerrainMask:result 1
-+   43 op add *tmp1 :createTerrainMask:x 0
-+   44 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   45 sensor solid type @solid
-+   46 select :isSolid:result notEqual solid false 1 0
-+   47 label *label263
-+   48 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   49 label *label264
-+   50 op shl *tmp0 :createTerrainMask:result 1
-+   51 op add *tmp1 :createTerrainMask:x -1
-+   52 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   53 sensor solid type @solid
-+   54 select :isSolid:result notEqual solid false 1 0
-+   55 label *label265
-+   56 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   57 label *label266
-+   58 op shl *tmp0 :createTerrainMask:result 1
-+   59 op add *tmp1 :createTerrainMask:x -2
-+   60 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   61 sensor solid type @solid
-+   62 select :isSolid:result notEqual solid false 1 0
-+   63 label *label267
-+   64 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   65 label *label268
-+   66 op shl *tmp0 :createTerrainMask:result 1
-+   67 op add *tmp1 :createTerrainMask:x -3
-+   68 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   69 sensor solid type @solid
-+   70 select :isSolid:result notEqual solid false 1 0
-+   71 label *label269
-+   72 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   73 label *label270
-+   74 label *label271
-+   75 label *label272
-+   76 op sub :createTerrainMask:r :createTerrainMask:r 1
-+   77 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+   78 label *label273
-+   79 label *label274
-+   80 op shl *tmp0 :createTerrainMask:result 1
-+   81 op add *tmp1 :createTerrainMask:x 3
-+   82 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   83 sensor solid type @solid
-+   84 select :isSolid:result notEqual solid false 1 0
-+   85 label *label275
-+   86 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   87 label *label276
-+   88 op shl *tmp0 :createTerrainMask:result 1
-+   89 op add *tmp1 :createTerrainMask:x 2
-+   90 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   91 sensor solid type @solid
-+   92 select :isSolid:result notEqual solid false 1 0
-+   93 label *label277
-+   94 op or :createTerrainMask:result *tmp0 :isSolid:result
-+   95 label *label278
-+   96 op shl *tmp0 :createTerrainMask:result 1
-+   97 op add *tmp1 :createTerrainMask:x 1
-+   98 ucontrol getBlock *tmp1 *tmp2 type building floor
-+   99 sensor solid type @solid
-+  100 select :isSolid:result notEqual solid false 1 0
-+  101 label *label279
-+  102 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  103 label *label280
-+  104 op shl *tmp0 :createTerrainMask:result 1
-+  105 op add *tmp1 :createTerrainMask:x 0
-+  106 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  107 sensor solid type @solid
-+  108 select :isSolid:result notEqual solid false 1 0
-+  109 label *label281
-+  110 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  111 label *label282
-+  112 op shl *tmp0 :createTerrainMask:result 1
-+  113 op add *tmp1 :createTerrainMask:x -1
-+  114 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  115 sensor solid type @solid
-+  116 select :isSolid:result notEqual solid false 1 0
-+  117 label *label283
-+  118 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  119 label *label284
-+  120 op shl *tmp0 :createTerrainMask:result 1
-+  121 op add *tmp1 :createTerrainMask:x -2
-+  122 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  123 sensor solid type @solid
-+  124 select :isSolid:result notEqual solid false 1 0
-+  125 label *label285
-+  126 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  127 label *label286
-+  128 op shl *tmp0 :createTerrainMask:result 1
-+  129 op add *tmp1 :createTerrainMask:x -3
-+  130 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  131 sensor solid type @solid
-+  132 select :isSolid:result notEqual solid false 1 0
-+  133 label *label287
-+  134 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  135 label *label288
-+  136 label *label289
-+  137 label *label290
-+  138 op sub :createTerrainMask:r :createTerrainMask:r 1
-+  139 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  140 label *label291
-+  141 label *label292
-+  142 op shl *tmp0 :createTerrainMask:result 1
-+  143 op add *tmp1 :createTerrainMask:x 3
-+  144 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  145 sensor solid type @solid
-+  146 select :isSolid:result notEqual solid false 1 0
-+  147 label *label293
-+  148 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  149 label *label294
-+  150 op shl *tmp0 :createTerrainMask:result 1
-+  151 op add *tmp1 :createTerrainMask:x 2
-+  152 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  153 sensor solid type @solid
-+  154 select :isSolid:result notEqual solid false 1 0
-+  155 label *label295
-+  156 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  157 label *label296
-+  158 op shl *tmp0 :createTerrainMask:result 1
-+  159 op add *tmp1 :createTerrainMask:x 1
-+  160 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  161 sensor solid type @solid
-+  162 select :isSolid:result notEqual solid false 1 0
-+  163 label *label297
-+  164 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  165 label *label298
-+  166 op shl *tmp0 :createTerrainMask:result 1
-+  167 op add *tmp1 :createTerrainMask:x 0
-+  168 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  169 sensor solid type @solid
-+  170 select :isSolid:result notEqual solid false 1 0
-+  171 label *label299
-+  172 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  173 label *label300
-+  174 op shl *tmp0 :createTerrainMask:result 1
-+  175 op add *tmp1 :createTerrainMask:x -1
-+  176 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  177 sensor solid type @solid
-+  178 select :isSolid:result notEqual solid false 1 0
-+  179 label *label301
-+  180 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  181 label *label302
-+  182 op shl *tmp0 :createTerrainMask:result 1
-+  183 op add *tmp1 :createTerrainMask:x -2
-+  184 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  185 sensor solid type @solid
-+  186 select :isSolid:result notEqual solid false 1 0
-+  187 label *label303
-+  188 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  189 label *label304
-+  190 op shl *tmp0 :createTerrainMask:result 1
-+  191 op add *tmp1 :createTerrainMask:x -3
-+  192 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  193 sensor solid type @solid
-+  194 select :isSolid:result notEqual solid false 1 0
-+  195 label *label305
-+  196 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  197 label *label306
-+  198 label *label307
-+  199 label *label308
-+  200 op sub :createTerrainMask:r :createTerrainMask:r 1
-+  201 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  202 label *label309
-+  203 label *label310
-+  204 op shl *tmp0 :createTerrainMask:result 1
-+  205 op add *tmp1 :createTerrainMask:x 3
-+  206 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  207 sensor solid type @solid
-+  208 select :isSolid:result notEqual solid false 1 0
-+  209 label *label311
-+  210 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  211 label *label312
-+  212 op shl *tmp0 :createTerrainMask:result 1
-+  213 op add *tmp1 :createTerrainMask:x 2
-+  214 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  215 sensor solid type @solid
-+  216 select :isSolid:result notEqual solid false 1 0
-+  217 label *label313
-+  218 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  219 label *label314
-+  220 op shl *tmp0 :createTerrainMask:result 1
-+  221 op add *tmp1 :createTerrainMask:x 1
-+  222 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  223 sensor solid type @solid
-+  224 select :isSolid:result notEqual solid false 1 0
-+  225 label *label315
-+  226 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  227 label *label316
-+  228 op shl *tmp0 :createTerrainMask:result 1
-+  229 op add *tmp1 :createTerrainMask:x 0
-+  230 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  231 sensor solid type @solid
-+  232 select :isSolid:result notEqual solid false 1 0
-+  233 label *label317
-+  234 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  235 label *label318
-+  236 op shl *tmp0 :createTerrainMask:result 1
-+  237 op add *tmp1 :createTerrainMask:x -1
-+  238 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  239 sensor solid type @solid
-+  240 select :isSolid:result notEqual solid false 1 0
-+  241 label *label319
-+  242 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  243 label *label320
-+  244 op shl *tmp0 :createTerrainMask:result 1
-+  245 op add *tmp1 :createTerrainMask:x -2
-+  246 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  247 sensor solid type @solid
-+  248 select :isSolid:result notEqual solid false 1 0
-+  249 label *label321
-+  250 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  251 label *label322
-+  252 op shl *tmp0 :createTerrainMask:result 1
-+  253 op add *tmp1 :createTerrainMask:x -3
-+  254 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  255 sensor solid type @solid
-+  256 select :isSolid:result notEqual solid false 1 0
-+  257 label *label323
-+  258 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  259 label *label324
-+  260 label *label325
-+  261 label *label326
-+  262 op sub :createTerrainMask:r :createTerrainMask:r 1
-+  263 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  264 label *label327
-+  265 label *label328
-+  266 op shl *tmp0 :createTerrainMask:result 1
-+  267 op add *tmp1 :createTerrainMask:x 3
-+  268 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  269 sensor solid type @solid
-+  270 select :isSolid:result notEqual solid false 1 0
-+  271 label *label329
-+  272 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  273 label *label330
-+  274 op shl *tmp0 :createTerrainMask:result 1
-+  275 op add *tmp1 :createTerrainMask:x 2
-+  276 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  277 sensor solid type @solid
-+  278 select :isSolid:result notEqual solid false 1 0
-+  279 label *label331
-+  280 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  281 label *label332
-+  282 op shl *tmp0 :createTerrainMask:result 1
-+  283 op add *tmp1 :createTerrainMask:x 1
-+  284 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  285 sensor solid type @solid
-+  286 select :isSolid:result notEqual solid false 1 0
-+  287 label *label333
-+  288 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  289 label *label334
-+  290 op shl *tmp0 :createTerrainMask:result 1
-+  291 op add *tmp1 :createTerrainMask:x 0
-+  292 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  293 sensor solid type @solid
-+  294 select :isSolid:result notEqual solid false 1 0
-+  295 label *label335
-+  296 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  297 label *label336
-+  298 op shl *tmp0 :createTerrainMask:result 1
-+  299 op add *tmp1 :createTerrainMask:x -1
-+  300 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  301 sensor solid type @solid
-+  302 select :isSolid:result notEqual solid false 1 0
-+  303 label *label337
-+  304 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  305 label *label338
-+  306 op shl *tmp0 :createTerrainMask:result 1
-+  307 op add *tmp1 :createTerrainMask:x -2
-+  308 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  309 sensor solid type @solid
-+  310 select :isSolid:result notEqual solid false 1 0
-+  311 label *label339
-+  312 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  313 label *label340
-+  314 op shl *tmp0 :createTerrainMask:result 1
-+  315 op add *tmp1 :createTerrainMask:x -3
-+  316 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  317 sensor solid type @solid
-+  318 select :isSolid:result notEqual solid false 1 0
-+  319 label *label341
-+  320 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  321 label *label342
-+  322 label *label343
-+  323 label *label344
-+  324 op sub :createTerrainMask:r :createTerrainMask:r 1
-+  325 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  326 label *label345
-+  327 label *label346
-+  328 op shl *tmp0 :createTerrainMask:result 1
-+  329 op add *tmp1 :createTerrainMask:x 3
-+  330 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  331 sensor solid type @solid
-+  332 select :isSolid:result notEqual solid false 1 0
-+  333 label *label347
-+  334 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  335 label *label348
-+  336 op shl *tmp0 :createTerrainMask:result 1
-+  337 op add *tmp1 :createTerrainMask:x 2
-+  338 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  339 sensor solid type @solid
-+  340 select :isSolid:result notEqual solid false 1 0
-+  341 label *label349
-+  342 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  343 label *label350
-+  344 op shl *tmp0 :createTerrainMask:result 1
-+  345 op add *tmp1 :createTerrainMask:x 1
-+  346 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  347 sensor solid type @solid
-+  348 select :isSolid:result notEqual solid false 1 0
-+  349 label *label351
-+  350 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  351 label *label352
-+  352 op shl *tmp0 :createTerrainMask:result 1
-+  353 op add *tmp1 :createTerrainMask:x 0
-+  354 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  355 sensor solid type @solid
-+  356 select :isSolid:result notEqual solid false 1 0
-+  357 label *label353
-+  358 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  359 label *label354
-+  360 op shl *tmp0 :createTerrainMask:result 1
-+  361 op add *tmp1 :createTerrainMask:x -1
-+  362 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  363 sensor solid type @solid
-+  364 select :isSolid:result notEqual solid false 1 0
-+  365 label *label355
-+  366 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  367 label *label356
-+  368 op shl *tmp0 :createTerrainMask:result 1
-+  369 op add *tmp1 :createTerrainMask:x -2
-+  370 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  371 sensor solid type @solid
-+  372 select :isSolid:result notEqual solid false 1 0
-+  373 label *label357
-+  374 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  375 label *label358
-+  376 op shl *tmp0 :createTerrainMask:result 1
-+  377 op add *tmp1 :createTerrainMask:x -3
-+  378 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  379 sensor solid type @solid
-+  380 select :isSolid:result notEqual solid false 1 0
-+  381 label *label359
-+  382 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  383 label *label360
-+  384 label *label361
-+  385 label *label362
-+  386 op sub :createTerrainMask:r :createTerrainMask:r 1
-+  387 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  388 label *label363
-+  389 label *label364
++   13 label *label252
++   14 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++   15 label *label253
++   16 op shl *tmp0 :createTerrainMask:result 1
++   17 op add *tmp1 :createTerrainMask:x 3
++   18 ucontrol getBlock *tmp1 *tmp2 type building floor
++   19 sensor solid type @solid
++   20 select :isSolid:result notEqual solid false 1 0
++   21 label *label254
++   22 op or :createTerrainMask:result *tmp0 :isSolid:result
++   23 label *label255
++   24 op shl *tmp0 :createTerrainMask:result 1
++   25 op add *tmp1 :createTerrainMask:x 2
++   26 ucontrol getBlock *tmp1 *tmp2 type building floor
++   27 sensor solid type @solid
++   28 select :isSolid:result notEqual solid false 1 0
++   29 label *label256
++   30 op or :createTerrainMask:result *tmp0 :isSolid:result
++   31 label *label257
++   32 op shl *tmp0 :createTerrainMask:result 1
++   33 op add *tmp1 :createTerrainMask:x 1
++   34 ucontrol getBlock *tmp1 *tmp2 type building floor
++   35 sensor solid type @solid
++   36 select :isSolid:result notEqual solid false 1 0
++   37 label *label258
++   38 op or :createTerrainMask:result *tmp0 :isSolid:result
++   39 label *label259
++   40 op shl *tmp0 :createTerrainMask:result 1
++   41 op add *tmp1 :createTerrainMask:x 0
++   42 ucontrol getBlock *tmp1 *tmp2 type building floor
++   43 sensor solid type @solid
++   44 select :isSolid:result notEqual solid false 1 0
++   45 label *label260
++   46 op or :createTerrainMask:result *tmp0 :isSolid:result
++   47 label *label261
++   48 op shl *tmp0 :createTerrainMask:result 1
++   49 op add *tmp1 :createTerrainMask:x -1
++   50 ucontrol getBlock *tmp1 *tmp2 type building floor
++   51 sensor solid type @solid
++   52 select :isSolid:result notEqual solid false 1 0
++   53 label *label262
++   54 op or :createTerrainMask:result *tmp0 :isSolid:result
++   55 label *label263
++   56 op shl *tmp0 :createTerrainMask:result 1
++   57 op add *tmp1 :createTerrainMask:x -2
++   58 ucontrol getBlock *tmp1 *tmp2 type building floor
++   59 sensor solid type @solid
++   60 select :isSolid:result notEqual solid false 1 0
++   61 label *label264
++   62 op or :createTerrainMask:result *tmp0 :isSolid:result
++   63 label *label265
++   64 op shl *tmp0 :createTerrainMask:result 1
++   65 op add *tmp1 :createTerrainMask:x -3
++   66 ucontrol getBlock *tmp1 *tmp2 type building floor
++   67 sensor solid type @solid
++   68 select :isSolid:result notEqual solid false 1 0
++   69 label *label266
++   70 op or :createTerrainMask:result *tmp0 :isSolid:result
++   71 label *label267
++   72 label *label268
++   73 label *label269
++   74 op sub :createTerrainMask:r :createTerrainMask:r 1
++   75 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++   76 label *label270
++   77 op shl *tmp0 :createTerrainMask:result 1
++   78 op add *tmp1 :createTerrainMask:x 3
++   79 ucontrol getBlock *tmp1 *tmp2 type building floor
++   80 sensor solid type @solid
++   81 select :isSolid:result notEqual solid false 1 0
++   82 label *label271
++   83 op or :createTerrainMask:result *tmp0 :isSolid:result
++   84 label *label272
++   85 op shl *tmp0 :createTerrainMask:result 1
++   86 op add *tmp1 :createTerrainMask:x 2
++   87 ucontrol getBlock *tmp1 *tmp2 type building floor
++   88 sensor solid type @solid
++   89 select :isSolid:result notEqual solid false 1 0
++   90 label *label273
++   91 op or :createTerrainMask:result *tmp0 :isSolid:result
++   92 label *label274
++   93 op shl *tmp0 :createTerrainMask:result 1
++   94 op add *tmp1 :createTerrainMask:x 1
++   95 ucontrol getBlock *tmp1 *tmp2 type building floor
++   96 sensor solid type @solid
++   97 select :isSolid:result notEqual solid false 1 0
++   98 label *label275
++   99 op or :createTerrainMask:result *tmp0 :isSolid:result
++  100 label *label276
++  101 op shl *tmp0 :createTerrainMask:result 1
++  102 op add *tmp1 :createTerrainMask:x 0
++  103 ucontrol getBlock *tmp1 *tmp2 type building floor
++  104 sensor solid type @solid
++  105 select :isSolid:result notEqual solid false 1 0
++  106 label *label277
++  107 op or :createTerrainMask:result *tmp0 :isSolid:result
++  108 label *label278
++  109 op shl *tmp0 :createTerrainMask:result 1
++  110 op add *tmp1 :createTerrainMask:x -1
++  111 ucontrol getBlock *tmp1 *tmp2 type building floor
++  112 sensor solid type @solid
++  113 select :isSolid:result notEqual solid false 1 0
++  114 label *label279
++  115 op or :createTerrainMask:result *tmp0 :isSolid:result
++  116 label *label280
++  117 op shl *tmp0 :createTerrainMask:result 1
++  118 op add *tmp1 :createTerrainMask:x -2
++  119 ucontrol getBlock *tmp1 *tmp2 type building floor
++  120 sensor solid type @solid
++  121 select :isSolid:result notEqual solid false 1 0
++  122 label *label281
++  123 op or :createTerrainMask:result *tmp0 :isSolid:result
++  124 label *label282
++  125 op shl *tmp0 :createTerrainMask:result 1
++  126 op add *tmp1 :createTerrainMask:x -3
++  127 ucontrol getBlock *tmp1 *tmp2 type building floor
++  128 sensor solid type @solid
++  129 select :isSolid:result notEqual solid false 1 0
++  130 label *label283
++  131 op or :createTerrainMask:result *tmp0 :isSolid:result
++  132 label *label284
++  133 label *label285
++  134 label *label286
++  135 op sub :createTerrainMask:r :createTerrainMask:r 1
++  136 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  137 label *label287
++  138 op shl *tmp0 :createTerrainMask:result 1
++  139 op add *tmp1 :createTerrainMask:x 3
++  140 ucontrol getBlock *tmp1 *tmp2 type building floor
++  141 sensor solid type @solid
++  142 select :isSolid:result notEqual solid false 1 0
++  143 label *label288
++  144 op or :createTerrainMask:result *tmp0 :isSolid:result
++  145 label *label289
++  146 op shl *tmp0 :createTerrainMask:result 1
++  147 op add *tmp1 :createTerrainMask:x 2
++  148 ucontrol getBlock *tmp1 *tmp2 type building floor
++  149 sensor solid type @solid
++  150 select :isSolid:result notEqual solid false 1 0
++  151 label *label290
++  152 op or :createTerrainMask:result *tmp0 :isSolid:result
++  153 label *label291
++  154 op shl *tmp0 :createTerrainMask:result 1
++  155 op add *tmp1 :createTerrainMask:x 1
++  156 ucontrol getBlock *tmp1 *tmp2 type building floor
++  157 sensor solid type @solid
++  158 select :isSolid:result notEqual solid false 1 0
++  159 label *label292
++  160 op or :createTerrainMask:result *tmp0 :isSolid:result
++  161 label *label293
++  162 op shl *tmp0 :createTerrainMask:result 1
++  163 op add *tmp1 :createTerrainMask:x 0
++  164 ucontrol getBlock *tmp1 *tmp2 type building floor
++  165 sensor solid type @solid
++  166 select :isSolid:result notEqual solid false 1 0
++  167 label *label294
++  168 op or :createTerrainMask:result *tmp0 :isSolid:result
++  169 label *label295
++  170 op shl *tmp0 :createTerrainMask:result 1
++  171 op add *tmp1 :createTerrainMask:x -1
++  172 ucontrol getBlock *tmp1 *tmp2 type building floor
++  173 sensor solid type @solid
++  174 select :isSolid:result notEqual solid false 1 0
++  175 label *label296
++  176 op or :createTerrainMask:result *tmp0 :isSolid:result
++  177 label *label297
++  178 op shl *tmp0 :createTerrainMask:result 1
++  179 op add *tmp1 :createTerrainMask:x -2
++  180 ucontrol getBlock *tmp1 *tmp2 type building floor
++  181 sensor solid type @solid
++  182 select :isSolid:result notEqual solid false 1 0
++  183 label *label298
++  184 op or :createTerrainMask:result *tmp0 :isSolid:result
++  185 label *label299
++  186 op shl *tmp0 :createTerrainMask:result 1
++  187 op add *tmp1 :createTerrainMask:x -3
++  188 ucontrol getBlock *tmp1 *tmp2 type building floor
++  189 sensor solid type @solid
++  190 select :isSolid:result notEqual solid false 1 0
++  191 label *label300
++  192 op or :createTerrainMask:result *tmp0 :isSolid:result
++  193 label *label301
++  194 label *label302
++  195 label *label303
++  196 op sub :createTerrainMask:r :createTerrainMask:r 1
++  197 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  198 label *label304
++  199 op shl *tmp0 :createTerrainMask:result 1
++  200 op add *tmp1 :createTerrainMask:x 3
++  201 ucontrol getBlock *tmp1 *tmp2 type building floor
++  202 sensor solid type @solid
++  203 select :isSolid:result notEqual solid false 1 0
++  204 label *label305
++  205 op or :createTerrainMask:result *tmp0 :isSolid:result
++  206 label *label306
++  207 op shl *tmp0 :createTerrainMask:result 1
++  208 op add *tmp1 :createTerrainMask:x 2
++  209 ucontrol getBlock *tmp1 *tmp2 type building floor
++  210 sensor solid type @solid
++  211 select :isSolid:result notEqual solid false 1 0
++  212 label *label307
++  213 op or :createTerrainMask:result *tmp0 :isSolid:result
++  214 label *label308
++  215 op shl *tmp0 :createTerrainMask:result 1
++  216 op add *tmp1 :createTerrainMask:x 1
++  217 ucontrol getBlock *tmp1 *tmp2 type building floor
++  218 sensor solid type @solid
++  219 select :isSolid:result notEqual solid false 1 0
++  220 label *label309
++  221 op or :createTerrainMask:result *tmp0 :isSolid:result
++  222 label *label310
++  223 op shl *tmp0 :createTerrainMask:result 1
++  224 op add *tmp1 :createTerrainMask:x 0
++  225 ucontrol getBlock *tmp1 *tmp2 type building floor
++  226 sensor solid type @solid
++  227 select :isSolid:result notEqual solid false 1 0
++  228 label *label311
++  229 op or :createTerrainMask:result *tmp0 :isSolid:result
++  230 label *label312
++  231 op shl *tmp0 :createTerrainMask:result 1
++  232 op add *tmp1 :createTerrainMask:x -1
++  233 ucontrol getBlock *tmp1 *tmp2 type building floor
++  234 sensor solid type @solid
++  235 select :isSolid:result notEqual solid false 1 0
++  236 label *label313
++  237 op or :createTerrainMask:result *tmp0 :isSolid:result
++  238 label *label314
++  239 op shl *tmp0 :createTerrainMask:result 1
++  240 op add *tmp1 :createTerrainMask:x -2
++  241 ucontrol getBlock *tmp1 *tmp2 type building floor
++  242 sensor solid type @solid
++  243 select :isSolid:result notEqual solid false 1 0
++  244 label *label315
++  245 op or :createTerrainMask:result *tmp0 :isSolid:result
++  246 label *label316
++  247 op shl *tmp0 :createTerrainMask:result 1
++  248 op add *tmp1 :createTerrainMask:x -3
++  249 ucontrol getBlock *tmp1 *tmp2 type building floor
++  250 sensor solid type @solid
++  251 select :isSolid:result notEqual solid false 1 0
++  252 label *label317
++  253 op or :createTerrainMask:result *tmp0 :isSolid:result
++  254 label *label318
++  255 label *label319
++  256 label *label320
++  257 op sub :createTerrainMask:r :createTerrainMask:r 1
++  258 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  259 label *label321
++  260 op shl *tmp0 :createTerrainMask:result 1
++  261 op add *tmp1 :createTerrainMask:x 3
++  262 ucontrol getBlock *tmp1 *tmp2 type building floor
++  263 sensor solid type @solid
++  264 select :isSolid:result notEqual solid false 1 0
++  265 label *label322
++  266 op or :createTerrainMask:result *tmp0 :isSolid:result
++  267 label *label323
++  268 op shl *tmp0 :createTerrainMask:result 1
++  269 op add *tmp1 :createTerrainMask:x 2
++  270 ucontrol getBlock *tmp1 *tmp2 type building floor
++  271 sensor solid type @solid
++  272 select :isSolid:result notEqual solid false 1 0
++  273 label *label324
++  274 op or :createTerrainMask:result *tmp0 :isSolid:result
++  275 label *label325
++  276 op shl *tmp0 :createTerrainMask:result 1
++  277 op add *tmp1 :createTerrainMask:x 1
++  278 ucontrol getBlock *tmp1 *tmp2 type building floor
++  279 sensor solid type @solid
++  280 select :isSolid:result notEqual solid false 1 0
++  281 label *label326
++  282 op or :createTerrainMask:result *tmp0 :isSolid:result
++  283 label *label327
++  284 op shl *tmp0 :createTerrainMask:result 1
++  285 op add *tmp1 :createTerrainMask:x 0
++  286 ucontrol getBlock *tmp1 *tmp2 type building floor
++  287 sensor solid type @solid
++  288 select :isSolid:result notEqual solid false 1 0
++  289 label *label328
++  290 op or :createTerrainMask:result *tmp0 :isSolid:result
++  291 label *label329
++  292 op shl *tmp0 :createTerrainMask:result 1
++  293 op add *tmp1 :createTerrainMask:x -1
++  294 ucontrol getBlock *tmp1 *tmp2 type building floor
++  295 sensor solid type @solid
++  296 select :isSolid:result notEqual solid false 1 0
++  297 label *label330
++  298 op or :createTerrainMask:result *tmp0 :isSolid:result
++  299 label *label331
++  300 op shl *tmp0 :createTerrainMask:result 1
++  301 op add *tmp1 :createTerrainMask:x -2
++  302 ucontrol getBlock *tmp1 *tmp2 type building floor
++  303 sensor solid type @solid
++  304 select :isSolid:result notEqual solid false 1 0
++  305 label *label332
++  306 op or :createTerrainMask:result *tmp0 :isSolid:result
++  307 label *label333
++  308 op shl *tmp0 :createTerrainMask:result 1
++  309 op add *tmp1 :createTerrainMask:x -3
++  310 ucontrol getBlock *tmp1 *tmp2 type building floor
++  311 sensor solid type @solid
++  312 select :isSolid:result notEqual solid false 1 0
++  313 label *label334
++  314 op or :createTerrainMask:result *tmp0 :isSolid:result
++  315 label *label335
++  316 label *label336
++  317 label *label337
++  318 op sub :createTerrainMask:r :createTerrainMask:r 1
++  319 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  320 label *label338
++  321 op shl *tmp0 :createTerrainMask:result 1
++  322 op add *tmp1 :createTerrainMask:x 3
++  323 ucontrol getBlock *tmp1 *tmp2 type building floor
++  324 sensor solid type @solid
++  325 select :isSolid:result notEqual solid false 1 0
++  326 label *label339
++  327 op or :createTerrainMask:result *tmp0 :isSolid:result
++  328 label *label340
++  329 op shl *tmp0 :createTerrainMask:result 1
++  330 op add *tmp1 :createTerrainMask:x 2
++  331 ucontrol getBlock *tmp1 *tmp2 type building floor
++  332 sensor solid type @solid
++  333 select :isSolid:result notEqual solid false 1 0
++  334 label *label341
++  335 op or :createTerrainMask:result *tmp0 :isSolid:result
++  336 label *label342
++  337 op shl *tmp0 :createTerrainMask:result 1
++  338 op add *tmp1 :createTerrainMask:x 1
++  339 ucontrol getBlock *tmp1 *tmp2 type building floor
++  340 sensor solid type @solid
++  341 select :isSolid:result notEqual solid false 1 0
++  342 label *label343
++  343 op or :createTerrainMask:result *tmp0 :isSolid:result
++  344 label *label344
++  345 op shl *tmp0 :createTerrainMask:result 1
++  346 op add *tmp1 :createTerrainMask:x 0
++  347 ucontrol getBlock *tmp1 *tmp2 type building floor
++  348 sensor solid type @solid
++  349 select :isSolid:result notEqual solid false 1 0
++  350 label *label345
++  351 op or :createTerrainMask:result *tmp0 :isSolid:result
++  352 label *label346
++  353 op shl *tmp0 :createTerrainMask:result 1
++  354 op add *tmp1 :createTerrainMask:x -1
++  355 ucontrol getBlock *tmp1 *tmp2 type building floor
++  356 sensor solid type @solid
++  357 select :isSolid:result notEqual solid false 1 0
++  358 label *label347
++  359 op or :createTerrainMask:result *tmp0 :isSolid:result
++  360 label *label348
++  361 op shl *tmp0 :createTerrainMask:result 1
++  362 op add *tmp1 :createTerrainMask:x -2
++  363 ucontrol getBlock *tmp1 *tmp2 type building floor
++  364 sensor solid type @solid
++  365 select :isSolid:result notEqual solid false 1 0
++  366 label *label349
++  367 op or :createTerrainMask:result *tmp0 :isSolid:result
++  368 label *label350
++  369 op shl *tmp0 :createTerrainMask:result 1
++  370 op add *tmp1 :createTerrainMask:x -3
++  371 ucontrol getBlock *tmp1 *tmp2 type building floor
++  372 sensor solid type @solid
++  373 select :isSolid:result notEqual solid false 1 0
++  374 label *label351
++  375 op or :createTerrainMask:result *tmp0 :isSolid:result
++  376 label *label352
++  377 label *label353
++  378 label *label354
++  379 op sub :createTerrainMask:r :createTerrainMask:r 1
++  380 op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  381 label *label355
++  382 op shl *tmp0 :createTerrainMask:result 1
++  383 op add *tmp1 :createTerrainMask:x 3
++  384 ucontrol getBlock *tmp1 *tmp2 type building floor
++  385 sensor solid type @solid
++  386 select :isSolid:result notEqual solid false 1 0
++  387 label *label356
++  388 op or :createTerrainMask:result *tmp0 :isSolid:result
++  389 label *label357
 +  390 op shl *tmp0 :createTerrainMask:result 1
-+  391 op add *tmp1 :createTerrainMask:x 3
++  391 op add *tmp1 :createTerrainMask:x 2
 +  392 ucontrol getBlock *tmp1 *tmp2 type building floor
 +  393 sensor solid type @solid
 +  394 select :isSolid:result notEqual solid false 1 0
-+  395 label *label365
++  395 label *label358
 +  396 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  397 label *label366
++  397 label *label359
 +  398 op shl *tmp0 :createTerrainMask:result 1
-+  399 op add *tmp1 :createTerrainMask:x 2
++  399 op add *tmp1 :createTerrainMask:x 1
 +  400 ucontrol getBlock *tmp1 *tmp2 type building floor
 +  401 sensor solid type @solid
 +  402 select :isSolid:result notEqual solid false 1 0
-+  403 label *label367
++  403 label *label360
 +  404 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  405 label *label368
++  405 label *label361
 +  406 op shl *tmp0 :createTerrainMask:result 1
-+  407 op add *tmp1 :createTerrainMask:x 1
++  407 op add *tmp1 :createTerrainMask:x 0
 +  408 ucontrol getBlock *tmp1 *tmp2 type building floor
 +  409 sensor solid type @solid
 +  410 select :isSolid:result notEqual solid false 1 0
-+  411 label *label369
++  411 label *label362
 +  412 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  413 label *label370
++  413 label *label363
 +  414 op shl *tmp0 :createTerrainMask:result 1
-+  415 op add *tmp1 :createTerrainMask:x 0
++  415 op add *tmp1 :createTerrainMask:x -1
 +  416 ucontrol getBlock *tmp1 *tmp2 type building floor
 +  417 sensor solid type @solid
 +  418 select :isSolid:result notEqual solid false 1 0
-+  419 label *label371
++  419 label *label364
 +  420 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  421 label *label372
++  421 label *label365
 +  422 op shl *tmp0 :createTerrainMask:result 1
-+  423 op add *tmp1 :createTerrainMask:x -1
++  423 op add *tmp1 :createTerrainMask:x -2
 +  424 ucontrol getBlock *tmp1 *tmp2 type building floor
 +  425 sensor solid type @solid
 +  426 select :isSolid:result notEqual solid false 1 0
-+  427 label *label373
++  427 label *label366
 +  428 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  429 label *label374
++  429 label *label367
 +  430 op shl *tmp0 :createTerrainMask:result 1
-+  431 op add *tmp1 :createTerrainMask:x -2
++  431 op add *tmp1 :createTerrainMask:x -3
 +  432 ucontrol getBlock *tmp1 *tmp2 type building floor
 +  433 sensor solid type @solid
 +  434 select :isSolid:result notEqual solid false 1 0
-+  435 label *label375
++  435 label *label368
 +  436 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  437 label *label376
-+  438 op shl *tmp0 :createTerrainMask:result 1
-+  439 op add *tmp1 :createTerrainMask:x -3
-+  440 ucontrol getBlock *tmp1 *tmp2 type building floor
-+  441 sensor solid type @solid
-+  442 select :isSolid:result notEqual solid false 1 0
-+  443 label *label377
-+  444 op or :createTerrainMask:result *tmp0 :isSolid:result
-+  445 label *label378
-+  446 label *label379
-+  447 label *label380
-+  448 op sub :createTerrainMask:r :createTerrainMask:r 1
-+  449 label *label9
-   450 set :createTerrainMask*retval :createTerrainMask:result
-   451 jump *label6 always
-   452 label *label6
++  437 label *label369
++  438 label *label370
++  439 label *label371
++  440 op sub :createTerrainMask:r :createTerrainMask:r 1
++  441 label *label9
+   442 set :createTerrainMask*retval :createTerrainMask:result
+   443 label *label6
+   444 set :createTerrainMask*finished true
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 1 (-1 instructions):
  
-    12 set :createTerrainMask:r 3
-    13 label *label253
-    14 label *label254
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+   15 op add *tmp2 :createTerrainMask:y 3
-    16 label *label255
-    17 label *label256
--    * op shl *tmp0 :createTerrainMask:result 1
-+   18 op shl *tmp0 0 1
-    19 op add *tmp1 :createTerrainMask:x 3
-    20 ucontrol getBlock *tmp1 *tmp2 type building floor
-    21 sensor solid type @solid
-    22 select :isSolid:result notEqual solid false 1 0
-    23 label *label257
+   433 sensor solid type @solid
+   434 select :isSolid:result notEqual solid false 1 0
+   435 label *label368
 -    * op or :createTerrainMask:result *tmp0 :isSolid:result
-+   24 op or :createTerrainMask:result 0 :isSolid:result
-    25 label *label258
-    26 op shl *tmp0 :createTerrainMask:result 1
-    27 op add *tmp1 :createTerrainMask:x 2
- 
-    73 label *label270
-    74 label *label271
-    75 label *label272
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+   76 op sub :createTerrainMask:r 3 1
-+   77 op add *tmp2 :createTerrainMask:y 2
-    78 label *label273
-    79 label *label274
-    80 op shl *tmp0 :createTerrainMask:result 1
- 
-   135 label *label288
-   136 label *label289
-   137 label *label290
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  138 op sub :createTerrainMask:r 2 1
-+  139 op add *tmp2 :createTerrainMask:y 1
-   140 label *label291
-   141 label *label292
-   142 op shl *tmp0 :createTerrainMask:result 1
- 
-   197 label *label306
-   198 label *label307
-   199 label *label308
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  200 op sub :createTerrainMask:r 1 1
-+  201 op add *tmp2 :createTerrainMask:y 0
-   202 label *label309
-   203 label *label310
-   204 op shl *tmp0 :createTerrainMask:result 1
- 
-   259 label *label324
-   260 label *label325
-   261 label *label326
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  262 op sub :createTerrainMask:r 0 1
-+  263 op add *tmp2 :createTerrainMask:y -1
-   264 label *label327
-   265 label *label328
-   266 op shl *tmp0 :createTerrainMask:result 1
- 
-   321 label *label342
-   322 label *label343
-   323 label *label344
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  324 op sub :createTerrainMask:r -1 1
-+  325 op add *tmp2 :createTerrainMask:y -2
-   326 label *label345
-   327 label *label346
-   328 op shl *tmp0 :createTerrainMask:result 1
- 
-   383 label *label360
-   384 label *label361
-   385 label *label362
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
--    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
-+  386 op sub :createTerrainMask:r -2 1
-+  387 op add *tmp2 :createTerrainMask:y -3
-   388 label *label363
-   389 label *label364
-   390 op shl *tmp0 :createTerrainMask:result 1
- 
-   445 label *label378
-   446 label *label379
-   447 label *label380
--    * op sub :createTerrainMask:r :createTerrainMask:r 1
-+  448 op sub :createTerrainMask:r -3 1
-   449 label *label9
-   450 set :createTerrainMask*retval :createTerrainMask:result
-   451 jump *label6 always
++  436 op or :createTerrainMask*retval *tmp0 :isSolid:result
+   437 label *label369
+   438 label *label370
+   439 label *label371
+   440 op sub :createTerrainMask:r :createTerrainMask:r 1
+   441 label *label9
+-    * set :createTerrainMask*retval :createTerrainMask:result
+   442 label *label6
+   443 set :createTerrainMask*finished true
+   444 jump *label5 always
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-10 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 2:
+ 
+    11 set :createTerrainMask:result 0
+    12 set :createTerrainMask:r 3
+    13 label *label252
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++   14 op add *tmp2 :createTerrainMask:y 3
+    15 label *label253
+-    * op shl *tmp0 :createTerrainMask:result 1
++   16 op shl *tmp0 0 1
+    17 op add *tmp1 :createTerrainMask:x 3
+    18 ucontrol getBlock *tmp1 *tmp2 type building floor
+    19 sensor solid type @solid
+    20 select :isSolid:result notEqual solid false 1 0
+    21 label *label254
+-    * op or :createTerrainMask:result *tmp0 :isSolid:result
++   22 op or :createTerrainMask:result 0 :isSolid:result
+    23 label *label255
+    24 op shl *tmp0 :createTerrainMask:result 1
+    25 op add *tmp1 :createTerrainMask:x 2
+ 
+    71 label *label267
+    72 label *label268
+    73 label *label269
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++   74 op sub :createTerrainMask:r 3 1
++   75 op add *tmp2 :createTerrainMask:y 2
+    76 label *label270
+    77 op shl *tmp0 :createTerrainMask:result 1
+    78 op add *tmp1 :createTerrainMask:x 3
+ 
+   132 label *label284
+   133 label *label285
+   134 label *label286
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  135 op sub :createTerrainMask:r 2 1
++  136 op add *tmp2 :createTerrainMask:y 1
+   137 label *label287
+   138 op shl *tmp0 :createTerrainMask:result 1
+   139 op add *tmp1 :createTerrainMask:x 3
+ 
+   193 label *label301
+   194 label *label302
+   195 label *label303
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  196 op sub :createTerrainMask:r 1 1
++  197 op add *tmp2 :createTerrainMask:y 0
+   198 label *label304
+   199 op shl *tmp0 :createTerrainMask:result 1
+   200 op add *tmp1 :createTerrainMask:x 3
+ 
+   254 label *label318
+   255 label *label319
+   256 label *label320
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  257 op sub :createTerrainMask:r 0 1
++  258 op add *tmp2 :createTerrainMask:y -1
+   259 label *label321
+   260 op shl *tmp0 :createTerrainMask:result 1
+   261 op add *tmp1 :createTerrainMask:x 3
+ 
+   315 label *label335
+   316 label *label336
+   317 label *label337
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  318 op sub :createTerrainMask:r -1 1
++  319 op add *tmp2 :createTerrainMask:y -2
+   320 label *label338
+   321 op shl *tmp0 :createTerrainMask:result 1
+   322 op add *tmp1 :createTerrainMask:x 3
+ 
+   376 label *label352
+   377 label *label353
+   378 label *label354
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
+-    * op add *tmp2 :createTerrainMask:y :createTerrainMask:r
++  379 op sub :createTerrainMask:r -2 1
++  380 op add *tmp2 :createTerrainMask:y -3
+   381 label *label355
+   382 op shl *tmp0 :createTerrainMask:result 1
+   383 op add *tmp1 :createTerrainMask:x 3
+ 
+   437 label *label369
+   438 label *label370
+   439 label *label371
+-    * op sub :createTerrainMask:r :createTerrainMask:r 1
++  440 op sub :createTerrainMask:r -3 1
+   441 label *label9
+   442 label *label6
+   443 set :createTerrainMask*finished true
+
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 3 (-10 instructions):
  
      8 end
      9 label *label0
     10 ubind :createTerrainMask:unit
 -    * set :createTerrainMask:result 0
 -    * set :createTerrainMask:r 3
-    11 label *label253
-    12 label *label254
-    13 op add *tmp2 :createTerrainMask:y 3
-    14 label *label255
-    15 label *label256
+    11 label *label252
+    12 op add *tmp2 :createTerrainMask:y 3
+    13 label *label253
 -    * op shl *tmp0 0 1
-    16 op add *tmp1 :createTerrainMask:x 3
-    17 ucontrol getBlock *tmp1 *tmp2 type building floor
-    18 sensor solid type @solid
+    14 op add *tmp1 :createTerrainMask:x 3
+    15 ucontrol getBlock *tmp1 *tmp2 type building floor
+    16 sensor solid type @solid
  
-    70 label *label270
-    71 label *label271
-    72 label *label272
+    68 label *label267
+    69 label *label268
+    70 label *label269
 -    * op sub :createTerrainMask:r 3 1
-    73 op add *tmp2 :createTerrainMask:y 2
-    74 label *label273
-    75 label *label274
+    71 op add *tmp2 :createTerrainMask:y 2
+    72 label *label270
+    73 op shl *tmp0 :createTerrainMask:result 1
  
-   131 label *label288
-   132 label *label289
-   133 label *label290
+   128 label *label284
+   129 label *label285
+   130 label *label286
 -    * op sub :createTerrainMask:r 2 1
-   134 op add *tmp2 :createTerrainMask:y 1
-   135 label *label291
-   136 label *label292
+   131 op add *tmp2 :createTerrainMask:y 1
+   132 label *label287
+   133 op shl *tmp0 :createTerrainMask:result 1
  
-   192 label *label306
-   193 label *label307
-   194 label *label308
+   188 label *label301
+   189 label *label302
+   190 label *label303
 -    * op sub :createTerrainMask:r 1 1
-   195 op add *tmp2 :createTerrainMask:y 0
-   196 label *label309
-   197 label *label310
+   191 op add *tmp2 :createTerrainMask:y 0
+   192 label *label304
+   193 op shl *tmp0 :createTerrainMask:result 1
  
-   253 label *label324
-   254 label *label325
-   255 label *label326
+   248 label *label318
+   249 label *label319
+   250 label *label320
 -    * op sub :createTerrainMask:r 0 1
-   256 op add *tmp2 :createTerrainMask:y -1
-   257 label *label327
-   258 label *label328
+   251 op add *tmp2 :createTerrainMask:y -1
+   252 label *label321
+   253 op shl *tmp0 :createTerrainMask:result 1
  
-   314 label *label342
-   315 label *label343
-   316 label *label344
+   308 label *label335
+   309 label *label336
+   310 label *label337
 -    * op sub :createTerrainMask:r -1 1
-   317 op add *tmp2 :createTerrainMask:y -2
-   318 label *label345
-   319 label *label346
+   311 op add *tmp2 :createTerrainMask:y -2
+   312 label *label338
+   313 op shl *tmp0 :createTerrainMask:result 1
  
-   375 label *label360
-   376 label *label361
-   377 label *label362
+   368 label *label352
+   369 label *label353
+   370 label *label354
 -    * op sub :createTerrainMask:r -2 1
-   378 op add *tmp2 :createTerrainMask:y -3
-   379 label *label363
-   380 label *label364
+   371 op add *tmp2 :createTerrainMask:y -3
+   372 label *label355
+   373 op shl *tmp0 :createTerrainMask:result 1
  
-   436 label *label378
-   437 label *label379
-   438 label *label380
+   428 label *label369
+   429 label *label370
+   430 label *label371
 -    * op sub :createTerrainMask:r -3 1
-   439 label *label9
-   440 set :createTerrainMask*retval :createTerrainMask:result
-   441 jump *label6 always
+   431 label *label9
+   432 label *label6
+   433 set :createTerrainMask*finished true
 
-Modifications by Iterated phase, Single Step Elimination, pass 2, iteration 1 (-23 instructions):
+Modifications by Iterated phase, Expression Optimization, pass 4, iteration 1:
  
-   438 label *label380
-   439 label *label9
-   440 set :createTerrainMask*retval :createTerrainMask:result
--    * jump *label6 always
-   441 label *label6
-   442 set :createTerrainMask*finished true
-   443 jump *label5 always
- 
-   480 op add *tmp21 :tileValue.2:result :tileValue.3:result
-   481 op add *tmp22 :tileValue.3:result :tileValue.4:result
-   482 packcolor *tmp6 *tmp19 *tmp20 *tmp21 *tmp22
--    * jump *label15 always
-   483 jump *label22 always
-   484 label *label21
-   485 jump *label23 notEqual :findBestPosition:size 3
- 
-   489 op add *tmp30 :tileValue.2:result :tileValue.3:result
-   490 op add *tmp31 *tmp30 :tileValue.4:result
-   491 packcolor *tmp6 *tmp27 *tmp29 *tmp31 0
--    * jump *label15 always
-   492 jump *label24 always
-   493 label *label23
-   494 op sub :tileValue.5:x :findBestPosition:x 3
- 
-   516 op add *tmp51 *tmp46 :tileValue.6:result
-   517 op min *tmp52 0.09803921568627451 *tmp51
-   518 packcolor *tmp6 *tmp40 *tmp44 *tmp48 *tmp52
--    * jump *label15 always
-   519 label *label24
-   520 label *label22
-   521 label *label15
- 
-   551 op add *tmp70 :tileValue.9:result :tileValue.10:result
-   552 op add *tmp71 :tileValue.10:result :tileValue.11:result
-   553 packcolor *tmp55 *tmp68 *tmp69 *tmp70 *tmp71
--    * jump *label27 always
-   554 jump *label34 always
-   555 label *label33
-   556 jump *label35 notEqual :findBestPosition:size 3
- 
-   560 op add *tmp79 :tileValue.9:result :tileValue.10:result
-   561 op add *tmp80 *tmp79 :tileValue.11:result
-   562 packcolor *tmp55 *tmp76 *tmp78 *tmp80 0
--    * jump *label27 always
-   563 jump *label36 always
-   564 label *label35
-   565 op sub :tileValue.12:x :findBestPosition:x 3
- 
-   587 op add *tmp100 *tmp95 :tileValue.13:result
-   588 op min *tmp101 0.09803921568627451 *tmp100
-   589 packcolor *tmp55 *tmp89 *tmp93 *tmp97 *tmp101
--    * jump *label27 always
-   590 label *label36
-   591 label *label34
-   592 label *label27
- 
-   621 op add *tmp119 :tileValue.16:result :tileValue.17:result
-   622 op add *tmp120 :tileValue.17:result :tileValue.18:result
-   623 packcolor *tmp104 *tmp117 *tmp118 *tmp119 *tmp120
--    * jump *label39 always
-   624 jump *label46 always
-   625 label *label45
-   626 jump *label47 notEqual :findBestPosition:size 3
- 
-   630 op add *tmp128 :tileValue.16:result :tileValue.17:result
-   631 op add *tmp129 *tmp128 :tileValue.18:result
-   632 packcolor *tmp104 *tmp125 *tmp127 *tmp129 0
--    * jump *label39 always
-   633 jump *label48 always
-   634 label *label47
-   635 op sub :tileValue.19:x :findBestPosition:x 3
- 
-   657 op add *tmp149 *tmp144 :tileValue.20:result
-   658 op min *tmp150 0.09803921568627451 *tmp149
-   659 packcolor *tmp104 *tmp138 *tmp142 *tmp146 *tmp150
--    * jump *label39 always
-   660 label *label48
-   661 label *label46
-   662 label *label39
- 
-   692 op add *tmp168 :tileValue.23:result :tileValue.24:result
-   693 op add *tmp169 :tileValue.24:result :tileValue.25:result
-   694 packcolor *tmp153 *tmp166 *tmp167 *tmp168 *tmp169
--    * jump *label51 always
-   695 jump *label58 always
-   696 label *label57
-   697 jump *label59 notEqual :findBestPosition:size 3
- 
-   701 op add *tmp177 :tileValue.23:result :tileValue.24:result
-   702 op add *tmp178 *tmp177 :tileValue.25:result
-   703 packcolor *tmp153 *tmp174 *tmp176 *tmp178 0
--    * jump *label51 always
-   704 jump *label60 always
-   705 label *label59
-   706 op sub :tileValue.26:x :findBestPosition:x 3
- 
-   728 op add *tmp198 *tmp193 :tileValue.27:result
-   729 op min *tmp199 0.09803921568627451 *tmp198
-   730 packcolor *tmp153 *tmp187 *tmp191 *tmp195 *tmp199
--    * jump *label51 always
-   731 label *label60
-   732 label *label58
-   733 label *label51
- 
-   763 op add *tmp217 :tileValue.30:result :tileValue.31:result
-   764 op add *tmp218 :tileValue.31:result :tileValue.32:result
-   765 packcolor *tmp202 *tmp215 *tmp216 *tmp217 *tmp218
--    * jump *label63 always
-   766 jump *label70 always
-   767 label *label69
-   768 jump *label71 notEqual :findBestPosition:size 3
- 
-   772 op add *tmp226 :tileValue.30:result :tileValue.31:result
-   773 op add *tmp227 *tmp226 :tileValue.32:result
-   774 packcolor *tmp202 *tmp223 *tmp225 *tmp227 0
--    * jump *label63 always
-   775 jump *label72 always
-   776 label *label71
-   777 op sub :tileValue.33:x :findBestPosition:x 3
- 
-   799 op add *tmp247 *tmp242 :tileValue.34:result
-   800 op min *tmp248 0.09803921568627451 *tmp247
-   801 packcolor *tmp202 *tmp236 *tmp240 *tmp244 *tmp248
--    * jump *label63 always
-   802 label *label72
-   803 label *label70
-   804 label *label63
- 
-   948 op add *tmp319 :tileValue.37:result :tileValue.38:result
-   949 op add *tmp320 :tileValue.38:result :tileValue.39:result
-   950 packcolor *tmp304 *tmp317 *tmp318 *tmp319 *tmp320
--    * jump *label127 always
-   951 jump *label134 always
-   952 label *label133
-   953 jump *label135 notEqual :findBestPosition:size 3
- 
-   957 op add *tmp328 :tileValue.37:result :tileValue.38:result
-   958 op add *tmp329 *tmp328 :tileValue.39:result
-   959 packcolor *tmp304 *tmp325 *tmp327 *tmp329 0
--    * jump *label127 always
-   960 jump *label136 always
-   961 label *label135
-   962 op sub :tileValue.40:x :findBestPosition:x 3
- 
-   984 op add *tmp349 *tmp344 :tileValue.41:result
-   985 op min *tmp350 0.09803921568627451 *tmp349
-   986 packcolor *tmp304 *tmp338 *tmp342 *tmp346 *tmp350
--    * jump *label127 always
-   987 label *label136
-   988 label *label134
-   989 label *label127
- 
-  1019 op add *tmp368 :tileValue.44:result :tileValue.45:result
-  1020 op add *tmp369 :tileValue.45:result :tileValue.46:result
-  1021 packcolor *tmp353 *tmp366 *tmp367 *tmp368 *tmp369
--    * jump *label139 always
-  1022 jump *label146 always
-  1023 label *label145
-  1024 jump *label147 notEqual :findBestPosition:size 3
- 
-  1028 op add *tmp377 :tileValue.44:result :tileValue.45:result
-  1029 op add *tmp378 *tmp377 :tileValue.46:result
-  1030 packcolor *tmp353 *tmp374 *tmp376 *tmp378 0
--    * jump *label139 always
-  1031 jump *label148 always
-  1032 label *label147
-  1033 op sub :tileValue.47:x :findBestPosition:x 3
- 
-  1055 op add *tmp398 *tmp393 :tileValue.48:result
-  1056 op min *tmp399 0.09803921568627451 *tmp398
-  1057 packcolor *tmp353 *tmp387 *tmp391 *tmp395 *tmp399
--    * jump *label139 always
-  1058 label *label148
-  1059 label *label146
-  1060 label *label139
- 
-  1237 label *label214
-  1238 label *label76
-  1239 op mul :findBestPosition*retval :findBestPosition:best 255
--    * jump *label14 always
-  1240 label *label14
-  1241 set :findBestPosition*finished true
-  1242 jump *label5 always
-
-Modifications by Iterated phase, Expression Optimization, pass 2, iteration 1:
- 
-    18 sensor solid type @solid
-    19 select :isSolid:result notEqual solid false 1 0
-    20 label *label257
+    16 sensor solid type @solid
+    17 select :isSolid:result notEqual solid false 1 0
+    18 label *label254
 -    * op or :createTerrainMask:result 0 :isSolid:result
-+   21 set :createTerrainMask:result :isSolid:result
-    22 label *label258
-    23 op shl *tmp0 :createTerrainMask:result 1
-    24 op add *tmp1 :createTerrainMask:x 2
++   19 set :createTerrainMask:result :isSolid:result
+    20 label *label255
+    21 op shl *tmp0 :createTerrainMask:result 1
+    22 op add *tmp1 :createTerrainMask:x 2
  
-    37 op or :createTerrainMask:result *tmp0 :isSolid:result
-    38 label *label262
-    39 op shl *tmp0 :createTerrainMask:result 1
+    35 op or :createTerrainMask:result *tmp0 :isSolid:result
+    36 label *label259
+    37 op shl *tmp0 :createTerrainMask:result 1
 -    * op add *tmp1 :createTerrainMask:x 0
-+   40 set *tmp1 :createTerrainMask:x
-    41 ucontrol getBlock *tmp1 *tmp2 type building floor
-    42 sensor solid type @solid
-    43 select :isSolid:result notEqual solid false 1 0
- 
-    98 op or :createTerrainMask:result *tmp0 :isSolid:result
-    99 label *label280
-   100 op shl *tmp0 :createTerrainMask:result 1
--    * op add *tmp1 :createTerrainMask:x 0
-+  101 set *tmp1 :createTerrainMask:x
-   102 ucontrol getBlock *tmp1 *tmp2 type building floor
-   103 sensor solid type @solid
-   104 select :isSolid:result notEqual solid false 1 0
- 
-   159 op or :createTerrainMask:result *tmp0 :isSolid:result
-   160 label *label298
-   161 op shl *tmp0 :createTerrainMask:result 1
--    * op add *tmp1 :createTerrainMask:x 0
-+  162 set *tmp1 :createTerrainMask:x
-   163 ucontrol getBlock *tmp1 *tmp2 type building floor
-   164 sensor solid type @solid
-   165 select :isSolid:result notEqual solid false 1 0
- 
-   192 label *label306
-   193 label *label307
-   194 label *label308
--    * op add *tmp2 :createTerrainMask:y 0
-+  195 set *tmp2 :createTerrainMask:y
-   196 label *label309
-   197 label *label310
-   198 op shl *tmp0 :createTerrainMask:result 1
- 
-   220 op or :createTerrainMask:result *tmp0 :isSolid:result
-   221 label *label316
-   222 op shl *tmp0 :createTerrainMask:result 1
--    * op add *tmp1 :createTerrainMask:x 0
-+  223 set *tmp1 :createTerrainMask:x
-   224 ucontrol getBlock *tmp1 *tmp2 type building floor
-   225 sensor solid type @solid
-   226 select :isSolid:result notEqual solid false 1 0
- 
-   281 op or :createTerrainMask:result *tmp0 :isSolid:result
-   282 label *label334
-   283 op shl *tmp0 :createTerrainMask:result 1
--    * op add *tmp1 :createTerrainMask:x 0
-+  284 set *tmp1 :createTerrainMask:x
-   285 ucontrol getBlock *tmp1 *tmp2 type building floor
-   286 sensor solid type @solid
-   287 select :isSolid:result notEqual solid false 1 0
- 
-   342 op or :createTerrainMask:result *tmp0 :isSolid:result
-   343 label *label352
-   344 op shl *tmp0 :createTerrainMask:result 1
--    * op add *tmp1 :createTerrainMask:x 0
-+  345 set *tmp1 :createTerrainMask:x
-   346 ucontrol getBlock *tmp1 *tmp2 type building floor
-   347 sensor solid type @solid
-   348 select :isSolid:result notEqual solid false 1 0
- 
-   403 op or :createTerrainMask:result *tmp0 :isSolid:result
-   404 label *label370
-   405 op shl *tmp0 :createTerrainMask:result 1
--    * op add *tmp1 :createTerrainMask:x 0
-+  406 set *tmp1 :createTerrainMask:x
-   407 ucontrol getBlock *tmp1 *tmp2 type building floor
-   408 sensor solid type @solid
-   409 select :isSolid:result notEqual solid false 1 0
-
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1 (-2 instructions):
- 
-    16 op add *tmp1 :createTerrainMask:x 3
-    17 ucontrol getBlock *tmp1 *tmp2 type building floor
-    18 sensor solid type @solid
--    * select :isSolid:result notEqual solid false 1 0
-+   19 select :createTerrainMask:result notEqual solid false 1 0
-    20 label *label257
--    * set :createTerrainMask:result :isSolid:result
-    21 label *label258
-    22 op shl *tmp0 :createTerrainMask:result 1
-    23 op add *tmp1 :createTerrainMask:x 2
- 
-   431 sensor solid type @solid
-   432 select :isSolid:result notEqual solid false 1 0
-   433 label *label377
--    * op or :createTerrainMask:result *tmp0 :isSolid:result
-+  434 op or :createTerrainMask*retval *tmp0 :isSolid:result
-   435 label *label378
-   436 label *label379
-   437 label *label380
-   438 label *label9
--    * set :createTerrainMask*retval :createTerrainMask:result
-   439 label *label6
-   440 set :createTerrainMask*finished true
-   441 jump *label5 always
-
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 2:
- 
-    37 label *label262
-    38 op shl *tmp0 :createTerrainMask:result 1
-    39 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+   40 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-    41 sensor solid type @solid
-    42 select :isSolid:result notEqual solid false 1 0
-    43 label *label263
- 
-    98 label *label280
-    99 op shl *tmp0 :createTerrainMask:result 1
-   100 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  101 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   102 sensor solid type @solid
-   103 select :isSolid:result notEqual solid false 1 0
-   104 label *label281
- 
-   159 label *label298
-   160 op shl *tmp0 :createTerrainMask:result 1
-   161 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  162 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   163 sensor solid type @solid
-   164 select :isSolid:result notEqual solid false 1 0
-   165 label *label299
- 
-   196 label *label310
-   197 op shl *tmp0 :createTerrainMask:result 1
-   198 op add *tmp1 :createTerrainMask:x 3
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  199 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
-   200 sensor solid type @solid
-   201 select :isSolid:result notEqual solid false 1 0
-   202 label *label311
- 
-   204 label *label312
-   205 op shl *tmp0 :createTerrainMask:result 1
-   206 op add *tmp1 :createTerrainMask:x 2
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  207 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
-   208 sensor solid type @solid
-   209 select :isSolid:result notEqual solid false 1 0
-   210 label *label313
- 
-   212 label *label314
-   213 op shl *tmp0 :createTerrainMask:result 1
-   214 op add *tmp1 :createTerrainMask:x 1
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  215 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
-   216 sensor solid type @solid
-   217 select :isSolid:result notEqual solid false 1 0
-   218 label *label315
- 
-   220 label *label316
-   221 op shl *tmp0 :createTerrainMask:result 1
-   222 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  223 ucontrol getBlock :createTerrainMask:x :createTerrainMask:y type building floor
-   224 sensor solid type @solid
-   225 select :isSolid:result notEqual solid false 1 0
-   226 label *label317
- 
-   228 label *label318
-   229 op shl *tmp0 :createTerrainMask:result 1
-   230 op add *tmp1 :createTerrainMask:x -1
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  231 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
-   232 sensor solid type @solid
-   233 select :isSolid:result notEqual solid false 1 0
-   234 label *label319
- 
-   236 label *label320
-   237 op shl *tmp0 :createTerrainMask:result 1
-   238 op add *tmp1 :createTerrainMask:x -2
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  239 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
-   240 sensor solid type @solid
-   241 select :isSolid:result notEqual solid false 1 0
-   242 label *label321
- 
-   244 label *label322
-   245 op shl *tmp0 :createTerrainMask:result 1
-   246 op add *tmp1 :createTerrainMask:x -3
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  247 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
-   248 sensor solid type @solid
-   249 select :isSolid:result notEqual solid false 1 0
-   250 label *label323
- 
-   281 label *label334
-   282 op shl *tmp0 :createTerrainMask:result 1
-   283 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  284 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   285 sensor solid type @solid
-   286 select :isSolid:result notEqual solid false 1 0
-   287 label *label335
- 
-   342 label *label352
-   343 op shl *tmp0 :createTerrainMask:result 1
-   344 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  345 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   346 sensor solid type @solid
-   347 select :isSolid:result notEqual solid false 1 0
-   348 label *label353
- 
-   403 label *label370
-   404 op shl *tmp0 :createTerrainMask:result 1
-   405 set *tmp1 :createTerrainMask:x
--    * ucontrol getBlock *tmp1 *tmp2 type building floor
-+  406 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   407 sensor solid type @solid
-   408 select :isSolid:result notEqual solid false 1 0
-   409 label *label371
-
-Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 3 (-8 instructions):
- 
-    36 op or :createTerrainMask:result *tmp0 :isSolid:result
-    37 label *label262
-    38 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-    39 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
++   38 set *tmp1 :createTerrainMask:x
+    39 ucontrol getBlock *tmp1 *tmp2 type building floor
     40 sensor solid type @solid
     41 select :isSolid:result notEqual solid false 1 0
  
-    96 op or :createTerrainMask:result *tmp0 :isSolid:result
-    97 label *label280
-    98 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-    99 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+    95 op or :createTerrainMask:result *tmp0 :isSolid:result
+    96 label *label276
+    97 op shl *tmp0 :createTerrainMask:result 1
+-    * op add *tmp1 :createTerrainMask:x 0
++   98 set *tmp1 :createTerrainMask:x
+    99 ucontrol getBlock *tmp1 *tmp2 type building floor
    100 sensor solid type @solid
    101 select :isSolid:result notEqual solid false 1 0
  
-   156 op or :createTerrainMask:result *tmp0 :isSolid:result
-   157 label *label298
-   158 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-   159 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   155 op or :createTerrainMask:result *tmp0 :isSolid:result
+   156 label *label293
+   157 op shl *tmp0 :createTerrainMask:result 1
+-    * op add *tmp1 :createTerrainMask:x 0
++  158 set *tmp1 :createTerrainMask:x
+   159 ucontrol getBlock *tmp1 *tmp2 type building floor
    160 sensor solid type @solid
    161 select :isSolid:result notEqual solid false 1 0
  
-   188 label *label306
-   189 label *label307
-   190 label *label308
--    * set *tmp2 :createTerrainMask:y
-   191 label *label309
-   192 label *label310
+   188 label *label301
+   189 label *label302
+   190 label *label303
+-    * op add *tmp2 :createTerrainMask:y 0
++  191 set *tmp2 :createTerrainMask:y
+   192 label *label304
    193 op shl *tmp0 :createTerrainMask:result 1
+   194 op add *tmp1 :createTerrainMask:x 3
  
    215 op or :createTerrainMask:result *tmp0 :isSolid:result
-   216 label *label316
+   216 label *label310
    217 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-   218 ucontrol getBlock :createTerrainMask:x :createTerrainMask:y type building floor
-   219 sensor solid type @solid
-   220 select :isSolid:result notEqual solid false 1 0
+-    * op add *tmp1 :createTerrainMask:x 0
++  218 set *tmp1 :createTerrainMask:x
+   219 ucontrol getBlock *tmp1 *tmp2 type building floor
+   220 sensor solid type @solid
+   221 select :isSolid:result notEqual solid false 1 0
  
    275 op or :createTerrainMask:result *tmp0 :isSolid:result
-   276 label *label334
+   276 label *label327
    277 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-   278 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   279 sensor solid type @solid
-   280 select :isSolid:result notEqual solid false 1 0
+-    * op add *tmp1 :createTerrainMask:x 0
++  278 set *tmp1 :createTerrainMask:x
+   279 ucontrol getBlock *tmp1 *tmp2 type building floor
+   280 sensor solid type @solid
+   281 select :isSolid:result notEqual solid false 1 0
  
    335 op or :createTerrainMask:result *tmp0 :isSolid:result
-   336 label *label352
+   336 label *label344
    337 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-   338 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
-   339 sensor solid type @solid
-   340 select :isSolid:result notEqual solid false 1 0
+-    * op add *tmp1 :createTerrainMask:x 0
++  338 set *tmp1 :createTerrainMask:x
+   339 ucontrol getBlock *tmp1 *tmp2 type building floor
+   340 sensor solid type @solid
+   341 select :isSolid:result notEqual solid false 1 0
  
    395 op or :createTerrainMask:result *tmp0 :isSolid:result
-   396 label *label370
+   396 label *label361
    397 op shl *tmp0 :createTerrainMask:result 1
--    * set *tmp1 :createTerrainMask:x
-   398 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+-    * op add *tmp1 :createTerrainMask:x 0
++  398 set *tmp1 :createTerrainMask:x
+   399 ucontrol getBlock *tmp1 *tmp2 type building floor
+   400 sensor solid type @solid
+   401 select :isSolid:result notEqual solid false 1 0
+
+Modifications by Iterated phase, Data Flow Optimization, pass 4, iteration 1 (-1 instructions):
+ 
+    14 op add *tmp1 :createTerrainMask:x 3
+    15 ucontrol getBlock *tmp1 *tmp2 type building floor
+    16 sensor solid type @solid
+-    * select :isSolid:result notEqual solid false 1 0
++   17 select :createTerrainMask:result notEqual solid false 1 0
+    18 label *label254
+-    * set :createTerrainMask:result :isSolid:result
+    19 label *label255
+    20 op shl *tmp0 :createTerrainMask:result 1
+    21 op add *tmp1 :createTerrainMask:x 2
+
+Modifications by Iterated phase, Data Flow Optimization, pass 4, iteration 2:
+ 
+    35 label *label259
+    36 op shl *tmp0 :createTerrainMask:result 1
+    37 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++   38 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+    39 sensor solid type @solid
+    40 select :isSolid:result notEqual solid false 1 0
+    41 label *label260
+ 
+    95 label *label276
+    96 op shl *tmp0 :createTerrainMask:result 1
+    97 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++   98 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+    99 sensor solid type @solid
+   100 select :isSolid:result notEqual solid false 1 0
+   101 label *label277
+ 
+   155 label *label293
+   156 op shl *tmp0 :createTerrainMask:result 1
+   157 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  158 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   159 sensor solid type @solid
+   160 select :isSolid:result notEqual solid false 1 0
+   161 label *label294
+ 
+   191 label *label304
+   192 op shl *tmp0 :createTerrainMask:result 1
+   193 op add *tmp1 :createTerrainMask:x 3
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  194 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
+   195 sensor solid type @solid
+   196 select :isSolid:result notEqual solid false 1 0
+   197 label *label305
+ 
+   199 label *label306
+   200 op shl *tmp0 :createTerrainMask:result 1
+   201 op add *tmp1 :createTerrainMask:x 2
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  202 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
+   203 sensor solid type @solid
+   204 select :isSolid:result notEqual solid false 1 0
+   205 label *label307
+ 
+   207 label *label308
+   208 op shl *tmp0 :createTerrainMask:result 1
+   209 op add *tmp1 :createTerrainMask:x 1
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  210 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
+   211 sensor solid type @solid
+   212 select :isSolid:result notEqual solid false 1 0
+   213 label *label309
+ 
+   215 label *label310
+   216 op shl *tmp0 :createTerrainMask:result 1
+   217 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  218 ucontrol getBlock :createTerrainMask:x :createTerrainMask:y type building floor
+   219 sensor solid type @solid
+   220 select :isSolid:result notEqual solid false 1 0
+   221 label *label311
+ 
+   223 label *label312
+   224 op shl *tmp0 :createTerrainMask:result 1
+   225 op add *tmp1 :createTerrainMask:x -1
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  226 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
+   227 sensor solid type @solid
+   228 select :isSolid:result notEqual solid false 1 0
+   229 label *label313
+ 
+   231 label *label314
+   232 op shl *tmp0 :createTerrainMask:result 1
+   233 op add *tmp1 :createTerrainMask:x -2
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  234 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
+   235 sensor solid type @solid
+   236 select :isSolid:result notEqual solid false 1 0
+   237 label *label315
+ 
+   239 label *label316
+   240 op shl *tmp0 :createTerrainMask:result 1
+   241 op add *tmp1 :createTerrainMask:x -3
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  242 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
+   243 sensor solid type @solid
+   244 select :isSolid:result notEqual solid false 1 0
+   245 label *label317
+ 
+   275 label *label327
+   276 op shl *tmp0 :createTerrainMask:result 1
+   277 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  278 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   279 sensor solid type @solid
+   280 select :isSolid:result notEqual solid false 1 0
+   281 label *label328
+ 
+   335 label *label344
+   336 op shl *tmp0 :createTerrainMask:result 1
+   337 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  338 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   339 sensor solid type @solid
+   340 select :isSolid:result notEqual solid false 1 0
+   341 label *label345
+ 
+   395 label *label361
+   396 op shl *tmp0 :createTerrainMask:result 1
+   397 set *tmp1 :createTerrainMask:x
+-    * ucontrol getBlock *tmp1 *tmp2 type building floor
++  398 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
    399 sensor solid type @solid
    400 select :isSolid:result notEqual solid false 1 0
+   401 label *label362
 
-Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 (-3 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 4, iteration 3 (-8 instructions):
+ 
+    34 op or :createTerrainMask:result *tmp0 :isSolid:result
+    35 label *label259
+    36 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+    37 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+    38 sensor solid type @solid
+    39 select :isSolid:result notEqual solid false 1 0
+ 
+    93 op or :createTerrainMask:result *tmp0 :isSolid:result
+    94 label *label276
+    95 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+    96 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+    97 sensor solid type @solid
+    98 select :isSolid:result notEqual solid false 1 0
+ 
+   152 op or :createTerrainMask:result *tmp0 :isSolid:result
+   153 label *label293
+   154 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+   155 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   156 sensor solid type @solid
+   157 select :isSolid:result notEqual solid false 1 0
+ 
+   184 label *label301
+   185 label *label302
+   186 label *label303
+-    * set *tmp2 :createTerrainMask:y
+   187 label *label304
+   188 op shl *tmp0 :createTerrainMask:result 1
+   189 op add *tmp1 :createTerrainMask:x 3
+ 
+   210 op or :createTerrainMask:result *tmp0 :isSolid:result
+   211 label *label310
+   212 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+   213 ucontrol getBlock :createTerrainMask:x :createTerrainMask:y type building floor
+   214 sensor solid type @solid
+   215 select :isSolid:result notEqual solid false 1 0
+ 
+   269 op or :createTerrainMask:result *tmp0 :isSolid:result
+   270 label *label327
+   271 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+   272 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   273 sensor solid type @solid
+   274 select :isSolid:result notEqual solid false 1 0
+ 
+   328 op or :createTerrainMask:result *tmp0 :isSolid:result
+   329 label *label344
+   330 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+   331 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   332 sensor solid type @solid
+   333 select :isSolid:result notEqual solid false 1 0
+ 
+   387 op or :createTerrainMask:result *tmp0 :isSolid:result
+   388 label *label361
+   389 op shl *tmp0 :createTerrainMask:result 1
+-    * set *tmp1 :createTerrainMask:x
+   390 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
+   391 sensor solid type @solid
+   392 select :isSolid:result notEqual solid false 1 0
+
+Modifications by Jumps phase, Unreachable Code Elimination, pass 6, iteration 1 (-3 instructions):
  
      5 label *label5
      6 wait 1e12
@@ -7686,425 +7707,417 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
 -    * end
      8 label *label0
      9 ubind :createTerrainMask:unit
--    * label *label253
--    * label *label254
+-    * label *label252
     10 op add *tmp2 :createTerrainMask:y 3
--    * label *label255
--    * label *label256
+-    * label *label253
     11 op add *tmp1 :createTerrainMask:x 3
     12 ucontrol getBlock *tmp1 *tmp2 type building floor
     13 sensor solid type @solid
     14 select :createTerrainMask:result notEqual solid false 1 0
--    * label *label257
--    * label *label258
+-    * label *label254
+-    * label *label255
     15 op shl *tmp0 :createTerrainMask:result 1
     16 op add *tmp1 :createTerrainMask:x 2
     17 ucontrol getBlock *tmp1 *tmp2 type building floor
     18 sensor solid type @solid
     19 select :isSolid:result notEqual solid false 1 0
--    * label *label259
+-    * label *label256
     20 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label260
+-    * label *label257
     21 op shl *tmp0 :createTerrainMask:result 1
     22 op add *tmp1 :createTerrainMask:x 1
     23 ucontrol getBlock *tmp1 *tmp2 type building floor
     24 sensor solid type @solid
     25 select :isSolid:result notEqual solid false 1 0
--    * label *label261
+-    * label *label258
     26 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label262
+-    * label *label259
     27 op shl *tmp0 :createTerrainMask:result 1
     28 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
     29 sensor solid type @solid
     30 select :isSolid:result notEqual solid false 1 0
--    * label *label263
+-    * label *label260
     31 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label264
+-    * label *label261
     32 op shl *tmp0 :createTerrainMask:result 1
     33 op add *tmp1 :createTerrainMask:x -1
     34 ucontrol getBlock *tmp1 *tmp2 type building floor
     35 sensor solid type @solid
     36 select :isSolid:result notEqual solid false 1 0
--    * label *label265
+-    * label *label262
     37 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label266
+-    * label *label263
     38 op shl *tmp0 :createTerrainMask:result 1
     39 op add *tmp1 :createTerrainMask:x -2
     40 ucontrol getBlock *tmp1 *tmp2 type building floor
     41 sensor solid type @solid
     42 select :isSolid:result notEqual solid false 1 0
--    * label *label267
+-    * label *label264
     43 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label268
+-    * label *label265
     44 op shl *tmp0 :createTerrainMask:result 1
     45 op add *tmp1 :createTerrainMask:x -3
     46 ucontrol getBlock *tmp1 *tmp2 type building floor
     47 sensor solid type @solid
     48 select :isSolid:result notEqual solid false 1 0
--    * label *label269
+-    * label *label266
     49 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label270
--    * label *label271
--    * label *label272
+-    * label *label267
+-    * label *label268
+-    * label *label269
     50 op add *tmp2 :createTerrainMask:y 2
--    * label *label273
--    * label *label274
+-    * label *label270
     51 op shl *tmp0 :createTerrainMask:result 1
     52 op add *tmp1 :createTerrainMask:x 3
     53 ucontrol getBlock *tmp1 *tmp2 type building floor
     54 sensor solid type @solid
     55 select :isSolid:result notEqual solid false 1 0
--    * label *label275
+-    * label *label271
     56 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label276
+-    * label *label272
     57 op shl *tmp0 :createTerrainMask:result 1
     58 op add *tmp1 :createTerrainMask:x 2
     59 ucontrol getBlock *tmp1 *tmp2 type building floor
     60 sensor solid type @solid
     61 select :isSolid:result notEqual solid false 1 0
--    * label *label277
+-    * label *label273
     62 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label278
+-    * label *label274
     63 op shl *tmp0 :createTerrainMask:result 1
     64 op add *tmp1 :createTerrainMask:x 1
     65 ucontrol getBlock *tmp1 *tmp2 type building floor
     66 sensor solid type @solid
     67 select :isSolid:result notEqual solid false 1 0
--    * label *label279
+-    * label *label275
     68 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label280
+-    * label *label276
     69 op shl *tmp0 :createTerrainMask:result 1
     70 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
     71 sensor solid type @solid
     72 select :isSolid:result notEqual solid false 1 0
--    * label *label281
+-    * label *label277
     73 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label282
+-    * label *label278
     74 op shl *tmp0 :createTerrainMask:result 1
     75 op add *tmp1 :createTerrainMask:x -1
     76 ucontrol getBlock *tmp1 *tmp2 type building floor
     77 sensor solid type @solid
     78 select :isSolid:result notEqual solid false 1 0
--    * label *label283
+-    * label *label279
     79 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label284
+-    * label *label280
     80 op shl *tmp0 :createTerrainMask:result 1
     81 op add *tmp1 :createTerrainMask:x -2
     82 ucontrol getBlock *tmp1 *tmp2 type building floor
     83 sensor solid type @solid
     84 select :isSolid:result notEqual solid false 1 0
--    * label *label285
+-    * label *label281
     85 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label286
+-    * label *label282
     86 op shl *tmp0 :createTerrainMask:result 1
     87 op add *tmp1 :createTerrainMask:x -3
     88 ucontrol getBlock *tmp1 *tmp2 type building floor
     89 sensor solid type @solid
     90 select :isSolid:result notEqual solid false 1 0
--    * label *label287
+-    * label *label283
     91 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label288
--    * label *label289
--    * label *label290
+-    * label *label284
+-    * label *label285
+-    * label *label286
     92 op add *tmp2 :createTerrainMask:y 1
--    * label *label291
--    * label *label292
+-    * label *label287
     93 op shl *tmp0 :createTerrainMask:result 1
     94 op add *tmp1 :createTerrainMask:x 3
     95 ucontrol getBlock *tmp1 *tmp2 type building floor
     96 sensor solid type @solid
     97 select :isSolid:result notEqual solid false 1 0
--    * label *label293
+-    * label *label288
     98 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label294
+-    * label *label289
     99 op shl *tmp0 :createTerrainMask:result 1
    100 op add *tmp1 :createTerrainMask:x 2
    101 ucontrol getBlock *tmp1 *tmp2 type building floor
    102 sensor solid type @solid
    103 select :isSolid:result notEqual solid false 1 0
--    * label *label295
+-    * label *label290
    104 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label296
+-    * label *label291
    105 op shl *tmp0 :createTerrainMask:result 1
    106 op add *tmp1 :createTerrainMask:x 1
    107 ucontrol getBlock *tmp1 *tmp2 type building floor
    108 sensor solid type @solid
    109 select :isSolid:result notEqual solid false 1 0
--    * label *label297
+-    * label *label292
    110 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label298
+-    * label *label293
    111 op shl *tmp0 :createTerrainMask:result 1
    112 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
    113 sensor solid type @solid
    114 select :isSolid:result notEqual solid false 1 0
--    * label *label299
+-    * label *label294
    115 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label300
+-    * label *label295
    116 op shl *tmp0 :createTerrainMask:result 1
    117 op add *tmp1 :createTerrainMask:x -1
    118 ucontrol getBlock *tmp1 *tmp2 type building floor
    119 sensor solid type @solid
    120 select :isSolid:result notEqual solid false 1 0
--    * label *label301
+-    * label *label296
    121 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label302
+-    * label *label297
    122 op shl *tmp0 :createTerrainMask:result 1
    123 op add *tmp1 :createTerrainMask:x -2
    124 ucontrol getBlock *tmp1 *tmp2 type building floor
    125 sensor solid type @solid
    126 select :isSolid:result notEqual solid false 1 0
--    * label *label303
+-    * label *label298
    127 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label304
+-    * label *label299
    128 op shl *tmp0 :createTerrainMask:result 1
    129 op add *tmp1 :createTerrainMask:x -3
    130 ucontrol getBlock *tmp1 *tmp2 type building floor
    131 sensor solid type @solid
    132 select :isSolid:result notEqual solid false 1 0
--    * label *label305
+-    * label *label300
    133 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label306
--    * label *label307
--    * label *label308
--    * label *label309
--    * label *label310
+-    * label *label301
+-    * label *label302
+-    * label *label303
+-    * label *label304
    134 op shl *tmp0 :createTerrainMask:result 1
    135 op add *tmp1 :createTerrainMask:x 3
    136 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
    137 sensor solid type @solid
    138 select :isSolid:result notEqual solid false 1 0
--    * label *label311
+-    * label *label305
    139 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label312
+-    * label *label306
    140 op shl *tmp0 :createTerrainMask:result 1
    141 op add *tmp1 :createTerrainMask:x 2
    142 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
    143 sensor solid type @solid
    144 select :isSolid:result notEqual solid false 1 0
--    * label *label313
+-    * label *label307
    145 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label314
+-    * label *label308
    146 op shl *tmp0 :createTerrainMask:result 1
    147 op add *tmp1 :createTerrainMask:x 1
    148 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
    149 sensor solid type @solid
    150 select :isSolid:result notEqual solid false 1 0
--    * label *label315
+-    * label *label309
    151 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label316
+-    * label *label310
    152 op shl *tmp0 :createTerrainMask:result 1
    153 ucontrol getBlock :createTerrainMask:x :createTerrainMask:y type building floor
    154 sensor solid type @solid
    155 select :isSolid:result notEqual solid false 1 0
--    * label *label317
+-    * label *label311
    156 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label318
+-    * label *label312
    157 op shl *tmp0 :createTerrainMask:result 1
    158 op add *tmp1 :createTerrainMask:x -1
    159 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
    160 sensor solid type @solid
    161 select :isSolid:result notEqual solid false 1 0
--    * label *label319
+-    * label *label313
    162 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label320
+-    * label *label314
    163 op shl *tmp0 :createTerrainMask:result 1
    164 op add *tmp1 :createTerrainMask:x -2
    165 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
    166 sensor solid type @solid
    167 select :isSolid:result notEqual solid false 1 0
--    * label *label321
+-    * label *label315
    168 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label322
+-    * label *label316
    169 op shl *tmp0 :createTerrainMask:result 1
    170 op add *tmp1 :createTerrainMask:x -3
    171 ucontrol getBlock *tmp1 :createTerrainMask:y type building floor
    172 sensor solid type @solid
    173 select :isSolid:result notEqual solid false 1 0
--    * label *label323
+-    * label *label317
    174 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label324
--    * label *label325
--    * label *label326
+-    * label *label318
+-    * label *label319
+-    * label *label320
    175 op add *tmp2 :createTerrainMask:y -1
--    * label *label327
--    * label *label328
+-    * label *label321
    176 op shl *tmp0 :createTerrainMask:result 1
    177 op add *tmp1 :createTerrainMask:x 3
    178 ucontrol getBlock *tmp1 *tmp2 type building floor
    179 sensor solid type @solid
    180 select :isSolid:result notEqual solid false 1 0
--    * label *label329
+-    * label *label322
    181 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label330
+-    * label *label323
    182 op shl *tmp0 :createTerrainMask:result 1
    183 op add *tmp1 :createTerrainMask:x 2
    184 ucontrol getBlock *tmp1 *tmp2 type building floor
    185 sensor solid type @solid
    186 select :isSolid:result notEqual solid false 1 0
--    * label *label331
+-    * label *label324
    187 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label332
+-    * label *label325
    188 op shl *tmp0 :createTerrainMask:result 1
    189 op add *tmp1 :createTerrainMask:x 1
    190 ucontrol getBlock *tmp1 *tmp2 type building floor
    191 sensor solid type @solid
    192 select :isSolid:result notEqual solid false 1 0
--    * label *label333
+-    * label *label326
    193 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label334
+-    * label *label327
    194 op shl *tmp0 :createTerrainMask:result 1
    195 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
    196 sensor solid type @solid
    197 select :isSolid:result notEqual solid false 1 0
--    * label *label335
+-    * label *label328
    198 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label336
+-    * label *label329
    199 op shl *tmp0 :createTerrainMask:result 1
    200 op add *tmp1 :createTerrainMask:x -1
    201 ucontrol getBlock *tmp1 *tmp2 type building floor
    202 sensor solid type @solid
    203 select :isSolid:result notEqual solid false 1 0
--    * label *label337
+-    * label *label330
    204 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label338
+-    * label *label331
    205 op shl *tmp0 :createTerrainMask:result 1
    206 op add *tmp1 :createTerrainMask:x -2
    207 ucontrol getBlock *tmp1 *tmp2 type building floor
    208 sensor solid type @solid
    209 select :isSolid:result notEqual solid false 1 0
--    * label *label339
+-    * label *label332
    210 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label340
+-    * label *label333
    211 op shl *tmp0 :createTerrainMask:result 1
    212 op add *tmp1 :createTerrainMask:x -3
    213 ucontrol getBlock *tmp1 *tmp2 type building floor
    214 sensor solid type @solid
    215 select :isSolid:result notEqual solid false 1 0
--    * label *label341
+-    * label *label334
    216 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label342
--    * label *label343
--    * label *label344
+-    * label *label335
+-    * label *label336
+-    * label *label337
    217 op add *tmp2 :createTerrainMask:y -2
--    * label *label345
--    * label *label346
+-    * label *label338
    218 op shl *tmp0 :createTerrainMask:result 1
    219 op add *tmp1 :createTerrainMask:x 3
    220 ucontrol getBlock *tmp1 *tmp2 type building floor
    221 sensor solid type @solid
    222 select :isSolid:result notEqual solid false 1 0
--    * label *label347
+-    * label *label339
    223 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label348
+-    * label *label340
    224 op shl *tmp0 :createTerrainMask:result 1
    225 op add *tmp1 :createTerrainMask:x 2
    226 ucontrol getBlock *tmp1 *tmp2 type building floor
    227 sensor solid type @solid
    228 select :isSolid:result notEqual solid false 1 0
--    * label *label349
+-    * label *label341
    229 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label350
+-    * label *label342
    230 op shl *tmp0 :createTerrainMask:result 1
    231 op add *tmp1 :createTerrainMask:x 1
    232 ucontrol getBlock *tmp1 *tmp2 type building floor
    233 sensor solid type @solid
    234 select :isSolid:result notEqual solid false 1 0
--    * label *label351
+-    * label *label343
    235 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label352
+-    * label *label344
    236 op shl *tmp0 :createTerrainMask:result 1
    237 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
    238 sensor solid type @solid
    239 select :isSolid:result notEqual solid false 1 0
--    * label *label353
+-    * label *label345
    240 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label354
+-    * label *label346
    241 op shl *tmp0 :createTerrainMask:result 1
    242 op add *tmp1 :createTerrainMask:x -1
    243 ucontrol getBlock *tmp1 *tmp2 type building floor
    244 sensor solid type @solid
    245 select :isSolid:result notEqual solid false 1 0
--    * label *label355
+-    * label *label347
    246 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label356
+-    * label *label348
    247 op shl *tmp0 :createTerrainMask:result 1
    248 op add *tmp1 :createTerrainMask:x -2
    249 ucontrol getBlock *tmp1 *tmp2 type building floor
    250 sensor solid type @solid
    251 select :isSolid:result notEqual solid false 1 0
--    * label *label357
+-    * label *label349
    252 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label358
+-    * label *label350
    253 op shl *tmp0 :createTerrainMask:result 1
    254 op add *tmp1 :createTerrainMask:x -3
    255 ucontrol getBlock *tmp1 *tmp2 type building floor
    256 sensor solid type @solid
    257 select :isSolid:result notEqual solid false 1 0
--    * label *label359
+-    * label *label351
    258 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label360
--    * label *label361
--    * label *label362
+-    * label *label352
+-    * label *label353
+-    * label *label354
    259 op add *tmp2 :createTerrainMask:y -3
--    * label *label363
--    * label *label364
+-    * label *label355
    260 op shl *tmp0 :createTerrainMask:result 1
    261 op add *tmp1 :createTerrainMask:x 3
    262 ucontrol getBlock *tmp1 *tmp2 type building floor
    263 sensor solid type @solid
    264 select :isSolid:result notEqual solid false 1 0
--    * label *label365
+-    * label *label356
    265 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label366
+-    * label *label357
    266 op shl *tmp0 :createTerrainMask:result 1
    267 op add *tmp1 :createTerrainMask:x 2
    268 ucontrol getBlock *tmp1 *tmp2 type building floor
    269 sensor solid type @solid
    270 select :isSolid:result notEqual solid false 1 0
--    * label *label367
+-    * label *label358
    271 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label368
+-    * label *label359
    272 op shl *tmp0 :createTerrainMask:result 1
    273 op add *tmp1 :createTerrainMask:x 1
    274 ucontrol getBlock *tmp1 *tmp2 type building floor
    275 sensor solid type @solid
    276 select :isSolid:result notEqual solid false 1 0
--    * label *label369
+-    * label *label360
    277 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label370
+-    * label *label361
    278 op shl *tmp0 :createTerrainMask:result 1
    279 ucontrol getBlock :createTerrainMask:x *tmp2 type building floor
    280 sensor solid type @solid
    281 select :isSolid:result notEqual solid false 1 0
--    * label *label371
+-    * label *label362
    282 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label372
+-    * label *label363
    283 op shl *tmp0 :createTerrainMask:result 1
    284 op add *tmp1 :createTerrainMask:x -1
    285 ucontrol getBlock *tmp1 *tmp2 type building floor
    286 sensor solid type @solid
    287 select :isSolid:result notEqual solid false 1 0
--    * label *label373
+-    * label *label364
    288 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label374
+-    * label *label365
    289 op shl *tmp0 :createTerrainMask:result 1
    290 op add *tmp1 :createTerrainMask:x -2
    291 ucontrol getBlock *tmp1 *tmp2 type building floor
    292 sensor solid type @solid
    293 select :isSolid:result notEqual solid false 1 0
--    * label *label375
+-    * label *label366
    294 op or :createTerrainMask:result *tmp0 :isSolid:result
--    * label *label376
+-    * label *label367
    295 op shl *tmp0 :createTerrainMask:result 1
    296 op add *tmp1 :createTerrainMask:x -3
    297 ucontrol getBlock *tmp1 *tmp2 type building floor
    298 sensor solid type @solid
    299 select :isSolid:result notEqual solid false 1 0
--    * label *label377
+-    * label *label368
    300 op or :createTerrainMask*retval *tmp0 :isSolid:result
--    * label *label378
--    * label *label379
--    * label *label380
+-    * label *label369
+-    * label *label370
+-    * label *label371
 -    * label *label9
 -    * label *label6
    301 set :createTerrainMask*finished true
@@ -8723,7 +8736,7 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 4, iteration 1 
    961 jump *label5 always
 -    * end
 
-Modifications by Jumps phase, Jump Threading, pass 4, iteration 1:
+Modifications by Jumps phase, Jump Threading, pass 6, iteration 1:
  
    688 set :findBestPosition:best :updateRowPositionsOdd.2:col2
    689 label *label118
@@ -9741,13 +9754,11 @@ Code size and number of instantiations by function:
      4     4x      1,0  inline void updateRowPositionsEven(in dy, in rowSum, bestX, bestY, best)
      3     3x      1,0  inline void updateRowPositionsOdd(in dy, in rowSum, bestX, bestY, best)
 
-Performance: parsed in 236 ms, compiled in 298 ms, optimized in 1,111 ms, run in 18 ms.
-Error connecting to Mlog Watcher: Connection refused: connect
-  - make sure Mindustry with active Mlog Watcher mod is running
-  - verify Mlog Watcher listens on port 9992
+Performance: parsed in 248 ms, compiled in 290 ms, optimized in 1,242 ms, run in 106 ms.
 
-Program output (3 steps):
+Compiled mlog code was sent to Mlog Watcher.
+  Mlog Watcher: no processor selected.
+  (The target processor must be selected in Mindustry to receive the code.)
+
+Program output (4 steps):
 The program didn't generate any output.
-Execution exception at instruction 4: wait 1e12:
-Instruction not supported by Mindcode emulator.
-(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)
