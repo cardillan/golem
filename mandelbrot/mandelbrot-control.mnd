@@ -3,6 +3,8 @@
 #set instruction-limit = 1500;
 require "mandelbrot-common.mnd";
 
+// As the schematic takes a long time to build, this processor may be built and running before all these blocks
+// are created. 'guarded' here ensures the program will wait for all the blocks to be built.
 guarded linked message1, message2, message3, display1,
     memory      = bank1,
     buttonUp    = switch1,
@@ -53,11 +55,18 @@ begin
 
     var updateBookmarks = true;
     var print = true;
+    var operations = 0;
 
     // Initialization complete
     START = 1;
 
     while true do
+        if operations > display1.@operations then
+            // The display has been reset (map reload?), force recomputing
+            CHANGE = true;
+        end;
+        operations = display1.@operations;
+
         if print then printInfo(); print = false; end;
 
         handleMove(buttonUp,    0,  1, 1);

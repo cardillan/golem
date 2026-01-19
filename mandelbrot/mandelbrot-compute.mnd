@@ -4,7 +4,7 @@
 require blocks;
 require "mandelbrot-common.mnd";
 
-const BATCH_SIZE = 4;
+const DISPLAY_BUFFER = 1024;
 
 var display, memory;
 allocate heap in memory[VARIABLES ... BOOKMARKS];
@@ -31,6 +31,7 @@ const ONE_TO_LOG = 1 / log(2);
 const QUARTER_TO_LOG = 0.25 / log(2);
 
 var start = 0, stop;
+var lastColor;
 
 // Processor graphics buffer usage
 noinit var localBuffer;
@@ -43,15 +44,16 @@ begin
 
 MainLoop:
     while true do
-        localBuffer = 0;
-        drawflush(null);
-
         // Waiting for a start signal
         do wait(0); while start == $START;
 
         // New computation starts here
         start = $START;
         stop = $STOP;
+        lastColor = -1;
+
+        localBuffer = 0;
+        drawflush(null);
 
         // Load positional information
         ZOOM     = $ZOOM;
@@ -93,12 +95,12 @@ MainLoop:
                 end;
             end;
 
-            flushLocalBuffer();
+            emptyLocalBuffer();
         end;
     end;
 end;
 
-def compute(x, y)
+inline def compute(x, y)
     var zx = x / ZOOM + OFFSET_X;
     var zy = y / ZOOM + OFFSET_Y;
     var cx, cy;
@@ -143,7 +145,7 @@ def compute(x, y)
     return i;
 end;
 
-noinline void drawPixel(x, y, iterations)
+inline void drawPixel(x, y, iterations)
     var color;
     if SMOOTH then
         if iterations == MAX_DEPTH then
@@ -180,31 +182,39 @@ noinline void drawPixel(x, y, iterations)
     if localBuffer >= 254 then
         // The local buffer is full
         // This waits until local buffer empties
-        flushLocalBuffer();
+        emptyLocalBuffer();
     end;
 
-    col(color);
-    rect(x, y, 1, 1);
-    localBuffer += 2;
+    if localBuffer > 0 and color === lastColor then
+        // When the local buffer is nonzero, we can skip setting the color. We know the color was set when
+        // the buffer was zero
+        rect(x, y, 1, 1);
+        localBuffer++;
+    else
+        col(color);
+        rect(x, y, 1, 1);
+        lastColor = color;
+        localBuffer += 2;
+    end;
 
-    var disabled = 1 - display.enabled;
-    var usage = display.@bufferSize + disabled * 900;
-    if usage < 100 then
-        drawflush(display);
-        localBuffer = 0;
-    elsif usage < 1800 / localBuffer then
-        drawflush(display);
-        localBuffer = 0;
+    flushLocalBuffer();
+end;
+
+inline void flushLocalBuffer()
+    // By disabling the display, we can emulate the display not being redrawn due to being off-screen
+    // Atomic makes it wait between retries, so there isn't busy waiting
+    atomic
+        if display.@enabled then
+            if localBuffer < DISPLAY_BUFFER - display.@bufferSize then
+                drawflush(display);
+                localBuffer = 0;
+            end;
+        end;
     end;
 end;
 
-void flushLocalBuffer()
-    do while !display.@enabled;
-    if localBuffer > 4 then
-        do
-            wait(0);
-        while display.@bufferSize > 250;
+inline void emptyLocalBuffer()
+    while localBuffer > 0 do
+        flushLocalBuffer();
     end;
-    drawflush(display);
-    localBuffer = 0;
 end;
