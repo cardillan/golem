@@ -67,18 +67,16 @@ MainLoop:
         ALL_PASS_COLORING = $ALL_PASS_COLORING;
         var leaderLimit = $SHOW_LEADER ? 1 - ALL_PASS_COLORING : 99;
 
-        // Start taking four batches at a time for better visuals
-        var multiple = 4;
-
         while true do
             // Obtain a batch (or batches)
-            var batch;
+            var batch, multiple;
             atomic
                 if stop != $STOP then
                     continue MainLoop;      // Break is signalled
                 end;
                 batch = $LINE;
-                $LINE += multiple;
+                multiple = batch >= TOTAL_BATCHES / 2 ? 1 : 4;
+                $LINE = batch + multiple;
             end;
 
             if batch >= TOTAL_BATCHES then
@@ -110,9 +108,6 @@ MainLoop:
                     $ITERATIONS += iterations;
                  end;
             end;
-
-            // Switch to single batch for the last pass
-            if batch >= TOTAL_BATCHES * 0.475 then multiple = 1; end;
         end;
 
         flush();

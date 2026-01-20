@@ -30,9 +30,12 @@ guarded linked message1, message2, message3,
     buttonLoad  = switch8,
     buttonSave  = switch9;
 
+const bookmarkButtons = 13;
+const paletteButtons = 5;
+
 // The length must be one longer then the number of buttons, as index 0 is unused
-var buttonBookmark[14];
-var buttonPalette[6];
+var buttonBookmark[bookmarkButtons + 1];
+var buttonPalette[paletteButtons + 1];
 var links = 0;
 
 allocate heap in memory[VARIABLES ... BOOKMARKS];
@@ -166,6 +169,7 @@ begin
             print = true;
         end;
 
+        println("Links: ", links);
         print("Loop time: ", round(@time - start));
         printflush(message4);
     end;
@@ -176,8 +180,7 @@ end;
 
 inline void printInfo()
     println("Mandelbrot Mania! v3.0");
-    println($"Completed: $PERCENT% in ${TIME}s");
-    //println($"($COMPLETED out of $TOTAL)");
+    println($"Completed $PERCENT% in ${TIME}s");
     if JULIA then
         println("Julia set of Mandelbrot");
         println("fractal at coordinates");
@@ -262,7 +265,7 @@ inline void saveBookmark(position, bookmark)
 end;
 
 inline void handleTopRowButtons(in out updateBookmarks)
-    for var index in 1 ... length(buttonBookmark) do
+    for var index in 1 .. bookmarkButtons do
         var switch = buttonBookmark[index];
         if index == bookmark then
             switch.enabled = true;
@@ -277,7 +280,7 @@ inline void handleTopRowButtons(in out updateBookmarks)
         end;
     end;
 
-    for var index in 1 ... length(buttonPalette) do
+    for var index in 1 .. paletteButtons do
         var switch = buttonPalette[index];
         if index == PALETTE then
             switch.enabled = true;
@@ -304,17 +307,19 @@ inline void initialize()
     createPalette();
     initializeBookmarks();
 
-    for var n in 0 ... @links do
-        var switch = getlink(n);
-        if switch.@type == @switch and switch.@y == bookmark_y then
-            var button_x = switch.@x;
-            if button_x >= palette_x then
-                buttonPalette[button_x - palette_x] = switch;
-            else
-                buttonBookmark[button_x - bookmark_x] = switch;
+    do
+        for var n in 0 ... @links do
+            var switch = getlink(n);
+            if switch.@type == @switch and switch.@y == bookmark_y then
+                var button_x = switch.@x;
+                if button_x >= palette_x then
+                    buttonPalette[button_x - palette_x] = switch;
+                else
+                    buttonBookmark[button_x - bookmark_x] = switch;
+                end;
             end;
         end;
-    end;
+    while !buttonBookmark[bookmarkButtons] or !buttonPalette[paletteButtons];
 
     STOP = 1;
     X = -0.8;
