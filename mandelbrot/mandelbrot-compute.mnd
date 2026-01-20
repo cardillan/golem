@@ -1,10 +1,9 @@
 #set syntax = strict;
 #set target = 8H;
 
-require blocks;
 require "mandelbrot-common.mnd";
 
-var display, memory;
+volatile noinit var display, memory;
 allocate heap in memory[VARIABLES ... BOOKMARKS];
 
 external $LINE;         // Current batch
@@ -39,10 +38,7 @@ var lastColor;
 var localBuffer;
 
 begin
-    findLinkedBlocks("Mandelbrot Generator", null,
-        @large-logic-display,   "Display",  out display,    true,
-        @memory-bank,           "Memory",   out memory,     true
-    );
+    do while display == null || memory == null;
 
 MainLoop:
     while true do

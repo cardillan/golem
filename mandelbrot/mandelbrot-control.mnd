@@ -17,7 +17,8 @@ param CLEAR_DISPLAY = true;
 
 // As the schematic takes a long time to build, this processor may be built and running before all these blocks
 // are created. 'guarded' here ensures the program will wait for all the blocks to be built.
-guarded linked message1, message2, message3, display1,
+guarded linked message1, message2, message3,
+    display     = display1,
     memory      = bank1,
     buttonUp    = switch1,
     buttonLeft  = switch2,
@@ -28,6 +29,11 @@ guarded linked message1, message2, message3, display1,
     buttonJulia = switch7,
     buttonLoad  = switch8,
     buttonSave  = switch9;
+
+// The length must be one longer then the number of buttons, as index 0 is unused
+var buttonBookmark[14];
+var buttonPalette[6];
+var links = 0;
 
 allocate heap in memory[VARIABLES ... BOOKMARKS];
 
@@ -52,9 +58,9 @@ external SHOW_LEADER_CFG = SHOW_LEADER;
 
 var CHANGE = true;
 var PERCENT = 0;
+var TIME = 0;
 var text1 = "";
 var text2 = "";
-noinit var time;
 var second = @second;
 
 // Bookmark buttons state
@@ -74,13 +80,21 @@ begin
     var updateBookmarks = true;
     var print = true;
     var operations = 0;
+    var lastTime = 0;
+    var lastPercent = 0;
 
     while true do
-        if operations > display1.@operations then
+        var start = @time;
+
+        if links != @links then
+            initializeProcessors();
+        end;
+
+        if operations > display.@operations then
             // The display has been reset (map reload?), force recomputing
             CHANGE = true;
         end;
-        operations = display1.@operations;
+        operations = display.@operations;
 
         if print then printInfo(); print = false; end;
 
@@ -115,9 +129,11 @@ begin
         end;
 
         // Computation progress
-        var completed = (100 * COMPLETED) \ TOTAL;
-        if completed != PERCENT then
-            PERCENT = completed;
+        PERCENT = (100 * COMPLETED) \ TOTAL;
+        if PERCENT < 100 then TIME = round(@second - second); end;
+        if lastTime != TIME or lastPercent != PERCENT then
+            lastTime = TIME;
+            lastPercent = PERCENT;
             print = true;
         end;
 
@@ -137,7 +153,7 @@ begin
                 color(86, 86, 102, 204);
                 rect(0, 0, 176, 176);
             end;
-            drawflush(display1);
+            drawflush(display);
 
             // Signal next round of computing to processors
             atomic
@@ -149,6 +165,9 @@ begin
             text1 = text2 = "";
             print = true;
         end;
+
+        print("Loop time: ", round(@time - start));
+        printflush(message4);
     end;
 end;
 
@@ -157,8 +176,7 @@ end;
 
 inline void printInfo()
     println("Mandelbrot Mania! v3.0");
-    if PERCENT < 100 then time = round(@second - second); end;
-    println($"Completed: $PERCENT% in ${time}s");
+    println($"Completed: $PERCENT% in ${TIME}s");
     //println($"($COMPLETED out of $TOTAL)");
     if JULIA then
         println("Julia set of Mandelbrot");
@@ -244,38 +262,34 @@ inline void saveBookmark(position, bookmark)
 end;
 
 inline void handleTopRowButtons(in out updateBookmarks)
-    for var n in 0 ... @links do
-        var switch = getlink(n);
-        if switch.@type == @switch and switch.@y == bookmark_y then
-            var button_x = switch.@x;
-            if button_x >= palette_x then
-                var index = button_x - palette_x;
-                if index == PALETTE then
-                    switch.enabled = true;
-                elsif index == palette_clr then
-                    switch.enabled = false;
-                    palette_clr = -1;
-                elsif switch.@enabled then
-                    palette_clr = PALETTE;
-                    PALETTE = index;
-                    print("Palette #", PALETTE);
-                    printflush(message3);
-                    CHANGE = true;
-                end;
-            else
-                var index = button_x - bookmark_x;
-                if index == bookmark then
-                    switch.enabled = true;
-                elsif index == bookmark_clr then
-                    switch.enabled = false;
-                    bookmark_clr = -1;
-                elsif switch.@enabled then
-                    bookmark_clr = bookmark;
-                    bookmark = index;
-                    position = BOOKMARKS + BOOKMARK_SIZE * (bookmark - 1);
-                    updateBookmarks = true;
-                end;
-            end;
+    for var index in 1 ... length(buttonBookmark) do
+        var switch = buttonBookmark[index];
+        if index == bookmark then
+            switch.enabled = true;
+        elsif index == bookmark_clr then
+            switch.enabled = false;
+            bookmark_clr = -1;
+        elsif switch.@enabled then
+            bookmark_clr = bookmark;
+            bookmark = index;
+            position = BOOKMARKS + BOOKMARK_SIZE * (bookmark - 1);
+            updateBookmarks = true;
+        end;
+    end;
+
+    for var index in 1 ... length(buttonPalette) do
+        var switch = buttonPalette[index];
+        if index == PALETTE then
+            switch.enabled = true;
+        elsif index == palette_clr then
+            switch.enabled = false;
+            palette_clr = -1;
+        elsif switch.@enabled then
+            palette_clr = PALETTE;
+            PALETTE = index;
+            print("Palette #", PALETTE);
+            printflush(message3);
+            CHANGE = true;
         end;
     end;
 end;
@@ -290,6 +304,18 @@ inline void initialize()
     createPalette();
     initializeBookmarks();
 
+    for var n in 0 ... @links do
+        var switch = getlink(n);
+        if switch.@type == @switch and switch.@y == bookmark_y then
+            var button_x = switch.@x;
+            if button_x >= palette_x then
+                buttonPalette[button_x - palette_x] = switch;
+            else
+                buttonBookmark[button_x - bookmark_x] = switch;
+            end;
+        end;
+    end;
+
     STOP = 1;
     X = -0.8;
     Y = 0;
@@ -301,6 +327,15 @@ inline void initialize()
 
     print("Palette #", PALETTE);
     printflush(message3);
+end;
+
+inline void initializeProcessors()
+    links = @links;
+    for var i in 0 ... links do
+        var proc = getlink(i);
+        proc.write(display, ".display");
+        proc.write(memory, ".memory");
+    end;
 end;
 
 inline void createPalette()
