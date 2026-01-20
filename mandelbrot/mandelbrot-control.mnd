@@ -3,7 +3,17 @@
 #set instruction-limit = 1500;
 require "mandelbrot-common.mnd";
 
-param FILL_PASS = false;
+// When set to true, all passes will color all pixels.
+// Gives a full image after the first pass, but spotting changes mabe by subsequent passes (especially by the last one)
+// are difficult to notice.
+param ALL_PASS_COLORING = false;
+
+// When set to true, the pixel(s) being computed are painted white. Makes it easier to see how the computation
+// progresses, especially with ALL_PASS_COLORING = true.
+param SHOW_LEADER = true;
+
+// When false, the display won't be fully cleared before the next computation, just dimmed.
+param CLEAR_DISPLAY = true;
 
 // As the schematic takes a long time to build, this processor may be built and running before all these blocks
 // are created. 'guarded' here ensures the program will wait for all the blocks to be built.
@@ -27,7 +37,7 @@ const SHIFT = 44;
 external LINE;                     // Current line
 external ITERATIONS;               // Number of completed lines
 external COMPLETED;                // Number of completed lines
-noinit external cached START;
+external cached START = 0;
 noinit external cached STOP;
 noinit external cached X;
 noinit external cached Y;
@@ -37,7 +47,8 @@ noinit external cached JULIA_X;
 noinit external cached JULIA_Y;
 noinit external cached PALETTE;
 
-external FILL_PASS_CFG = FILL_PASS;
+external ALL_PASS_COLORING_CFG = ALL_PASS_COLORING;
+external SHOW_LEADER_CFG = SHOW_LEADER;
 
 var CHANGE = true;
 var PERCENT = 0;
@@ -63,9 +74,6 @@ begin
     var updateBookmarks = true;
     var print = true;
     var operations = 0;
-
-    // Initialization complete
-    START = 1;
 
     while true do
         if operations > display1.@operations then
@@ -123,9 +131,12 @@ begin
             CHANGE = false;
 
             // Dim the current display
-            color(86, 86, 102, 204);
-            rect(0, 0, 176, 176);
-//            clear(86, 86, 102);
+            if CLEAR_DISPLAY then
+                clear(86, 86, 102);
+            else
+                color(86, 86, 102, 204);
+                rect(0, 0, 176, 176);
+            end;
             drawflush(display1);
 
             // Signal next round of computing to processors

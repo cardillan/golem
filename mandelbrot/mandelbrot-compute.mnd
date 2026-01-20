@@ -19,7 +19,8 @@ external $JULIA;
 external $JULIA_X;
 external $JULIA_Y;
 external $PALETTE;
-external $FILL_PASS;
+external $ALL_PASS_COLORING;
+external $SHOW_LEADER;
 
 // Current coordinates
 // Copied from external variables when work computation for faster access
@@ -27,7 +28,7 @@ var ZOOM, OFFSET_X, OFFSET_Y;
 var JULIA, JULIA_X, JULIA_Y;
 
 // Coloring configuration
-var PALETTE, SMOOTH, FILL_PASS;
+var PALETTE, SMOOTH, ALL_PASS_COLORING;
 const ONE_TO_LOG = 1 / log(2);
 const QUARTER_TO_LOG = 0.25 / log(2);
 
@@ -59,15 +60,16 @@ MainLoop:
         drawflush(display);
 
         // Load position information
-        ZOOM      = $ZOOM;
-        OFFSET_X  = -HALF_SIZE / ZOOM + $X;
-        OFFSET_Y  = -HALF_SIZE / ZOOM + $Y;
-        JULIA     = $JULIA;
-        JULIA_X   = $JULIA_X;
-        JULIA_Y   = $JULIA_Y;
-        PALETTE   = $PALETTE;
-        SMOOTH    = PALETTE > 1;
-        FILL_PASS = $FILL_PASS;
+        ZOOM     = $ZOOM;
+        OFFSET_X = -HALF_SIZE / ZOOM + $X;
+        OFFSET_Y = -HALF_SIZE / ZOOM + $Y;
+        JULIA    = $JULIA;
+        JULIA_X  = $JULIA_X;
+        JULIA_Y  = $JULIA_Y;
+        PALETTE  = $PALETTE;
+        SMOOTH   = PALETTE > 1;
+        ALL_PASS_COLORING = $ALL_PASS_COLORING;
+        var leaderLimit = $SHOW_LEADER ? 1 - ALL_PASS_COLORING : 99;
 
         // Start taking four batches at a time for better visuals
         var multiple = 4;
@@ -91,6 +93,15 @@ MainLoop:
             for var i in 0 ... BATCH_SIZE * multiple do
                 var x, y, dx, dy;
                 adam5(batch * BATCH_SIZE + i, out x, out y, out dx, out dy);
+
+                // Display a "leader" - white pixel being just computed
+                if multiple > leaderLimit and localBuffer == 0 then
+                    col(%[white]);
+                    rect(x, y, dx, dx);
+                    lastColor = %[white];
+                    localBuffer = 2;
+                    tryFlush();
+                end;
 
                 var iterations = compute(x, y);
                 drawPixel(x, y, dx, dy, iterations);
@@ -126,26 +137,26 @@ void adam5(index, out x, out y, out dx, out dy)
         when 0 ... PASS_SIZE16 then
             x = 4 * (index % SIZE4);
             y = 4 * (index \ SIZE4);
-            dx = dy = FILL_PASS ? 4 : 1;
+            dx = dy = ALL_PASS_COLORING ? 4 : 2;
 
         when PASS_SIZE16 ... 2 * PASS_SIZE16 then
             index -= PASS_SIZE;
             x = 4 * (index % SIZE4) + 2;
             y = 4 * (index \ SIZE4);
-            dx = FILL_PASS ? 2 : 1;
-            dy = FILL_PASS ? 4 : 1;
+            dx = ALL_PASS_COLORING ? 2 : 1;
+            dy = ALL_PASS_COLORING ? 4 : 2;
 
         when 2 * PASS_SIZE16 ... 4 * PASS_SIZE16 then
             index -= 2 * PASS_SIZE;
             x = 2 * (index % SIZE2);
             y = 4 * (index \ SIZE2) + 2;
-            dx = dy = FILL_PASS ? 2 : 1;
+            dx = dy = ALL_PASS_COLORING ? 2 : 1;
 
         when 4 * PASS_SIZE16 ... 8 * PASS_SIZE16 then
             index -= 4 * PASS_SIZE;
             x = 2 * (index % SIZE2) + 1;
             y = 2 * (index \ SIZE2);
-            dx = 1; dy = FILL_PASS ? 2 : 1;
+            dx = 1; dy = ALL_PASS_COLORING ? 2 : 1;
 
         else
             index -= 8 * PASS_SIZE;
