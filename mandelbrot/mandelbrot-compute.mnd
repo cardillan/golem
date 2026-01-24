@@ -1,6 +1,10 @@
 #set syntax = strict;
 #set target = 8H;
 
+#set processor-id = "Computing";
+#set program-name = "Mandelbrot Mania!";
+#set program-version = "v3.0";
+
 require "mandelbrot-common.mnd";
 
 volatile noinit var display, memory;
@@ -38,7 +42,7 @@ var lastColor;
 var localBuffer;
 
 begin
-    do while display == null || memory == null;
+    do while display == null or memory == null;
 
 MainLoop:
     while true do
@@ -185,19 +189,23 @@ inline def compute(x, y)
 
     // Mandelbrot iteration loop, gets unrolled by the compiler
     var dist, i;
-    for i in 0 ... MAX_DEPTH do
-        var x1 = zx;
-        var y1 = zy;
-        zx = x1 * x1 - y1 * y1 + cx;
-        zy = 2 * x1 * y1 + cy;
-        dist = len(zx, zy);
-        if dist >= 64 then
-            break;
+    Compute: do
+        for i in 0 ... MAX_DEPTH do
+            var x1 = zx;
+            var y1 = zy;
+            zx = x1 * x1 - y1 * y1 + cx;
+            zy = 2 * x1 * y1 + cy;
+            dist = len(zx, zy);
+            if dist >= 64 then
+                break Compute;
+            end;
         end;
-    end;
+
+        return i;
+    while false;
 
     // Correction only if we're smoothing and not at max iteration
-    if SMOOTH and i < MAX_DEPTH then
+    if SMOOTH then
         var correction = 4 - log(log(dist) * QUARTER_TO_LOG) * ONE_TO_LOG;
         i += correction;
     end;
@@ -208,33 +216,31 @@ end;
 // Converts the iteration to color, draws the pixel and handles flushing
 inline void drawPixel(x, y, dx, dy, iterations)
     var color;
-    if SMOOTH then
-        if iterations == MAX_DEPTH then
-            color = %[black];
-        else
-            var r, g, b;
-            case PALETTE
-                when 2 then
-                    r = 255/255 - 7 * abs(32 - iterations) / 255;
-                    g = 240/255 - 6 * abs(iterations - 32) / 255;
-                    b = 120/255 + 4 * abs(32 - iterations) / 255;
-                    color = packcolor(r, g, b, 1);
+    if iterations == MAX_DEPTH then
+        color = %[black];
+    elsif SMOOTH then
+        var r, g, b;
+        case PALETTE
+            when 2 then
+                r = 255/255 - 7 * abs(32 - iterations) / 255;
+                g = 240/255 - 6 * abs(iterations - 32) / 255;
+                b = 120/255 + 4 * abs(32 - iterations) / 255;
+                color = packcolor(r, g, b, 1);
 
-                when 3 then
-                    r = sin(iterations / MAX_DEPTH * 360);
-                    g = cos(iterations / MAX_DEPTH * 360);
-                    b = 100/255 + 4 * abs(iterations - 32) / 255;
-                    color = packcolor(r, g, b, 1);
+            when 3 then
+                r = sin(iterations / MAX_DEPTH * 360);
+                g = cos(iterations / MAX_DEPTH * 360);
+                b = 100/255 + 4 * abs(iterations - 32) / 255;
+                color = packcolor(r, g, b, 1);
 
-                when 4 then
-                    r = 4 * iterations / 255;
-                    g = 1.5 * iterations / 255;
-                    color = packcolor(r, g, 0, 1);
+            when 4 then
+                r = 4 * iterations / 255;
+                g = 1.5 * iterations / 255;
+                color = packcolor(r, g, 0, 1);
 
-                else
-                    r = 1 - 4 * iterations / 255;
-                    color = packcolor(r, r, 0, 1);
-            end;
+            else
+                r = 1 - 4 * iterations / 255;
+                color = packcolor(r, r, 0, 1);
         end;
     else
         color = memory[iterations];
