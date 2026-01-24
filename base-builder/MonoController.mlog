@@ -1,3 +1,4 @@
+set *id "name: Base Builder - Mono Controller\nversion: v0.4.0"
 set .min 0
 set .minOre null
 set copper @ore-copper
@@ -8,12 +9,12 @@ set *signature "0:v1"
 ubind @mono
 set :backgroundProcess:firstUnit @unit
 ulocate building core false @copper .coreX .coreY 0 .core
-jump 7 equal .core null
+jump 8 equal .core null
 set :backgroundProcess:runningCount 0
 ubind @mono
 sensor *tmp4 :backgroundProcess:firstUnit @dead
 select :backgroundProcess:firstUnit notEqual *tmp4 false @unit :backgroundProcess:firstUnit
-jump 40 notEqual @unit :backgroundProcess:firstUnit
+jump 41 notEqual @unit :backgroundProcess:firstUnit
 printflush message1
 sensor *tmp9 .core @lead
 op sub :backgroundProcess:lead *tmp9 .leadTarget
@@ -28,7 +29,7 @@ op min *tmp17 *tmp17 :backgroundProcess:copper
 select *tmp21 equal *tmp17 :backgroundProcess:lead @lead @copper
 select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp21
 set .minOre *tmp19
-jump 32 equal .scrap false
+jump 33 equal .scrap false
 select .minOre equal *tmp19 @sand @scrap *tmp19
 print "minOre:{0}\n"
 format .minOre
@@ -42,12 +43,12 @@ op add :backgroundProcess:runningCount :backgroundProcess:runningCount 1
 sensor :backgroundProcess:flag @unit @flag
 print "Unit flag: {0}\n"
 format :backgroundProcess:flag
-jump 64 notEqual :backgroundProcess:flag 0
+jump 65 notEqual :backgroundProcess:flag 0
 sensor *tmp32 @unit @firstItem
-jump 50 equal *tmp32 null
+jump 51 equal *tmp32 null
 ucontrol itemDrop @air 20 0 0 0
 sensor *tmp35 @unit @firstItem
-jump 12 notEqual *tmp35 null
+jump 13 notEqual *tmp35 null
 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y 0 0
 ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0
 ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
@@ -61,22 +62,22 @@ print "Found {0} at {0}, {0}\n"
 format .minOre
 format :findOreToMine:x
 format :findOreToMine:y
-jump 12 always 0 0
-jump 79 notEqual :backgroundProcess:flag 1
+jump 13 always 0 0
+jump 80 notEqual :backgroundProcess:flag 1
 print "Returning ore"
 sensor *tmp47 @unit @firstItem
-jump 71 notEqual *tmp47 @scrap
+jump 72 notEqual *tmp47 @scrap
 ucontrol approach .sandX .sandY 7 0 0
 ucontrol itemDrop .sandContainer 20 0 0 0
-jump 73 always 0 0
+jump 74 always 0 0
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol itemDrop .core 20 0 0 0
 sensor *tmp50 @unit @firstItem
-jump 77 notEqual *tmp50 null
+jump 78 notEqual *tmp50 null
 print " (finished)\n"
 ucontrol flag 0 0 0 0 0
 print "\n"
-jump 12 always 0 0
+jump 13 always 0 0
 print "Mining "
 op mod *tmp53 :backgroundProcess:flag 16
 lookup item :mine:ore *tmp53
@@ -88,47 +89,47 @@ sensor *tmp57 :mine:ore @name
 read :mine:floorOre @this *tmp57
 op sub *tmp85 20 .count
 select *tmp60 equal :mine:ore @scrap *tmp85 20
-jump 97 equal :mine:ore .minOre
-jump 97 equal :mine:ore @scrap
+jump 98 equal :mine:ore .minOre
+jump 98 equal :mine:ore @scrap
 sensor *tmp66 .core :mine:ore
-jump 97 lessThanEq *tmp66 .min
+jump 98 lessThanEq *tmp66 .min
 print ", switching to a more needed ore"
 ucontrol flag 1 0 0 0 0
-jump 12 always 0 0
+jump 13 always 0 0
 sensor :mine:items @unit @totalItems
 print :mine:items
 sensor *tmp70 @unit @firstItem
-jump 103 equal *tmp70 :mine:ore
+jump 104 equal *tmp70 :mine:ore
 print " (dropping)"
 ucontrol itemDrop @air 20 0 0 0
-jump 113 lessThan :mine:items *tmp60
+jump 114 lessThan :mine:items *tmp60
 print ", full"
 ucontrol flag 1 0 0 0 0
-jump 110 notEqual :mine:ore @scrap
+jump 111 notEqual :mine:ore @scrap
 ucontrol approach .sandX .sandY 7 0 0
 ucontrol itemDrop .sandContainer 20 0 0 0
-jump 130 always 0 0
+jump 131 always 0 0
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol itemDrop .core 20 0 0 0
-jump 130 always 0 0
+jump 131 always 0 0
 print " at {0}, "
 format :mine:x
 print :mine:y
 ucontrol approach :mine:x :mine:y 7 0 0
 ucontrol getBlock :mine:x :mine:y 0 :mine:block :mine:floor
-jump 125 equal :mine:floor :mine:floorOre
-jump 122 notEqual :mine:floor null
+jump 126 equal :mine:floor :mine:floorOre
+jump 123 notEqual :mine:floor null
 print ": too far\n"
-jump 130 always 0 0
+jump 131 always 0 0
 ucontrol flag 1 0 0 0 0
 print ": no ore!\n"
-jump 130 always 0 0
-jump 128 notEqual :mine:block null
+jump 131 always 0 0
+jump 129 notEqual :mine:block null
 ucontrol mine :mine:x :mine:y 0 0 0
-jump 130 always 0 0
+jump 131 always 0 0
 ucontrol flag 1 0 0 0 0
 print ": blocked!\n"
 print "\n"
-jump 12 always 0 0
+jump 13 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 
