@@ -168,13 +168,13 @@ jump 178 notEqual *tmp214 .bookmark_y
 sensor :initialize:button_x :initialize:switch @x
 jump 174 lessThan :initialize:button_x .palette_x
 op sub *tmp221 :initialize:button_x .palette_x
-lookup team *tmp474 *tmp221
-sensor .buttonPalette*elem *tmp474 @name
+lookup team *tmp477 *tmp221
+sensor .buttonPalette*elem *tmp477 @name
 write :initialize:switch @this .buttonPalette*elem
 jump 178 always 0 0
 op sub *tmp223 :initialize:button_x .bookmark_x
-lookup item *tmp475 *tmp223
-sensor .buttonBookmark*elem *tmp475 @name
+lookup item *tmp478 *tmp223
+sensor .buttonBookmark*elem *tmp478 @name
 write :initialize:switch @this .buttonBookmark*elem
 op add :initialize:n :initialize:n 1
 jump 162 lessThan :initialize:n @links
@@ -613,7 +613,7 @@ jump 615 equal :lastPercent .PERCENT
 set :lastTime .TIME
 set :lastPercent .PERCENT
 set :print true
-jump 637 equal .CHANGE false
+jump 645 equal .CHANGE false
 print "Initializing..."
 printflush message1
 op add .STOP .STOP 1
@@ -635,11 +635,19 @@ set .second @second
 set .text2 ""
 set .text1 ""
 set :print true
+set .links @links
+set :initializeProcessors.1:i 0
+jump 645 greaterThanEq 0 .links
+getlink :initializeProcessors.1:proc :initializeProcessors.1:i
+write display1 :initializeProcessors.1:proc ".display"
+write bank1 :initializeProcessors.1:proc ".memory"
+op add :initializeProcessors.1:i :initializeProcessors.1:i 1
+jump 640 lessThan :initializeProcessors.1:i .links
 print "Links: {0}\nLoop time: "
 format .links
-op sub *tmp472 @time :start
-op round *tmp473 *tmp472 0
-print *tmp473
+op sub *tmp475 @time :start
+op round *tmp476 *tmp475 0
+print *tmp476
 printflush message4
 jump 205 always 0 0
 draw triangle derelict copper 0 0 0 0
