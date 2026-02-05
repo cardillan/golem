@@ -1,0 +1,37 @@
+var count = 0, errors = 0;
+var green = 128;
+var red = 0;
+var last = 0;
+volatile var x, y;
+while true do
+    var ops = display1.@operations;
+    if ops < last then
+        errors = 0;
+        green = 128;
+        red = 0;
+    end;
+    last = ops;
+
+    atomic
+        x = @tick;
+        for i in 1 ... p do
+            drawflush(null);
+        end;
+        y = @tick;
+    end;
+    if x !== y then
+        errors++;
+        green = 0;
+        red = 255;
+    end;
+    count++;
+    println("Atomic section length: ", p + 2);
+    println("Loop: ", count);
+    print("Errors: ", errors);
+    printflush(message1);
+
+
+    clear(red, green, 0);
+    drawflush(display1);
+    if red > 128 then red--; end;
+end;
