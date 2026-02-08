@@ -23,16 +23,16 @@ read .JULIA_Y .memory 74
 read .PALETTE .memory 75
 read .ALL_PASS_COLORING .memory 76
 read *tmp33 .memory 77
-op sub *tmp201 1 .ALL_PASS_COLORING
-select *tmp34 notEqual *tmp33 false *tmp201 99
-wait 0.004667                           # 0.280 ticks for atomic execution of 7 steps at 25 ipt
+op sub *tmp212 1 .ALL_PASS_COLORING
+select *tmp34 notEqual *tmp33 false *tmp212 99
+wait 0.00467                            # 0.280 ticks for atomic execution of 7 steps at 25 ipt
 read *tmp37 .memory 68
 jump 4 notEqual .stop *tmp37
 read :batch .memory 64
 select *tmp41 greaterThanEq :batch 1408 1 4
 op add *tmp42 :batch *tmp41
-write *tmp42 .memory 64                 # The last atomic block instruction
-jump 903 greaterThanEq :batch 2816
+write *tmp42 .memory 64                 # The last atomic section instruction
+jump 911 greaterThanEq :batch 2816
 op mul *tmp46 11 *tmp41
 set :i 0
 op mul *tmp47 :batch 11
@@ -83,836 +83,847 @@ op idiv *tmp73 :adam5:index 88
 op mul :adam5:y 2 *tmp73
 set :adam5:dx 1
 select :adam5:dy notEqual .ALL_PASS_COLORING false 2 1
-jump 98 lessThanEq *tmp41 *tmp34
-jump 98 notEqual .localBuffer 0
+jump 100 lessThanEq *tmp41 *tmp34
+jump 100 notEqual .localBuffer 0
 draw col %[white] 0 0 0 0 0
 draw rect :adam5:x :adam5:y :adam5:dx :adam5:dx 0 0
 set .lastColor %[white]
 set .localBuffer 2
-wait 0.004                              # 0.240 ticks for atomic execution of 6 steps at 25 ipt
-sensor *tmp83 .display @enabled
-jump 98 equal *tmp83 false
-sensor *tmp84 .display @bufferSize
-jump 98 greaterThanEq *tmp84 1022
+wait 0.00534                            # 0.320 ticks for atomic execution of 8 steps at 25 ipt
+read *tmp85 .memory 68
+jump 100 notEqual .stop *tmp85
+sensor *tmp87 .display @enabled
+jump 100 equal *tmp87 false
+sensor *tmp88 .display @bufferSize
+jump 100 greaterThanEq *tmp88 1022
 drawflush .display
-set .localBuffer 0                      # The last atomic block instruction
-op div *tmp89 :adam5:x .ZOOM
-op add :compute:zx *tmp89 .OFFSET_X
-op div *tmp91 :adam5:y .ZOOM
-op add :compute:zy *tmp91 .OFFSET_Y
-jump 106 equal .JULIA false
+set .localBuffer 0                      # The last atomic section instruction
+op div *tmp93 :adam5:x .ZOOM
+op add :compute:zx *tmp93 .OFFSET_X
+op div *tmp95 :adam5:y .ZOOM
+op add :compute:zy *tmp95 .OFFSET_Y
+jump 108 equal .JULIA false
 set :compute:cx .JULIA_X
 set :compute:cy .JULIA_Y
-jump 122 always 0 0
+jump 124 always 0 0
 set :compute:cx :compute:zx
 set :compute:cy :compute:zy
-op sub *tmp94 :compute:zx 0.25
-op len :compute:p *tmp94 :compute:zy
-op mul *tmp96 2 :compute:p
-op mul *tmp97 *tmp96 :compute:p
-op sub *tmp98 :compute:p *tmp97
-op add *tmp99 *tmp98 0.25
-jump 117 greaterThan :compute:zx *tmp99
-set *tmp88 63
-jump 826 always 0 0
-op add *tmp102 :compute:zx 1
-op len *tmp103 *tmp102 :compute:zy
-jump 122 greaterThan *tmp103 0.25
-set *tmp88 63
-jump 826 always 0 0
-set *tmp88 63
+op sub *tmp98 :compute:zx 0.25
+op len :compute:p *tmp98 :compute:zy
+op mul *tmp100 2 :compute:p
+op mul *tmp101 *tmp100 :compute:p
+op sub *tmp102 :compute:p *tmp101
+op add *tmp103 *tmp102 0.25
+jump 119 greaterThan :compute:zx *tmp103
+set *tmp92 63
+jump 828 always 0 0
+op add *tmp106 :compute:zx 1
+op len *tmp107 *tmp106 :compute:zy
+jump 124 greaterThan *tmp107 0.25
+set *tmp92 63
+jump 828 always 0 0
+set *tmp92 63
 set :compute:i 0
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 set :compute:i 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 1 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 2 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 3 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 4 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 5 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 6 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 7 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 8 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 9 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 10 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 11 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 12 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 13 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 14 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 15 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 16 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 17 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 18 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 19 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 20 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 21 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 22 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 23 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 24 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 25 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 26 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 27 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 28 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 29 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 30 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 31 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 32 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 33 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 34 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 35 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 36 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 37 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 38 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 39 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 40 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 41 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 42 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 43 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 44 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 45 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 46 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 47 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 48 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 49 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 50 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 51 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 52 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 53 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 54 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 55 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 56 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 57 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 58 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 59 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 60 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 61 1
 set :compute:x1 :compute:zx
-op mul *tmp106 :compute:zx :compute:zx
-op mul *tmp107 :compute:zy :compute:zy
-op sub *tmp108 *tmp106 *tmp107
-op add :compute:zx *tmp108 :compute:cx
-op mul *tmp110 2 :compute:x1
-op mul *tmp111 *tmp110 :compute:zy
-op add :compute:zy *tmp111 :compute:cy
+op mul *tmp110 :compute:zx :compute:zx
+op mul *tmp111 :compute:zy :compute:zy
+op sub *tmp112 *tmp110 *tmp111
+op add :compute:zx *tmp112 :compute:cx
+op mul *tmp114 2 :compute:x1
+op mul *tmp115 *tmp114 :compute:zy
+op add :compute:zy *tmp115 :compute:cy
 op len :compute:dist :compute:zx :compute:zy
-jump 818 greaterThanEq :compute:dist 64
+jump 820 greaterThanEq :compute:dist 64
 op add :compute:i 62 1
-jump 826 always 0 0
-jump 825 lessThanEq .PALETTE 1
-op log *tmp117 :compute:dist 0
-op mul *tmp118 *tmp117 0.36067376022224085
-op log *tmp119 *tmp118 0
-op mul *tmp120 *tmp119 1.4426950408889634
-op sub :compute:correction 4 *tmp120
+jump 828 always 0 0
+jump 827 lessThanEq .PALETTE 1
+op log *tmp121 :compute:dist 0
+op mul *tmp122 *tmp121 0.36067376022224085
+op log *tmp123 *tmp122 0
+op mul *tmp124 *tmp123 1.4426950408889634
+op sub :compute:correction 4 *tmp124
 op add :compute:i :compute:i :compute:correction
-set *tmp88 :compute:i
-jump 829 notEqual *tmp88 63
+set *tmp92 :compute:i
+jump 831 notEqual *tmp92 63
 set :drawPixel:color %[black]
-jump 861 always 0 0
-jump 860 lessThanEq .PALETTE 1
-read @counter "̿̿̓͏͘" .PALETTE
-op div *tmp161 *tmp88 63.75             # Origin: 830, keys: 0, 1
-op sub :drawPixel:r 1 *tmp161
+jump 863 always 0 0
+jump 862 lessThanEq .PALETTE 1
+read @counter "͚́́͑ͅ" .PALETTE
+op div *tmp165 *tmp92 63.75             # Origin: 832, keys: 0, 1
+op sub :drawPixel:r 1 *tmp165
 packcolor :drawPixel:color :drawPixel:r :drawPixel:r 0 1
-jump 861 always 0 0
-op sub *tmp127 32 *tmp88                # Origin: 830, keys: 2
-op abs *tmp128 *tmp127 0
-op div *tmp130 *tmp128 36.42857142857143
-op sub :drawPixel:r 1 *tmp130
-op sub *tmp132 *tmp88 32
-op abs *tmp133 *tmp132 0
-op div *tmp135 *tmp133 42.5
-op sub :drawPixel:g 0.9411764705882353 *tmp135
-op div *tmp140 *tmp128 63.75
-op add :drawPixel:b 0.47058823529411764 *tmp140
+jump 863 always 0 0
+op sub *tmp131 32 *tmp92                # Origin: 832, keys: 2
+op abs *tmp132 *tmp131 0
+op div *tmp134 *tmp132 36.42857142857143
+op sub :drawPixel:r 1 *tmp134
+op sub *tmp136 *tmp92 32
+op abs *tmp137 *tmp136 0
+op div *tmp139 *tmp137 42.5
+op sub :drawPixel:g 0.9411764705882353 *tmp139
+op div *tmp144 *tmp132 63.75
+op add :drawPixel:b 0.47058823529411764 *tmp144
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g :drawPixel:b 1
-jump 861 always 0 0
-op div *tmp144 *tmp88 0.175             # Origin: 830, keys: 3
-op sin :drawPixel:r *tmp144 0
-op cos :drawPixel:g *tmp144 0
-op sub *tmp149 *tmp88 32
-op abs *tmp150 *tmp149 0
-op div *tmp152 *tmp150 63.75
-op add :drawPixel:b 0.39215686274509803 *tmp152
+jump 863 always 0 0
+op div *tmp148 *tmp92 0.175             # Origin: 832, keys: 3
+op sin :drawPixel:r *tmp148 0
+op cos :drawPixel:g *tmp148 0
+op sub *tmp153 *tmp92 32
+op abs *tmp154 *tmp153 0
+op div *tmp156 *tmp154 63.75
+op add :drawPixel:b 0.39215686274509803 *tmp156
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g :drawPixel:b 1
-jump 861 always 0 0
-op div :drawPixel:r *tmp88 63.75        # Origin: 830, keys: 4
-op div :drawPixel:g *tmp88 170
+jump 863 always 0 0
+op div :drawPixel:r *tmp92 63.75        # Origin: 832, keys: 4
+op div :drawPixel:g *tmp92 170
 packcolor :drawPixel:color :drawPixel:r :drawPixel:g 0 1
-jump 861 always 0 0
-read :drawPixel:color .memory *tmp88
-jump 874 lessThan .localBuffer 254
-jump 879 lessThanEq .localBuffer 0
-read *tmp171 .memory 68
-jump 874 notEqual .stop *tmp171
-wait 0.004667                           # 0.280 ticks for atomic execution of 7 steps at 25 ipt
-sensor *tmp172 .display @enabled
-jump 873 equal *tmp172 false
-sensor *tmp173 .display @bufferSize
-op sub *tmp174 1024 *tmp173
-jump 873 greaterThanEq .localBuffer *tmp174
+jump 863 always 0 0
+read :drawPixel:color .memory *tmp92
+jump 879 lessThan .localBuffer 254
+jump 884 lessThanEq .localBuffer 0
+wait 0.006                              # 0.360 ticks for atomic execution of 9 steps at 25 ipt
+read *tmp176 .memory 68
+jump 870 equal .stop *tmp176
+set *tmp174 false
+jump 878 always 0 0
+sensor *tmp178 .display @enabled
+jump 877 equal *tmp178 false
+sensor *tmp179 .display @bufferSize
+op sub *tmp180 1024 *tmp179
+jump 877 greaterThanEq .localBuffer *tmp180
 drawflush .display
-set .localBuffer 0                      # The last atomic block instruction
-jump 863 greaterThan .localBuffer 0
-jump 879 lessThanEq .localBuffer 0
-select @counter strictEqual :drawPixel:color .lastColor @counter 879
+set .localBuffer 0
+set *tmp174 true                        # The last atomic section instruction
+jump 864 notEqual *tmp174 false
+jump 884 lessThanEq .localBuffer 0
+select @counter strictEqual :drawPixel:color .lastColor @counter 884
 draw rect :adam5:x :adam5:y :adam5:dx :adam5:dy 0 0
 op add .localBuffer .localBuffer 1
-jump 883 always 0 0
+jump 888 always 0 0
 draw col :drawPixel:color 0 0 0 0 0
 draw rect :adam5:x :adam5:y :adam5:dx :adam5:dy 0 0
 set .lastColor :drawPixel:color
 op add .localBuffer .localBuffer 2
-wait 0.004667                           # 0.280 ticks for atomic execution of 7 steps at 25 ipt
-sensor *tmp181 .display @enabled
-jump 891 equal *tmp181 false
-sensor *tmp182 .display @bufferSize
-op sub *tmp183 1024 *tmp182
-jump 891 greaterThanEq .localBuffer *tmp183
-drawflush .display
-set .localBuffer 0                      # The last atomic block instruction
-wait 0.006                              # 0.360 ticks for atomic execution of 9 steps at 25 ipt
-read *tmp187 .memory 68
-jump 4 notEqual .stop *tmp187
-read *tmp189 .memory 66
-op add *tmp2 *tmp189 1
+wait 0.01                               # 0.600 ticks for atomic execution of 15 steps at 25 ipt
+read *tmp187 .memory 66
+op add *tmp2 *tmp187 1
 write *tmp2 .memory 66
-read *tmp191 .memory 65
-op add *tmp192 *tmp191 *tmp88
-write *tmp192 .memory 65                # The last atomic block instruction
+read *tmp189 .memory 65
+op add *tmp190 *tmp189 *tmp92
+write *tmp190 .memory 65
+read *tmp193 .memory 68
+jump 899 equal .stop *tmp193
+set *tmp191 false
+jump 907 always 0 0
+sensor *tmp195 .display @enabled
+jump 906 equal *tmp195 false
+sensor *tmp196 .display @bufferSize
+op sub *tmp197 1024 *tmp196
+jump 906 greaterThanEq .localBuffer *tmp197
+drawflush .display
+set .localBuffer 0
+set *tmp191 true
+jump 4 equal *tmp191 false              # The last atomic section instruction
 op add :i :i 1
 jump 39 lessThan :i *tmp46
 jump 27 always 0 0
 jump 4 lessThanEq .localBuffer 0
-read *tmp195 .memory 68
-jump 4 notEqual .stop *tmp195
-wait 0.004667                           # 0.280 ticks for atomic execution of 7 steps at 25 ipt
-sensor *tmp196 .display @enabled
-jump 914 equal *tmp196 false
-sensor *tmp197 .display @bufferSize
-op sub *tmp198 1024 *tmp197
-jump 914 greaterThanEq .localBuffer *tmp198
+wait 0.006                              # 0.360 ticks for atomic execution of 9 steps at 25 ipt
+read *tmp205 .memory 68
+jump 917 equal .stop *tmp205
+set *tmp203 false
+jump 925 always 0 0
+sensor *tmp207 .display @enabled
+jump 924 equal *tmp207 false
+sensor *tmp208 .display @bufferSize
+op sub *tmp209 1024 *tmp208
+jump 924 greaterThanEq .localBuffer *tmp209
 drawflush .display
-set .localBuffer 0                      # The last atomic block instruction
-jump 904 greaterThan .localBuffer 0
+set .localBuffer 0
+set *tmp203 true                        # The last atomic section instruction
+jump 911 notEqual *tmp203 false
 jump 4 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

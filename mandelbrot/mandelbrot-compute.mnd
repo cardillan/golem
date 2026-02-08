@@ -105,11 +105,11 @@ MainLoop:
                 drawPixel(x, y, dx, dy, iterations);
 
                 atomic
-                    if stop != $STOP then
-                        continue MainLoop;  // Break is signalled
-                    end;
                     $COMPLETED++;
                     $ITERATIONS += iterations;
+                    if not tryFlush() then
+                        continue MainLoop;  // Break is signalled
+                    end;
                  end;
             end;
         end;
@@ -263,27 +263,26 @@ inline void drawPixel(x, y, dx, dy, iterations)
         lastColor = color;
         localBuffer += 2;
     end;
-
-    tryFlush();
 end;
 
 // Flushes the local buffer if there's enough capacity
-inline void tryFlush()
+// Returns false if the computation was stopped
+inline atomic def tryFlush()
+    if stop != $STOP then return false; end;
+
     // By disabling the display, we can emulate the display not being redrawn due to being off-screen
     // Atomic makes it wait between retries, so there isn't busy waiting in flush()
-    atomic
-        if display.@enabled and localBuffer < DISPLAY_BUFFER - display.@bufferSize then
-            drawflush(display);
-            localBuffer = 0;
-        end;
+    if display.@enabled and localBuffer < DISPLAY_BUFFER - display.@bufferSize then
+        drawflush(display);
+        localBuffer = 0;
     end;
+
+    return true;
 end;
 
 // Ensure the local buffer is completely flushed.
 // Called when the local buffer gets full and when the computation is finished
 inline void flush()
     // Break waiting when the stop signal is set
-    while localBuffer > 0 and stop == $STOP do
-        tryFlush();
-    end;
+    do while localBuffer > 0 and tryFlush();
 end;
