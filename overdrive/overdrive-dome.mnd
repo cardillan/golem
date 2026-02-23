@@ -72,7 +72,7 @@ begin
 
     if UNIT_S1.@firstItem == @phase-fabric or UNIT_P1.@firstItem == @silicon then
         // At least one of our units holds wrong item. Swapping them fixes at least one
-        swap(out UNIT_S1, out UNIT_P1);
+        swap(ref UNIT_S1, ref UNIT_P1);
     end;
 
     // GATHERING STATISTICS
@@ -93,19 +93,19 @@ begin
 
         if UNIT_S1.@firstItem == @phase-fabric and UNIT_P2.@firstItem != @phase-fabric then
             // At least one of our units holds wrong item. Swapping them fixes at least one
-            swap(out UNIT_S1, out UNIT_P2);
+            swap(ref UNIT_S1, ref UNIT_P2);
         end;
 
         if UNIT_S2.@firstItem == @phase-fabric or UNIT_P2.@firstItem == @silicon then
             // At least one of our units holds wrong item. Swapping them fixes at least one
-            swap(out UNIT_S2, out UNIT_P2);
+            swap(ref UNIT_S2, ref UNIT_P2);
         end;
 
         GROUP1 = "unit  1";
         GROUP2 = "unit 2";
     else
-        ubind(UNIT_S2); unbind(); UNIT_S2 = null;
-        ubind(UNIT_P2); unbind(); UNIT_P2 = null;
+        ubind(UNIT_S2); flag(0); unbind(); UNIT_S2 = null;
+        ubind(UNIT_P2); flag(0); unbind(); UNIT_P2 = null;
         GROUP1 = "unit";
     end;
 
@@ -165,7 +165,7 @@ inline void locateDomeAndCore()
     printflush(message1);
     CORE = null;
 
-    while true do
+    loop
         for var type in @flare, @poly, @mega, @mono do
             if locateCore(type) then return; end;
         end;
@@ -275,7 +275,7 @@ end;
 inline def rebindUnit(currentUnit)
     if currentUnit != null then
         ubind(currentUnit);
-        if @unit.@dead == 0 && @unit.@controller == @this then
+        if @unit.@dead == 0 and @unit.@controller == @this then
             // Current unit is valid, no need to rebind
             return currentUnit;
         end;
@@ -391,6 +391,6 @@ inline void printDomeStatus(item, text)
     end;
 end;
 
-inline void swap(in out a, in out b)
+inline void swap(ref a, ref b)
     var t = a; a = b; b = t;
 end;
