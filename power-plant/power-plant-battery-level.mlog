@@ -1,3 +1,9 @@
+set *id "id: Battery Level Meter\nname: Impact Reactor Power Plant\nversion: v0.1.0"
+set PRM_DELAY 150
+set PRM_SAMPLES 40
+op min .SAMPLES PRM_SAMPLES 100
+op mul *tmp1 PRM_DELAY .SAMPLES
+op div .SECONDS *tmp1 1000
 printflush message1
 print "Initializing..."
 printflush message1
@@ -513,67 +519,59 @@ write 0 bank1 508
 write 0 bank1 509
 write 0 bank1 510
 write 0 bank1 511
-set .ACCU_CONS 0
-set .ACCU_PROD 0
+set :ACCU_CONS 0
+set :ACCU_PROD 0
 set :index 0
 set :loops 0
 set :wait @time
-jump 522 notEqual :loops 0
-set :wait @time
-op add :wait :wait 150
+select :wait equal :loops 0 @time :wait
+op add :wait :wait PRM_DELAY
 sensor :powerNetIn battery1 @powerNetIn
 sensor :powerNetOut battery1 @powerNetOut
 sensor :powerNetStored battery1 @powerNetStored
 read *tmp13 bank1 :index
-op sub .ACCU_CONS .ACCU_CONS *tmp13
-op add .ACCU_CONS .ACCU_CONS :powerNetOut
+op sub :ACCU_CONS :ACCU_CONS *tmp13
+op add :ACCU_CONS :ACCU_CONS :powerNetOut
 write :powerNetOut bank1 :index
-op div *tmp16 .ACCU_CONS 40
-op add *tmp17 *tmp16 0.5
-op floor :consumption *tmp17 0
+op div *tmp16 :ACCU_CONS .SAMPLES
+op round :consumption *tmp16 0
 write :consumption bank1 508
 op add :tmp :index 100
-read *tmp23 bank1 :tmp
-op sub .ACCU_PROD .ACCU_PROD *tmp23
-op add .ACCU_PROD .ACCU_PROD :powerNetIn
+read *tmp21 bank1 :tmp
+op sub :ACCU_PROD :ACCU_PROD *tmp21
+op add :ACCU_PROD :ACCU_PROD :powerNetIn
 write :powerNetIn bank1 :tmp
-op div *tmp26 .ACCU_PROD 40
-op add *tmp27 *tmp26 0.5
-op floor :production *tmp27 0
+op div *tmp24 :ACCU_PROD .SAMPLES
+op round :production *tmp24 0
 write :production bank1 509
-op sub *tmp31 .ACCU_PROD .ACCU_CONS
-op div *tmp32 *tmp31 40
-op add *tmp33 *tmp32 0.5
-op floor :net_power *tmp33 0
+op sub *tmp27 :ACCU_PROD :ACCU_CONS
+op div *tmp28 *tmp27 .SAMPLES
+op round :net_power *tmp28 0
 write :net_power bank1 510
 op add :tmp :index 200
 read :last bank1 :tmp
 write :powerNetStored bank1 :tmp
 op sub :diff :powerNetStored :last
-op div *tmp43 :diff 6
-op add *tmp44 *tmp43 0.5
-op floor :battery_change *tmp44 0
+op div *tmp37 :diff .SECONDS
+op round :battery_change *tmp37 0
 write :battery_change bank1 511
-op add *tmp48 :index 1
-op mod :index *tmp48 40
-print "Measured interval: [green]6[] seconds\nConsumption: [green]"
-print :consumption
-print "[]\nProduction: [green]"
-print :production
-print "[]\nNet power: [green]"
-print :net_power
-print "[]\nBattery change: [green]"
-print :battery_change
-print "\n"
+op add *tmp40 :index 1
+op mod :index *tmp40 .SAMPLES
+print "Measured interval: [green]{0}[] seconds\nConsumption: [green]{0}[]\nProduction: [green]{0}[]\nNet power: [green]{0}[]\nBattery change: [green]{0}\n"
+format .SECONDS
+format :consumption
+format :production
+format :net_power
+format :battery_change
 set :loops 0
 set :start @time
-jump 573 lessThan @time :start
-jump 573 greaterThanEq @time :wait
+jump 571 lessThan @time :start
+jump 571 greaterThanEq @time :wait
 op add :loops :loops 1
-jump 570 greaterThanEq @time :start
+jump 568 greaterThanEq @time :start
 print "[lightgray]Loops: "
 print :loops
 printflush message1
-jump 520 always 0 0
+jump 526 always 0 0
 print "Compiled by Mindcode - github.com/cardillan/mindcode"
 

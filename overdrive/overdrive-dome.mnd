@@ -9,7 +9,10 @@
 #set syntax = strict;
 #set instruction-limit = 1100;
 
-linked dome1, switch1, message1;
+#set program-name = "Overdrive dome supply";
+#set program-version = "v0.1.0";
+
+linked DOME = dome1, switch1, message1;
 
 /// This is the preferred unit type to use for bringing in supplies.
 /// If no units of this type exist, we'll try using other types.
@@ -33,7 +36,7 @@ const SUPPLY_INTERVAL   = 50 - 3;
 // Interval to check for the availability of the optimal unit type if not used
 const UNIT_CHECK_TIME   = 5000;
 
-var TYPE, DOME, CORE;
+var TYPE, CORE;
 var UNIT_S1, UNIT_P1, UNIT_S2, UNIT_P2;
 var CORE_X, CORE_Y, DOME_X, DOME_Y, FOUR_UNITS;
 var UNIT_CAPACITY, SPEED, SPEED_TENTHS;
@@ -104,8 +107,8 @@ begin
         GROUP1 = "unit  1";
         GROUP2 = "unit 2";
     else
-        ubind(UNIT_S2); flag(0); unbind(); UNIT_S2 = null;
-        ubind(UNIT_P2); flag(0); unbind(); UNIT_P2 = null;
+        free(UNIT_S2, UNIT_P2);
+        UNIT_S2 = UNIT_P2 = null;
         GROUP1 = "unit";
     end;
 
@@ -142,11 +145,13 @@ begin
 
         if TYPE != UNIT_TYPE and unitCheck > @time then
             if areUnitsAvailable(UNIT_TYPE, false) then
-                end();
+                break;
             end;
             unitCheck = @time + UNIT_CHECK_TIME;
         end;
     end;
+
+    free(UNIT_S1, UNIT_P1, UNIT_S2, UNIT_P2);
 end;
 
 inline void locateDomeAndCore()
@@ -154,11 +159,10 @@ inline void locateDomeAndCore()
     // Now this is funny: the processor might get built way
     // earlier than the dome and miss it in initialization
     /////////////////////////////////////////////////////////
-    while dome1 == null do
+    while DOME == null do
         print("[gold]Waiting for an overdrive dome to be connected...");
         printflush(message1);
     end;
-    DOME = dome1;
 
     print("[gold]Locating core...");
     printflush(message1);
@@ -392,4 +396,12 @@ end;
 
 inline void swap(ref a, ref b)
     var t = a; a = b; b = t;
+end;
+
+inline void free(units...)
+    for var unit in units do
+        ubind(unit);
+        flag(0);
+        unbind();
+    end;
 end;

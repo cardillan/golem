@@ -1,80 +1,90 @@
-DELAY = 150;
-SAMPLES = 40;
+#set target = 8l;
+#set syntax = strict;
 
-printflush(message1);
-print("Initializing...");
-printflush(message1);
+#set processor-id = "Battery Level Meter";
+#set program-name = "Impact Reactor Power Plant";
+#set program-version = "v0.1.0";
 
-for addr in 0 ... 512 do
-    bank1[addr] = 0;
-end;
+param PRM_DELAY = 150;
+param PRM_SAMPLES = 40;
 
-CONSUMPTION_INDEX       = 508;
-PRODUCTION_INDEX        = 509;
-NET_POWER_INDEX         = 510;
-BATTERY_CHANGE_INDEX    = 511;
+linked bank1, battery1;
 
-ACCU_CONS = 0;
-ACCU_PROD = 0;
-index = 0;
+const CONSUMPTION_INDEX       = 508;
+const PRODUCTION_INDEX        = 509;
+const NET_POWER_INDEX         = 510;
+const BATTERY_CHANGE_INDEX    = 511;
 
-SPACING = 100;
-SAMPLES = min(SAMPLES, SPACING);
-HALF = 0.5;
-SECONDS = DELAY * SAMPLES / 1000;
+const SPACING = 100;
 
-index = 0;
-loops = 0;
-wait = @time;
-while true do
-    if loops == 0 then
-        // Falling behind (possibly paused)
-        wait = @time;
-    end;
-    wait += DELAY;
+var SAMPLES = min(PRM_SAMPLES, SPACING);
+var SECONDS = PRM_DELAY * SAMPLES / 1000;
 
-    powerNetIn = battery1.@powerNetIn;
-    powerNetOut = battery1.@powerNetOut;
-    powerNetStored = battery1.@powerNetStored;
-
-    tmp = index;
-    ACCU_CONS -= bank1[tmp];
-    ACCU_CONS += powerNetOut;
-    bank1[tmp] = powerNetOut;
-    consumption = floor(ACCU_CONS / SAMPLES + HALF);
-    bank1[CONSUMPTION_INDEX] = consumption;
-
-    tmp = tmp + SPACING;
-    ACCU_PROD -= bank1[tmp];
-    ACCU_PROD += powerNetIn;
-    bank1[tmp] = powerNetIn;
-    production = floor(ACCU_PROD / SAMPLES + HALF);
-    bank1[PRODUCTION_INDEX] = production;
-
-    net_power = floor((ACCU_PROD - ACCU_CONS) / SAMPLES + HALF);
-    bank1[NET_POWER_INDEX] = net_power;
-
-    tmp = tmp + SPACING;
-    last = bank1[tmp];
-    bank1[tmp] = powerNetStored;
-    diff = powerNetStored - last;
-    battery_change = floor(diff / SECONDS + HALF);
-    bank1[BATTERY_CHANGE_INDEX] = battery_change;
-
-    index = (index + 1) % SAMPLES;
-
-    println($"Measured interval: [green]$SECONDS[] seconds");
-    println($"Consumption: [green]$consumption[]");
-    println($"Production: [green]$production[]");
-    println($"Net power: [green]$net_power[]");
-    println($"Battery change: [green]$battery_change");
-
-    loops = 0;
-    start = @time;
-    while @time >= start and @time < wait do
-        loops += 1;
-    end;
-
-    print($"[lightgray]Loops: $loops");
+begin
     printflush(message1);
+    print("Initializing...");
+    printflush(message1);
+
+    for var addr in 0 ... 512 do
+        bank1[addr] = 0;
+    end;
+
+    var ACCU_CONS = 0;
+    var ACCU_PROD = 0;
+    var index = 0;
+    var loops = 0;
+    var wait = @time;
+
+    loop
+        if loops == 0 then
+            // Falling behind (possibly paused)
+            wait = @time;
+        end;
+        wait += PRM_DELAY;
+
+        var powerNetIn = battery1.@powerNetIn;
+        var powerNetOut = battery1.@powerNetOut;
+        var powerNetStored = battery1.@powerNetStored;
+
+        var tmp = index;
+        ACCU_CONS -= bank1[tmp];
+        ACCU_CONS += powerNetOut;
+        bank1[tmp] = powerNetOut;
+        var consumption = round(ACCU_CONS / SAMPLES);
+        bank1[CONSUMPTION_INDEX] = consumption;
+
+        tmp += SPACING;
+        ACCU_PROD -= bank1[tmp];
+        ACCU_PROD += powerNetIn;
+        bank1[tmp] = powerNetIn;
+        var production = round(ACCU_PROD / SAMPLES);
+        bank1[PRODUCTION_INDEX] = production;
+
+        var net_power = round((ACCU_PROD - ACCU_CONS) / SAMPLES);
+        bank1[NET_POWER_INDEX] = net_power;
+
+        tmp += SPACING;
+        var last = bank1[tmp];
+        bank1[tmp] = powerNetStored;
+        var diff = powerNetStored - last;
+        var battery_change = round(diff / SECONDS);
+        bank1[BATTERY_CHANGE_INDEX] = battery_change;
+
+        index = (index + 1) % SAMPLES;
+
+        println($"Measured interval: [green]$SECONDS[] seconds");
+        println($"Consumption: [green]$consumption[]");
+        println($"Production: [green]$production[]");
+        println($"Net power: [green]$net_power[]");
+        println($"Battery change: [green]$battery_change");
+
+        loops = 0;
+        var start = @time;
+        while @time >= start and @time < wait do
+            loops += 1;
+        end;
+
+        print($"[lightgray]Loops: $loops");
+        printflush(message1);
+    end;
 end;
