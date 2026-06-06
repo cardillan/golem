@@ -9,8 +9,11 @@
 
 module OreLocator;
 
+linked noinit switch1, message1;
+linked(@memory-bank) oreLogMemory;
+linked(@logic-processor) matrices;
+
 require math;
-require "Links.mnd";
 
 const RADIUS =  6;
 const MIN_CORE_DIST = 8;
@@ -235,8 +238,8 @@ inline def visited(in x, in y)
 //    remark($"Testing $x, $y:\n");
     for var i in locationsStart ... locations do
         var index = 4 * i;
-        var lx = bank1[index + 2];
-        var ly = bank1[index + 3];
+        var lx = oreLogMemory[index + 2];
+        var ly = oreLogMemory[index + 3];
 
 //        remark($"Loc $i, ind $index: $lx, $ly\n");
 
@@ -252,10 +255,10 @@ end;
 
 inline void saveLocation(item, value, x, y)
 //    remark($"Saving spot #${count+1}:\nValue: $value at $x, $y\n");
-    bank1[++count] = item.@id;
-    bank1[++count] = value;
-    bank1[++count] = x;
-    bank1[++count] = y;
+    oreLogMemory[++count] = item.@id;
+    oreLogMemory[++count] = value;
+    oreLogMemory[++count] = x;
+    oreLogMemory[++count] = y;
     locations++;
 //    remark($"Locations: $locations");
 //    debugPause();

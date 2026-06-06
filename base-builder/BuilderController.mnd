@@ -9,10 +9,19 @@
 
 module Builder;
 
-require "Links.mnd";
+linked(@memory-bank) oreLogMemory;
+linked(@logic-processor) baseBuilder;
+linked(@logic-processor) displayProcessor;
+linked(@logic-processor) oreLocator;
+linked(@micro-processor) flareController;
+linked(@micro-processor) monoController;
+linked(@micro-processor) polyController;
+linked(@micro-processor) timer;
+remote(timer) mlog("time") TIME;
+
 require "Common.mnd";
 require "Actions.mnd";
-require "Display.mnd" remote display;
+require "Display.mnd" remote displayProcessor;
 require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote processor;
 require "FlareController.mnd" remote flareController;
@@ -51,7 +60,7 @@ export var
     siliconMonoSurplus = 0,
     metaglassSurplus = 20;
 
-external(bank1[511]) logPosition = 511;
+external(oreLogMemory[511]) logPosition = 511;
 
 // SUPPLY OPERATIONS
 
@@ -190,13 +199,13 @@ end;
 
 def targetMet()
     // This is horrible, but Mindcode doesn't do short-circuit evaluation yet.
-    if core.@silicon < targetSilicon then display.missing = @silicon; return false; end;
-    if core.@copper < targetCopper then display.missing = @copper; return false; end;
-    if core.@lead < targetLead then display.missing = @lead; return false; end;
-    if core.@metaglass < targetMetaglass then display.missing = @metaglass; return false; end;
-    if core.@graphite < targetGraphite then display.missing = @graphite; return false; end;
-    if core.@titanium < targetTitanium then display.missing = @titanium; return false; end;
-    if core.@thorium < targetThorium then display.missing = @thorium; return false; end;
+    if core.@silicon < targetSilicon then displayProcessor.missing = @silicon; return false; end;
+    if core.@copper < targetCopper then displayProcessor.missing = @copper; return false; end;
+    if core.@lead < targetLead then displayProcessor.missing = @lead; return false; end;
+    if core.@metaglass < targetMetaglass then displayProcessor.missing = @metaglass; return false; end;
+    if core.@graphite < targetGraphite then displayProcessor.missing = @graphite; return false; end;
+    if core.@titanium < targetTitanium then displayProcessor.missing = @titanium; return false; end;
+    if core.@thorium < targetThorium then displayProcessor.missing = @thorium; return false; end;
     //display.missing = false;
     return true;
 end;
@@ -205,15 +214,15 @@ export void meetTarget(block, copper, lead, graphite, silicon, titanium, metagla
     // Update display
     var count = 0;
     for var t in copper, lead, graphite, silicon, titanium, metaglass, thorium do count += sign(t); end;
-    display.totalTargets = count;
-    display.nextBlock = block;
-    display.targetCopper = copper;
-    display.targetLead = lead;
-    display.targetGraphite = graphite;
-    display.targetSilicon = silicon;
-    display.targetTitanium = titanium;
-    display.targetMetaglass = metaglass;
-    display.targetThorium = thorium;
+    displayProcessor.totalTargets = count;
+    displayProcessor.nextBlock = block;
+    displayProcessor.targetCopper = copper;
+    displayProcessor.targetLead = lead;
+    displayProcessor.targetGraphite = graphite;
+    displayProcessor.targetSilicon = silicon;
+    displayProcessor.targetTitanium = titanium;
+    displayProcessor.targetMetaglass = metaglass;
+    displayProcessor.targetThorium = thorium;
 
     targetCopper = copper;
     targetLead = lead + leadSurplus;
@@ -278,7 +287,7 @@ export def buildBlockFromCfg(cfg, config)
     var building = buildBlock(type, coreX + x, coreY + y, cu, pb, gr, si, ti, mg, th, rotation, config, index);
     //display.nextBuildIndex = 1000;
     @this.write(building, cfg);
-    display.write(building, cfg);
+    displayProcessor.write(building, cfg);
     processor.write(building, cfg);
     baseBuilder.write(building, cfg);
     return building;
@@ -287,14 +296,14 @@ end;
 noinit export var ERROR_FOUND_BLOCK, ERROR_FOUND_TYPE, ERROR_X, ERROR_Y;
 
 inline void log(encodedId)
-    bank1[--logPosition] = encodedId + TIME * 1000;
+    oreLogMemory[--logPosition] = encodedId + TIME * 1000;
 end;
 
 inline void logBlock(block, index)
     log(block.@id);
     if index >= 0 and index < length(BLOCKS) then
-        display.blocksBuilt |= (1 << index);
-        display.recentBuildIndex = index;
+        displayProcessor.blocksBuilt |= (1 << index);
+        displayProcessor.recentBuildIndex = index;
     end;
 end;
 
@@ -409,10 +418,10 @@ export void buildTitaniumDrills(current)
     do
         while current < oreLocator.locations do
             var index = current * 4;
-            var size = bank1[index + 1];
+            var size = oreLogMemory[index + 1];
             if size >= 3 then
-                var x = bank1[index + 2];
-                var y = bank1[index + 3];
+                var x = oreLogMemory[index + 2];
+                var y = oreLogMemory[index + 3];
 
                 var built = buildTitaniumDrill(x - 1, y - 1, in out count, in out tiles)
                     + buildTitaniumDrill(x + 1, y - 1, in out count, in out tiles)

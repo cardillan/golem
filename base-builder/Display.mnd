@@ -9,7 +9,14 @@
 
 module Display;
 
-require "Links.mnd";
+linked(@memory-bank) oreLogMemory;
+linked(@memory-bank) resourceHistory;
+linked(@logic-processor) oreLocator;
+linked(@micro-processor) timer;
+linked(@switch) nextPage;
+linked(@tile-logic-display) display;
+remote(timer) mlog("time") TIME;
+
 require "Common.mnd";
 require "OreLocator.mnd" remote oreLocator;
 
@@ -115,7 +122,7 @@ inline void animate()
     var size = lerp(32, 168, ratio);
     image(x, y, @mega, size, 0);
     if ratio == 1 then drawHeader(); end;
-    drawflush(display1);
+    drawflush(display);
     animation++;
 end;
 
@@ -239,7 +246,7 @@ void updateDisplay()
     drawMultiReco(ref y);
     drawBuilder(ref y);
     drawPower(ref y);
-    drawflush(display1);
+    drawflush(display);
 end;
 
 inline void drawMaterials(ref y)
@@ -428,7 +435,7 @@ inline void displayRecord(record, index)
 end;
 
 void displayLog(page)
-    var logPosition = bank1[511];
+    var logPosition = oreLogMemory[511];
     var records = (511 - logPosition);
     var pages = max(1, (records - 1) \ RECORDS_PER_PAGE + 1);
     numPages = pages + 3;
@@ -446,14 +453,14 @@ void displayLog(page)
     drawHeader();
 
     for var position in stop ... lastRecord descending do
-        var record = bank1[position];
+        var record = oreLogMemory[position];
         displayRecord(record, start - position - 1);
-        drawflush(display1);
-        if switch1.enabled then break; end;
+        drawflush(display);
+        if nextPage.enabled then break; end;
     end;
 
     lastRecord = stop + 1;
-    drawflush(display1);
+    drawflush(display);
 end;
 
 //external bank1[0 ... 4] var minX, minY, maxX, maxY;
@@ -491,7 +498,7 @@ end;
 //    col(%[white]);
 //    drawText(175, 172, @topRight, index);
 //
-//    drawflush(display1);
+//    drawflush(display);
 //end;
 
 inline void setBaseMapScale()
@@ -529,7 +536,7 @@ void displayBaseMap()
         drawBold(90, HEADER1_Y1 - 11, @center, "Base map");
         setBaseMapScale();
         col(%[white]);
-        drawflush(display1);
+        drawflush(display);
         limit = 5;
     end;
 
@@ -557,23 +564,23 @@ void displayBaseMap()
 //            end;
         end;
 
-        if switch1.enabled then
+        if nextPage.enabled then
             clear(0, 0, 32);
-            drawflush(display1);
+            drawflush(display);
             break;
         end;
-        drawflush(display1);
+        drawflush(display);
     end;
 end;
 
 noinit var lastTail;
 
 void displayStorage()
-    var tail = bank2[510];
+    var tail = resourceHistory[510];
     var START = HEADER1_Y1 - 11 - 16;
 
     if pageSwitched then
-        lastTail = bank2[511];
+        lastTail = resourceHistory[511];
         col(%[gold]);
         drawBold(11, HEADER1_Y1 - 11, @left, "Resources");
         col(%[white]);
@@ -585,11 +592,11 @@ void displayStorage()
     end;
 
     drawHeader();
-    drawflush(display1);
+    drawflush(display);
 
     if lastTail > tail then return; end;
 
-    var accumulator = bank2[lastTail];
+    var accumulator = resourceHistory[lastTail];
     var x = 25 + lastTail;
     var y = START - 8;
 
@@ -601,7 +608,7 @@ void displayStorage()
         accumulator >>= 5;
     end;
 
-    drawflush(display1);
+    drawflush(display);
     lastTail++;
 end;
 
@@ -638,9 +645,9 @@ void backgroundProcess()
             updateMessage();
         end;
 
-        pageSwitched = switch1.enabled;
+        pageSwitched = nextPage.enabled;
         if pageSwitched then
-            switch1.enabled = false;
+            nextPage.enabled = false;
             page = (page + 1) % numPages;
             drawflush(null);
             reset();

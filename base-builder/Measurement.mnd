@@ -6,10 +6,14 @@
 #set program-version = "v0.4.0";
 
 require math;
-require "Links.mnd";
 
-external(bank2[511]) cached head = 0;
-external(bank2[510]) cached tail = -1;
+linked(@memory-bank) resourceHistory;
+linked(@logic-processor) builderController;
+linked(@micro-processor) timer;
+remote(timer) mlog("time") TIME;
+
+external(resourceHistory[511]) cached head = 0;
+external(resourceHistory[510]) cached tail = -1;
 
 const INTERVAL = 15 * 120;
 
@@ -43,7 +47,7 @@ begin
         end;
 
         var newTail = tail + 1;
-        bank2[newTail] = accumulator;
+        resourceHistory[newTail] = accumulator;
         tail = newTail;
     end;
 end;

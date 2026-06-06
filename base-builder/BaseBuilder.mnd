@@ -6,11 +6,21 @@
 #set program-name = "Base Builder";
 #set program-version = "v0.4.0";
 
+linked(@memory-bank) oreLogMemory;
+linked(@logic-processor) builderController;
+linked(@logic-processor) displayProcessor;
+linked(@logic-processor) oreLocator;
+linked(@micro-processor) coreControllerConfig;
+linked(@micro-processor) flareController;
+linked(@micro-processor) measurements;
+linked(@micro-processor) monoController;
+linked(@micro-processor) polyController;
+linked(@micro-processor) timer;
+remote(timer) mlog("time") TIME;
 
 require units;
-require "Links.mnd";
 require "Common.mnd";
-require "Display.mnd" remote display;
+require "Display.mnd" remote displayProcessor;
 require "OreLocator.mnd" remote oreLocator;
 require "CoreController.mnd" remote processor;
 require "MonoController.mnd" remote monoController;
@@ -60,11 +70,11 @@ end;
 def buildFirstTitaniumDrill(cfg)
     builderController.meetTargetCfg(cfg, false);
 
-    display.nextBlock = @ore-titanium;
+    displayProcessor.nextBlock = @ore-titanium;
     var dx, dy;
     var result = oreLocator.findDrillLocation(coreX, coreY, @unit, @titanium, @ore-titanium, 2, 4, out dx, out dy);
     if !result then error("Cannot locate spot for titanium drill"); end;
-    display.nextBlock = @pneumatic-drill;
+    displayProcessor.nextBlock = @pneumatic-drill;
 
     return builderController.buildFirstTitaniumDrillAt(dx, dy);
 end;
@@ -103,8 +113,8 @@ void buildThoriumDrill()
     thoriumContainer = buildRemoteBlockLocal(CONTAINER, oreLocator.containerX, oreLocator.containerY);
     if thoriumContainer == null then thoriumContainer = thoriumDrill; end;
 
-    display.thoriumDrill = thoriumDrill;
-    display.thoriumContainer = thoriumContainer;
+    displayProcessor.thoriumDrill = thoriumDrill;
+    displayProcessor.thoriumContainer = thoriumContainer;
 
     builderController.thoriumBattery = thoriumBattery;
     builderController.thoriumContainer = thoriumContainer;
@@ -117,8 +127,8 @@ end;
 
 void buildUnits()
     builderController.meetTarget(0, 0, 0, 0, 0, 0, 0, 0, false, true);
-    display.totalTargets = 0;
-    display.nextBlock = null;
+    displayProcessor.totalTargets = 0;
+    displayProcessor.nextBlock = null;
     processor.siliconReserve = 0;
     processor.graphiteReserve = 0;
 end;
@@ -132,7 +142,7 @@ begin
     while core == null;
 
     scrap = !ulocate(:ore, @sand);
-    display.scrap = scrap;
+    displayProcessor.scrap = scrap;
     builderController.scrap = scrap;
     monoController.scrap = scrap;
 
@@ -156,7 +166,7 @@ begin
     buildBlockFromCfgLocal(SMELTER);
     buildBlockFromCfgLocal(INVERTED_SORT1);
     titaniumDrill = buildFirstTitaniumDrill(PNEUMATIC_DRILL);
-    display.titaniumDrill = titaniumDrill;
+    displayProcessor.titaniumDrill = titaniumDrill;
     builderController.titaniumDrill = titaniumDrill;
 
     if scrap then
@@ -177,9 +187,9 @@ begin
     // Build and initialize base controller
     buildBlockFromCfgLocal(PROCESSOR, coreControllerConfig);
     processor.timer = timer;
-    processor.display = display;
+    processor.displayProcessor = displayProcessor;
     processor.core = core;
-    processor.bank = bank1;
+    processor.bank = oreLogMemory;
 
     for var block in BLOCKS[0 ... 10] do
         processor.write(@this.read(block), block);
@@ -261,16 +271,16 @@ begin
     // The base can already be fully served by monos and polys,
     // the main builder no longer needs to be occupied by supplying base
     // Note: display three concurrent goals
-    display.nextBlock = @ore-titanium;
+    displayProcessor.nextBlock = @ore-titanium;
     blocksBuildTitaniumDrills();
-    display.nextBlock = null;
+    displayProcessor.nextBlock = null;
 
     builderController.graphiteSurplus = 10;
     builderController.metaglassSurplus = 50;
 
-    display.nextBlock = @ore-thorium;
+    displayProcessor.nextBlock = @ore-thorium;
     buildThoriumDrill();
-    display.nextBlock = null;
+    displayProcessor.nextBlock = null;
 
     while processor.polys < 3 do
         builderController.supplyBase();
@@ -293,7 +303,7 @@ begin
     var tmp = processor.polys - 1;
     processor.polyTarget = tmp;
     processor.polys = tmp;
-    display.polys = tmp;
+    displayProcessor.polys = tmp;
     var x = multiplicative_rec.@x;
     var y = multiplicative_rec.@y;
     do

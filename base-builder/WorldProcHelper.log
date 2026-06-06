@@ -1,16 +1,35 @@
-    17 instructions before optimizations.
-     2 instructions eliminated by Jump Normalization (2 passes, 7 iterations).
-     1 instructions eliminated by Condition Optimization (8 iterations).
-    10 instructions modified by Expression Optimization (5 iterations).
-    21 instructions eliminated by Data Flow Optimization (3 passes, 11 iterations).
+    19 instructions before optimizations.
+     2 instructions eliminated by Temp Variables Elimination (9 iterations).
+     2 instructions eliminated by Jump Normalization (2 passes, 8 iterations).
+     1 instructions eliminated by Condition Optimization (9 iterations).
+    10 instructions modified by Expression Optimization (6 iterations).
+    21 instructions eliminated by Data Flow Optimization (3 passes, 12 iterations).
        1 loop conditions were partially rotated.
-    26 instructions added by Loop Unrolling (6 iterations).
+    26 instructions added by Loop Unrolling (7 iterations).
      1 loops unrolled by Loop Unrolling.
      1 instructions eliminated by Unreachable Code Elimination (2 iterations).
     18 instructions after optimizations.
 
 Pass 3: speed optimization selection (cost limit 986):
   * Unroll loop at line 16:5                                     size   +15, benefit    12500.0, efficiency    833.333 (+15 instructions)
+
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-2 instructions):
+ 
+     5 jump *label2 equal true false
+     6 label *label3
+     7 label *label4
+-    * set *tmp0 switch1
+-    * sensor *tmp1 *tmp0 @enabled
++    8 sensor *tmp1 switch1 @enabled
+     9 op equal *tmp2 *tmp1 false
+    10 jump *label3 notEqual *tmp2 false
+    11 label *label5
+-    * set *tmp3 switch1
+-    * control enabled *tmp3 false
++   12 control enabled switch1 false
+    13 set :i 0
+    14 label *label6
+    15 jump *label8 greaterThanEq :i 10
 
 Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
  
@@ -20,16 +39,16 @@ Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 ins
 -    * jump *label2 equal true false
      5 label *label3
      6 label *label4
-     7 sensor *tmp0 switch1 @enabled
+     7 sensor *tmp1 switch1 @enabled
 
 Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-1 instructions):
  
      5 label *label3
      6 label *label4
-     7 sensor *tmp0 switch1 @enabled
--    * op equal *tmp1 *tmp0 false
--    * jump *label3 notEqual *tmp1 false
-+    8 jump *label3 equal *tmp0 false
+     7 sensor *tmp1 switch1 @enabled
+-    * op equal *tmp2 *tmp1 false
+-    * jump *label3 notEqual *tmp2 false
++    8 jump *label3 equal *tmp1 false
      9 label *label5
     10 control enabled switch1 false
     11 set :i 0
@@ -40,8 +59,8 @@ Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1:
     12 label *label6
     13 jump *label8 greaterThanEq :i 10
 +   14 label *label9
-    15 lookup item *tmp3 :i
-    16 setprop *tmp3 shard1 3000
+    15 lookup item *tmp5 :i
+    16 setprop *tmp5 shard1 3000
     17 label *label7
     18 op add :i :i 1
 -    * jump *label6 always
@@ -58,8 +77,8 @@ Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1:
 -    * jump *label8 greaterThanEq :i 10
 +   13 jump *label8 greaterThanEq 0 10
     14 label *label9
-    15 lookup item *tmp3 :i
-    16 setprop *tmp3 shard1 3000
+    15 lookup item *tmp5 :i
+    16 setprop *tmp5 shard1 3000
 
 Modifications by Iterated phase, Jump Normalization, pass 3, iteration 1 (-1 instructions):
  
@@ -68,63 +87,63 @@ Modifications by Iterated phase, Jump Normalization, pass 3, iteration 1 (-1 ins
     12 label *label6
 -    * jump *label8 greaterThanEq 0 10
     13 label *label9
-    14 lookup item *tmp3 :i
-    15 setprop *tmp3 shard1 3000
+    14 lookup item *tmp5 :i
+    15 setprop *tmp5 shard1 3000
 
 Modifications by Unroll loop at line 16:5 (+26 instructions):
  
-     8 jump *label3 equal *tmp0 false
+     8 jump *label3 equal *tmp1 false
      9 label *label5
     10 control enabled switch1 false
 -    * set :i 0
 -    * label *label6
 -    * label *label9
--    * lookup item *tmp3 :i
--    * setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 :i
+-    * setprop *tmp5 shard1 3000
 -    * label *label7
 -    * op add :i :i 1
 -    * jump *label9 lessThan :i 10
 -    * label *label8
 +   11 set :i 0
 +   12 label *label10
-+   13 lookup item *tmp3 :i
-+   14 setprop *tmp3 shard1 3000
++   13 lookup item *tmp5 :i
++   14 setprop *tmp5 shard1 3000
 +   15 label *label11
 +   16 op add :i :i 1
-+   17 lookup item *tmp3 :i
-+   18 setprop *tmp3 shard1 3000
++   17 lookup item *tmp5 :i
++   18 setprop *tmp5 shard1 3000
 +   19 label *label12
 +   20 op add :i :i 1
-+   21 lookup item *tmp3 :i
-+   22 setprop *tmp3 shard1 3000
++   21 lookup item *tmp5 :i
++   22 setprop *tmp5 shard1 3000
 +   23 label *label13
 +   24 op add :i :i 1
-+   25 lookup item *tmp3 :i
-+   26 setprop *tmp3 shard1 3000
++   25 lookup item *tmp5 :i
++   26 setprop *tmp5 shard1 3000
 +   27 label *label14
 +   28 op add :i :i 1
-+   29 lookup item *tmp3 :i
-+   30 setprop *tmp3 shard1 3000
++   29 lookup item *tmp5 :i
++   30 setprop *tmp5 shard1 3000
 +   31 label *label15
 +   32 op add :i :i 1
-+   33 lookup item *tmp3 :i
-+   34 setprop *tmp3 shard1 3000
++   33 lookup item *tmp5 :i
++   34 setprop *tmp5 shard1 3000
 +   35 label *label16
 +   36 op add :i :i 1
-+   37 lookup item *tmp3 :i
-+   38 setprop *tmp3 shard1 3000
++   37 lookup item *tmp5 :i
++   38 setprop *tmp5 shard1 3000
 +   39 label *label17
 +   40 op add :i :i 1
-+   41 lookup item *tmp3 :i
-+   42 setprop *tmp3 shard1 3000
++   41 lookup item *tmp5 :i
++   42 setprop *tmp5 shard1 3000
 +   43 label *label18
 +   44 op add :i :i 1
-+   45 lookup item *tmp3 :i
-+   46 setprop *tmp3 shard1 3000
++   45 lookup item *tmp5 :i
++   46 setprop *tmp5 shard1 3000
 +   47 label *label19
 +   48 op add :i :i 1
-+   49 lookup item *tmp3 :i
-+   50 setprop *tmp3 shard1 3000
++   49 lookup item *tmp5 :i
++   50 setprop *tmp5 shard1 3000
 +   51 label *label20
 +   52 op add :i :i 1
 +   53 label *label8
@@ -137,63 +156,63 @@ Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 1:
     10 control enabled switch1 false
     11 set :i 0
     12 label *label10
--    * lookup item *tmp3 :i
-+   13 lookup item *tmp3 0
-    14 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 :i
++   13 lookup item *tmp5 0
+    14 setprop *tmp5 shard1 3000
     15 label *label11
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   16 op add :i 0 1
-+   17 lookup item *tmp3 1
-    18 setprop *tmp3 shard1 3000
++   17 lookup item *tmp5 1
+    18 setprop *tmp5 shard1 3000
     19 label *label12
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   20 op add :i 1 1
-+   21 lookup item *tmp3 2
-    22 setprop *tmp3 shard1 3000
++   21 lookup item *tmp5 2
+    22 setprop *tmp5 shard1 3000
     23 label *label13
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   24 op add :i 2 1
-+   25 lookup item *tmp3 3
-    26 setprop *tmp3 shard1 3000
++   25 lookup item *tmp5 3
+    26 setprop *tmp5 shard1 3000
     27 label *label14
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   28 op add :i 3 1
-+   29 lookup item *tmp3 4
-    30 setprop *tmp3 shard1 3000
++   29 lookup item *tmp5 4
+    30 setprop *tmp5 shard1 3000
     31 label *label15
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   32 op add :i 4 1
-+   33 lookup item *tmp3 5
-    34 setprop *tmp3 shard1 3000
++   33 lookup item *tmp5 5
+    34 setprop *tmp5 shard1 3000
     35 label *label16
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   36 op add :i 5 1
-+   37 lookup item *tmp3 6
-    38 setprop *tmp3 shard1 3000
++   37 lookup item *tmp5 6
+    38 setprop *tmp5 shard1 3000
     39 label *label17
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   40 op add :i 6 1
-+   41 lookup item *tmp3 7
-    42 setprop *tmp3 shard1 3000
++   41 lookup item *tmp5 7
+    42 setprop *tmp5 shard1 3000
     43 label *label18
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   44 op add :i 7 1
-+   45 lookup item *tmp3 8
-    46 setprop *tmp3 shard1 3000
++   45 lookup item *tmp5 8
+    46 setprop *tmp5 shard1 3000
     47 label *label19
 -    * op add :i :i 1
--    * lookup item *tmp3 :i
+-    * lookup item *tmp5 :i
 +   48 op add :i 8 1
-+   49 lookup item *tmp3 9
-    50 setprop *tmp3 shard1 3000
++   49 lookup item *tmp5 9
+    50 setprop *tmp5 shard1 3000
     51 label *label20
 -    * op add :i :i 1
 +   52 op add :i 9 1
@@ -203,49 +222,49 @@ Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 1:
 
 Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 2 (-11 instructions):
  
-     8 jump *label3 equal *tmp0 false
+     8 jump *label3 equal *tmp1 false
      9 label *label5
     10 control enabled switch1 false
 -    * set :i 0
     11 label *label10
-    12 lookup item *tmp3 0
-    13 setprop *tmp3 shard1 3000
+    12 lookup item *tmp5 0
+    13 setprop *tmp5 shard1 3000
     14 label *label11
 -    * op add :i 0 1
-    15 lookup item *tmp3 1
-    16 setprop *tmp3 shard1 3000
+    15 lookup item *tmp5 1
+    16 setprop *tmp5 shard1 3000
     17 label *label12
 -    * op add :i 1 1
-    18 lookup item *tmp3 2
-    19 setprop *tmp3 shard1 3000
+    18 lookup item *tmp5 2
+    19 setprop *tmp5 shard1 3000
     20 label *label13
 -    * op add :i 2 1
-    21 lookup item *tmp3 3
-    22 setprop *tmp3 shard1 3000
+    21 lookup item *tmp5 3
+    22 setprop *tmp5 shard1 3000
     23 label *label14
 -    * op add :i 3 1
-    24 lookup item *tmp3 4
-    25 setprop *tmp3 shard1 3000
+    24 lookup item *tmp5 4
+    25 setprop *tmp5 shard1 3000
     26 label *label15
 -    * op add :i 4 1
-    27 lookup item *tmp3 5
-    28 setprop *tmp3 shard1 3000
+    27 lookup item *tmp5 5
+    28 setprop *tmp5 shard1 3000
     29 label *label16
 -    * op add :i 5 1
-    30 lookup item *tmp3 6
-    31 setprop *tmp3 shard1 3000
+    30 lookup item *tmp5 6
+    31 setprop *tmp5 shard1 3000
     32 label *label17
 -    * op add :i 6 1
-    33 lookup item *tmp3 7
-    34 setprop *tmp3 shard1 3000
+    33 lookup item *tmp5 7
+    34 setprop *tmp5 shard1 3000
     35 label *label18
 -    * op add :i 7 1
-    36 lookup item *tmp3 8
-    37 setprop *tmp3 shard1 3000
+    36 lookup item *tmp5 8
+    37 setprop *tmp5 shard1 3000
     38 label *label19
 -    * op add :i 8 1
-    39 lookup item *tmp3 9
-    40 setprop *tmp3 shard1 3000
+    39 lookup item *tmp5 9
+    40 setprop *tmp5 shard1 3000
     41 label *label20
 -    * op add :i 9 1
     42 label *label8
@@ -257,140 +276,140 @@ Modifications by Iterated phase, Expression Optimization, pass 4, iteration 1:
      9 label *label5
     10 control enabled switch1 false
     11 label *label10
--    * lookup item *tmp3 0
-+   12 set *tmp3 @copper
-    13 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 0
++   12 set *tmp5 @copper
+    13 setprop *tmp5 shard1 3000
     14 label *label11
--    * lookup item *tmp3 1
-+   15 set *tmp3 @lead
-    16 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 1
++   15 set *tmp5 @lead
+    16 setprop *tmp5 shard1 3000
     17 label *label12
--    * lookup item *tmp3 2
-+   18 set *tmp3 @metaglass
-    19 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 2
++   18 set *tmp5 @metaglass
+    19 setprop *tmp5 shard1 3000
     20 label *label13
--    * lookup item *tmp3 3
-+   21 set *tmp3 @graphite
-    22 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 3
++   21 set *tmp5 @graphite
+    22 setprop *tmp5 shard1 3000
     23 label *label14
--    * lookup item *tmp3 4
-+   24 set *tmp3 @sand
-    25 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 4
++   24 set *tmp5 @sand
+    25 setprop *tmp5 shard1 3000
     26 label *label15
--    * lookup item *tmp3 5
-+   27 set *tmp3 @coal
-    28 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 5
++   27 set *tmp5 @coal
+    28 setprop *tmp5 shard1 3000
     29 label *label16
--    * lookup item *tmp3 6
-+   30 set *tmp3 @titanium
-    31 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 6
++   30 set *tmp5 @titanium
+    31 setprop *tmp5 shard1 3000
     32 label *label17
--    * lookup item *tmp3 7
-+   33 set *tmp3 @thorium
-    34 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 7
++   33 set *tmp5 @thorium
+    34 setprop *tmp5 shard1 3000
     35 label *label18
--    * lookup item *tmp3 8
-+   36 set *tmp3 @scrap
-    37 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 8
++   36 set *tmp5 @scrap
+    37 setprop *tmp5 shard1 3000
     38 label *label19
--    * lookup item *tmp3 9
-+   39 set *tmp3 @silicon
-    40 setprop *tmp3 shard1 3000
+-    * lookup item *tmp5 9
++   39 set *tmp5 @silicon
+    40 setprop *tmp5 shard1 3000
     41 label *label20
     42 label *label8
 
-Modifications by Iterated phase, Data Flow Optimization, pass 4, iteration 1:
+Modifications by Iterated phase, Data Flow Optimization, pass 5, iteration 1:
  
     10 control enabled switch1 false
     11 label *label10
-    12 set *tmp3 @copper
--    * setprop *tmp3 shard1 3000
+    12 set *tmp5 @copper
+-    * setprop *tmp5 shard1 3000
 +   13 setprop @copper shard1 3000
     14 label *label11
-    15 set *tmp3 @lead
--    * setprop *tmp3 shard1 3000
+    15 set *tmp5 @lead
+-    * setprop *tmp5 shard1 3000
 +   16 setprop @lead shard1 3000
     17 label *label12
-    18 set *tmp3 @metaglass
--    * setprop *tmp3 shard1 3000
+    18 set *tmp5 @metaglass
+-    * setprop *tmp5 shard1 3000
 +   19 setprop @metaglass shard1 3000
     20 label *label13
-    21 set *tmp3 @graphite
--    * setprop *tmp3 shard1 3000
+    21 set *tmp5 @graphite
+-    * setprop *tmp5 shard1 3000
 +   22 setprop @graphite shard1 3000
     23 label *label14
-    24 set *tmp3 @sand
--    * setprop *tmp3 shard1 3000
+    24 set *tmp5 @sand
+-    * setprop *tmp5 shard1 3000
 +   25 setprop @sand shard1 3000
     26 label *label15
-    27 set *tmp3 @coal
--    * setprop *tmp3 shard1 3000
+    27 set *tmp5 @coal
+-    * setprop *tmp5 shard1 3000
 +   28 setprop @coal shard1 3000
     29 label *label16
-    30 set *tmp3 @titanium
--    * setprop *tmp3 shard1 3000
+    30 set *tmp5 @titanium
+-    * setprop *tmp5 shard1 3000
 +   31 setprop @titanium shard1 3000
     32 label *label17
-    33 set *tmp3 @thorium
--    * setprop *tmp3 shard1 3000
+    33 set *tmp5 @thorium
+-    * setprop *tmp5 shard1 3000
 +   34 setprop @thorium shard1 3000
     35 label *label18
-    36 set *tmp3 @scrap
--    * setprop *tmp3 shard1 3000
+    36 set *tmp5 @scrap
+-    * setprop *tmp5 shard1 3000
 +   37 setprop @scrap shard1 3000
     38 label *label19
-    39 set *tmp3 @silicon
--    * setprop *tmp3 shard1 3000
+    39 set *tmp5 @silicon
+-    * setprop *tmp5 shard1 3000
 +   40 setprop @silicon shard1 3000
     41 label *label20
     42 label *label8
     43 label *label1
 
-Modifications by Iterated phase, Data Flow Optimization, pass 4, iteration 2 (-10 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 5, iteration 2 (-10 instructions):
  
      9 label *label5
     10 control enabled switch1 false
     11 label *label10
--    * set *tmp3 @copper
+-    * set *tmp5 @copper
     12 setprop @copper shard1 3000
     13 label *label11
--    * set *tmp3 @lead
+-    * set *tmp5 @lead
     14 setprop @lead shard1 3000
     15 label *label12
--    * set *tmp3 @metaglass
+-    * set *tmp5 @metaglass
     16 setprop @metaglass shard1 3000
     17 label *label13
--    * set *tmp3 @graphite
+-    * set *tmp5 @graphite
     18 setprop @graphite shard1 3000
     19 label *label14
--    * set *tmp3 @sand
+-    * set *tmp5 @sand
     20 setprop @sand shard1 3000
     21 label *label15
--    * set *tmp3 @coal
+-    * set *tmp5 @coal
     22 setprop @coal shard1 3000
     23 label *label16
--    * set *tmp3 @titanium
+-    * set *tmp5 @titanium
     24 setprop @titanium shard1 3000
     25 label *label17
--    * set *tmp3 @thorium
+-    * set *tmp5 @thorium
     26 setprop @thorium shard1 3000
     27 label *label18
--    * set *tmp3 @scrap
+-    * set *tmp5 @scrap
     28 setprop @scrap shard1 3000
     29 label *label19
--    * set *tmp3 @silicon
+-    * set *tmp5 @silicon
     30 setprop @silicon shard1 3000
     31 label *label20
     32 label *label8
 
-Modifications by Jumps phase, Unreachable Code Elimination, pass 6, iteration 1 (-1 instructions):
+Modifications by Jumps phase, Unreachable Code Elimination, pass 7, iteration 1 (-1 instructions):
  
      3 setprop @graphite shard1 120
      4 label *label0
      5 label *label3
 -    * label *label4
-     6 sensor *tmp0 switch1 @enabled
-     7 jump *label3 equal *tmp0 false
+     6 sensor *tmp1 switch1 @enabled
+     7 jump *label3 equal *tmp1 false
 -    * label *label5
      8 control enabled switch1 false
 -    * label *label10
@@ -428,8 +447,8 @@ Final code before resolving virtual instructions:
     3:  setprop @graphite shard1 120                                 shard1.setprop(@graphite, 120);
         label *label0                                                while true do
         label *label3                                                do while !switch1.enabled;
-    4:  sensor *tmp0 switch1 @enabled                                ...
-    5:  jump *label3 equal *tmp0 false                               ...
+    4:  sensor *tmp1 switch1 @enabled                                ...
+    5:  jump *label3 equal *tmp1 false                               ...
     6:  control enabled switch1 false 0 0 0                          switch1.enabled = false;
     7:  setprop @copper shard1 3000                                  shard1.setprop(lookup(:item, i), 3000);
     8:  setprop @lead shard1 3000                                    ...
@@ -447,3 +466,4 @@ Final code before resolving virtual instructions:
 Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
     19     1x     19,0  <no function>
+

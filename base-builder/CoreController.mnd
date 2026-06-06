@@ -10,10 +10,10 @@
 
 module CoreController;
 
-noinit export var display;
+noinit export var displayProcessor;
 
 require "Common.mnd";
-require "Display.mnd" remote display;
+require "Display.mnd" remote displayProcessor;
 
 noinit export var
     timer,
@@ -55,10 +55,10 @@ end;
 void factoryUnitFinished(unit)
     logUnit(unit);
     case unit
-        when @flare then display.flares = ++flares;
-        when @mono  then display.monos = ++monos;
-        when @poly  then display.polys = ++polys;
-        when @mega  then display.megas = ++megas;
+        when @flare then displayProcessor.flares = ++flares;
+        when @mono  then displayProcessor.monos = ++monos;
+        when @poly  then displayProcessor.polys = ++polys;
+        when @mega  then displayProcessor.megas = ++megas;
     end;
 end;
 
@@ -147,20 +147,20 @@ void backgroundProcess()
         end;
 
         if flares < flareTarget and airFactoryTarget != @mono then
-            display.nextFactory = airFactoryTarget = @flare;
+            displayProcessor.nextFactory = airFactoryTarget = @flare;
             handleAirFactory(@flare, power, 15, 0, ref lastProgress);
         elsif monos < monoTarget and airFactoryTarget != @flare then
-            display.nextFactory = airFactoryTarget = @mono;
+            displayProcessor.nextFactory = airFactoryTarget = @mono;
             handleAirFactory(@mono, power, 30, 15, ref lastProgress);
         else
-            display.nextFactory = airFactoryTarget = null;
+            displayProcessor.nextFactory = airFactoryTarget = null;
             air_factory.enabled = false;
             air_factory.config = @flare;
             unloader2.config = @coal;
         end;
 
         if polys < polyTarget then
-            display.nextAddReco = @poly;
+            displayProcessor.nextAddReco = @poly;
 
             var recoProgress = additive_rec.@progress;
             if lastRecoProgress > recoProgress then
@@ -182,7 +182,7 @@ void backgroundProcess()
                         move(x, y);
                         payEnter();
                     while !@unit.@dead;
-                    display.monos = --monos;
+                    displayProcessor.monos = --monos;
                     recoEntered = true;
                 end;
                 inverted_sort4.enabled = false;
@@ -196,12 +196,12 @@ void backgroundProcess()
                 inverted_sort4.enabled = false;
             end;
         else
-            display.nextAddReco = null;
+            displayProcessor.nextAddReco = null;
             inverted_sort4.enabled = false;
         end;
 
         if multiplicative_rec then
-            display.nextMultiReco = @mega;
+            displayProcessor.nextMultiReco = @mega;
             var c = null;
             if multiplicative_rec.@metaglass < 40 then
                 c = @metaglass;
@@ -217,7 +217,7 @@ void backgroundProcess()
 
             var multiProgress = multiplicative_rec.@progress;
             if lastMultiProgress > multiProgress then
-                display.nextMultiReco = null;
+                displayProcessor.nextMultiReco = null;
                 factoryUnitFinished(@mega);
                 lastMultiProgress = 0;
             else
