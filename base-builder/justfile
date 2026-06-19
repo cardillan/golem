@@ -1,24 +1,45 @@
 set shell := ["powershell.exe", "-c"]
 
-schemacode := "mindcode cs -l -c -s -a Cardillan -w --file-references windows-uri"
-mindcode := "mindcode cm -l -d 3 -u source -s --file-references windows-uri"
+schemacode := "mindcode cs -p -l -c -s -a Cardillan -w --file-references windows-uri"
+mindcode := "mindcode cm -l -d3 -u source -s --file-references windows-uri"
 
-schematics:
+Schematics:
      {{schemacode}} base-builder.sdf
 
-programs:
+basebuilder:
     {{mindcode}} BaseBuilder.mnd
+
+buildercontroller:
     {{mindcode}} BuilderController.mnd
+
+corecontroller:
     {{mindcode}} CoreController.mnd
+
+display:
     {{mindcode}} Display.mnd
+
+flarecontroller:
     {{mindcode}} FlareController.mnd
+
+matrices:
     {{mindcode}} Matrices.mnd
+
+measurement:
     {{mindcode}} Measurement.mnd
+
+monocontroller:
     {{mindcode}} MonoController.mnd
+
+orelocator:
     {{mindcode}} OreLocator.mnd
+
+polycontroller:
     {{mindcode}} PolyController.mnd
+
+worldprochelper:
     {{mindcode}} WorldProcHelper.mnd
 
-all:
-    just schematics
-    just programs
+[parallel]
+programs: basebuilder buildercontroller corecontroller display flarecontroller matrices measurement monocontroller orelocator polycontroller worldprochelper
+
+all: Schematics programs

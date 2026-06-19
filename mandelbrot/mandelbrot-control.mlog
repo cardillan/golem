@@ -1,12 +1,12 @@
-set *id "id: Controlling\nname: Mandelbrot Mania!\nversion: v3.0"
+set *id "id: Controlling\nname: Mandelbrot Mania!\nversion: v3.1"
 set ALL_PASS_COLORING false
 set SHOW_LEADER true
 set CLEAR_DISPLAY true
 jump 4 equal message1 null
 jump 5 equal message2 null
 jump 6 equal message3 null
-jump 7 equal display1 null
-jump 8 equal bank1 null
+jump 7 equal bank1 null
+jump 8 equal display1 null
 jump 9 equal switch1 null
 jump 10 equal switch2 null
 jump 11 equal switch3 null
@@ -27,12 +27,9 @@ set .TIME 0
 set .text1 ""
 set .text2 ""
 set .second @second
-sensor .bookmark_x message2 @x
-sensor .bookmark_y message2 @y
-set .bookmark 1
+set .bookmark 0
 set .bookmark_clr -1
 op add .position 80 0
-sensor .palette_x message3 @x
 set .palette_clr -1
 print "Initializing..."
 printflush message1
@@ -158,28 +155,6 @@ write 5000 bank1 154
 write true bank1 155
 write -1.408547 bank1 156
 write -0.03734831 bank1 157
-set :initialize:n 0
-jump 180 greaterThanEq 0 @links
-getlink :initialize:switch :initialize:n
-sensor *tmp212 :initialize:switch @type
-jump 178 notEqual *tmp212 @switch
-sensor *tmp214 :initialize:switch @y
-jump 178 notEqual *tmp214 .bookmark_y
-sensor :initialize:button_x :initialize:switch @x
-jump 174 lessThan :initialize:button_x .palette_x
-op sub *tmp221 :initialize:button_x .palette_x
-lookup team *tmp477 *tmp221
-sensor .buttonPalette*elem *tmp477 @name
-write :initialize:switch @this .buttonPalette*elem
-jump 178 always 0 0
-op sub *tmp223 :initialize:button_x .bookmark_x
-lookup item *tmp478 *tmp223
-sensor .buttonBookmark*elem *tmp478 @name
-write :initialize:switch @this .buttonBookmark*elem
-op add :initialize:n :initialize:n 1
-jump 162 lessThan :initialize:n @links
-jump 160 equal spore-pod false
-jump 160 equal blue false
 set .STOP 1
 write 1 bank1 68
 set .X -0.8
@@ -194,7 +169,7 @@ set .JULIA_X 0
 write 0 bank1 73
 set .JULIA_Y 0
 write 0 bank1 74
-set .PALETTE 1
+set .palette 0
 write 1 bank1 75
 print "Palette #1"
 printflush message3
@@ -204,424 +179,425 @@ set :operations 0
 set :lastTime 0
 set :lastPercent 0
 set :start @time
-jump 215 equal .links @links
+jump 190 equal .links @links
 set .links @links
 set :initializeProcessors:i 0
-jump 215 greaterThanEq 0 .links
+jump 190 greaterThanEq 0 .links
 getlink :initializeProcessors:proc :initializeProcessors:i
 write display1 :initializeProcessors:proc ".display"
 write bank1 :initializeProcessors:proc ".memory"
 op add :initializeProcessors:i :initializeProcessors:i 1
-jump 210 lessThan :initializeProcessors:i .links
-sensor *tmp234 display1 @operations
-select .CHANGE greaterThan :operations *tmp234 true .CHANGE
+jump 185 lessThan :initializeProcessors:i .links
+sensor *tmp0 display1 @operations
+select .CHANGE greaterThan :operations *tmp0 true .CHANGE
 sensor :operations display1 @operations
-jump 241 equal :print false
-print "Mandelbrot Mania! v3.0\nCompleted {0}% in {0}s\n"
+jump 216 equal :print false
+print "Mandelbrot Mania! v3.1\nCompleted {0}% in {0}s\n"
 format .PERCENT
 format .TIME
-jump 227 equal .JULIA false
+jump 202 equal .JULIA false
 print "Julia set of Mandelbrot\nfractal at coordinates\n   X: {0}\n   Y: {0}\n"
 format .JULIA_X
 format .JULIA_Y
-jump 228 always 0 0
+jump 203 always 0 0
 print "Mandelbrot set\n"
 print "-------------------------\nX: {0}\nY: {0}\nZoom: {0}\nAvg. iters: {0}\n"
 format .X
 format .Y
 format .ZOOM
-read *tmp241 bank1 65
-read *tmp242 bank1 66
-op div *tmp240 *tmp241 *tmp242
-op round *tmp243 *tmp240 0
-format *tmp243
+read *tmp2 bank1 65
+read *tmp3 bank1 66
+op div *tmp1 *tmp2 *tmp3
+op round *tmp4 *tmp1 0
+format *tmp4
 print .text1
 print .text2
 printflush message1
 set :print false
-sensor *tmp245 switch1 @enabled
-jump 248 equal *tmp245 false
+sensor *tmp5 switch1 @enabled
+jump 223 equal *tmp5 false
 set .CHANGE true
-op div *tmp255 44 .ZOOM
-op add .Y .Y *tmp255
+op div *tmp6 44 .ZOOM
+op add .Y .Y *tmp6
 write .Y bank1 70
 control enabled switch1 false 0 0 0
-sensor *tmp263 switch2 @enabled
-jump 255 equal *tmp263 false
+sensor *tmp7 switch2 @enabled
+jump 230 equal *tmp7 false
 set .CHANGE true
-op div *tmp268 -44 .ZOOM
-op add .X .X *tmp268
+op div *tmp8 -44 .ZOOM
+op add .X .X *tmp8
 write .X bank1 69
 control enabled switch2 false 0 0 0
-sensor *tmp281 switch3 @enabled
-jump 262 equal *tmp281 false
+sensor *tmp9 switch3 @enabled
+jump 237 equal *tmp9 false
 set .CHANGE true
-op div *tmp286 44 .ZOOM
-op add .X .X *tmp286
+op div *tmp10 44 .ZOOM
+op add .X .X *tmp10
 write .X bank1 69
 control enabled switch3 false 0 0 0
-sensor *tmp299 switch4 @enabled
-jump 269 equal *tmp299 false
+sensor *tmp11 switch4 @enabled
+jump 244 equal *tmp11 false
 set .CHANGE true
-op div *tmp309 -44 .ZOOM
-op add .Y .Y *tmp309
+op div *tmp12 -44 .ZOOM
+op add .Y .Y *tmp12
 write .Y bank1 70
 control enabled switch4 false 0 0 0
-sensor *tmp317 switch5 @enabled
-jump 275 equal *tmp317 false
+sensor *tmp13 switch5 @enabled
+jump 250 equal *tmp13 false
 set .CHANGE true
 op mul .ZOOM .ZOOM 2
 write .ZOOM bank1 71
 control enabled switch5 false 0 0 0
-sensor *tmp335 switch6 @enabled
-jump 281 equal *tmp335 false
+sensor *tmp14 switch6 @enabled
+jump 256 equal *tmp14 false
 set .CHANGE true
 op mul .ZOOM .ZOOM 0.5
 write .ZOOM bank1 71
 control enabled switch6 false 0 0 0
-sensor *tmp352 switch7 @enabled
-jump 291 equal *tmp352 .JULIA
+sensor *tmp15 switch7 @enabled
+jump 266 equal *tmp15 .JULIA
 set .CHANGE true
 sensor .JULIA switch7 @enabled
 write .JULIA bank1 72
-jump 291 equal .JULIA false
+jump 266 equal .JULIA false
 set .JULIA_X .X
 write .X bank1 73
 set .JULIA_Y .Y
 write .Y bank1 74
-sensor *tmp357 switch8 @enabled
-jump 315 equal *tmp357 false
+sensor *tmp16 switch8 @enabled
+jump 290 equal *tmp16 false
 read .X bank1 .position
 write .X bank1 69
-op add *tmp362 .position 1
-read .Y bank1 *tmp362
+op add *tmp17 .position 1
+read .Y bank1 *tmp17
 write .Y bank1 70
-op add *tmp366 .position 2
-read .ZOOM bank1 *tmp366
+op add *tmp18 .position 2
+read .ZOOM bank1 *tmp18
 write .ZOOM bank1 71
-op add *tmp370 .position 3
-read .JULIA bank1 *tmp370
+op add *tmp19 .position 3
+read .JULIA bank1 *tmp19
 write .JULIA bank1 72
-op add *tmp375 .position 4
-read .JULIA_X bank1 *tmp375
+op add *tmp20 .position 4
+read .JULIA_X bank1 *tmp20
 write .JULIA_X bank1 73
-op add *tmp378 .position 5
-read .JULIA_Y bank1 *tmp378
+op add *tmp21 .position 5
+read .JULIA_Y bank1 *tmp21
 write .JULIA_Y bank1 74
 control enabled switch7 .JULIA 0 0 0
 control enabled switch8 false 0 0 0
 set .text1 "\nLoaded from #"
-set .text2 .bookmark
+op add .text2 .bookmark 1
 set .CHANGE true
-sensor *tmp384 switch9 @enabled
-jump 332 equal *tmp384 false
+sensor *tmp22 switch9 @enabled
+jump 307 equal *tmp22 false
 write .X bank1 .position
-op add *tmp388 .position 1
-write .Y bank1 *tmp388
-op add *tmp391 .position 2
-write .ZOOM bank1 *tmp391
-op add *tmp394 .position 3
-write .JULIA bank1 *tmp394
-op add *tmp397 .position 4
-write .JULIA_X bank1 *tmp397
-op add *tmp400 .position 5
-write .JULIA_Y bank1 *tmp400
+op add *tmp23 .position 1
+write .Y bank1 *tmp23
+op add *tmp24 .position 2
+write .ZOOM bank1 *tmp24
+op add *tmp25 .position 3
+write .JULIA bank1 *tmp25
+op add *tmp26 .position 4
+write .JULIA_X bank1 *tmp26
+op add *tmp27 .position 5
+write .JULIA_Y bank1 *tmp27
 control enabled switch9 false 0 0 0
 set .text1 "\nSaved to #"
-set .text2 .bookmark
+op add .text2 .bookmark 1
 set :updateBookmarks true
 set :handleTopRowButtons:updateBookmarks :updateBookmarks
-jump 336 notEqual 1 .bookmark
-control enabled lead true 0 0 0
-jump 346 always 0 0
-jump 340 notEqual 1 .bookmark_clr
-control enabled lead false 0 0 0
+jump 311 notEqual 0 .bookmark
+control enabled switch10 true 0 0 0
+jump 321 always 0 0
+jump 315 notEqual 0 .bookmark_clr
+control enabled switch10 false 0 0 0
 set .bookmark_clr -1
-jump 346 always 0 0
-sensor *tmp414 lead @enabled
-jump 346 equal *tmp414 false
+jump 321 always 0 0
+sensor *tmp28 switch10 @enabled
+jump 321 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 1
+set .bookmark 0
 op add .position 80 0
 set :handleTopRowButtons:updateBookmarks true
-jump 349 notEqual 2 .bookmark
-control enabled metaglass true 0 0 0
-jump 359 always 0 0
-jump 353 notEqual 2 .bookmark_clr
-control enabled metaglass false 0 0 0
+jump 324 notEqual 1 .bookmark
+control enabled switch11 true 0 0 0
+jump 334 always 0 0
+jump 328 notEqual 1 .bookmark_clr
+control enabled switch11 false 0 0 0
 set .bookmark_clr -1
-jump 359 always 0 0
-sensor *tmp414 metaglass @enabled
-jump 359 equal *tmp414 false
+jump 334 always 0 0
+sensor *tmp28 switch11 @enabled
+jump 334 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 2
+set .bookmark 1
 op add .position 80 6
 set :handleTopRowButtons:updateBookmarks true
-jump 362 notEqual 3 .bookmark
-control enabled graphite true 0 0 0
-jump 372 always 0 0
-jump 366 notEqual 3 .bookmark_clr
-control enabled graphite false 0 0 0
+jump 337 notEqual 2 .bookmark
+control enabled switch12 true 0 0 0
+jump 347 always 0 0
+jump 341 notEqual 2 .bookmark_clr
+control enabled switch12 false 0 0 0
 set .bookmark_clr -1
-jump 372 always 0 0
-sensor *tmp414 graphite @enabled
-jump 372 equal *tmp414 false
+jump 347 always 0 0
+sensor *tmp28 switch12 @enabled
+jump 347 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 3
+set .bookmark 2
 op add .position 80 12
 set :handleTopRowButtons:updateBookmarks true
-jump 375 notEqual 4 .bookmark
-control enabled sand true 0 0 0
-jump 385 always 0 0
-jump 379 notEqual 4 .bookmark_clr
-control enabled sand false 0 0 0
+jump 350 notEqual 3 .bookmark
+control enabled switch13 true 0 0 0
+jump 360 always 0 0
+jump 354 notEqual 3 .bookmark_clr
+control enabled switch13 false 0 0 0
 set .bookmark_clr -1
-jump 385 always 0 0
-sensor *tmp414 sand @enabled
-jump 385 equal *tmp414 false
+jump 360 always 0 0
+sensor *tmp28 switch13 @enabled
+jump 360 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 4
+set .bookmark 3
 op add .position 80 18
 set :handleTopRowButtons:updateBookmarks true
-jump 388 notEqual 5 .bookmark
-control enabled coal true 0 0 0
-jump 398 always 0 0
-jump 392 notEqual 5 .bookmark_clr
-control enabled coal false 0 0 0
+jump 363 notEqual 4 .bookmark
+control enabled switch14 true 0 0 0
+jump 373 always 0 0
+jump 367 notEqual 4 .bookmark_clr
+control enabled switch14 false 0 0 0
 set .bookmark_clr -1
-jump 398 always 0 0
-sensor *tmp414 coal @enabled
-jump 398 equal *tmp414 false
+jump 373 always 0 0
+sensor *tmp28 switch14 @enabled
+jump 373 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 5
+set .bookmark 4
 op add .position 80 24
 set :handleTopRowButtons:updateBookmarks true
-jump 401 notEqual 6 .bookmark
-control enabled titanium true 0 0 0
-jump 411 always 0 0
-jump 405 notEqual 6 .bookmark_clr
-control enabled titanium false 0 0 0
+jump 376 notEqual 5 .bookmark
+control enabled switch15 true 0 0 0
+jump 386 always 0 0
+jump 380 notEqual 5 .bookmark_clr
+control enabled switch15 false 0 0 0
 set .bookmark_clr -1
-jump 411 always 0 0
-sensor *tmp414 titanium @enabled
-jump 411 equal *tmp414 false
+jump 386 always 0 0
+sensor *tmp28 switch15 @enabled
+jump 386 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 6
+set .bookmark 5
 op add .position 80 30
 set :handleTopRowButtons:updateBookmarks true
-jump 414 notEqual 7 .bookmark
-control enabled thorium true 0 0 0
-jump 424 always 0 0
-jump 418 notEqual 7 .bookmark_clr
-control enabled thorium false 0 0 0
+jump 389 notEqual 6 .bookmark
+control enabled switch16 true 0 0 0
+jump 399 always 0 0
+jump 393 notEqual 6 .bookmark_clr
+control enabled switch16 false 0 0 0
 set .bookmark_clr -1
-jump 424 always 0 0
-sensor *tmp414 thorium @enabled
-jump 424 equal *tmp414 false
+jump 399 always 0 0
+sensor *tmp28 switch16 @enabled
+jump 399 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 7
+set .bookmark 6
 op add .position 80 36
 set :handleTopRowButtons:updateBookmarks true
-jump 427 notEqual 8 .bookmark
-control enabled scrap true 0 0 0
-jump 437 always 0 0
-jump 431 notEqual 8 .bookmark_clr
-control enabled scrap false 0 0 0
+jump 402 notEqual 7 .bookmark
+control enabled switch17 true 0 0 0
+jump 412 always 0 0
+jump 406 notEqual 7 .bookmark_clr
+control enabled switch17 false 0 0 0
 set .bookmark_clr -1
-jump 437 always 0 0
-sensor *tmp414 scrap @enabled
-jump 437 equal *tmp414 false
+jump 412 always 0 0
+sensor *tmp28 switch17 @enabled
+jump 412 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 8
+set .bookmark 7
 op add .position 80 42
 set :handleTopRowButtons:updateBookmarks true
-jump 440 notEqual 9 .bookmark
-control enabled silicon true 0 0 0
-jump 450 always 0 0
-jump 444 notEqual 9 .bookmark_clr
-control enabled silicon false 0 0 0
+jump 415 notEqual 8 .bookmark
+control enabled switch18 true 0 0 0
+jump 425 always 0 0
+jump 419 notEqual 8 .bookmark_clr
+control enabled switch18 false 0 0 0
 set .bookmark_clr -1
-jump 450 always 0 0
-sensor *tmp414 silicon @enabled
-jump 450 equal *tmp414 false
+jump 425 always 0 0
+sensor *tmp28 switch18 @enabled
+jump 425 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 9
+set .bookmark 8
 op add .position 80 48
 set :handleTopRowButtons:updateBookmarks true
-jump 453 notEqual 10 .bookmark
-control enabled plastanium true 0 0 0
-jump 463 always 0 0
-jump 457 notEqual 10 .bookmark_clr
-control enabled plastanium false 0 0 0
+jump 428 notEqual 9 .bookmark
+control enabled switch19 true 0 0 0
+jump 438 always 0 0
+jump 432 notEqual 9 .bookmark_clr
+control enabled switch19 false 0 0 0
 set .bookmark_clr -1
-jump 463 always 0 0
-sensor *tmp414 plastanium @enabled
-jump 463 equal *tmp414 false
+jump 438 always 0 0
+sensor *tmp28 switch19 @enabled
+jump 438 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 10
+set .bookmark 9
 op add .position 80 54
 set :handleTopRowButtons:updateBookmarks true
-jump 466 notEqual 11 .bookmark
-control enabled phase-fabric true 0 0 0
-jump 476 always 0 0
-jump 470 notEqual 11 .bookmark_clr
-control enabled phase-fabric false 0 0 0
+jump 441 notEqual 10 .bookmark
+control enabled switch20 true 0 0 0
+jump 451 always 0 0
+jump 445 notEqual 10 .bookmark_clr
+control enabled switch20 false 0 0 0
 set .bookmark_clr -1
-jump 476 always 0 0
-sensor *tmp414 phase-fabric @enabled
-jump 476 equal *tmp414 false
+jump 451 always 0 0
+sensor *tmp28 switch20 @enabled
+jump 451 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 11
+set .bookmark 10
 op add .position 80 60
 set :handleTopRowButtons:updateBookmarks true
-jump 479 notEqual 12 .bookmark
-control enabled surge-alloy true 0 0 0
-jump 489 always 0 0
-jump 483 notEqual 12 .bookmark_clr
-control enabled surge-alloy false 0 0 0
+jump 454 notEqual 11 .bookmark
+control enabled switch21 true 0 0 0
+jump 464 always 0 0
+jump 458 notEqual 11 .bookmark_clr
+control enabled switch21 false 0 0 0
 set .bookmark_clr -1
-jump 489 always 0 0
-sensor *tmp414 surge-alloy @enabled
-jump 489 equal *tmp414 false
+jump 464 always 0 0
+sensor *tmp28 switch21 @enabled
+jump 464 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 12
+set .bookmark 11
 op add .position 80 66
 set :handleTopRowButtons:updateBookmarks true
-jump 492 notEqual 13 .bookmark
-control enabled spore-pod true 0 0 0
-jump 502 always 0 0
-jump 496 notEqual 13 .bookmark_clr
-control enabled spore-pod false 0 0 0
+jump 467 notEqual 12 .bookmark
+control enabled switch22 true 0 0 0
+jump 477 always 0 0
+jump 471 notEqual 12 .bookmark_clr
+control enabled switch22 false 0 0 0
 set .bookmark_clr -1
-jump 502 always 0 0
-sensor *tmp414 spore-pod @enabled
-jump 502 equal *tmp414 false
+jump 477 always 0 0
+sensor *tmp28 switch22 @enabled
+jump 477 equal *tmp28 false
 set .bookmark_clr .bookmark
-set .bookmark 13
+set .bookmark 12
 op add .position 80 72
 set :handleTopRowButtons:updateBookmarks true
-jump 505 notEqual 1 .PALETTE
-control enabled sharded true 0 0 0
-jump 517 always 0 0
-jump 509 notEqual 1 .palette_clr
-control enabled sharded false 0 0 0
+jump 480 notEqual 0 .palette
+control enabled switch23 true 0 0 0
+jump 492 always 0 0
+jump 484 notEqual 0 .palette_clr
+control enabled switch23 false 0 0 0
 set .palette_clr -1
-jump 517 always 0 0
-sensor *tmp429 sharded @enabled
-jump 517 equal *tmp429 false
-set .palette_clr .PALETTE
-set .PALETTE 1
+jump 492 always 0 0
+sensor *tmp29 switch23 @enabled
+jump 492 equal *tmp29 false
+set .palette_clr .palette
+set .palette 0
 write 1 bank1 75
 print "Palette #1"
 printflush message3
 set .CHANGE true
-jump 520 notEqual 2 .PALETTE
-control enabled crux true 0 0 0
-jump 532 always 0 0
-jump 524 notEqual 2 .palette_clr
-control enabled crux false 0 0 0
+jump 495 notEqual 1 .palette
+control enabled switch24 true 0 0 0
+jump 507 always 0 0
+jump 499 notEqual 1 .palette_clr
+control enabled switch24 false 0 0 0
 set .palette_clr -1
-jump 532 always 0 0
-sensor *tmp429 crux @enabled
-jump 532 equal *tmp429 false
-set .palette_clr .PALETTE
-set .PALETTE 2
+jump 507 always 0 0
+sensor *tmp29 switch24 @enabled
+jump 507 equal *tmp29 false
+set .palette_clr .palette
+set .palette 1
 write 2 bank1 75
 print "Palette #2"
 printflush message3
 set .CHANGE true
-jump 535 notEqual 3 .PALETTE
-control enabled malis true 0 0 0
-jump 547 always 0 0
-jump 539 notEqual 3 .palette_clr
-control enabled malis false 0 0 0
+jump 510 notEqual 2 .palette
+control enabled switch25 true 0 0 0
+jump 522 always 0 0
+jump 514 notEqual 2 .palette_clr
+control enabled switch25 false 0 0 0
 set .palette_clr -1
-jump 547 always 0 0
-sensor *tmp429 malis @enabled
-jump 547 equal *tmp429 false
-set .palette_clr .PALETTE
-set .PALETTE 3
+jump 522 always 0 0
+sensor *tmp29 switch25 @enabled
+jump 522 equal *tmp29 false
+set .palette_clr .palette
+set .palette 2
 write 3 bank1 75
 print "Palette #3"
 printflush message3
 set .CHANGE true
-jump 550 notEqual 4 .PALETTE
-control enabled green true 0 0 0
-jump 562 always 0 0
-jump 554 notEqual 4 .palette_clr
-control enabled green false 0 0 0
+jump 525 notEqual 3 .palette
+control enabled switch26 true 0 0 0
+jump 537 always 0 0
+jump 529 notEqual 3 .palette_clr
+control enabled switch26 false 0 0 0
 set .palette_clr -1
-jump 562 always 0 0
-sensor *tmp429 green @enabled
-jump 562 equal *tmp429 false
-set .palette_clr .PALETTE
-set .PALETTE 4
+jump 537 always 0 0
+sensor *tmp29 switch26 @enabled
+jump 537 equal *tmp29 false
+set .palette_clr .palette
+set .palette 3
 write 4 bank1 75
 print "Palette #4"
 printflush message3
 set .CHANGE true
-jump 565 notEqual 5 .PALETTE
-control enabled blue true 0 0 0
-jump 577 always 0 0
-jump 569 notEqual 5 .palette_clr
-control enabled blue false 0 0 0
+jump 540 notEqual 4 .palette
+control enabled switch27 true 0 0 0
+jump 552 always 0 0
+jump 544 notEqual 4 .palette_clr
+control enabled switch27 false 0 0 0
 set .palette_clr -1
-jump 577 always 0 0
-sensor *tmp429 blue @enabled
-jump 577 equal *tmp429 false
-set .palette_clr .PALETTE
-set .PALETTE 5
+jump 552 always 0 0
+sensor *tmp29 switch27 @enabled
+jump 552 equal *tmp29 false
+set .palette_clr .palette
+set .palette 4
 write 5 bank1 75
 print "Palette #5"
 printflush message3
 set .CHANGE true
 set :updateBookmarks :handleTopRowButtons:updateBookmarks
-jump 604 equal :handleTopRowButtons:updateBookmarks false
+jump 580 equal :handleTopRowButtons:updateBookmarks false
 print "BOOKMARKS\n[o] [o] [o] [o] ...\n      [o] Load\n      [o] Save\n-------------------------\nSelected bookmark #{0}:\n"
-format .bookmark
-op add *tmp433 .position 3
-read *tmp436 bank1 *tmp433
-jump 592 equal *tmp436 false
+op add *tmp30 .bookmark 1
+format *tmp30
+op add *tmp31 .position 3
+read *tmp32 bank1 *tmp31
+jump 568 equal *tmp32 false
 print "Julia set of Mandelbrot\nfractal at coordinates\n   X: {0}\n   Y: {0}\n"
-op add *tmp439 .position 4
-read *tmp441 bank1 *tmp439
-format *tmp441
-op add *tmp443 .position 5
-read *tmp445 bank1 *tmp443
-format *tmp445
-jump 593 always 0 0
+op add *tmp33 .position 4
+read *tmp34 bank1 *tmp33
+format *tmp34
+op add *tmp35 .position 5
+read *tmp36 bank1 *tmp35
+format *tmp36
+jump 569 always 0 0
 print "Mandelbrot set\n"
 print "-------------------------\nX: {0}\nY: {0}\nZoom: {0}\n"
-read *tmp448 bank1 .position
-format *tmp448
-op add *tmp450 .position 1
-read *tmp452 bank1 *tmp450
-format *tmp452
-op add *tmp454 .position 2
-read *tmp456 bank1 *tmp454
-format *tmp456
+read *tmp37 bank1 .position
+format *tmp37
+op add *tmp38 .position 1
+read *tmp39 bank1 *tmp38
+format *tmp39
+op add *tmp40 .position 2
+read *tmp41 bank1 *tmp40
+format *tmp41
 printflush message2
 set :updateBookmarks false
-read *tmp458 bank1 66
-op mul *tmp457 100 *tmp458
-op idiv .PERCENT *tmp457 30976
-jump 610 greaterThanEq .PERCENT 100
-op sub *tmp462 @second .second
-op round .TIME *tmp462 0
-jump 612 notEqual :lastTime .TIME
-jump 615 equal :lastPercent .PERCENT
+read *tmp43 bank1 66
+op mul *tmp42 100 *tmp43
+op idiv .PERCENT *tmp42 30976
+jump 586 greaterThanEq .PERCENT 100
+op sub *tmp44 @second .second
+op round .TIME *tmp44 0
+jump 588 notEqual :lastTime .TIME
+jump 591 equal :lastPercent .PERCENT
 set :lastTime .TIME
 set :lastPercent .PERCENT
 set :print true
-jump 645 equal .CHANGE false
+jump 621 equal .CHANGE false
 print "Initializing..."
 printflush message1
 op add .STOP .STOP 1
 write .STOP bank1 68
 set .CHANGE false
-jump 624 equal CLEAR_DISPLAY false
+jump 600 equal CLEAR_DISPLAY false
 draw clear 86 86 102 0 0 0
-jump 626 always 0 0
+jump 602 always 0 0
 draw color 86 86 102 204 0 0
 draw rect 0 0 176 176 0 0
 drawflush display1
@@ -637,19 +613,17 @@ set .text1 ""
 set :print true
 set .links @links
 set :initializeProcessors.1:i 0
-jump 645 greaterThanEq 0 .links
+jump 621 greaterThanEq 0 .links
 getlink :initializeProcessors.1:proc :initializeProcessors.1:i
 write display1 :initializeProcessors.1:proc ".display"
 write bank1 :initializeProcessors.1:proc ".memory"
 op add :initializeProcessors.1:i :initializeProcessors.1:i 1
-jump 640 lessThan :initializeProcessors.1:i .links
+jump 616 lessThan :initializeProcessors.1:i .links
 print "Links: {0}\nLoop time: "
 format .links
-op sub *tmp475 @time :start
-op round *tmp476 *tmp475 0
-print *tmp476
+op sub *tmp45 @time :start
+op round *tmp46 *tmp45 0
+print *tmp46
 printflush message4
-jump 205 always 0 0
-draw triangle derelict copper 0 0 0 0
-print "Compiled by Mindcode - github.com/cardillan/mindcode"
-
+jump 180 always 0 0
+print "Compiled by Mindcode 3.16.3 - github.com/cardillan/mindcode"

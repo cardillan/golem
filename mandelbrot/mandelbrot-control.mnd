@@ -4,7 +4,7 @@
 
 #set processor-id = "Controlling";
 #set program-name = "Mandelbrot Mania!";
-#set program-version = "v3.0";
+#set program-version = "v3.1";
 
 require "mandelbrot-common.mnd";
 
@@ -22,25 +22,27 @@ param CLEAR_DISPLAY = true;
 
 // As the schematic takes a long time to build, this processor may be built and running before all these blocks
 // are created. 'guarded' here ensures the program will wait for all the blocks to be built.
-guarded linked message1, message2, message3,
-    display     = display1,
-    memory      = bank1,
-    buttonUp    = switch1,
-    buttonLeft  = switch2,
-    buttonRight = switch3,
-    buttonDown  = switch4,
-    buttonPlus  = switch5,
-    buttonMinus = switch6,
-    buttonJulia = switch7,
-    buttonLoad  = switch8,
-    buttonSave  = switch9;
+guarded linked message1, message2, message3;
+guarded linked(@memory-bank) memory;
+guarded linked(@large-logic-display) display;
 
-const bookmarkButtons = 13;
-const paletteButtons = 5;
+guarded linked(@switch)
+    buttonUp,
+    buttonLeft,
+    buttonRight,
+    buttonDown,
+    buttonPlus,
+    buttonMinus,
+    buttonJulia,
+    buttonLoad,
+    buttonSave;
+
+noinit linked message4;
+
+linked(@switch) buttonBookmark[] = (bookmark1 .. bookmark13);
+linked(@switch) buttonPalette[] = (palette1 .. palette5);
 
 // The length must be one longer then the number of buttons, as index 0 is unused
-var buttonBookmark[bookmarkButtons + 1];
-var buttonPalette[paletteButtons + 1];
 var links = 0;
 
 allocate heap in memory[VARIABLES ... BOOKMARKS];
@@ -72,15 +74,11 @@ var text2 = "";
 var second = @second;
 
 // Bookmark buttons state
-var bookmark_x = message2.@x;
-var bookmark_y = message2.@y;
-var bookmark = 1;
-var bookmark_clr = -1;
-var position = BOOKMARKS + BOOKMARK_SIZE * (bookmark - 1);
+var bookmark = 0, bookmark_clr = -1;
+var position = BOOKMARKS + BOOKMARK_SIZE * bookmark;
 
 // Palette buttons state
-var palette_x = message3.@x;
-var palette_clr = -1;
+var palette = 0, palette_clr = -1;
 
 begin
     initialize();
@@ -186,7 +184,7 @@ end;
 ///////////////////////////////////////////////////////////////////////
 
 inline void printInfo()
-    println("Mandelbrot Mania! v3.0");
+    println("Mandelbrot Mania! v3.1");
     println($"Completed $PERCENT% in ${TIME}s");
     if JULIA then
         println("Julia set of Mandelbrot");
@@ -211,7 +209,7 @@ inline void printBookmarks(position, bookmark)
     println("      [o] Load");
     println("      [o] Save");
     println("-------------------------");
-    print($"Selected bookmark #$bookmark:\n");
+    print($"Selected bookmark #${bookmark+1}:\n");
     if memory[position + 3] then
         println("Julia set of Mandelbrot");
         println("fractal at coordinates");
@@ -256,7 +254,7 @@ inline void loadBookmark(position, bookmark)
     buttonJulia.enabled = JULIA;
     buttonLoad.enabled = false;
     text1 = "\nLoaded from #";
-    text2 = bookmark;
+    text2 = bookmark + 1;
 end;
 
 inline void saveBookmark(position, bookmark)
@@ -268,11 +266,11 @@ inline void saveBookmark(position, bookmark)
     memory[position + 5] = JULIA_Y;
     buttonSave.enabled = false;
     text1 = "\nSaved to #";
-    text2 = bookmark;
+    text2 = bookmark + 1;
 end;
 
 inline void handleTopRowButtons(in out updateBookmarks)
-    for var index in 1 .. bookmarkButtons do
+    for var index in 0 ... length(buttonBookmark) do
         var switch = buttonBookmark[index];
         if index == bookmark then
             switch.enabled = true;
@@ -282,21 +280,22 @@ inline void handleTopRowButtons(in out updateBookmarks)
         elsif switch.@enabled then
             bookmark_clr = bookmark;
             bookmark = index;
-            position = BOOKMARKS + BOOKMARK_SIZE * (bookmark - 1);
+            position = BOOKMARKS + BOOKMARK_SIZE * bookmark;
             updateBookmarks = true;
         end;
     end;
 
-    for var index in 1 .. paletteButtons do
+    for var index in 0 ... length(buttonPalette) do
         var switch = buttonPalette[index];
-        if index == PALETTE then
+        if index == palette then
             switch.enabled = true;
         elsif index == palette_clr then
             switch.enabled = false;
             palette_clr = -1;
         elsif switch.@enabled then
-            palette_clr = PALETTE;
-            PALETTE = index;
+            palette_clr = palette;
+            palette = index;
+            PALETTE = index + 1;
             print("Palette #", PALETTE);
             printflush(message3);
             CHANGE = true;
@@ -314,20 +313,6 @@ inline void initialize()
     createPalette();
     initializeBookmarks();
 
-    do
-        for var n in 0 ... @links do
-            var switch = getlink(n);
-            if switch.@type == @switch and switch.@y == bookmark_y then
-                var button_x = switch.@x;
-                if button_x >= palette_x then
-                    buttonPalette[button_x - palette_x] = switch;
-                else
-                    buttonBookmark[button_x - bookmark_x] = switch;
-                end;
-            end;
-        end;
-    while !buttonBookmark[bookmarkButtons] or !buttonPalette[paletteButtons];
-
     STOP = 1;
     X = -0.8;
     Y = 0;
@@ -335,6 +320,7 @@ inline void initialize()
     JULIA = false;
     JULIA_X = 0;
     JULIA_Y = 0;
+    palette = 0;
     PALETTE = 1;
 
     print("Palette #", PALETTE);

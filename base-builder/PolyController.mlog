@@ -1,7 +1,7 @@
 jump 3 always 0 0
 jump 170 always 0 0
 jump 163 always 0 0
-set *id "id: Poly Controller\nname: Base Builder\nversion: v0.4.0"
+set *id "id: Poly Controller"
 set .thoriumContainer null
 set .thoriumLimit 100
 set .thoriumContainerX 0
@@ -28,8 +28,8 @@ jump 29 notEqual .thoriumDrone null
 set .thoriumDrone @unit
 jump 21 always 0 0
 jump 43 notEqual @unit .thoriumDrone
-sensor *tmp12 .thoriumContainer @thorium
-jump 43 lessThanEq *tmp12 .thoriumLimit
+sensor *tmp0 .thoriumContainer @thorium
+jump 43 lessThanEq *tmp0 .thoriumLimit
 sensor :serviceThoriumDrill:item @unit @firstItem
 jump 37 notEqual :serviceThoriumDrill:item @thorium
 ucontrol approach .coreX .coreY 6 0 0
@@ -43,30 +43,30 @@ ucontrol itemDrop @air 30 0 0 0
 jump 21 always 0 0
 jump 47 equal .container false
 sensor :backgroundProcess:coal .core @coal
-select *tmp25 greaterThan :backgroundProcess:coal 220 @scrap .ore
-select .ore lessThan :backgroundProcess:coal 120 @coal *tmp25
+select *tmp1 greaterThan :backgroundProcess:coal 220 @scrap .ore
+select .ore lessThan :backgroundProcess:coal 120 @coal *tmp1
 sensor :backgroundProcess:flag @unit @flag
 print "Unit flag: {0}\n"
 format :backgroundProcess:flag
 read @counter "4Op" :backgroundProcess:flag
 jump 21 always 0 0
-sensor *tmp29 @unit @firstItem          # Origin: 50, keys: 0
-jump 59 equal *tmp29 null
+sensor *tmp2 @unit @firstItem           # Origin: 50, keys: 0
+jump 59 equal *tmp2 null
 ucontrol itemDrop @air 30 0 0 0
-sensor *tmp32 @unit @firstItem
-jump 59 equal *tmp32 null
+sensor *tmp3 @unit @firstItem
+jump 59 equal *tmp3 null
 print "Holding wrong item.\n"
 jump 21 always 0 0
-select *tmp36 equal .ore @coal 1 2
-ucontrol flag *tmp36 0 0 0 0
-select *tmp38 equal .ore @coal .coreX .containerX
-select *tmp40 equal .ore @coal .coreY .containerY
-select *tmp42 equal .ore @coal .coalDistance .scrapDistance
+select *tmp4 equal .ore @coal 1 2
+ucontrol flag *tmp4 0 0 0 0
+select *tmp5 equal .ore @coal .coreX .containerX
+select *tmp6 equal .ore @coal .coreY .containerY
+select *tmp7 equal .ore @coal .coalDistance .scrapDistance
 ulocate ore core true .ore :findOreToMine:x :findOreToMine:y 0 0
-op sub *tmp45 :findOreToMine:x *tmp38
-op sub *tmp46 :findOreToMine:y *tmp40
-op len :findOreToMine:dist *tmp45 *tmp46
-jump 77 greaterThanEq :findOreToMine:dist *tmp42
+op sub *tmp8 :findOreToMine:x *tmp5
+op sub *tmp9 :findOreToMine:y *tmp6
+op len :findOreToMine:dist *tmp8 *tmp9
+jump 77 greaterThanEq :findOreToMine:dist *tmp7
 jump 74 notEqual .ore @coal
 set .coalX :findOreToMine:x
 set .coalY :findOreToMine:y
@@ -83,8 +83,8 @@ print ", switching"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
 ucontrol flag 3 0 0 0 0
-sensor *tmp54 @unit @firstItem
-jump 89 equal *tmp54 @coal
+sensor *tmp10 @unit @firstItem
+jump 89 equal *tmp10 @coal
 print " (dropping)"
 ucontrol itemDrop @air 30 0 0 0
 print " at {0}, "
@@ -92,17 +92,17 @@ format .coalX
 print .coalY
 ucontrol approach .coalX .coalY 6 0 0
 ucontrol mine .coalX .coalY 0 0 0
-sensor *tmp57 @unit @totalItems
-jump 101 lessThan *tmp57 30
+sensor *tmp11 @unit @totalItems
+jump 101 lessThan *tmp11 30
 print ", full"
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
 ucontrol flag 3 0 0 0 0
 jump 110 always 0 0
-ucontrol within .coalX .coalY 6.5 *tmp60 0
-jump 110 equal *tmp60 false
-sensor *tmp62 @unit @mining
-jump 110 notEqual *tmp62 false
+ucontrol within .coalX .coalY 6.5 *tmp12 0
+jump 110 equal *tmp12 false
+sensor *tmp13 @unit @mining
+jump 110 notEqual *tmp13 false
 print ", ore lost"
 set .coalDistance 1000000000
 ucontrol approach .coreX .coreY 6 0 0
@@ -116,8 +116,8 @@ print ", switching"
 ucontrol approach .containerX .containerY 6 0 0
 ucontrol itemDrop .container 30 0 0 0
 ucontrol flag 4 0 0 0 0
-sensor *tmp67 @unit @firstItem
-jump 122 equal *tmp67 @scrap
+sensor *tmp14 @unit @firstItem
+jump 122 equal *tmp14 @scrap
 print " (dropping)"
 ucontrol itemDrop @air 30 0 0 0
 print " at {0}, "
@@ -125,17 +125,17 @@ format .scrapX
 print .scrapY
 ucontrol approach .scrapX .scrapY 6 0 0
 ucontrol mine .scrapX .scrapY 0 0 0
-sensor *tmp70 @unit @totalItems
-jump 134 lessThan *tmp70 25
+sensor *tmp15 @unit @totalItems
+jump 134 lessThan *tmp15 25
 print ", full"
 ucontrol approach .containerX .containerY 6 0 0
 ucontrol itemDrop .container 30 0 0 0
 ucontrol flag 4 0 0 0 0
 jump 143 always 0 0
-ucontrol within .scrapX .scrapY 6.5 *tmp73 0
-jump 143 equal *tmp73 false
-sensor *tmp75 @unit @mining
-jump 143 notEqual *tmp75 false
+ucontrol within .scrapX .scrapY 6.5 *tmp16 0
+jump 143 equal *tmp16 false
+sensor *tmp17 @unit @mining
+jump 143 notEqual *tmp17 false
 print ", ore lost"
 set .scrapDistance 1000000000
 ucontrol approach .containerX .containerY 6 0 0
@@ -146,16 +146,16 @@ jump 21 always 0 0
 print "Returning\n"                     # Origin: 50, keys: 3
 ucontrol approach .coreX .coreY 6 0 0
 ucontrol itemDrop .core 30 0 0 0
-sensor *tmp78 @unit @firstItem
-jump 21 notEqual *tmp78 null
+sensor *tmp18 @unit @firstItem
+jump 21 notEqual *tmp18 null
 print "    Finished\n"
 ucontrol flag 0 0 0 0 0
 jump 21 always 0 0
 print "Returning\n"                     # Origin: 50, keys: 4
 ucontrol approach .containerX .containerY 6 0 0
 ucontrol itemDrop .container 30 0 0 0
-sensor *tmp81 @unit @firstItem
-jump 21 notEqual *tmp81 null
+sensor *tmp19 @unit @firstItem
+jump 21 notEqual *tmp19 null
 print "    Finished\n"
 ucontrol flag 0 0 0 0 0
 jump 21 always 0 0
@@ -164,8 +164,8 @@ jump 20 always 0 0
 set .thoriumContainer :setThoriumContainer:container
 sensor .thoriumContainerX :setThoriumContainer:container @x
 sensor .thoriumContainerY :setThoriumContainer:container @y
-sensor *tmp86 .thoriumContainer @itemCapacity
-select .thoriumLimit greaterThan *tmp86 10 100 0
+sensor *tmp20 .thoriumContainer @itemCapacity
+select .thoriumLimit greaterThan *tmp20 10 100 0
 set :setThoriumContainer*finished true
 jump 20 always 0 0
 set .container :setScrapContainer:scrapContainer
@@ -173,5 +173,4 @@ sensor .containerX .container @x
 sensor .containerY .container @y
 set :setScrapContainer*finished true
 jump 20 always 0 0
-print "Compiled by Mindcode - github.com/cardillan/mindcode"
-
+print "Compiled by Mindcode 3.16.3 - github.com/cardillan/mindcode"

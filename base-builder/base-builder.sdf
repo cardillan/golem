@@ -1,5 +1,5 @@
 schematic
-    target = 8s
+    target = 8
     name = "Base Builder"
     tag = "Cardillan"
     description = """
@@ -20,29 +20,35 @@ schematic
         [gold]This schematic was originally created as an entry for Skye's Jam of July 2025.
         """
 
+    mindcode = """
+        #set syntax = strict;
+        #set program-name = "Base Builder";
+        #set program-version = "v0.4.0";
+        """
+
 nextPage:
     @switch              at ( 0,  0) disabled
 
-message1:
+message:
     @message             at ( 1,  0) text ""
 
 timer:
     @micro-processor     at ( 2,  0) processor mlog = "op add time time 1" end
 
 coreControllerConfig:
-    // Contains code for the processor controlling the core
+    // A template for building the processor controlling the core
     @micro-processor     at ( 3, 0) processor mindcode = file "CoreController.mnd" end
 
 displayProcessor:
     @logic-processor     at ( 0,  1) processor
         links
             display
+            message
+            nextPage
+            oreLocator
             oreLogMemory
             resourceHistory
-            nextPage
-            message1
             timer
-            oreLocator
         end
         mindcode = file "Display.mnd"
     end
@@ -50,9 +56,9 @@ displayProcessor:
 measurements:
     @micro-processor     at ( 2,  1) processor
         links
+            builderController
             resourceHistory
             timer
-            builderController
         end
         mindcode = file "Measurement.mnd"
     end
@@ -72,33 +78,30 @@ flareController:
     end
 
 oreLocator:
-    // Ore locator
     @logic-processor     at ( 0,  3) processor
         links
-            oreLogMemory
             matrices
+            oreLogMemory
         end
         mindcode = file "OreLocator.mnd"
     end
 
 matrices:
-    // Matrices
     @logic-processor     at ( 2,  3) processor mindcode = file "Matrices.mnd" end
 
-    // The main builder
 baseBuilder:
     @logic-processor     at ( 0, 5) processor
         links
-            oreLogMemory
-            timer
-            displayProcessor
-            oreLocator
             builderController
-            polyController
-            monoController
-            flareController
             coreControllerConfig
+            displayProcessor
+            flareController
             measurements
+            monoController
+            oreLocator
+            oreLogMemory
+            polyController
+            timer
         end
         mindcode = file "BaseBuilder.mnd"
     end
@@ -125,72 +128,18 @@ resourceHistory:
     @memory-bank         at ( 2,  7)
 
 display:
-    @tile-logic-display  at ( 4,  0)
-    @tile-logic-display  at ( 4,  1)
-    @tile-logic-display  at ( 4,  2)
-    @tile-logic-display  at ( 4,  3)
-    @tile-logic-display  at ( 4,  4)
-    @tile-logic-display  at ( 4,  5)
-    @tile-logic-display  at ( 4,  6)
-    @tile-logic-display  at ( 4,  7)
-    @tile-logic-display  at ( 4,  8)
-    @tile-logic-display  at ( 5,  0)
-    @tile-logic-display  at ( 5,  1)
-    @tile-logic-display  at ( 5,  2)
-    @tile-logic-display  at ( 5,  3)
-    @tile-logic-display  at ( 5,  4)
-    @tile-logic-display  at ( 5,  5)
-    @tile-logic-display  at ( 5,  6)
-    @tile-logic-display  at ( 5,  7)
-    @tile-logic-display  at ( 5,  8)
-    @tile-logic-display  at ( 6,  0)
-    @tile-logic-display  at ( 6,  1)
-    @tile-logic-display  at ( 6,  2)
-    @tile-logic-display  at ( 6,  3)
-    @tile-logic-display  at ( 6,  4)
-    @tile-logic-display  at ( 6,  5)
-    @tile-logic-display  at ( 6,  6)
-    @tile-logic-display  at ( 6,  7)
-    @tile-logic-display  at ( 6,  8)
-    @tile-logic-display  at ( 7,  0)
-    @tile-logic-display  at ( 7,  1)
-    @tile-logic-display  at ( 7,  2)
-    @tile-logic-display  at ( 7,  3)
-    @tile-logic-display  at ( 7,  4)
-    @tile-logic-display  at ( 7,  5)
-    @tile-logic-display  at ( 7,  6)
-    @tile-logic-display  at ( 7,  7)
-    @tile-logic-display  at ( 7,  8)
-    @tile-logic-display  at ( 8,  0)
-    @tile-logic-display  at ( 8,  1)
-    @tile-logic-display  at ( 8,  2)
-    @tile-logic-display  at ( 8,  3)
-    @tile-logic-display  at ( 8,  4)
-    @tile-logic-display  at ( 8,  5)
-    @tile-logic-display  at ( 8,  6)
-    @tile-logic-display  at ( 8,  7)
-    @tile-logic-display  at ( 8,  8)
-    @tile-logic-display  at ( 9,  0)
-    @tile-logic-display  at ( 9,  1)
-    @tile-logic-display  at ( 9,  2)
-    @tile-logic-display  at ( 9,  3)
-    @tile-logic-display  at ( 9,  4)
-    @tile-logic-display  at ( 9,  5)
-    @tile-logic-display  at ( 9,  6)
-    @tile-logic-display  at ( 9,  7)
-    @tile-logic-display  at ( 9,  8)
-
+    @tile-logic-display  at (4, 0) * (6, 9)
 
     // Poly spawner
-    @world-processor     at (-1,  8) processor mlog = """
-        setrule waves false 0 0 100 100
-        fetch core core @sharded 0 @conveyor
-        sensor x core @x
-        sensor y core @y
-        op add y y 3
-        spawn @poly x y 90 @sharded result
-        setprop @titanium shard1 500
-        stop
+    @world-processor     at (-1,  8) processor mindcode = """
+        #set processor-id = "Spawner";
+
+        begin
+            setrule(:waves, false);
+            var core = fetch(:core, @sharded, 0);
+            spawn(@poly, core.@x, core.@y, 90, @sharded);
+            stopProcessor();
+        end;
         """
     end
 end

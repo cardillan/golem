@@ -1,14 +1,12 @@
 schematic
     name = "Clear Area"
 
-switch1:    @world-switch        at ( 0,  0) disabled
-            @world-processor     at ( 1,  0) processor
+switch1:    @world-switch        at (0, 0) disabled
+            @world-processor     at (1, 0) processor
                 links * end
                 mindcode = main
             end
-processor1: @world-processor     at ( 2,  0) processor mindcode = clear end
-processor2: @world-processor     at ( 3,  0) processor mindcode = clear end
-processor3: @world-processor     at ( 4,  0) processor mindcode = clear end
+processor#: @world-processor     at (2, 0) * (3, 1) processor mindcode = clear end
 end
 
 main = """
@@ -33,7 +31,7 @@ main = """
 
 clear = """
     #set target = 8W;
-    module clear1;
+    module clear;
 
     const minY = 0;
     const maxY = 150;
@@ -42,7 +40,7 @@ clear = """
         setrate(1000);
     end;
 
-    remote void clearArea(minX, maxX)
+    export void clearArea(minX, maxX)
         for var x in minX ... maxX do
             for var y in minY ... maxY do
                 var building = getblock(:building, x, y);

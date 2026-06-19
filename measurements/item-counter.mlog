@@ -1,236 +1,197 @@
-set .conv*0 null
-set .conv*1 null
-set .conv*2 null
-set .conv*3 null
-set .conv*4 null
-set .conv*5 null
-set .conv*6 null
-set .conv*7 null
-set .conv*8 null
-set .conv*9 null
-set .conv*10 null
-set .conv*11 null
-set .conv*12 null
-set .conv*13 null
-set .conv*14 null
-set .conv*15 null
+set graphite-press null
+set multi-press null
+set silicon-smelter null
+set silicon-crucible null
+set kiln null
+set plastanium-compressor null
+set phase-weaver null
+set cryofluid-mixer null
+set pyratite-mixer null
+set blast-mixer null
+set melter null
+set separator null
+set disassembler null
+set spore-press null
+set pulverizer null
+set coal-centrifuge null
 set .memory null
 set .found 0
 set .links @links
 op sub :initialize:n .links 1
-jump 65 lessThan .links 1
+jump 35 lessThan .links 1
 getlink :initialize:block :initialize:n
 sensor *tmp4 :initialize:block @type
 jump 25 equal *tmp4 @memory-cell
 jump 27 notEqual *tmp4 @memory-bank
 set .memory :initialize:block
-jump 63 always 0 0
-jump 63 notEqual *tmp4 @plastanium-conveyor
-jump 62 greaterThanEq .found 16
-op mul *tmp60 .found 2
-op add @counter *tmp60 31
-set .conv*0 :initialize:block
-jump 62 always 0 0
-set .conv*1 :initialize:block
-jump 62 always 0 0
-set .conv*2 :initialize:block
-jump 62 always 0 0
-set .conv*3 :initialize:block
-jump 62 always 0 0
-set .conv*4 :initialize:block
-jump 62 always 0 0
-set .conv*5 :initialize:block
-jump 62 always 0 0
-set .conv*6 :initialize:block
-jump 62 always 0 0
-set .conv*7 :initialize:block
-jump 62 always 0 0
-set .conv*8 :initialize:block
-jump 62 always 0 0
-set .conv*9 :initialize:block
-jump 62 always 0 0
-set .conv*10 :initialize:block
-jump 62 always 0 0
-set .conv*11 :initialize:block
-jump 62 always 0 0
-set .conv*12 :initialize:block
-jump 62 always 0 0
-set .conv*13 :initialize:block
-jump 62 always 0 0
-set .conv*14 :initialize:block
-jump 62 always 0 0
-set .conv*15 :initialize:block
+jump 33 always 0 0
+jump 33 notEqual *tmp4 @plastanium-conveyor
+jump 32 greaterThanEq .found 16
+lookup block *tmp61 .found
+sensor .conv*elem *tmp61 @name
+write :initialize:block @this .conv*elem
 op add .found .found 1
 op sub :initialize:n :initialize:n 1
 jump 21 greaterThanEq :initialize:n 0
-jump 71 notEqual .found 0
-print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]No plastanium conveyor attached (maximum: 16, found: "
-print .found
-print ")"
+jump 40 notEqual .found 0
+print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]No plastanium conveyor attached (maximum: 16, found: {0})"
+format .found
 printflush message1
 jump 0 always 0 0
-jump 77 lessThanEq .found 16
-print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]Too many plastanium conveyors attached (maximum: 16, found: "
-print .found
-print ")"
+jump 45 lessThanEq .found 16
+print "[gold]Item Counter[], version [gold]1.0[]\n[salmon]Too many plastanium conveyors attached (maximum: 16, found: {0})"
+format .found
 printflush message1
 jump 0 always 0 0
-jump 81 notEqual .memory null
+jump 49 notEqual .memory null
 print "$TITLE\n[salmon]No memory attached."
 printflush message1
 jump 0 always 0 0
 sensor *tmp17 .memory @type
-jump 85 notEqual *tmp17 @memory-cell
-set *tmp19 63
-jump 86 always 0 0
-set *tmp19 511
+select *tmp19 equal *tmp17 @memory-cell 63 511
 set .totalIndex *tmp19
 read .total .memory *tmp19
 control enabled switch1 false 0 0 0
 set :start @time
-sensor *tmp28 .conv*0 @totalItems
-set .state1*0 *tmp28
-jump 94 greaterThanEq *tmp28 .state2*0
+sensor *tmp29 graphite-press @totalItems
+set .state1*0 *tmp29
+jump 59 greaterThanEq *tmp29 .state2*0
 op add .total .total 10
-sensor *tmp28 .conv*1 @totalItems
-set .state1*1 *tmp28
-jump 98 greaterThanEq *tmp28 .state2*1
+sensor *tmp29 multi-press @totalItems
+set .state1*1 *tmp29
+jump 63 greaterThanEq *tmp29 .state2*1
 op add .total .total 10
-sensor *tmp28 .conv*2 @totalItems
-set .state1*2 *tmp28
-jump 102 greaterThanEq *tmp28 .state2*2
+sensor *tmp29 silicon-smelter @totalItems
+set .state1*2 *tmp29
+jump 67 greaterThanEq *tmp29 .state2*2
 op add .total .total 10
-sensor *tmp28 .conv*3 @totalItems
-set .state1*3 *tmp28
-jump 106 greaterThanEq *tmp28 .state2*3
+sensor *tmp29 silicon-crucible @totalItems
+set .state1*3 *tmp29
+jump 71 greaterThanEq *tmp29 .state2*3
 op add .total .total 10
-sensor *tmp28 .conv*4 @totalItems
-set .state1*4 *tmp28
-jump 110 greaterThanEq *tmp28 .state2*4
+sensor *tmp29 kiln @totalItems
+set .state1*4 *tmp29
+jump 75 greaterThanEq *tmp29 .state2*4
 op add .total .total 10
-sensor *tmp28 .conv*5 @totalItems
-set .state1*5 *tmp28
-jump 114 greaterThanEq *tmp28 .state2*5
+sensor *tmp29 plastanium-compressor @totalItems
+set .state1*5 *tmp29
+jump 79 greaterThanEq *tmp29 .state2*5
 op add .total .total 10
-sensor *tmp28 .conv*6 @totalItems
-set .state1*6 *tmp28
-jump 118 greaterThanEq *tmp28 .state2*6
+sensor *tmp29 phase-weaver @totalItems
+set .state1*6 *tmp29
+jump 83 greaterThanEq *tmp29 .state2*6
 op add .total .total 10
-sensor *tmp28 .conv*7 @totalItems
-set .state1*7 *tmp28
-jump 122 greaterThanEq *tmp28 .state2*7
+sensor *tmp29 cryofluid-mixer @totalItems
+set .state1*7 *tmp29
+jump 87 greaterThanEq *tmp29 .state2*7
 op add .total .total 10
-sensor *tmp28 .conv*8 @totalItems
-set .state1*8 *tmp28
-jump 126 greaterThanEq *tmp28 .state2*8
+sensor *tmp29 pyratite-mixer @totalItems
+set .state1*8 *tmp29
+jump 91 greaterThanEq *tmp29 .state2*8
 op add .total .total 10
-sensor *tmp28 .conv*9 @totalItems
-set .state1*9 *tmp28
-jump 130 greaterThanEq *tmp28 .state2*9
+sensor *tmp29 blast-mixer @totalItems
+set .state1*9 *tmp29
+jump 95 greaterThanEq *tmp29 .state2*9
 op add .total .total 10
-sensor *tmp28 .conv*10 @totalItems
-set .state1*10 *tmp28
-jump 134 greaterThanEq *tmp28 .state2*10
+sensor *tmp29 melter @totalItems
+set .state1*10 *tmp29
+jump 99 greaterThanEq *tmp29 .state2*10
 op add .total .total 10
-sensor *tmp28 .conv*11 @totalItems
-set .state1*11 *tmp28
-jump 138 greaterThanEq *tmp28 .state2*11
+sensor *tmp29 separator @totalItems
+set .state1*11 *tmp29
+jump 103 greaterThanEq *tmp29 .state2*11
 op add .total .total 10
-sensor *tmp28 .conv*12 @totalItems
-set .state1*12 *tmp28
-jump 142 greaterThanEq *tmp28 .state2*12
+sensor *tmp29 disassembler @totalItems
+set .state1*12 *tmp29
+jump 107 greaterThanEq *tmp29 .state2*12
 op add .total .total 10
-sensor *tmp28 .conv*13 @totalItems
-set .state1*13 *tmp28
-jump 146 greaterThanEq *tmp28 .state2*13
+sensor *tmp29 spore-press @totalItems
+set .state1*13 *tmp29
+jump 111 greaterThanEq *tmp29 .state2*13
 op add .total .total 10
-sensor *tmp28 .conv*14 @totalItems
-set .state1*14 *tmp28
-jump 150 greaterThanEq *tmp28 .state2*14
+sensor *tmp29 pulverizer @totalItems
+set .state1*14 *tmp29
+jump 115 greaterThanEq *tmp29 .state2*14
 op add .total .total 10
-sensor *tmp28 .conv*15 @totalItems
-jump 153 greaterThanEq *tmp28 .state2*15
+sensor *tmp29 coal-centrifuge @totalItems
+jump 118 greaterThanEq *tmp29 .state2*15
 op add .total .total 10
 write .total .memory .totalIndex
-print "[gold]Item Counter[], version [gold]1.0[]            \nMonitoring [green]"
-print .found
-print "[] conveyors\nTotal items: [gold]"
-print .total
-print "[]\n"
-sensor *tmp43 .conv*0 @totalItems
-set .state2*0 *tmp43
-jump 163 greaterThanEq *tmp43 .state1*0
+print "[gold]Item Counter[], version [gold]1.0[]            \nMonitoring [green]{0}[] conveyors\nTotal items: [gold]{0}[]\n"
+format .found
+format .total
+sensor *tmp44 graphite-press @totalItems
+set .state2*0 *tmp44
+jump 126 greaterThanEq *tmp44 .state1*0
 op add .total .total 10
-sensor *tmp43 .conv*1 @totalItems
-set .state2*1 *tmp43
-jump 167 greaterThanEq *tmp43 .state1*1
+sensor *tmp44 multi-press @totalItems
+set .state2*1 *tmp44
+jump 130 greaterThanEq *tmp44 .state1*1
 op add .total .total 10
-sensor *tmp43 .conv*2 @totalItems
-set .state2*2 *tmp43
-jump 171 greaterThanEq *tmp43 .state1*2
+sensor *tmp44 silicon-smelter @totalItems
+set .state2*2 *tmp44
+jump 134 greaterThanEq *tmp44 .state1*2
 op add .total .total 10
-sensor *tmp43 .conv*3 @totalItems
-set .state2*3 *tmp43
-jump 175 greaterThanEq *tmp43 .state1*3
+sensor *tmp44 silicon-crucible @totalItems
+set .state2*3 *tmp44
+jump 138 greaterThanEq *tmp44 .state1*3
 op add .total .total 10
-sensor *tmp43 .conv*4 @totalItems
-set .state2*4 *tmp43
-jump 179 greaterThanEq *tmp43 .state1*4
+sensor *tmp44 kiln @totalItems
+set .state2*4 *tmp44
+jump 142 greaterThanEq *tmp44 .state1*4
 op add .total .total 10
-sensor *tmp43 .conv*5 @totalItems
-set .state2*5 *tmp43
-jump 183 greaterThanEq *tmp43 .state1*5
+sensor *tmp44 plastanium-compressor @totalItems
+set .state2*5 *tmp44
+jump 146 greaterThanEq *tmp44 .state1*5
 op add .total .total 10
-sensor *tmp43 .conv*6 @totalItems
-set .state2*6 *tmp43
-jump 187 greaterThanEq *tmp43 .state1*6
+sensor *tmp44 phase-weaver @totalItems
+set .state2*6 *tmp44
+jump 150 greaterThanEq *tmp44 .state1*6
 op add .total .total 10
-sensor *tmp43 .conv*7 @totalItems
-set .state2*7 *tmp43
-jump 191 greaterThanEq *tmp43 .state1*7
+sensor *tmp44 cryofluid-mixer @totalItems
+set .state2*7 *tmp44
+jump 154 greaterThanEq *tmp44 .state1*7
 op add .total .total 10
-sensor *tmp43 .conv*8 @totalItems
-set .state2*8 *tmp43
-jump 195 greaterThanEq *tmp43 .state1*8
+sensor *tmp44 pyratite-mixer @totalItems
+set .state2*8 *tmp44
+jump 158 greaterThanEq *tmp44 .state1*8
 op add .total .total 10
-sensor *tmp43 .conv*9 @totalItems
-set .state2*9 *tmp43
-jump 199 greaterThanEq *tmp43 .state1*9
+sensor *tmp44 blast-mixer @totalItems
+set .state2*9 *tmp44
+jump 162 greaterThanEq *tmp44 .state1*9
 op add .total .total 10
-sensor *tmp43 .conv*10 @totalItems
-set .state2*10 *tmp43
-jump 203 greaterThanEq *tmp43 .state1*10
+sensor *tmp44 melter @totalItems
+set .state2*10 *tmp44
+jump 166 greaterThanEq *tmp44 .state1*10
 op add .total .total 10
-sensor *tmp43 .conv*11 @totalItems
-set .state2*11 *tmp43
-jump 207 greaterThanEq *tmp43 .state1*11
+sensor *tmp44 separator @totalItems
+set .state2*11 *tmp44
+jump 170 greaterThanEq *tmp44 .state1*11
 op add .total .total 10
-sensor *tmp43 .conv*12 @totalItems
-set .state2*12 *tmp43
-jump 211 greaterThanEq *tmp43 .state1*12
+sensor *tmp44 disassembler @totalItems
+set .state2*12 *tmp44
+jump 174 greaterThanEq *tmp44 .state1*12
 op add .total .total 10
-sensor *tmp43 .conv*13 @totalItems
-set .state2*13 *tmp43
-jump 215 greaterThanEq *tmp43 .state1*13
+sensor *tmp44 spore-press @totalItems
+set .state2*13 *tmp44
+jump 178 greaterThanEq *tmp44 .state1*13
 op add .total .total 10
-sensor *tmp43 .conv*14 @totalItems
-set .state2*14 *tmp43
-jump 219 greaterThanEq *tmp43 .state1*14
+sensor *tmp44 pulverizer @totalItems
+set .state2*14 *tmp44
+jump 182 greaterThanEq *tmp44 .state1*14
 op add .total .total 10
-sensor *tmp43 .conv*15 @totalItems
-set .state2*15 *tmp43
-jump 223 greaterThanEq *tmp43 *tmp28
+sensor *tmp44 coal-centrifuge @totalItems
+set .state2*15 *tmp44
+jump 186 greaterThanEq *tmp44 *tmp29
 op add .total .total 10
-op sub *tmp51 @time :start
-op idiv *tmp53 *tmp51 2
-print "[lightgray]Loop time: "
-print *tmp53
-print " ms\n"
+op sub *tmp52 @time :start
+op idiv *tmp54 *tmp52 2
+print "[lightgray]Loop time: {0} ms\n"
+format *tmp54
 printflush message1
-jump 231 equal .links @links
+jump 193 equal .links @links
 end
-sensor *tmp56 switch1 @enabled
-jump 89 equal *tmp56 false
+sensor *tmp57 switch1 @enabled
+jump 54 equal *tmp57 false
 set .total 0
 write 0 .memory .totalIndex
-

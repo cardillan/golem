@@ -1,4 +1,4 @@
-set *id "id: Mono Controller\nname: Base Builder\nversion: v0.4.0"
+set *id "id: Mono Controller"
 set .min 0
 set .minOre null
 set copper @ore-copper
@@ -12,29 +12,29 @@ ulocate building core false @copper .coreX .coreY 0 .core
 jump 8 equal .core null
 set :backgroundProcess:runningCount 0
 ubind @mono
-sensor *tmp4 :backgroundProcess:firstUnit @dead
-select :backgroundProcess:firstUnit notEqual *tmp4 false @unit :backgroundProcess:firstUnit
+sensor *tmp0 :backgroundProcess:firstUnit @dead
+select :backgroundProcess:firstUnit notEqual *tmp0 false @unit :backgroundProcess:firstUnit
 jump 41 notEqual @unit :backgroundProcess:firstUnit
 printflush message1
-sensor *tmp9 .core @lead
-op sub :backgroundProcess:lead *tmp9 .leadTarget
-sensor *tmp11 .sandContainer @sand
-sensor *tmp12 .sandContainer @scrap
-op add *tmp13 *tmp11 *tmp12
-op sub :backgroundProcess:sand *tmp13 .sandTarget
-sensor *tmp15 .core @copper
-op sub :backgroundProcess:copper *tmp15 .copperTarget
-op min *tmp17 :backgroundProcess:lead :backgroundProcess:sand
-op min *tmp17 *tmp17 :backgroundProcess:copper
-select *tmp21 equal *tmp17 :backgroundProcess:lead @lead @copper
-select *tmp19 equal *tmp17 :backgroundProcess:sand @sand *tmp21
-set .minOre *tmp19
+sensor *tmp1 .core @lead
+op sub :backgroundProcess:lead *tmp1 .leadTarget
+sensor *tmp2 .sandContainer @sand
+sensor *tmp3 .sandContainer @scrap
+op add *tmp4 *tmp2 *tmp3
+op sub :backgroundProcess:sand *tmp4 .sandTarget
+sensor *tmp5 .core @copper
+op sub :backgroundProcess:copper *tmp5 .copperTarget
+op min *tmp6 :backgroundProcess:lead :backgroundProcess:sand
+op min *tmp6 *tmp6 :backgroundProcess:copper
+select *tmp8 equal *tmp6 :backgroundProcess:lead @lead @copper
+select *tmp7 equal *tmp6 :backgroundProcess:sand @sand *tmp8
+set .minOre *tmp7
 jump 33 equal .scrap false
-select .minOre equal *tmp19 @sand @scrap *tmp19
+select .minOre equal *tmp7 @sand @scrap *tmp7
 print "minOre:{0}\n"
 format .minOre
-op mul *tmp25 10 :backgroundProcess:runningCount
-op add .min *tmp17 *tmp25
+op mul *tmp9 10 :backgroundProcess:runningCount
+op add .min *tmp6 *tmp9
 set .count :backgroundProcess:runningCount
 set :backgroundProcess:runningCount 2
 sensor .sandX .sandContainer @x
@@ -44,20 +44,20 @@ sensor :backgroundProcess:flag @unit @flag
 print "Unit flag: {0}\n"
 format :backgroundProcess:flag
 jump 65 notEqual :backgroundProcess:flag 0
-sensor *tmp32 @unit @firstItem
-jump 51 equal *tmp32 null
+sensor *tmp10 @unit @firstItem
+jump 51 equal *tmp10 null
 ucontrol itemDrop @air 20 0 0 0
-sensor *tmp35 @unit @firstItem
-jump 13 notEqual *tmp35 null
+sensor *tmp11 @unit @firstItem
+jump 13 notEqual *tmp11 null
 ulocate ore core true .minOre :findOreToMine:x :findOreToMine:y 0 0
 ucontrol approach :findOreToMine:x :findOreToMine:y 7 0 0
 ucontrol mine :findOreToMine:x :findOreToMine:y 0 0 0
-op mul *tmp40 :findOreToMine:x 1000
-op add *tmp41 *tmp40 :findOreToMine:y
-op mul *tmp42 *tmp41 16
-sensor *tmp43 .minOre @id
-op add *tmp44 *tmp42 *tmp43
-ucontrol flag *tmp44 0 0 0 0
+op mul *tmp12 :findOreToMine:x 1000
+op add *tmp13 *tmp12 :findOreToMine:y
+op mul *tmp14 *tmp13 16
+sensor *tmp15 .minOre @id
+op add *tmp16 *tmp14 *tmp15
+ucontrol flag *tmp16 0 0 0 0
 print "Found {0} at {0}, {0}\n"
 format .minOre
 format :findOreToMine:x
@@ -65,44 +65,44 @@ format :findOreToMine:y
 jump 13 always 0 0
 jump 80 notEqual :backgroundProcess:flag 1
 print "Returning ore"
-sensor *tmp47 @unit @firstItem
-jump 72 notEqual *tmp47 @scrap
+sensor *tmp17 @unit @firstItem
+jump 72 notEqual *tmp17 @scrap
 ucontrol approach .sandX .sandY 7 0 0
 ucontrol itemDrop .sandContainer 20 0 0 0
 jump 74 always 0 0
 ucontrol approach .coreX .coreY 7 0 0
 ucontrol itemDrop .core 20 0 0 0
-sensor *tmp50 @unit @firstItem
-jump 78 notEqual *tmp50 null
+sensor *tmp18 @unit @firstItem
+jump 78 notEqual *tmp18 null
 print " (finished)\n"
 ucontrol flag 0 0 0 0 0
 print "\n"
 jump 13 always 0 0
 print "Mining "
-op mod *tmp53 :backgroundProcess:flag 16
-lookup item :mine:ore *tmp53
+op mod *tmp19 :backgroundProcess:flag 16
+lookup item :mine:ore *tmp19
 printchar :mine:ore
 op idiv :mine:flag :backgroundProcess:flag 16
 op mod :mine:y :mine:flag 1000
 op idiv :mine:x :mine:flag 1000
-sensor *tmp57 :mine:ore @name
-read :mine:floorOre @this *tmp57
-op sub *tmp85 20 .count
-select *tmp60 equal :mine:ore @scrap *tmp85 20
+sensor *tmp20 :mine:ore @name
+read :mine:floorOre @this *tmp20
+op sub *tmp24 20 .count
+select *tmp21 equal :mine:ore @scrap *tmp24 20
 jump 98 equal :mine:ore .minOre
 jump 98 equal :mine:ore @scrap
-sensor *tmp66 .core :mine:ore
-jump 98 lessThanEq *tmp66 .min
+sensor *tmp22 .core :mine:ore
+jump 98 lessThanEq *tmp22 .min
 print ", switching to a more needed ore"
 ucontrol flag 1 0 0 0 0
 jump 13 always 0 0
 sensor :mine:items @unit @totalItems
 print :mine:items
-sensor *tmp70 @unit @firstItem
-jump 104 equal *tmp70 :mine:ore
+sensor *tmp23 @unit @firstItem
+jump 104 equal *tmp23 :mine:ore
 print " (dropping)"
 ucontrol itemDrop @air 20 0 0 0
-jump 114 lessThan :mine:items *tmp60
+jump 114 lessThan :mine:items *tmp21
 print ", full"
 ucontrol flag 1 0 0 0 0
 jump 111 notEqual :mine:ore @scrap
@@ -131,5 +131,4 @@ ucontrol flag 1 0 0 0 0
 print ": blocked!\n"
 print "\n"
 jump 13 always 0 0
-print "Compiled by Mindcode - github.com/cardillan/mindcode"
-
+print "Compiled by Mindcode 3.16.3 - github.com/cardillan/mindcode"

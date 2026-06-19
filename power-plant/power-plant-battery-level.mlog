@@ -2,8 +2,8 @@ set *id "id: Battery Level Meter\nname: Impact Reactor Power Plant\nversion: v0.
 set PRM_DELAY 150
 set PRM_SAMPLES 40
 op min .SAMPLES PRM_SAMPLES 100
-op mul *tmp1 PRM_DELAY .SAMPLES
-op div .SECONDS *tmp1 1000
+op mul *tmp0 PRM_DELAY .SAMPLES
+op div .SECONDS *tmp0 1000
 printflush message1
 print "Initializing..."
 printflush message1
@@ -529,34 +529,34 @@ op add :wait :wait PRM_DELAY
 sensor :powerNetIn battery1 @powerNetIn
 sensor :powerNetOut battery1 @powerNetOut
 sensor :powerNetStored battery1 @powerNetStored
-read *tmp13 bank1 :index
-op sub :ACCU_CONS :ACCU_CONS *tmp13
+read *tmp1 bank1 :index
+op sub :ACCU_CONS :ACCU_CONS *tmp1
 op add :ACCU_CONS :ACCU_CONS :powerNetOut
 write :powerNetOut bank1 :index
-op div *tmp16 :ACCU_CONS .SAMPLES
-op round :consumption *tmp16 0
+op div *tmp2 :ACCU_CONS .SAMPLES
+op round :consumption *tmp2 0
 write :consumption bank1 508
 op add :tmp :index 100
-read *tmp21 bank1 :tmp
-op sub :ACCU_PROD :ACCU_PROD *tmp21
+read *tmp3 bank1 :tmp
+op sub :ACCU_PROD :ACCU_PROD *tmp3
 op add :ACCU_PROD :ACCU_PROD :powerNetIn
 write :powerNetIn bank1 :tmp
-op div *tmp24 :ACCU_PROD .SAMPLES
-op round :production *tmp24 0
+op div *tmp4 :ACCU_PROD .SAMPLES
+op round :production *tmp4 0
 write :production bank1 509
-op sub *tmp27 :ACCU_PROD :ACCU_CONS
-op div *tmp28 *tmp27 .SAMPLES
-op round :net_power *tmp28 0
+op sub *tmp5 :ACCU_PROD :ACCU_CONS
+op div *tmp6 *tmp5 .SAMPLES
+op round :net_power *tmp6 0
 write :net_power bank1 510
 op add :tmp :index 200
 read :last bank1 :tmp
 write :powerNetStored bank1 :tmp
 op sub :diff :powerNetStored :last
-op div *tmp37 :diff .SECONDS
-op round :battery_change *tmp37 0
+op div *tmp7 :diff .SECONDS
+op round :battery_change *tmp7 0
 write :battery_change bank1 511
-op add *tmp40 :index 1
-op mod :index *tmp40 .SAMPLES
+op add *tmp8 :index 1
+op mod :index *tmp8 .SAMPLES
 print "Measured interval: [green]{0}[] seconds\nConsumption: [green]{0}[]\nProduction: [green]{0}[]\nNet power: [green]{0}[]\nBattery change: [green]{0}\n"
 format .SECONDS
 format :consumption
@@ -573,5 +573,4 @@ print "[lightgray]Loops: "
 print :loops
 printflush message1
 jump 526 always 0 0
-print "Compiled by Mindcode - github.com/cardillan/mindcode"
-
+print "Compiled by Mindcode 3.16.3 - github.com/cardillan/mindcode"
