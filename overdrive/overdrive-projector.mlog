@@ -1,0 +1,115 @@
+set UNIT @flare
+jump 7 equal switch1 false
+sensor *tmp0 switch1 @enabled
+jump 7 notEqual *tmp0 false
+print "Supplying projector with phase fabric.\nActivate switch to start.\n"
+printflush message1
+jump 2 notEqual switch1 false
+set :CORE null
+print "Locating core..."
+printflush message1
+ubind UNIT
+jump 16 notEqual @unit null
+print "No unit of type {0} found."
+format UNIT
+printflush message1
+jump 10 always 0 0
+sensor *tmp1 @unit @controller
+jump 28 equal *tmp1 @this
+sensor *tmp2 @unit @controlled
+jump 10 notEqual *tmp2 0
+set :first_unit @unit
+ubind UNIT
+jump 28 equal @unit :first_unit
+sensor *tmp3 @unit @controller
+jump 28 equal *tmp3 @this
+sensor *tmp4 :first_unit @dead
+select @counter strictEqual *tmp4 0 @counter 10
+jump 21 always 0 0
+ucontrol flag 1 0 0 0 0
+ulocate building core false @copper 0 0 0 :CORE
+jump 8 equal :CORE null
+jump 35 notEqual projector1 null
+print "Waiting for projector to be connected..."
+printflush message1
+jump 32 equal projector1 null
+sensor :CORE_X :CORE @x
+sensor :CORE_Y :CORE @y
+sensor :PROJ_X projector1 @x
+sensor :PROJ_Y projector1 @y
+sensor :UNIT_CAPACITY @unit @itemCapacity
+set :state 1
+set :MSG ""
+sensor *tmp5 switch1 @enabled
+jump 0 strictEqual *tmp5 false
+set :start @time
+sensor *tmp6 @unit @dead
+op equal *tmp7 *tmp6 0
+sensor *tmp8 @unit @controller
+op notEqual *tmp9 *tmp8 @this
+jump 62 greaterThan *tmp7 *tmp9
+ubind UNIT
+jump 55 notEqual @unit null
+print "No unit of type $UNIT found."
+printflush message1
+jump 50 always 0 0
+sensor *tmp10 @unit @controlled
+jump 60 equal *tmp10 0
+print "Looking for a free $UNIT..."
+printflush message1
+jump 50 always 0 0
+ucontrol flag 1 0 0 0 0
+set :state 1
+jump 76 notEqual :state 1
+sensor *tmp11 @unit @firstItem
+jump 67 notEqual *tmp11 @phase-fabric
+set :state 3
+jump 76 always 0 0
+sensor *tmp12 @unit @totalItems
+jump 71 notEqual *tmp12 0
+set :state 2
+jump 76 always 0 0
+set :MSG "\nUnloading previous items ("
+ucontrol approach :CORE_X :CORE_Y 6 0 0
+ucontrol within :CORE_X :CORE_Y 8 *tmp13 0
+jump 76 equal *tmp13 false
+ucontrol itemDrop :CORE :UNIT_CAPACITY 0 0 0
+jump 89 notEqual :state 2
+ucontrol within :CORE_X :CORE_Y 8 *tmp14 0
+jump 87 equal *tmp14 false
+ucontrol itemTake :CORE @phase-fabric :UNIT_CAPACITY 0 0
+sensor *tmp15 @unit @totalItems
+jump 85 lessThan *tmp15 :UNIT_CAPACITY
+ucontrol approach :PROJ_X :PROJ_Y 6 0 0
+set :state 3
+jump 89 always 0 0
+set :MSG ")\nLoading phase fabric"
+jump 89 always 0 0
+ucontrol approach :CORE_X :CORE_Y 6 0 0
+set :MSG ")\nApproaching core"
+jump 102 notEqual :state 3
+ucontrol within :PROJ_X :PROJ_Y 8 *tmp16 0
+jump 100 equal *tmp16 false
+ucontrol itemDrop projector1 :UNIT_CAPACITY 0 0 0
+sensor *tmp17 @unit @totalItems
+jump 98 greaterThan *tmp17 0
+ucontrol approach :CORE_X :CORE_Y 6 0 0
+set :state 2
+jump 102 always 0 0
+set :MSG ")\nDropping phase fabric"
+jump 102 always 0 0
+ucontrol approach :PROJ_X :PROJ_Y 6 0 0
+set :MSG ")\nApproaching projector"
+print "Supplying projector with phase fabric\nPhase fabric level: {0} (+{0}{0}\nLoop time: {0} ms"
+sensor *tmp18 projector1 @phase-fabric
+sensor *tmp19 @unit @totalItems
+format *tmp18
+format *tmp19
+format :MSG
+op sub *tmp20 @time :start
+op floor *tmp21 *tmp20 0
+format *tmp21
+printflush message1
+sensor *tmp5 switch1 @enabled
+select @counter strictEqual *tmp5 false @counter 44
+

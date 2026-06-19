@@ -1,0 +1,177 @@
+// Unit transport of phase fabric to overdrive projector using a single unit only
+
+// Linked structures
+// projector1: the projector to supply
+// message1: status
+
+#set syntax = strict;
+
+param UNIT = @flare;   // Which unit to use
+
+linked PROJ = projector1;
+linked message = message1;
+noinit linked switch = switch1;
+
+//    BASIC INITIALIZATION
+/////////////////////////////////////////////////////////
+const RADIUS_WITHIN           = 8;
+const RADIUS_APPROACH         = 6;
+
+const S_UNUSED          = 0;            // Unit is not used.
+const S_UNLOAD          = 1;            // Unloading wrong items held by unit/initializing unit
+const S_APPROACH_SRC    = 2;            // Approaching source block
+const S_APPROACH_DST    = 3;            // Approaching destination block
+
+begin
+    //    WAITING FOR ACTIVE SWITCH
+    /////////////////////////////////////////////////////////
+    while switch and !switch.@enabled do
+        println("Supplying projector with phase fabric.");
+        println("Activate switch to start.");
+        printflush(message);
+    end;
+    
+    //    BASIC INITIALIZATION - REBINDING UNIT
+    /////////////////////////////////////////////////////////
+    var CORE = null;
+    do
+        print("Locating core...");
+        printflush(message);
+    
+    FindUnit:
+        while true do
+            // Find first free unit
+            while true do
+                ubind(UNIT);
+                if @unit == null then
+                    print($"No unit of type $UNIT found.");
+                    printflush(message);
+                elsif @unit.@controller == @this then
+                    break FindUnit;
+                elsif @unit.@controlled == 0 then
+                    break;
+                end;
+            end;
+    
+            // Try to find a unit controlled by us
+            var first_unit = @unit;
+            while true do
+                ubind(UNIT);
+                if @unit == first_unit or @unit.@controller == @this then
+                    // Either found unit controlled by this processor, or looped through all and didn't find one
+                    break FindUnit;
+                elsif first_unit.@dead !== 0 then
+                    // Don't get stuck if the first unit gets killed, start over
+                    break;
+                end;
+            end;
+        end;
+    
+        // This is our unit. We'll keep it
+        flag(1);
+        CORE = ulocate(:building, :core, false);
+    while CORE == null;
+    
+    // Funny. The processor might get built way earlier than the projector and miss the initialization.
+    while PROJ == null do
+        print("Waiting for projector to be connected...");
+        printflush(message);
+    end;
+    
+    var CORE_X = CORE.@x;
+    var CORE_Y = CORE.@y;
+    var PROJ_X = PROJ.@x;
+    var PROJ_Y = PROJ.@y;
+    
+    //    MAIN LOOP INITIALIZATION
+    /////////////////////////////////////////////////////////
+    var UNIT_CAPACITY = @unit.@itemCapacity;
+    var state = S_UNLOAD;
+    var item = @phase-fabric;
+    var MSG = "";
+    
+    //    MAIN LOOP
+    /////////////////////////////////////////////////////////
+    
+    // If a switch is attached, exit loop when it is not enabled, otherwise stay
+    while switch.@enabled !== false do
+        var start = @time;
+    
+        // Bind new unit if it is somehow lost
+        if (@unit.@dead == 0) <= (@unit.@controller != @this) then
+            while true do
+                ubind(UNIT);
+                if @unit == null then
+                    // All units have died, poor bastards
+                    print("No unit of type $UNIT found.");
+                    printflush(message);
+                elsif @unit.@controlled != 0 then
+                    print("Looking for a free $UNIT...");
+                    printflush(message);
+                else
+                    flag(1);
+                    break;
+                end;
+            end;
+    
+            // Unload newly acquired unit first
+            state = S_UNLOAD;
+        end;
+    
+        // We have a bound, functioning unit
+    
+        // Unloads everything to the core. Used as starting state, to make sure
+        // the unit is free to accept whatever it has to transport
+        if state == S_UNLOAD then
+            if @unit.@firstItem == item then
+                // Jump threading optimization here...
+                state = S_APPROACH_DST;
+            elsif @unit.@totalItems == 0 then
+                // Jump threading optimization here...
+                state = S_APPROACH_SRC;
+            else
+                MSG = "\nUnloading previous items (";
+                approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+                if within(CORE_X, CORE_Y, RADIUS_WITHIN) then
+                    itemDrop(CORE, UNIT_CAPACITY);
+                end;
+            end;
+        end;
+    
+        if state == S_APPROACH_SRC then
+            if within(CORE_X, CORE_Y, RADIUS_WITHIN) then
+                itemTake(CORE, item, UNIT_CAPACITY);
+                if @unit.@totalItems >= UNIT_CAPACITY then
+                    approach(PROJ_X, PROJ_Y, RADIUS_APPROACH);
+                    // Jump threading optimization here...
+                    state = S_APPROACH_DST;
+                else
+                    MSG = ")\nLoading phase fabric";
+                end;
+            else
+                approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+                MSG = ")\nApproaching core";
+            end;
+        end;
+    
+        if state == S_APPROACH_DST then
+            if within(PROJ_X, PROJ_Y, RADIUS_WITHIN) then
+                itemDrop(PROJ, UNIT_CAPACITY);
+                if @unit.@totalItems <= 0 then
+                    approach(CORE_X, CORE_Y, RADIUS_APPROACH);
+                    state = S_APPROACH_SRC;
+                else
+                    MSG = ")\nDropping phase fabric";
+                end;
+            else
+                approach(PROJ_X, PROJ_Y, RADIUS_APPROACH);
+                MSG = ")\nApproaching projector";
+            end;
+        end;
+    
+        print($"Supplying projector with phase fabric\n");
+        print($"Phase fabric level: $ (+${}$\n", PROJ.sensor(item), @unit.@totalItems, MSG);
+        print($"Loop time: $ ms", floor(@time - start));
+        printflush(message);
+    end;
+end;
