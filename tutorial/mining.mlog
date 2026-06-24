@@ -1,0 +1,136 @@
+# Unit mining logic. Part of mlog tutorial.
+#
+# Intended as a well-readable and understandable code illustrating all aspects that need to be considered
+# when controlling units.
+#
+# Link a storage (e.g. a container or a vault) and a sorter as 'sorter1'.
+# Choose the item type to mine in the sorter.
+
+# Set the type of unit to use
+set UNIT @mega
+
+# Link a storage block and set the name here
+set STORAGE vault1
+
+# Create a flag tied to this processor
+op mul flag @thisx @maph
+op add flag flag @thisy
+
+# Find a free unit. Loops until a free unit is found
+# We don't check the unit's flag. If there's a flagged unit that isn't actively controlled, we'll steal it.
+findUnit:
+    print "Finding a free unit"
+    printflush message1
+
+    ubind UNIT
+    sensor controller @unit @controller
+
+    # We've controlled this unit recently, and we'll accept it again
+    jump foundUnit equal controller @this
+
+    # When the `@controller is equal to @unit, the unit is NOT controlled by anyone else
+    jump findUnit notEqual controller @unit
+
+foundUnit:
+    # We flag the unit so that flag-based logic sees it as occupied
+    ucontrol flag flag
+
+    # We'll mine up to capacity - 1
+    # When the unit is at full capacity while mining, it tries to deposit the items into a nearby core
+    # This would cause the unit to lose the items and continue mining, perhaps indefinitely
+    sensor capacity @unit @itemCapacity
+    op sub mineCapacity capacity 1
+
+mainLoop:
+    # Here we have a unit. Find out what we need to mine.
+    # We do not verify the selected item can be mined by the current unit.
+    sensor itemToMine sorter1 @config
+    jump mainLoop equal itemToMine null     # Nothing selected
+
+    # If we already hold the right item, store it
+    # (If it holds just a few items, it might be better to go mining instead. The "correct" decision isnt'
+    # obvious)
+    sensor current @unit @firstItem
+    jump store equal current itemToMine
+
+    # We hold items of a type we don't want - drop it all
+    # Better also stop, as the unit might still be mining the previous type of ore
+    # and we could acquire an unwanted ore again right after dropping the contents,
+    # that would prevent us from mining the ore we want
+    ucontrol stop
+    ucontrol itemDrop @air capacity
+
+    # Locate the ore
+    # If it doesn't exist on the map, let it be known
+    ulocate ore core true itemToMine x y found
+    jump moveToOre notEqual found 0
+
+    print "Ore not found"
+    printflush message1
+    jump mainLoop always
+
+    moveToOre:
+        print "Moving to ore location"
+        printflush message1
+
+        # The unit might have died or get stolen while working for us
+        # When it happens, the controller changes.
+        # We need to check in every loop unfortunately
+        sensor controller @unit @controller
+        jump findUnit notEqual controller @this
+
+        ucontrol approach x y 4 0 0
+        ucontrol within x y 5 within
+        jump moveToOre equal within 0
+
+    mine:
+        print "Mining..."
+        printflush message1
+
+        # The unit might have died or get stolen while working for us
+        # When it happens, the controller changes.
+        # We need to check in every loop unfortunately
+        sensor controller @unit @controller
+        jump findUnit notEqual controller @this
+
+        # Someone may have built something over our mining spot. if so, we need to move elsewhere
+        ucontrol getBlock x y 0 building 0
+        jump store notEqual building null
+
+        # Someone might also have hijacked out unit, removed the items and load in different items,
+        # perhaps disabling our processor so that we wouldn't notice the change. While theoretically plausible,
+        # we aren't going to guard against this possibility. The line needs to be drawn somewhere.
+
+        ucontrol mine x y 0 0 0
+        sensor amount @unit itemToMine
+        jump mine lessThan amount mineCapacity
+
+        # Stop mining to avoid reaching capacity
+        ucontrol stop
+
+    store:
+        print "Moving to storage location"
+        printflush message1
+
+        # We could move this in front of the main loop, but it's just two instructions.
+        # We also do not guard against the possibility of the storage getting destroyed or moved; both is possible.
+        sensor sx STORAGE @x
+        sensor sy STORAGE @y
+
+    moveToContainer:
+        # The unit might have died or get stolen while working for us
+        # When it happens, the controller changes.
+        # We need to check in every loop unfortunately
+        sensor controller @unit @controller
+        jump findUnit notEqual controller @this
+
+        ucontrol approach sx sy 4 0 0
+        ucontrol within sx sy 5 within
+        jump moveToContainer equal within 0
+
+    # We're at the container: drop all
+    # No need to wait here, happens instantaneously
+    # If it is full, or got destroyed, the items won't be dropped.
+    # Recovering from destroyed storage is not supported.
+    ucontrol itemDrop STORAGE capacity 0 0 0
+    jump mainLoop always
