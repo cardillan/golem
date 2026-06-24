@@ -93,15 +93,13 @@ mainLoop:
         sensor controller @unit @controller
         jump findUnit notEqual controller @this
 
-        # Someone may have built something over our mining spot. if so, we need to move elsewhere
-        ucontrol getBlock x y 0 building 0
-        jump store notEqual building null
-
-        # Someone might also have hijacked out unit, removed the items and load in different items,
-        # perhaps disabling our processor so that we wouldn't notice the change. While theoretically plausible,
-        # we aren't going to guard against this possibility. The line needs to be drawn somewhere.
-
         ucontrol mine x y 0 0 0
+
+        # If the unit isn't mining, something went wrong. It might be that the ore tile
+        # is now obscured by a new block, or the unit isn't capable of mining this ore
+        sensor mining @unit @mining
+        jump store equal mining 0
+
         sensor amount @unit itemToMine
         jump mine lessThan amount mineCapacity
 
@@ -113,7 +111,8 @@ mainLoop:
         printflush message1
 
         # We could move this in front of the main loop, but it's just two instructions.
-        # We also do not guard against the possibility of the storage getting destroyed or moved; both is possible.
+        # We also do not guard against the possibility of the storage getting destroyed
+        # or moved; both is possible.
         sensor sx STORAGE @x
         sensor sy STORAGE @y
 
