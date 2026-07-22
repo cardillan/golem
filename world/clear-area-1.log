@@ -1,124 +1,152 @@
     28 instructions before optimizations.
-     1 instructions eliminated by Temp Variables Elimination (5 iterations).
+     1 instructions eliminated by Temp Variables Elimination (7 iterations).
      3 instructions eliminated by Dead Code Elimination (4 iterations).
-     1 instructions eliminated by Condition Optimization (5 iterations).
-     1 instructions eliminated by Single Step Elimination (5 iterations).
-   151 instructions eliminated by Data Flow Optimization (5 iterations).
-     2 instructions eliminated by Loop Rotation (2 iterations).
-       2 loop conditions were fully rotated.
-   744 instructions added by Loop Unrolling (3 iterations).
+     2 instructions eliminated by Jump Normalization (6 iterations).
+     1 instructions eliminated by Condition Optimization (7 iterations).
+     1 instructions eliminated by Single Step Elimination (7 iterations).
+   151 instructions eliminated by Data Flow Optimization (2 passes, 8 iterations).
+       2 loop conditions were partially rotated.
+   744 instructions added by Loop Unrolling (5 iterations).
      1 loops unrolled by Loop Unrolling.
      2 instructions eliminated by Unreachable Code Elimination (2 iterations).
    611 instructions after optimizations.
 
-Pass 1: speed optimization selection (cost limit 980):
+Pass 3: speed optimization selection (cost limit 980):
   ! Unroll loop at line 17:5                                     size +1390, benefit    10000.0, efficiency      7.194
   * Unroll loop at line 18:9                                     size  +593, benefit   187500.0, efficiency    316.189 (+593 instructions)
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-3 instructions):
  
-     2 label *label2
      3 setrate 1000
-     4 set *signature "8bd37276df37009f:v1"
+     4 label *label3
+     5 set *signature "8bd37276df37009f:v1"
 -    * set *waitaddr @counter
-     5 label *label3
-     6 wait 1e12
-     7 jump *label3 always
+     6 label *label4
+     7 wait 1e12
+     8 jump *label4 always
  
-    20 op greaterThan *tmp2 *tmp1 0
-    21 jump *label11 equal *tmp2 false
-    22 setblock block @air :clearArea1:x :clearArea1:y 0 0
+    21 op greaterThan *tmp2 *tmp1 0
+    22 jump *label12 equal *tmp2 false
+    23 setblock block @air :clearArea1:x :clearArea1:y 0 0
 -    * set *tmp3 null
-    23 jump *label12 always
-    24 label *label11
--    * set *tmp3 null
+    24 jump *label13 always
     25 label *label12
-    26 label *label9
-    27 op add :clearArea1:y :clearArea1:y 1
+-    * set *tmp3 null
+    26 label *label13
+    27 label *label10
+    28 op add :clearArea1:y :clearArea1:y 1
 
 Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-1 instructions):
  
-    14 set :clearArea1:y 0
-    15 label *label8
-    16 jump *label10 greaterThanEq :clearArea1:y 150
+    15 set :clearArea1:y 0
+    16 label *label9
+    17 jump *label11 greaterThanEq :clearArea1:y 150
 -    * getblock building *tmp0 :clearArea1:x :clearArea1:y
 -    * set :clearArea1:building *tmp0
-+   17 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
-    18 sensor *tmp1 :clearArea1:building @ammoCapacity
-    19 op greaterThan *tmp2 *tmp1 0
-    20 jump *label11 equal *tmp2 false
++   18 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
+    19 sensor *tmp1 :clearArea1:building @ammoCapacity
+    20 op greaterThan *tmp2 *tmp1 0
+    21 jump *label12 equal *tmp2 false
 
 Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-1 instructions):
  
-    16 jump *label10 greaterThanEq :clearArea1:y 150
-    17 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
-    18 sensor *tmp1 :clearArea1:building @ammoCapacity
+    17 jump *label11 greaterThanEq :clearArea1:y 150
+    18 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
+    19 sensor *tmp1 :clearArea1:building @ammoCapacity
 -    * op greaterThan *tmp2 *tmp1 0
--    * jump *label11 equal *tmp2 false
-+   19 jump *label11 lessThanEq *tmp1 0
-    20 setblock block @air :clearArea1:x :clearArea1:y 0 0
-    21 jump *label12 always
-    22 label *label11
+-    * jump *label12 equal *tmp2 false
++   20 jump *label12 lessThanEq *tmp1 0
+    21 setblock block @air :clearArea1:x :clearArea1:y 0 0
+    22 jump *label13 always
+    23 label *label12
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
  
-    18 sensor *tmp1 :clearArea1:building @ammoCapacity
-    19 jump *label11 lessThanEq *tmp1 0
-    20 setblock block @air :clearArea1:x :clearArea1:y 0 0
--    * jump *label12 always
-    21 label *label11
+    19 sensor *tmp1 :clearArea1:building @ammoCapacity
+    20 jump *label12 lessThanEq *tmp1 0
+    21 setblock block @air :clearArea1:x :clearArea1:y 0 0
+-    * jump *label13 always
     22 label *label12
-    23 label *label9
+    23 label *label13
+    24 label *label10
 
-Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1 (-2 instructions):
+Modifications by Iterated phase, Loop Rotation, pass 1, iteration 1:
  
-    10 # "Function: export void clearArea1()"
-    11 set :clearArea1:x 200
-    12 label *label5
--    * jump *label7 greaterThanEq :clearArea1:x 400
-+   13 label *label13
-    14 set :clearArea1:y 0
-    15 label *label8
--    * jump *label10 greaterThanEq :clearArea1:y 150
-+   16 label *label14
-    17 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
-    18 sensor *tmp1 :clearArea1:building @ammoCapacity
-    19 jump *label11 lessThanEq *tmp1 0
+    12 set :clearArea1:x 200
+    13 label *label6
+    14 jump *label8 greaterThanEq :clearArea1:x 400
++   15 label *label14
+    16 set :clearArea1:y 0
+    17 label *label9
+    18 jump *label11 greaterThanEq :clearArea1:y 150
++   19 label *label15
+    20 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
+    21 sensor *tmp1 :clearArea1:building @ammoCapacity
+    22 jump *label12 lessThanEq *tmp1 0
  
-    22 label *label12
-    23 label *label9
-    24 op add :clearArea1:y :clearArea1:y 1
--    * jump *label8 always
-+   25 jump *label14 lessThan :clearArea1:y 150
+    25 label *label13
     26 label *label10
-    27 label *label6
-    28 op add :clearArea1:x :clearArea1:x 1
--    * jump *label5 always
-+   29 jump *label13 lessThan :clearArea1:x 400
+    27 op add :clearArea1:y :clearArea1:y 1
+-    * jump *label9 always
++   28 jump *label15 lessThan :clearArea1:y 150
+    29 label *label11
     30 label *label7
-    31 label *label4
-    32 set :clearArea1*finished true
+    31 op add :clearArea1:x :clearArea1:x 1
+-    * jump *label6 always
++   32 jump *label14 lessThan :clearArea1:x 400
+    33 label *label8
+    34 label *label5
+    35 set :clearArea1*finished true
+
+Modifications by Iterated phase, Data Flow Optimization, pass 2, iteration 1:
+ 
+    11 # "Function: export void clearArea1()"
+    12 set :clearArea1:x 200
+    13 label *label6
+-    * jump *label8 greaterThanEq :clearArea1:x 400
++   14 jump *label8 greaterThanEq 200 400
+    15 label *label14
+    16 set :clearArea1:y 0
+    17 label *label9
+-    * jump *label11 greaterThanEq :clearArea1:y 150
++   18 jump *label11 greaterThanEq 0 150
+    19 label *label15
+    20 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
+    21 sensor *tmp1 :clearArea1:building @ammoCapacity
+
+Modifications by Iterated phase, Jump Normalization, pass 3, iteration 1 (-2 instructions):
+ 
+    11 # "Function: export void clearArea1()"
+    12 set :clearArea1:x 200
+    13 label *label6
+-    * jump *label8 greaterThanEq 200 400
+    14 label *label14
+    15 set :clearArea1:y 0
+    16 label *label9
+-    * jump *label11 greaterThanEq 0 150
+    17 label *label15
+    18 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
+    19 sensor *tmp1 :clearArea1:building @ammoCapacity
 
 Modifications by Unroll loop at line 18:9 (+744 instructions):
  
-    11 set :clearArea1:x 200
-    12 label *label5
-    13 label *label13
+    12 set :clearArea1:x 200
+    13 label *label6
+    14 label *label14
 -    * set :clearArea1:y 0
--    * label *label8
--    * label *label14
+-    * label *label9
+-    * label *label15
 -    * getblock building :clearArea1:building :clearArea1:x :clearArea1:y
 -    * sensor *tmp1 :clearArea1:building @ammoCapacity
--    * jump *label11 lessThanEq *tmp1 0
+-    * jump *label12 lessThanEq *tmp1 0
 -    * setblock block @air :clearArea1:x :clearArea1:y 0 0
--    * label *label11
 -    * label *label12
--    * label *label9
--    * op add :clearArea1:y :clearArea1:y 1
--    * jump *label14 lessThan :clearArea1:y 150
+-    * label *label13
 -    * label *label10
-+   14 set :clearArea1:y 0
-+   15 label *label15
+-    * op add :clearArea1:y :clearArea1:y 1
+-    * jump *label15 lessThan :clearArea1:y 150
+-    * label *label11
++   15 set :clearArea1:y 0
 +   16 label *label16
 +   17 getblock building :clearArea1:building :clearArea1:x :clearArea1:y
 +   18 sensor *tmp1 :clearArea1:building @ammoCapacity
@@ -1320,15 +1348,15 @@ Modifications by Unroll loop at line 18:9 (+744 instructions):
 + 1214 label *label465
 + 1215 label *label466
 + 1216 op add :clearArea1:y :clearArea1:y 1
-+ 1217 label *label10
-  1218 label *label6
++ 1217 label *label11
+  1218 label *label7
   1219 op add :clearArea1:x :clearArea1:x 1
-  1220 jump *label13 lessThan :clearArea1:x 400
+  1220 jump *label14 lessThan :clearArea1:x 400
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 1:
  
-    14 set :clearArea1:y 0
-    15 label *label15
+    14 label *label14
+    15 set :clearArea1:y 0
     16 label *label16
 -    * getblock building :clearArea1:building :clearArea1:x :clearArea1:y
 +   17 getblock building :clearArea1:building :clearArea1:x 0
@@ -2980,19 +3008,19 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 1:
   1215 label *label466
 -    * op add :clearArea1:y :clearArea1:y 1
 + 1216 op add :clearArea1:y 149 1
-  1217 label *label10
-  1218 label *label6
+  1217 label *label11
+  1218 label *label7
   1219 op add :clearArea1:x :clearArea1:x 1
 
-Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-151 instructions):
+Modifications by Iterated phase, Data Flow Optimization, pass 3, iteration 2 (-151 instructions):
  
-    11 set :clearArea1:x 200
-    12 label *label5
-    13 label *label13
+    12 set :clearArea1:x 200
+    13 label *label6
+    14 label *label14
 -    * set :clearArea1:y 0
-    14 label *label15
     15 label *label16
     16 getblock building :clearArea1:building :clearArea1:x 0
+    17 sensor *tmp1 :clearArea1:building @ammoCapacity
  
     20 label *label17
     21 label *label18
@@ -4190,22 +4218,26 @@ Modifications by Iterated phase, Data Flow Optimization, pass 1, iteration 2 (-1
   1064 label *label465
   1065 label *label466
 -    * op add :clearArea1:y 149 1
-  1066 label *label10
-  1067 label *label6
+  1066 label *label11
+  1067 label *label7
   1068 op add :clearArea1:x :clearArea1:x 1
 
-Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-2 instructions):
+Modifications by Jumps phase, Unreachable Code Elimination, pass 5, iteration 1 (-2 instructions):
  
-     5 label *label3
+     1 jump *label0 always
+     2 label *label2
+     3 setrate 1000
+-    * label *label3
+     4 set *signature "8bd37276df37009f:v1"
+     5 label *label4
      6 wait 1e12
-     7 jump *label3 always
+     7 jump *label4 always
 -    * end
      8 label *label0
      9 # "Function: export void clearArea1()"
     10 set :clearArea1:x 200
--    * label *label5
-    11 label *label13
--    * label *label15
+-    * label *label6
+    11 label *label14
 -    * label *label16
     12 getblock building :clearArea1:building :clearArea1:x 0
     13 sensor *tmp1 :clearArea1:building @ammoCapacity
@@ -5257,798 +5289,21 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 
    761 label *label464
 -    * label *label465
 -    * label *label466
--    * label *label10
--    * label *label6
-   762 op add :clearArea1:x :clearArea1:x 1
-   763 jump *label13 lessThan :clearArea1:x 400
+-    * label *label11
 -    * label *label7
--    * label *label4
+   762 op add :clearArea1:x :clearArea1:x 1
+   763 jump *label14 lessThan :clearArea1:x 400
+-    * label *label8
+-    * label *label5
    764 set :clearArea1*finished true
-   765 jump *label3 always
+   765 jump *label4 always
 -    * end
-
-Final code before resolving virtual instructions:
-
-    0:  jump *label2 always 0 0                                      #set target = 8W;
-    1:  jump *label0 always 0 0                                      ...
-        label *label2                                                ...
-    2:  setrate 1000                                                 setrate(1000);
-    3:  set *signature "8bd37276df37009f:v1"                         #set target = 8W;
-        label *label3                                                ...
-    4:  wait 1e12                                                    ...
-    5:  jump *label3 always 0 0                                      ...
-        label *label0                                                export void clearArea1()
-        # "Function: export void clearArea1()"                       ...
-    6:  set :clearArea1:x 200                                        for var x in minX ... maxX do
-        label *label13                                               ...
-    7:  getblock building :clearArea1:building :clearArea1:x 0       var building = getblock(:building, x, y);
-    8:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-    9:  jump *label17 lessThanEq *tmp1 0                             ...
-   10:  setblock block @air :clearArea1:x 0 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label17                                               if building.@ammoCapacity > 0 then
-   11:  getblock building :clearArea1:building :clearArea1:x 1       var building = getblock(:building, x, y);
-   12:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   13:  jump *label20 lessThanEq *tmp1 0                             ...
-   14:  setblock block @air :clearArea1:x 1 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label20                                               if building.@ammoCapacity > 0 then
-   15:  getblock building :clearArea1:building :clearArea1:x 2       var building = getblock(:building, x, y);
-   16:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   17:  jump *label23 lessThanEq *tmp1 0                             ...
-   18:  setblock block @air :clearArea1:x 2 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label23                                               if building.@ammoCapacity > 0 then
-   19:  getblock building :clearArea1:building :clearArea1:x 3       var building = getblock(:building, x, y);
-   20:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   21:  jump *label26 lessThanEq *tmp1 0                             ...
-   22:  setblock block @air :clearArea1:x 3 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label26                                               if building.@ammoCapacity > 0 then
-   23:  getblock building :clearArea1:building :clearArea1:x 4       var building = getblock(:building, x, y);
-   24:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   25:  jump *label29 lessThanEq *tmp1 0                             ...
-   26:  setblock block @air :clearArea1:x 4 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label29                                               if building.@ammoCapacity > 0 then
-   27:  getblock building :clearArea1:building :clearArea1:x 5       var building = getblock(:building, x, y);
-   28:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   29:  jump *label32 lessThanEq *tmp1 0                             ...
-   30:  setblock block @air :clearArea1:x 5 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label32                                               if building.@ammoCapacity > 0 then
-   31:  getblock building :clearArea1:building :clearArea1:x 6       var building = getblock(:building, x, y);
-   32:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   33:  jump *label35 lessThanEq *tmp1 0                             ...
-   34:  setblock block @air :clearArea1:x 6 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label35                                               if building.@ammoCapacity > 0 then
-   35:  getblock building :clearArea1:building :clearArea1:x 7       var building = getblock(:building, x, y);
-   36:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   37:  jump *label38 lessThanEq *tmp1 0                             ...
-   38:  setblock block @air :clearArea1:x 7 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label38                                               if building.@ammoCapacity > 0 then
-   39:  getblock building :clearArea1:building :clearArea1:x 8       var building = getblock(:building, x, y);
-   40:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   41:  jump *label41 lessThanEq *tmp1 0                             ...
-   42:  setblock block @air :clearArea1:x 8 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label41                                               if building.@ammoCapacity > 0 then
-   43:  getblock building :clearArea1:building :clearArea1:x 9       var building = getblock(:building, x, y);
-   44:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   45:  jump *label44 lessThanEq *tmp1 0                             ...
-   46:  setblock block @air :clearArea1:x 9 0 0                      setblock(:block, @air, x, y, 0, 0);
-        label *label44                                               if building.@ammoCapacity > 0 then
-   47:  getblock building :clearArea1:building :clearArea1:x 10      var building = getblock(:building, x, y);
-   48:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   49:  jump *label47 lessThanEq *tmp1 0                             ...
-   50:  setblock block @air :clearArea1:x 10 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label47                                               if building.@ammoCapacity > 0 then
-   51:  getblock building :clearArea1:building :clearArea1:x 11      var building = getblock(:building, x, y);
-   52:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   53:  jump *label50 lessThanEq *tmp1 0                             ...
-   54:  setblock block @air :clearArea1:x 11 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label50                                               if building.@ammoCapacity > 0 then
-   55:  getblock building :clearArea1:building :clearArea1:x 12      var building = getblock(:building, x, y);
-   56:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   57:  jump *label53 lessThanEq *tmp1 0                             ...
-   58:  setblock block @air :clearArea1:x 12 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label53                                               if building.@ammoCapacity > 0 then
-   59:  getblock building :clearArea1:building :clearArea1:x 13      var building = getblock(:building, x, y);
-   60:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   61:  jump *label56 lessThanEq *tmp1 0                             ...
-   62:  setblock block @air :clearArea1:x 13 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label56                                               if building.@ammoCapacity > 0 then
-   63:  getblock building :clearArea1:building :clearArea1:x 14      var building = getblock(:building, x, y);
-   64:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   65:  jump *label59 lessThanEq *tmp1 0                             ...
-   66:  setblock block @air :clearArea1:x 14 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label59                                               if building.@ammoCapacity > 0 then
-   67:  getblock building :clearArea1:building :clearArea1:x 15      var building = getblock(:building, x, y);
-   68:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   69:  jump *label62 lessThanEq *tmp1 0                             ...
-   70:  setblock block @air :clearArea1:x 15 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label62                                               if building.@ammoCapacity > 0 then
-   71:  getblock building :clearArea1:building :clearArea1:x 16      var building = getblock(:building, x, y);
-   72:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   73:  jump *label65 lessThanEq *tmp1 0                             ...
-   74:  setblock block @air :clearArea1:x 16 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label65                                               if building.@ammoCapacity > 0 then
-   75:  getblock building :clearArea1:building :clearArea1:x 17      var building = getblock(:building, x, y);
-   76:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   77:  jump *label68 lessThanEq *tmp1 0                             ...
-   78:  setblock block @air :clearArea1:x 17 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label68                                               if building.@ammoCapacity > 0 then
-   79:  getblock building :clearArea1:building :clearArea1:x 18      var building = getblock(:building, x, y);
-   80:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   81:  jump *label71 lessThanEq *tmp1 0                             ...
-   82:  setblock block @air :clearArea1:x 18 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label71                                               if building.@ammoCapacity > 0 then
-   83:  getblock building :clearArea1:building :clearArea1:x 19      var building = getblock(:building, x, y);
-   84:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   85:  jump *label74 lessThanEq *tmp1 0                             ...
-   86:  setblock block @air :clearArea1:x 19 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label74                                               if building.@ammoCapacity > 0 then
-   87:  getblock building :clearArea1:building :clearArea1:x 20      var building = getblock(:building, x, y);
-   88:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   89:  jump *label77 lessThanEq *tmp1 0                             ...
-   90:  setblock block @air :clearArea1:x 20 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label77                                               if building.@ammoCapacity > 0 then
-   91:  getblock building :clearArea1:building :clearArea1:x 21      var building = getblock(:building, x, y);
-   92:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   93:  jump *label80 lessThanEq *tmp1 0                             ...
-   94:  setblock block @air :clearArea1:x 21 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label80                                               if building.@ammoCapacity > 0 then
-   95:  getblock building :clearArea1:building :clearArea1:x 22      var building = getblock(:building, x, y);
-   96:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-   97:  jump *label83 lessThanEq *tmp1 0                             ...
-   98:  setblock block @air :clearArea1:x 22 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label83                                               if building.@ammoCapacity > 0 then
-   99:  getblock building :clearArea1:building :clearArea1:x 23      var building = getblock(:building, x, y);
-  100:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  101:  jump *label86 lessThanEq *tmp1 0                             ...
-  102:  setblock block @air :clearArea1:x 23 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label86                                               if building.@ammoCapacity > 0 then
-  103:  getblock building :clearArea1:building :clearArea1:x 24      var building = getblock(:building, x, y);
-  104:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  105:  jump *label89 lessThanEq *tmp1 0                             ...
-  106:  setblock block @air :clearArea1:x 24 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label89                                               if building.@ammoCapacity > 0 then
-  107:  getblock building :clearArea1:building :clearArea1:x 25      var building = getblock(:building, x, y);
-  108:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  109:  jump *label92 lessThanEq *tmp1 0                             ...
-  110:  setblock block @air :clearArea1:x 25 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label92                                               if building.@ammoCapacity > 0 then
-  111:  getblock building :clearArea1:building :clearArea1:x 26      var building = getblock(:building, x, y);
-  112:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  113:  jump *label95 lessThanEq *tmp1 0                             ...
-  114:  setblock block @air :clearArea1:x 26 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label95                                               if building.@ammoCapacity > 0 then
-  115:  getblock building :clearArea1:building :clearArea1:x 27      var building = getblock(:building, x, y);
-  116:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  117:  jump *label98 lessThanEq *tmp1 0                             ...
-  118:  setblock block @air :clearArea1:x 27 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label98                                               if building.@ammoCapacity > 0 then
-  119:  getblock building :clearArea1:building :clearArea1:x 28      var building = getblock(:building, x, y);
-  120:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  121:  jump *label101 lessThanEq *tmp1 0                            ...
-  122:  setblock block @air :clearArea1:x 28 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label101                                              if building.@ammoCapacity > 0 then
-  123:  getblock building :clearArea1:building :clearArea1:x 29      var building = getblock(:building, x, y);
-  124:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  125:  jump *label104 lessThanEq *tmp1 0                            ...
-  126:  setblock block @air :clearArea1:x 29 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label104                                              if building.@ammoCapacity > 0 then
-  127:  getblock building :clearArea1:building :clearArea1:x 30      var building = getblock(:building, x, y);
-  128:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  129:  jump *label107 lessThanEq *tmp1 0                            ...
-  130:  setblock block @air :clearArea1:x 30 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label107                                              if building.@ammoCapacity > 0 then
-  131:  getblock building :clearArea1:building :clearArea1:x 31      var building = getblock(:building, x, y);
-  132:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  133:  jump *label110 lessThanEq *tmp1 0                            ...
-  134:  setblock block @air :clearArea1:x 31 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label110                                              if building.@ammoCapacity > 0 then
-  135:  getblock building :clearArea1:building :clearArea1:x 32      var building = getblock(:building, x, y);
-  136:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  137:  jump *label113 lessThanEq *tmp1 0                            ...
-  138:  setblock block @air :clearArea1:x 32 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label113                                              if building.@ammoCapacity > 0 then
-  139:  getblock building :clearArea1:building :clearArea1:x 33      var building = getblock(:building, x, y);
-  140:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  141:  jump *label116 lessThanEq *tmp1 0                            ...
-  142:  setblock block @air :clearArea1:x 33 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label116                                              if building.@ammoCapacity > 0 then
-  143:  getblock building :clearArea1:building :clearArea1:x 34      var building = getblock(:building, x, y);
-  144:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  145:  jump *label119 lessThanEq *tmp1 0                            ...
-  146:  setblock block @air :clearArea1:x 34 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label119                                              if building.@ammoCapacity > 0 then
-  147:  getblock building :clearArea1:building :clearArea1:x 35      var building = getblock(:building, x, y);
-  148:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  149:  jump *label122 lessThanEq *tmp1 0                            ...
-  150:  setblock block @air :clearArea1:x 35 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label122                                              if building.@ammoCapacity > 0 then
-  151:  getblock building :clearArea1:building :clearArea1:x 36      var building = getblock(:building, x, y);
-  152:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  153:  jump *label125 lessThanEq *tmp1 0                            ...
-  154:  setblock block @air :clearArea1:x 36 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label125                                              if building.@ammoCapacity > 0 then
-  155:  getblock building :clearArea1:building :clearArea1:x 37      var building = getblock(:building, x, y);
-  156:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  157:  jump *label128 lessThanEq *tmp1 0                            ...
-  158:  setblock block @air :clearArea1:x 37 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label128                                              if building.@ammoCapacity > 0 then
-  159:  getblock building :clearArea1:building :clearArea1:x 38      var building = getblock(:building, x, y);
-  160:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  161:  jump *label131 lessThanEq *tmp1 0                            ...
-  162:  setblock block @air :clearArea1:x 38 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label131                                              if building.@ammoCapacity > 0 then
-  163:  getblock building :clearArea1:building :clearArea1:x 39      var building = getblock(:building, x, y);
-  164:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  165:  jump *label134 lessThanEq *tmp1 0                            ...
-  166:  setblock block @air :clearArea1:x 39 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label134                                              if building.@ammoCapacity > 0 then
-  167:  getblock building :clearArea1:building :clearArea1:x 40      var building = getblock(:building, x, y);
-  168:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  169:  jump *label137 lessThanEq *tmp1 0                            ...
-  170:  setblock block @air :clearArea1:x 40 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label137                                              if building.@ammoCapacity > 0 then
-  171:  getblock building :clearArea1:building :clearArea1:x 41      var building = getblock(:building, x, y);
-  172:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  173:  jump *label140 lessThanEq *tmp1 0                            ...
-  174:  setblock block @air :clearArea1:x 41 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label140                                              if building.@ammoCapacity > 0 then
-  175:  getblock building :clearArea1:building :clearArea1:x 42      var building = getblock(:building, x, y);
-  176:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  177:  jump *label143 lessThanEq *tmp1 0                            ...
-  178:  setblock block @air :clearArea1:x 42 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label143                                              if building.@ammoCapacity > 0 then
-  179:  getblock building :clearArea1:building :clearArea1:x 43      var building = getblock(:building, x, y);
-  180:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  181:  jump *label146 lessThanEq *tmp1 0                            ...
-  182:  setblock block @air :clearArea1:x 43 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label146                                              if building.@ammoCapacity > 0 then
-  183:  getblock building :clearArea1:building :clearArea1:x 44      var building = getblock(:building, x, y);
-  184:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  185:  jump *label149 lessThanEq *tmp1 0                            ...
-  186:  setblock block @air :clearArea1:x 44 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label149                                              if building.@ammoCapacity > 0 then
-  187:  getblock building :clearArea1:building :clearArea1:x 45      var building = getblock(:building, x, y);
-  188:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  189:  jump *label152 lessThanEq *tmp1 0                            ...
-  190:  setblock block @air :clearArea1:x 45 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label152                                              if building.@ammoCapacity > 0 then
-  191:  getblock building :clearArea1:building :clearArea1:x 46      var building = getblock(:building, x, y);
-  192:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  193:  jump *label155 lessThanEq *tmp1 0                            ...
-  194:  setblock block @air :clearArea1:x 46 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label155                                              if building.@ammoCapacity > 0 then
-  195:  getblock building :clearArea1:building :clearArea1:x 47      var building = getblock(:building, x, y);
-  196:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  197:  jump *label158 lessThanEq *tmp1 0                            ...
-  198:  setblock block @air :clearArea1:x 47 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label158                                              if building.@ammoCapacity > 0 then
-  199:  getblock building :clearArea1:building :clearArea1:x 48      var building = getblock(:building, x, y);
-  200:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  201:  jump *label161 lessThanEq *tmp1 0                            ...
-  202:  setblock block @air :clearArea1:x 48 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label161                                              if building.@ammoCapacity > 0 then
-  203:  getblock building :clearArea1:building :clearArea1:x 49      var building = getblock(:building, x, y);
-  204:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  205:  jump *label164 lessThanEq *tmp1 0                            ...
-  206:  setblock block @air :clearArea1:x 49 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label164                                              if building.@ammoCapacity > 0 then
-  207:  getblock building :clearArea1:building :clearArea1:x 50      var building = getblock(:building, x, y);
-  208:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  209:  jump *label167 lessThanEq *tmp1 0                            ...
-  210:  setblock block @air :clearArea1:x 50 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label167                                              if building.@ammoCapacity > 0 then
-  211:  getblock building :clearArea1:building :clearArea1:x 51      var building = getblock(:building, x, y);
-  212:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  213:  jump *label170 lessThanEq *tmp1 0                            ...
-  214:  setblock block @air :clearArea1:x 51 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label170                                              if building.@ammoCapacity > 0 then
-  215:  getblock building :clearArea1:building :clearArea1:x 52      var building = getblock(:building, x, y);
-  216:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  217:  jump *label173 lessThanEq *tmp1 0                            ...
-  218:  setblock block @air :clearArea1:x 52 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label173                                              if building.@ammoCapacity > 0 then
-  219:  getblock building :clearArea1:building :clearArea1:x 53      var building = getblock(:building, x, y);
-  220:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  221:  jump *label176 lessThanEq *tmp1 0                            ...
-  222:  setblock block @air :clearArea1:x 53 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label176                                              if building.@ammoCapacity > 0 then
-  223:  getblock building :clearArea1:building :clearArea1:x 54      var building = getblock(:building, x, y);
-  224:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  225:  jump *label179 lessThanEq *tmp1 0                            ...
-  226:  setblock block @air :clearArea1:x 54 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label179                                              if building.@ammoCapacity > 0 then
-  227:  getblock building :clearArea1:building :clearArea1:x 55      var building = getblock(:building, x, y);
-  228:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  229:  jump *label182 lessThanEq *tmp1 0                            ...
-  230:  setblock block @air :clearArea1:x 55 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label182                                              if building.@ammoCapacity > 0 then
-  231:  getblock building :clearArea1:building :clearArea1:x 56      var building = getblock(:building, x, y);
-  232:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  233:  jump *label185 lessThanEq *tmp1 0                            ...
-  234:  setblock block @air :clearArea1:x 56 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label185                                              if building.@ammoCapacity > 0 then
-  235:  getblock building :clearArea1:building :clearArea1:x 57      var building = getblock(:building, x, y);
-  236:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  237:  jump *label188 lessThanEq *tmp1 0                            ...
-  238:  setblock block @air :clearArea1:x 57 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label188                                              if building.@ammoCapacity > 0 then
-  239:  getblock building :clearArea1:building :clearArea1:x 58      var building = getblock(:building, x, y);
-  240:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  241:  jump *label191 lessThanEq *tmp1 0                            ...
-  242:  setblock block @air :clearArea1:x 58 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label191                                              if building.@ammoCapacity > 0 then
-  243:  getblock building :clearArea1:building :clearArea1:x 59      var building = getblock(:building, x, y);
-  244:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  245:  jump *label194 lessThanEq *tmp1 0                            ...
-  246:  setblock block @air :clearArea1:x 59 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label194                                              if building.@ammoCapacity > 0 then
-  247:  getblock building :clearArea1:building :clearArea1:x 60      var building = getblock(:building, x, y);
-  248:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  249:  jump *label197 lessThanEq *tmp1 0                            ...
-  250:  setblock block @air :clearArea1:x 60 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label197                                              if building.@ammoCapacity > 0 then
-  251:  getblock building :clearArea1:building :clearArea1:x 61      var building = getblock(:building, x, y);
-  252:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  253:  jump *label200 lessThanEq *tmp1 0                            ...
-  254:  setblock block @air :clearArea1:x 61 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label200                                              if building.@ammoCapacity > 0 then
-  255:  getblock building :clearArea1:building :clearArea1:x 62      var building = getblock(:building, x, y);
-  256:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  257:  jump *label203 lessThanEq *tmp1 0                            ...
-  258:  setblock block @air :clearArea1:x 62 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label203                                              if building.@ammoCapacity > 0 then
-  259:  getblock building :clearArea1:building :clearArea1:x 63      var building = getblock(:building, x, y);
-  260:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  261:  jump *label206 lessThanEq *tmp1 0                            ...
-  262:  setblock block @air :clearArea1:x 63 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label206                                              if building.@ammoCapacity > 0 then
-  263:  getblock building :clearArea1:building :clearArea1:x 64      var building = getblock(:building, x, y);
-  264:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  265:  jump *label209 lessThanEq *tmp1 0                            ...
-  266:  setblock block @air :clearArea1:x 64 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label209                                              if building.@ammoCapacity > 0 then
-  267:  getblock building :clearArea1:building :clearArea1:x 65      var building = getblock(:building, x, y);
-  268:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  269:  jump *label212 lessThanEq *tmp1 0                            ...
-  270:  setblock block @air :clearArea1:x 65 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label212                                              if building.@ammoCapacity > 0 then
-  271:  getblock building :clearArea1:building :clearArea1:x 66      var building = getblock(:building, x, y);
-  272:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  273:  jump *label215 lessThanEq *tmp1 0                            ...
-  274:  setblock block @air :clearArea1:x 66 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label215                                              if building.@ammoCapacity > 0 then
-  275:  getblock building :clearArea1:building :clearArea1:x 67      var building = getblock(:building, x, y);
-  276:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  277:  jump *label218 lessThanEq *tmp1 0                            ...
-  278:  setblock block @air :clearArea1:x 67 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label218                                              if building.@ammoCapacity > 0 then
-  279:  getblock building :clearArea1:building :clearArea1:x 68      var building = getblock(:building, x, y);
-  280:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  281:  jump *label221 lessThanEq *tmp1 0                            ...
-  282:  setblock block @air :clearArea1:x 68 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label221                                              if building.@ammoCapacity > 0 then
-  283:  getblock building :clearArea1:building :clearArea1:x 69      var building = getblock(:building, x, y);
-  284:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  285:  jump *label224 lessThanEq *tmp1 0                            ...
-  286:  setblock block @air :clearArea1:x 69 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label224                                              if building.@ammoCapacity > 0 then
-  287:  getblock building :clearArea1:building :clearArea1:x 70      var building = getblock(:building, x, y);
-  288:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  289:  jump *label227 lessThanEq *tmp1 0                            ...
-  290:  setblock block @air :clearArea1:x 70 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label227                                              if building.@ammoCapacity > 0 then
-  291:  getblock building :clearArea1:building :clearArea1:x 71      var building = getblock(:building, x, y);
-  292:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  293:  jump *label230 lessThanEq *tmp1 0                            ...
-  294:  setblock block @air :clearArea1:x 71 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label230                                              if building.@ammoCapacity > 0 then
-  295:  getblock building :clearArea1:building :clearArea1:x 72      var building = getblock(:building, x, y);
-  296:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  297:  jump *label233 lessThanEq *tmp1 0                            ...
-  298:  setblock block @air :clearArea1:x 72 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label233                                              if building.@ammoCapacity > 0 then
-  299:  getblock building :clearArea1:building :clearArea1:x 73      var building = getblock(:building, x, y);
-  300:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  301:  jump *label236 lessThanEq *tmp1 0                            ...
-  302:  setblock block @air :clearArea1:x 73 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label236                                              if building.@ammoCapacity > 0 then
-  303:  getblock building :clearArea1:building :clearArea1:x 74      var building = getblock(:building, x, y);
-  304:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  305:  jump *label239 lessThanEq *tmp1 0                            ...
-  306:  setblock block @air :clearArea1:x 74 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label239                                              if building.@ammoCapacity > 0 then
-  307:  getblock building :clearArea1:building :clearArea1:x 75      var building = getblock(:building, x, y);
-  308:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  309:  jump *label242 lessThanEq *tmp1 0                            ...
-  310:  setblock block @air :clearArea1:x 75 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label242                                              if building.@ammoCapacity > 0 then
-  311:  getblock building :clearArea1:building :clearArea1:x 76      var building = getblock(:building, x, y);
-  312:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  313:  jump *label245 lessThanEq *tmp1 0                            ...
-  314:  setblock block @air :clearArea1:x 76 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label245                                              if building.@ammoCapacity > 0 then
-  315:  getblock building :clearArea1:building :clearArea1:x 77      var building = getblock(:building, x, y);
-  316:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  317:  jump *label248 lessThanEq *tmp1 0                            ...
-  318:  setblock block @air :clearArea1:x 77 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label248                                              if building.@ammoCapacity > 0 then
-  319:  getblock building :clearArea1:building :clearArea1:x 78      var building = getblock(:building, x, y);
-  320:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  321:  jump *label251 lessThanEq *tmp1 0                            ...
-  322:  setblock block @air :clearArea1:x 78 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label251                                              if building.@ammoCapacity > 0 then
-  323:  getblock building :clearArea1:building :clearArea1:x 79      var building = getblock(:building, x, y);
-  324:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  325:  jump *label254 lessThanEq *tmp1 0                            ...
-  326:  setblock block @air :clearArea1:x 79 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label254                                              if building.@ammoCapacity > 0 then
-  327:  getblock building :clearArea1:building :clearArea1:x 80      var building = getblock(:building, x, y);
-  328:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  329:  jump *label257 lessThanEq *tmp1 0                            ...
-  330:  setblock block @air :clearArea1:x 80 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label257                                              if building.@ammoCapacity > 0 then
-  331:  getblock building :clearArea1:building :clearArea1:x 81      var building = getblock(:building, x, y);
-  332:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  333:  jump *label260 lessThanEq *tmp1 0                            ...
-  334:  setblock block @air :clearArea1:x 81 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label260                                              if building.@ammoCapacity > 0 then
-  335:  getblock building :clearArea1:building :clearArea1:x 82      var building = getblock(:building, x, y);
-  336:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  337:  jump *label263 lessThanEq *tmp1 0                            ...
-  338:  setblock block @air :clearArea1:x 82 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label263                                              if building.@ammoCapacity > 0 then
-  339:  getblock building :clearArea1:building :clearArea1:x 83      var building = getblock(:building, x, y);
-  340:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  341:  jump *label266 lessThanEq *tmp1 0                            ...
-  342:  setblock block @air :clearArea1:x 83 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label266                                              if building.@ammoCapacity > 0 then
-  343:  getblock building :clearArea1:building :clearArea1:x 84      var building = getblock(:building, x, y);
-  344:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  345:  jump *label269 lessThanEq *tmp1 0                            ...
-  346:  setblock block @air :clearArea1:x 84 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label269                                              if building.@ammoCapacity > 0 then
-  347:  getblock building :clearArea1:building :clearArea1:x 85      var building = getblock(:building, x, y);
-  348:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  349:  jump *label272 lessThanEq *tmp1 0                            ...
-  350:  setblock block @air :clearArea1:x 85 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label272                                              if building.@ammoCapacity > 0 then
-  351:  getblock building :clearArea1:building :clearArea1:x 86      var building = getblock(:building, x, y);
-  352:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  353:  jump *label275 lessThanEq *tmp1 0                            ...
-  354:  setblock block @air :clearArea1:x 86 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label275                                              if building.@ammoCapacity > 0 then
-  355:  getblock building :clearArea1:building :clearArea1:x 87      var building = getblock(:building, x, y);
-  356:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  357:  jump *label278 lessThanEq *tmp1 0                            ...
-  358:  setblock block @air :clearArea1:x 87 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label278                                              if building.@ammoCapacity > 0 then
-  359:  getblock building :clearArea1:building :clearArea1:x 88      var building = getblock(:building, x, y);
-  360:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  361:  jump *label281 lessThanEq *tmp1 0                            ...
-  362:  setblock block @air :clearArea1:x 88 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label281                                              if building.@ammoCapacity > 0 then
-  363:  getblock building :clearArea1:building :clearArea1:x 89      var building = getblock(:building, x, y);
-  364:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  365:  jump *label284 lessThanEq *tmp1 0                            ...
-  366:  setblock block @air :clearArea1:x 89 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label284                                              if building.@ammoCapacity > 0 then
-  367:  getblock building :clearArea1:building :clearArea1:x 90      var building = getblock(:building, x, y);
-  368:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  369:  jump *label287 lessThanEq *tmp1 0                            ...
-  370:  setblock block @air :clearArea1:x 90 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label287                                              if building.@ammoCapacity > 0 then
-  371:  getblock building :clearArea1:building :clearArea1:x 91      var building = getblock(:building, x, y);
-  372:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  373:  jump *label290 lessThanEq *tmp1 0                            ...
-  374:  setblock block @air :clearArea1:x 91 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label290                                              if building.@ammoCapacity > 0 then
-  375:  getblock building :clearArea1:building :clearArea1:x 92      var building = getblock(:building, x, y);
-  376:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  377:  jump *label293 lessThanEq *tmp1 0                            ...
-  378:  setblock block @air :clearArea1:x 92 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label293                                              if building.@ammoCapacity > 0 then
-  379:  getblock building :clearArea1:building :clearArea1:x 93      var building = getblock(:building, x, y);
-  380:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  381:  jump *label296 lessThanEq *tmp1 0                            ...
-  382:  setblock block @air :clearArea1:x 93 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label296                                              if building.@ammoCapacity > 0 then
-  383:  getblock building :clearArea1:building :clearArea1:x 94      var building = getblock(:building, x, y);
-  384:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  385:  jump *label299 lessThanEq *tmp1 0                            ...
-  386:  setblock block @air :clearArea1:x 94 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label299                                              if building.@ammoCapacity > 0 then
-  387:  getblock building :clearArea1:building :clearArea1:x 95      var building = getblock(:building, x, y);
-  388:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  389:  jump *label302 lessThanEq *tmp1 0                            ...
-  390:  setblock block @air :clearArea1:x 95 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label302                                              if building.@ammoCapacity > 0 then
-  391:  getblock building :clearArea1:building :clearArea1:x 96      var building = getblock(:building, x, y);
-  392:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  393:  jump *label305 lessThanEq *tmp1 0                            ...
-  394:  setblock block @air :clearArea1:x 96 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label305                                              if building.@ammoCapacity > 0 then
-  395:  getblock building :clearArea1:building :clearArea1:x 97      var building = getblock(:building, x, y);
-  396:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  397:  jump *label308 lessThanEq *tmp1 0                            ...
-  398:  setblock block @air :clearArea1:x 97 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label308                                              if building.@ammoCapacity > 0 then
-  399:  getblock building :clearArea1:building :clearArea1:x 98      var building = getblock(:building, x, y);
-  400:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  401:  jump *label311 lessThanEq *tmp1 0                            ...
-  402:  setblock block @air :clearArea1:x 98 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label311                                              if building.@ammoCapacity > 0 then
-  403:  getblock building :clearArea1:building :clearArea1:x 99      var building = getblock(:building, x, y);
-  404:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  405:  jump *label314 lessThanEq *tmp1 0                            ...
-  406:  setblock block @air :clearArea1:x 99 0 0                     setblock(:block, @air, x, y, 0, 0);
-        label *label314                                              if building.@ammoCapacity > 0 then
-  407:  getblock building :clearArea1:building :clearArea1:x 100     var building = getblock(:building, x, y);
-  408:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  409:  jump *label317 lessThanEq *tmp1 0                            ...
-  410:  setblock block @air :clearArea1:x 100 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label317                                              if building.@ammoCapacity > 0 then
-  411:  getblock building :clearArea1:building :clearArea1:x 101     var building = getblock(:building, x, y);
-  412:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  413:  jump *label320 lessThanEq *tmp1 0                            ...
-  414:  setblock block @air :clearArea1:x 101 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label320                                              if building.@ammoCapacity > 0 then
-  415:  getblock building :clearArea1:building :clearArea1:x 102     var building = getblock(:building, x, y);
-  416:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  417:  jump *label323 lessThanEq *tmp1 0                            ...
-  418:  setblock block @air :clearArea1:x 102 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label323                                              if building.@ammoCapacity > 0 then
-  419:  getblock building :clearArea1:building :clearArea1:x 103     var building = getblock(:building, x, y);
-  420:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  421:  jump *label326 lessThanEq *tmp1 0                            ...
-  422:  setblock block @air :clearArea1:x 103 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label326                                              if building.@ammoCapacity > 0 then
-  423:  getblock building :clearArea1:building :clearArea1:x 104     var building = getblock(:building, x, y);
-  424:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  425:  jump *label329 lessThanEq *tmp1 0                            ...
-  426:  setblock block @air :clearArea1:x 104 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label329                                              if building.@ammoCapacity > 0 then
-  427:  getblock building :clearArea1:building :clearArea1:x 105     var building = getblock(:building, x, y);
-  428:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  429:  jump *label332 lessThanEq *tmp1 0                            ...
-  430:  setblock block @air :clearArea1:x 105 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label332                                              if building.@ammoCapacity > 0 then
-  431:  getblock building :clearArea1:building :clearArea1:x 106     var building = getblock(:building, x, y);
-  432:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  433:  jump *label335 lessThanEq *tmp1 0                            ...
-  434:  setblock block @air :clearArea1:x 106 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label335                                              if building.@ammoCapacity > 0 then
-  435:  getblock building :clearArea1:building :clearArea1:x 107     var building = getblock(:building, x, y);
-  436:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  437:  jump *label338 lessThanEq *tmp1 0                            ...
-  438:  setblock block @air :clearArea1:x 107 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label338                                              if building.@ammoCapacity > 0 then
-  439:  getblock building :clearArea1:building :clearArea1:x 108     var building = getblock(:building, x, y);
-  440:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  441:  jump *label341 lessThanEq *tmp1 0                            ...
-  442:  setblock block @air :clearArea1:x 108 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label341                                              if building.@ammoCapacity > 0 then
-  443:  getblock building :clearArea1:building :clearArea1:x 109     var building = getblock(:building, x, y);
-  444:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  445:  jump *label344 lessThanEq *tmp1 0                            ...
-  446:  setblock block @air :clearArea1:x 109 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label344                                              if building.@ammoCapacity > 0 then
-  447:  getblock building :clearArea1:building :clearArea1:x 110     var building = getblock(:building, x, y);
-  448:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  449:  jump *label347 lessThanEq *tmp1 0                            ...
-  450:  setblock block @air :clearArea1:x 110 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label347                                              if building.@ammoCapacity > 0 then
-  451:  getblock building :clearArea1:building :clearArea1:x 111     var building = getblock(:building, x, y);
-  452:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  453:  jump *label350 lessThanEq *tmp1 0                            ...
-  454:  setblock block @air :clearArea1:x 111 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label350                                              if building.@ammoCapacity > 0 then
-  455:  getblock building :clearArea1:building :clearArea1:x 112     var building = getblock(:building, x, y);
-  456:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  457:  jump *label353 lessThanEq *tmp1 0                            ...
-  458:  setblock block @air :clearArea1:x 112 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label353                                              if building.@ammoCapacity > 0 then
-  459:  getblock building :clearArea1:building :clearArea1:x 113     var building = getblock(:building, x, y);
-  460:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  461:  jump *label356 lessThanEq *tmp1 0                            ...
-  462:  setblock block @air :clearArea1:x 113 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label356                                              if building.@ammoCapacity > 0 then
-  463:  getblock building :clearArea1:building :clearArea1:x 114     var building = getblock(:building, x, y);
-  464:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  465:  jump *label359 lessThanEq *tmp1 0                            ...
-  466:  setblock block @air :clearArea1:x 114 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label359                                              if building.@ammoCapacity > 0 then
-  467:  getblock building :clearArea1:building :clearArea1:x 115     var building = getblock(:building, x, y);
-  468:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  469:  jump *label362 lessThanEq *tmp1 0                            ...
-  470:  setblock block @air :clearArea1:x 115 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label362                                              if building.@ammoCapacity > 0 then
-  471:  getblock building :clearArea1:building :clearArea1:x 116     var building = getblock(:building, x, y);
-  472:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  473:  jump *label365 lessThanEq *tmp1 0                            ...
-  474:  setblock block @air :clearArea1:x 116 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label365                                              if building.@ammoCapacity > 0 then
-  475:  getblock building :clearArea1:building :clearArea1:x 117     var building = getblock(:building, x, y);
-  476:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  477:  jump *label368 lessThanEq *tmp1 0                            ...
-  478:  setblock block @air :clearArea1:x 117 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label368                                              if building.@ammoCapacity > 0 then
-  479:  getblock building :clearArea1:building :clearArea1:x 118     var building = getblock(:building, x, y);
-  480:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  481:  jump *label371 lessThanEq *tmp1 0                            ...
-  482:  setblock block @air :clearArea1:x 118 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label371                                              if building.@ammoCapacity > 0 then
-  483:  getblock building :clearArea1:building :clearArea1:x 119     var building = getblock(:building, x, y);
-  484:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  485:  jump *label374 lessThanEq *tmp1 0                            ...
-  486:  setblock block @air :clearArea1:x 119 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label374                                              if building.@ammoCapacity > 0 then
-  487:  getblock building :clearArea1:building :clearArea1:x 120     var building = getblock(:building, x, y);
-  488:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  489:  jump *label377 lessThanEq *tmp1 0                            ...
-  490:  setblock block @air :clearArea1:x 120 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label377                                              if building.@ammoCapacity > 0 then
-  491:  getblock building :clearArea1:building :clearArea1:x 121     var building = getblock(:building, x, y);
-  492:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  493:  jump *label380 lessThanEq *tmp1 0                            ...
-  494:  setblock block @air :clearArea1:x 121 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label380                                              if building.@ammoCapacity > 0 then
-  495:  getblock building :clearArea1:building :clearArea1:x 122     var building = getblock(:building, x, y);
-  496:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  497:  jump *label383 lessThanEq *tmp1 0                            ...
-  498:  setblock block @air :clearArea1:x 122 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label383                                              if building.@ammoCapacity > 0 then
-  499:  getblock building :clearArea1:building :clearArea1:x 123     var building = getblock(:building, x, y);
-  500:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  501:  jump *label386 lessThanEq *tmp1 0                            ...
-  502:  setblock block @air :clearArea1:x 123 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label386                                              if building.@ammoCapacity > 0 then
-  503:  getblock building :clearArea1:building :clearArea1:x 124     var building = getblock(:building, x, y);
-  504:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  505:  jump *label389 lessThanEq *tmp1 0                            ...
-  506:  setblock block @air :clearArea1:x 124 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label389                                              if building.@ammoCapacity > 0 then
-  507:  getblock building :clearArea1:building :clearArea1:x 125     var building = getblock(:building, x, y);
-  508:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  509:  jump *label392 lessThanEq *tmp1 0                            ...
-  510:  setblock block @air :clearArea1:x 125 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label392                                              if building.@ammoCapacity > 0 then
-  511:  getblock building :clearArea1:building :clearArea1:x 126     var building = getblock(:building, x, y);
-  512:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  513:  jump *label395 lessThanEq *tmp1 0                            ...
-  514:  setblock block @air :clearArea1:x 126 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label395                                              if building.@ammoCapacity > 0 then
-  515:  getblock building :clearArea1:building :clearArea1:x 127     var building = getblock(:building, x, y);
-  516:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  517:  jump *label398 lessThanEq *tmp1 0                            ...
-  518:  setblock block @air :clearArea1:x 127 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label398                                              if building.@ammoCapacity > 0 then
-  519:  getblock building :clearArea1:building :clearArea1:x 128     var building = getblock(:building, x, y);
-  520:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  521:  jump *label401 lessThanEq *tmp1 0                            ...
-  522:  setblock block @air :clearArea1:x 128 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label401                                              if building.@ammoCapacity > 0 then
-  523:  getblock building :clearArea1:building :clearArea1:x 129     var building = getblock(:building, x, y);
-  524:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  525:  jump *label404 lessThanEq *tmp1 0                            ...
-  526:  setblock block @air :clearArea1:x 129 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label404                                              if building.@ammoCapacity > 0 then
-  527:  getblock building :clearArea1:building :clearArea1:x 130     var building = getblock(:building, x, y);
-  528:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  529:  jump *label407 lessThanEq *tmp1 0                            ...
-  530:  setblock block @air :clearArea1:x 130 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label407                                              if building.@ammoCapacity > 0 then
-  531:  getblock building :clearArea1:building :clearArea1:x 131     var building = getblock(:building, x, y);
-  532:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  533:  jump *label410 lessThanEq *tmp1 0                            ...
-  534:  setblock block @air :clearArea1:x 131 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label410                                              if building.@ammoCapacity > 0 then
-  535:  getblock building :clearArea1:building :clearArea1:x 132     var building = getblock(:building, x, y);
-  536:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  537:  jump *label413 lessThanEq *tmp1 0                            ...
-  538:  setblock block @air :clearArea1:x 132 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label413                                              if building.@ammoCapacity > 0 then
-  539:  getblock building :clearArea1:building :clearArea1:x 133     var building = getblock(:building, x, y);
-  540:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  541:  jump *label416 lessThanEq *tmp1 0                            ...
-  542:  setblock block @air :clearArea1:x 133 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label416                                              if building.@ammoCapacity > 0 then
-  543:  getblock building :clearArea1:building :clearArea1:x 134     var building = getblock(:building, x, y);
-  544:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  545:  jump *label419 lessThanEq *tmp1 0                            ...
-  546:  setblock block @air :clearArea1:x 134 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label419                                              if building.@ammoCapacity > 0 then
-  547:  getblock building :clearArea1:building :clearArea1:x 135     var building = getblock(:building, x, y);
-  548:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  549:  jump *label422 lessThanEq *tmp1 0                            ...
-  550:  setblock block @air :clearArea1:x 135 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label422                                              if building.@ammoCapacity > 0 then
-  551:  getblock building :clearArea1:building :clearArea1:x 136     var building = getblock(:building, x, y);
-  552:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  553:  jump *label425 lessThanEq *tmp1 0                            ...
-  554:  setblock block @air :clearArea1:x 136 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label425                                              if building.@ammoCapacity > 0 then
-  555:  getblock building :clearArea1:building :clearArea1:x 137     var building = getblock(:building, x, y);
-  556:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  557:  jump *label428 lessThanEq *tmp1 0                            ...
-  558:  setblock block @air :clearArea1:x 137 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label428                                              if building.@ammoCapacity > 0 then
-  559:  getblock building :clearArea1:building :clearArea1:x 138     var building = getblock(:building, x, y);
-  560:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  561:  jump *label431 lessThanEq *tmp1 0                            ...
-  562:  setblock block @air :clearArea1:x 138 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label431                                              if building.@ammoCapacity > 0 then
-  563:  getblock building :clearArea1:building :clearArea1:x 139     var building = getblock(:building, x, y);
-  564:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  565:  jump *label434 lessThanEq *tmp1 0                            ...
-  566:  setblock block @air :clearArea1:x 139 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label434                                              if building.@ammoCapacity > 0 then
-  567:  getblock building :clearArea1:building :clearArea1:x 140     var building = getblock(:building, x, y);
-  568:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  569:  jump *label437 lessThanEq *tmp1 0                            ...
-  570:  setblock block @air :clearArea1:x 140 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label437                                              if building.@ammoCapacity > 0 then
-  571:  getblock building :clearArea1:building :clearArea1:x 141     var building = getblock(:building, x, y);
-  572:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  573:  jump *label440 lessThanEq *tmp1 0                            ...
-  574:  setblock block @air :clearArea1:x 141 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label440                                              if building.@ammoCapacity > 0 then
-  575:  getblock building :clearArea1:building :clearArea1:x 142     var building = getblock(:building, x, y);
-  576:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  577:  jump *label443 lessThanEq *tmp1 0                            ...
-  578:  setblock block @air :clearArea1:x 142 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label443                                              if building.@ammoCapacity > 0 then
-  579:  getblock building :clearArea1:building :clearArea1:x 143     var building = getblock(:building, x, y);
-  580:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  581:  jump *label446 lessThanEq *tmp1 0                            ...
-  582:  setblock block @air :clearArea1:x 143 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label446                                              if building.@ammoCapacity > 0 then
-  583:  getblock building :clearArea1:building :clearArea1:x 144     var building = getblock(:building, x, y);
-  584:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  585:  jump *label449 lessThanEq *tmp1 0                            ...
-  586:  setblock block @air :clearArea1:x 144 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label449                                              if building.@ammoCapacity > 0 then
-  587:  getblock building :clearArea1:building :clearArea1:x 145     var building = getblock(:building, x, y);
-  588:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  589:  jump *label452 lessThanEq *tmp1 0                            ...
-  590:  setblock block @air :clearArea1:x 145 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label452                                              if building.@ammoCapacity > 0 then
-  591:  getblock building :clearArea1:building :clearArea1:x 146     var building = getblock(:building, x, y);
-  592:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  593:  jump *label455 lessThanEq *tmp1 0                            ...
-  594:  setblock block @air :clearArea1:x 146 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label455                                              if building.@ammoCapacity > 0 then
-  595:  getblock building :clearArea1:building :clearArea1:x 147     var building = getblock(:building, x, y);
-  596:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  597:  jump *label458 lessThanEq *tmp1 0                            ...
-  598:  setblock block @air :clearArea1:x 147 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label458                                              if building.@ammoCapacity > 0 then
-  599:  getblock building :clearArea1:building :clearArea1:x 148     var building = getblock(:building, x, y);
-  600:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  601:  jump *label461 lessThanEq *tmp1 0                            ...
-  602:  setblock block @air :clearArea1:x 148 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label461                                              if building.@ammoCapacity > 0 then
-  603:  getblock building :clearArea1:building :clearArea1:x 149     var building = getblock(:building, x, y);
-  604:  sensor *tmp1 :clearArea1:building @ammoCapacity              if building.@ammoCapacity > 0 then
-  605:  jump *label464 lessThanEq *tmp1 0                            ...
-  606:  setblock block @air :clearArea1:x 149 0 0                    setblock(:block, @air, x, y, 0, 0);
-        label *label464                                              if building.@ammoCapacity > 0 then
-  607:  op add :clearArea1:x :clearArea1:x 1                         for var x in minX ... maxX do
-  608:  jump *label13 lessThan :clearArea1:x 400                     ...
-  609:  set :clearArea1*finished true                                export void clearArea1()
-  610:  jump *label3 always 0 0                                      ...
-
 
 Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
    606     1x    606,0  export void clearArea1()
      6     1x      6,0  <no function>
 
-Performance: parsed in 119 ms, compiled in 210 ms, optimized in 401 ms, run in 14 ms.
-Error connecting to Mlog Watcher: Connection refused: connect
-  - make sure Mindustry with active Mlog Watcher mod is running
-  - verify Mlog Watcher listens on port 9992
 
-Program output (4 steps):
+Emulator output (5 steps, 0.03 sec):
 The program didn't generate any output.
-Execution exception at instruction 4: wait 1e12:
-Instruction not supported by Mindcode emulator.
-(Use the '#set err-unsupported-opcode = false;' directive or the '--err-unsupported-opcode false' command line option to ignore this exception.)

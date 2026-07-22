@@ -1,57 +1,42 @@
-    63 instructions before optimizations.
-     5 instructions eliminated by Temp Variables Elimination (5 iterations).
-     5 instructions eliminated by Dead Code Elimination (5 iterations).
-     1 instructions eliminated by Jump Normalization (4 iterations).
-     2 instructions eliminated by Condition Optimization (5 iterations).
+    55 instructions before optimizations.
+     4 instructions eliminated by Temp Variables Elimination (5 iterations).
+     4 instructions eliminated by Dead Code Elimination (5 iterations).
+     1 instructions eliminated by Condition Optimization (5 iterations).
      1 instructions eliminated by Single Step Elimination (5 iterations).
-     1 loops improved by Loop Hoisting.
-     1 instructions added by Loop Rotation (2 iterations).
-       1 loop conditions were partially rotated.
      1 instructions updated by Jump Threading.
      1 instructions eliminated by Unreachable Code Elimination (2 iterations).
      2 instructions eliminated by Print Merging.
-    47 instructions after optimizations.
+    42 instructions after optimizations.
 
-Pass 1: speed optimization selection (cost limit 951):
-  * Full loop rotation at line 40:9                              size    +1, benefit      650.0, efficiency    650.000 (+1 instructions)
-
-Modifications by Initial phase, Dead Code Elimination, iteration 1 (-3 instructions):
+Modifications by Initial phase, Dead Code Elimination, iteration 1 (-2 instructions):
  
-    40 label *label9
-    41 set *tmp15 null
-    42 label *label10
--    * set *tmp13 *tmp15
-    43 jump *label8 always
-    44 label *label7
-    45 set .slot 0
-    46 write 0 bank1 511
--    * set *tmp13 0
-    47 label *label8
-    48 print .slot
-    49 draw color 0 0 80 255
- 
-    58 read *tmp25 bank1 *tmp22
-    59 op greaterThan *tmp24 *tmp25 0
-    60 jump *label14 equal *tmp24 false
--    * set *tmp26 :count
-    61 op add :count :count 1
-    62 label *label13
-    63 jump *label12 always
+    38 label *label9
+    39 set *tmp16 null
+    40 label *label10
+-    * set *tmp14 *tmp16
+    41 jump *label8 always
+    42 label *label7
+    43 set .slot 0
+    44 write 0 bank1 511
+-    * set *tmp14 0
+    45 label *label8
+    46 print .slot
+    47 draw color 0 0 80 255
 
 Modifications by Initial phase, Dead Code Elimination, iteration 2 (-2 instructions):
  
-    35 write *tmp18 bank1 511
-    36 label *label11
-    37 set .slot *tmp18
--    * set *tmp15 .slot
-    38 jump *label10 always
-    39 label *label9
--    * set *tmp15 null
-    40 label *label10
-    41 jump *label8 always
-    42 label *label7
+    33 write *tmp18 bank1 511
+    34 label *label11
+    35 set .slot *tmp18
+-    * set *tmp16 .slot
+    36 jump *label10 always
+    37 label *label9
+-    * set *tmp16 null
+    38 label *label10
+    39 jump *label8 always
+    40 label *label7
 
-Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-5 instructions):
+Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-4 instructions):
  
      7 sensor *tmp0 bank1 @x
      8 op sub *tmp1 @thisx *tmp0
@@ -75,158 +60,81 @@ Modifications by Initial phase, Temp Variables Elimination, iteration 1 (-5 inst
 +   18 op add .y 17 *tmp10
     19 draw reset
     20 drawflush display1
-    21 set :count 0
- 
-    48 draw print .x .y @center
-    49 drawflush display1
-    50 label *label12
--    * set *tmp22 :count
--    * read *tmp25 bank1 *tmp22
-+   51 read *tmp25 bank1 :count
-    52 op greaterThan *tmp24 *tmp25 0
-    53 jump *label14 equal *tmp24 false
-    54 op add :count :count 1
+    21 label *label4
 
-Modifications by Iterated phase, Jump Normalization, pass 1, iteration 1 (-1 instructions):
+Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-1 instructions):
  
-    20 drawflush display1
-    21 set :count 0
-    22 label *label4
--    * jump *label6 equal true false
-    23 sensor *tmp12 switch1 @enabled
-    24 jump *label7 equal *tmp12 false
-    25 op equal *tmp14 .slot 0
-
-Modifications by Iterated phase, Condition Optimization, pass 1, iteration 1 (-2 instructions):
- 
-    22 label *label4
-    23 sensor *tmp12 switch1 @enabled
-    24 jump *label7 equal *tmp12 false
--    * op equal *tmp14 .slot 0
--    * jump *label9 equal *tmp14 false
-+   25 jump *label9 notEqual .slot 0
-    26 wait 0
-    27 read *tmp17 bank1 511
-    28 op add *tmp18 *tmp17 1
- 
-    47 drawflush display1
-    48 label *label12
-    49 read *tmp25 bank1 :count
--    * op greaterThan *tmp24 *tmp25 0
--    * jump *label14 equal *tmp24 false
-+   50 jump *label14 lessThanEq *tmp25 0
-    51 op add :count :count 1
-    52 label *label13
-    53 jump *label12 always
+    21 label *label4
+    22 sensor *tmp13 switch1 @enabled
+    23 jump *label7 equal *tmp13 false
+-    * op equal *tmp15 .slot 0
+-    * jump *label9 equal *tmp15 false
++   24 jump *label9 notEqual .slot 0
+    25 wait 0
+    26 read *tmp17 bank1 511
+    27 op add *tmp18 *tmp17 1
 
 Modifications by Iterated phase, Single Step Elimination, pass 1, iteration 1 (-1 instructions):
  
-    29 write *tmp18 bank1 511
-    30 label *label11
-    31 set .slot *tmp18
+    28 write *tmp18 bank1 511
+    29 label *label11
+    30 set .slot *tmp18
 -    * jump *label10 always
-    32 label *label9
-    33 label *label10
-    34 jump *label8 always
-
-Modifications by Iterated phase, Loop Hoisting, pass 1, iteration 1:
- 
-    19 draw reset
-    20 drawflush display1
-    21 set :count 0
-+   22 op sub *tmp20 .x 15
-+   23 op sub *tmp21 .y 15
-    24 label *label4
-    25 sensor *tmp12 switch1 @enabled
-    26 jump *label7 equal *tmp12 false
- 
-    40 label *label8
-    41 print .slot
-    42 draw color 0 0 80 255
--    * op sub *tmp20 .x 15
--    * op sub *tmp21 .y 15
-    43 draw rect *tmp20 *tmp21 30 30
-    44 draw color 0 255 0 255
-    45 draw print .x .y @center
-
-Modifications by Full loop rotation at line 40:9 (+1 instructions):
- 
-    47 label *label12
-    48 read *tmp25 bank1 :count
-    49 jump *label14 lessThanEq *tmp25 0
-+   50 label *label15
-    51 op add :count :count 1
-    52 label *label13
--    * jump *label12 always
-+   53 read *tmp25 bank1 :count
-+   54 jump *label15 greaterThan *tmp25 0
-    55 label *label14
-    56 print "Found "
-    57 print :count
+    31 label *label9
+    32 label *label10
+    33 jump *label8 always
 
 Modifications by Jumps phase, Unreachable Code Elimination, pass 3, iteration 1 (-1 instructions):
  
-    29 read *tmp17 bank1 511
-    30 op add *tmp18 *tmp17 1
-    31 write *tmp18 bank1 511
+    26 read *tmp17 bank1 511
+    27 op add *tmp18 *tmp17 1
+    28 write *tmp18 bank1 511
 -    * label *label11
-    32 set .slot *tmp18
-    33 label *label9
+    29 set .slot *tmp18
+    30 label *label9
 -    * label *label10
-    34 jump *label8 always
-    35 label *label7
-    36 set .slot 0
+    31 jump *label8 always
+    32 label *label7
+    33 set .slot 0
  
-    42 draw color 0 255 0 255
-    43 draw print .x .y @center
-    44 drawflush display1
--    * label *label12
-    45 read *tmp25 bank1 :count
-    46 jump *label14 lessThanEq *tmp25 0
-    47 label *label15
-    48 op add :count :count 1
--    * label *label13
-    49 read *tmp25 bank1 :count
-    50 jump *label15 greaterThan *tmp25 0
-    51 label *label14
- 
-    54 print " "
-    55 print "active processors."
-    56 printflush message1
+    47 print " "
+    48 print "active processors."
+    49 printflush message1
 -    * label *label5
-    57 jump *label4 always
+    50 jump *label4 always
 -    * label *label6
 -    * label *label3
 -    * end
 
 Modifications by Jumps phase, Jump Threading, pass 3, iteration 1:
  
-    24 label *label4
-    25 sensor *tmp12 switch1 @enabled
-    26 jump *label7 equal *tmp12 false
+    21 label *label4
+    22 sensor *tmp13 switch1 @enabled
+    23 jump *label7 equal *tmp13 false
 -    * jump *label9 notEqual .slot 0
-+   27 jump *label8 notEqual .slot 0
-    28 wait 0
-    29 read *tmp17 bank1 511
-    30 op add *tmp18 *tmp17 1
++   24 jump *label8 notEqual .slot 0
+    25 wait 0
+    26 read *tmp17 bank1 511
+    27 op add *tmp18 *tmp17 1
 
 Modifications by Final phase, Print Merging, iteration 1 (-2 instructions):
  
-    48 read *tmp25 bank1 :count
-    49 jump *label15 greaterThan *tmp25 0
-    50 label *label14
+    40 draw color 0 255 0 255
+    41 draw print .x .y @center
+    42 drawflush display1
 -    * print "Found "
--    * print :count
++   43 print "Found {0} active processors."
+    44 read *tmp21 bank1 511
+-    * print *tmp21
 -    * print " "
 -    * print "active processors."
-+   51 print "Found {0} active processors."
-+   52 format :count
-    53 printflush message1
-    54 jump *label4 always
++   45 format *tmp21
+    46 printflush message1
+    47 jump *label4 always
 
 Code size and number of instantiations by function:
   Size  Times  AvgSize  Function
-    48     1x     48,0  <no function>
+    43     1x     43,0  <no function>
 
 
 Symbolic link resolution:

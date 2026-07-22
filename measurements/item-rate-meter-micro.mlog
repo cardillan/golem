@@ -4,94 +4,88 @@ set .switch null
 set .message null
 set .primaryMem null
 set .secondaryMem null
-print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\n[salmon]Initializing...[]\n"
+print "[salmon]Initializing...[]\n"
 op sub :init:n @links 1
-jump 26 lessThan :init:n 0
+jump 24 lessThan @links 1
 getlink :init:block :init:n
-print "Found: "
-print :init:block
-print "\n"
-sensor *tmp2 :init:block @type
-jump 17 notEqual *tmp2 @message
-set .message :init:block
-jump 24 always 0 0
-jump 20 notEqual *tmp2 @switch
-set .switch :init:block
-jump 24 always 0 0
-jump 22 equal *tmp2 @memory-bank
-jump 24 notEqual *tmp2 @memory-cell
-set .primaryMem .secondaryMem
+print "Found: {0}\n"
+format :init:block
+sensor *tmp0 :init:block @type
+sensor *tmp10 *tmp0 @id
+read @counter "" *tmp10
+jump 22 always 0 0                      # Origin: 14, keys: 0 .. 136, 139 .. 141
+set .message :init:block                # Origin: 14, keys: 137
+jump 22 always 0 0
+set .switch :init:block                 # Origin: 14, keys: 138
+jump 22 always 0 0
+set .primaryMem .secondaryMem           # Origin: 14, keys: 142, 143
 set .secondaryMem :init:block
 op sub :init:n :init:n 1
 jump 9 greaterThanEq :init:n 0
-print "Message: "
-print .message
-print "\nSwitch: "
-print .switch
-print "\nSource memory: "
-print .primaryMem
-print "\nTarget memory: "
-print .secondaryMem
-print "\n"
-jump 37 notEqual .primaryMem null
+print "Message: {0}\nSwitch: {0}\nSource memory: {0}\nTarget memory: {0}\n"
+format .message
+format .switch
+format .primaryMem
+format .secondaryMem
+jump 31 notEqual .primaryMem null
 print "No memory.\n"
 printflush .message
 jump 2 equal .secondaryMem null
-jump 58 notEqual .primaryMem null
+jump 52 notEqual .primaryMem null
 set .primaryMem .secondaryMem
-sensor *tmp85 .secondaryMem @type
-jump 45 notEqual *tmp85 @memory-cell
-set *tmp84 64
-jump 49 always 0 0
-jump 48 notEqual *tmp85 @memory-bank
-set *tmp84 512
-jump 49 always 0 0
-set *tmp84 null
+sensor *tmp9 .secondaryMem @type
+jump 39 notEqual *tmp9 @memory-cell
+set *tmp8 64
+jump 43 always 0 0
+jump 42 notEqual *tmp9 @memory-bank
+set *tmp8 512
+jump 43 always 0 0
+set *tmp8 null
 set .cacheSize 50
 set .bufferStart 50
-op sub .bufferEnd *tmp84 7
-op sub .bufferStartIndex *tmp84 7
-op sub .bufferEndIndex *tmp84 6
-op sub .headIndex *tmp84 5
-op sub .valueIndex *tmp84 2
-op sub .totalIndex *tmp84 1
-jump 82 always 0 0
-sensor *tmp85 .primaryMem @type
-jump 62 notEqual *tmp85 @memory-cell
+op sub .bufferEnd *tmp8 7
+op sub .bufferStartIndex *tmp8 7
+op sub .bufferEndIndex *tmp8 6
+op sub .headIndex *tmp8 5
+op sub .valueIndex *tmp8 2
+op sub .totalIndex *tmp8 1
+jump 76 always 0 0
+sensor *tmp9 .primaryMem @type
+jump 56 notEqual *tmp9 @memory-cell
 set :init:primarySize 64
-jump 66 always 0 0
-jump 65 notEqual *tmp85 @memory-bank
+jump 60 always 0 0
+jump 59 notEqual *tmp9 @memory-bank
 set :init:primarySize 512
-jump 66 always 0 0
+jump 60 always 0 0
 set :init:primarySize null
-sensor *tmp85 .secondaryMem @type
-jump 70 notEqual *tmp85 @memory-cell
-set *tmp84 64
-jump 74 always 0 0
-jump 73 notEqual *tmp85 @memory-bank
-set *tmp84 512
-jump 74 always 0 0
-set *tmp84 null
+sensor *tmp9 .secondaryMem @type
+jump 64 notEqual *tmp9 @memory-cell
+set *tmp8 64
+jump 68 always 0 0
+jump 67 notEqual *tmp9 @memory-bank
+set *tmp8 512
+jump 68 always 0 0
+set *tmp8 null
 op sub .cacheSize :init:primarySize 2
 op sub .valueIndex :init:primarySize 2
 op sub .totalIndex :init:primarySize 1
 set .bufferStart 0
-op sub .bufferEnd *tmp84 8
-op sub .bufferStartIndex *tmp84 7
-op sub .bufferEndIndex *tmp84 6
-op sub .headIndex *tmp84 5
+op sub .bufferEnd *tmp8 8
+op sub .bufferStartIndex *tmp8 7
+op sub .bufferEndIndex *tmp8 6
+op sub .headIndex *tmp8 5
 write .bufferStart .secondaryMem .bufferStartIndex
 write .bufferEnd .secondaryMem .bufferEndIndex
 op min .cacheSize SMOOTHING .cacheSize
 op mul :divisor .cacheSize 15
 set :i 0
-jump 91 greaterThanEq 0 .cacheSize
+jump 85 greaterThanEq 0 .cacheSize
 write 0 .primaryMem :i
 op add :i :i 1
-jump 88 lessThan :i .cacheSize
+jump 82 lessThan :i .cacheSize
 set :cacheHead 0
-read *tmp39 .secondaryMem .headIndex
-op max :head .bufferStart *tmp39
+read *tmp1 .secondaryMem .headIndex
+op max :head .bufferStart *tmp1
 set :step 1
 set :total 0
 set :rate 0
@@ -101,48 +95,46 @@ read :prev .primaryMem .totalIndex
 set :waits 0
 set :prevTick :nextTick
 op add :nextTick :nextTick 15
-op add *tmp45 :nextTick 15
-jump 107 lessThanEq @tick *tmp45
+op add *tmp2 :nextTick 15
+jump 101 lessThanEq @tick *tmp2
 op add :nextTick @tick 15
 read :prev .primaryMem .totalIndex
-jump 112 greaterThanEq @tick :nextTick
+jump 106 greaterThanEq @tick :nextTick
 jump 0 lessThan @tick :prevTick
 op add :waits :waits :step
 wait 0.000000000000001
-jump 108 lessThan @tick :nextTick
+jump 102 lessThan @tick :nextTick
 read :curr .primaryMem .totalIndex
 op sub :amount :curr :prev
 set :prev :curr
-read *tmp58 .primaryMem :cacheHead
-op sub *tmp59 :total *tmp58
-op add :total *tmp59 :amount
+read *tmp4 .primaryMem :cacheHead
+op sub *tmp3 :total *tmp4
+op add :total *tmp3 :amount
 write :amount .primaryMem :cacheHead
-op add *tmp63 :cacheHead 1
-op mod :cacheHead *tmp63 .cacheSize
+op add *tmp5 :cacheHead 1
+op mod :cacheHead *tmp5 .cacheSize
 op mul :step :step 10
-jump 136 greaterThan :step 100
-jump 131 notEqual :step 10
+jump 128 greaterThan :step 100
+jump 124 notEqual :step 10
 op div :rate :total :divisor
 op add :head :head 1
-jump 128 lessThan :head .bufferEnd
-set :head .bufferStart
+select :head greaterThanEq :head .bufferEnd .bufferStart :head
 write :head .secondaryMem .headIndex
 write :rate .secondaryMem :head
-jump 145 always 0 0
+jump 137 always 0 0
 write :rate .primaryMem .valueIndex
-print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\nTotal items: [gold]"
-print :curr
-print "[]\nCurrent rate [green]"
-jump 145 always 0 0
-jump 141 notEqual :step 1000
-op idiv *tmp81 :rate 0.0002777777777777778
-print *tmp81
+print "[gold]Item Rate Meter Micro[], version [gold]1.0[]\nTotal items: [gold]{0}[]\nCurrent rate [green]"
+format :curr
+jump 137 always 0 0
+jump 133 notEqual :step 1000
+op idiv *tmp6 :rate 0.0002777777777777778
+print *tmp6
 print "[]/min\n[lightgray]Waits: "
-jump 145 always 0 0
+jump 137 always 0 0
 print :waits
 printflush .message
 set :waits 0
 set :step 1
-sensor *tmp82 .switch @enabled
-jump 101 equal *tmp82 false
+sensor *tmp7 .switch @enabled
+jump 95 equal *tmp7 false
 

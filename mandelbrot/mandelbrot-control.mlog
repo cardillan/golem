@@ -589,7 +589,7 @@ jump 591 equal :lastPercent .PERCENT
 set :lastTime .TIME
 set :lastPercent .PERCENT
 set :print true
-jump 621 equal .CHANGE false
+jump 639 equal .CHANGE false
 print "Initializing..."
 printflush message1
 op add .STOP .STOP 1
@@ -600,6 +600,24 @@ draw clear 86 86 102 0 0 0
 jump 602 always 0 0
 draw color 86 86 102 204 0 0
 draw rect 0 0 176 176 0 0
+draw reset 0 0 0 0 0 0
+sensor *tmp45 display1 @x
+op sub :rotateDisplay:dx *tmp45 @thisx
+sensor *tmp46 display1 @y
+op sub :rotateDisplay:dy *tmp46 @thisy
+op angle *tmp47 :rotateDisplay:dx :rotateDisplay:dy
+op div *tmp48 *tmp47 90
+op round *tmp49 *tmp48 0
+read @counter "ɪɣɤɧ" *tmp49
+jump 620 always 0 0                     # Origin: 610, keys: 1
+draw rotate 0 0 90 0 0 0                # Origin: 610, keys: 2
+draw translate 0 -176 0 0 0 0
+jump 620 always 0 0
+draw rotate 0 0 180 0 0 0               # Origin: 610, keys: 3
+draw translate -176 -176 0 0 0 0
+jump 620 always 0 0
+draw rotate 0 0 270 0 0 0               # Origin: 610, keys: 0
+draw translate -176 0 0 0 0 0
 drawflush display1
 wait 0.0125                             # 0.750 ticks for atomic execution of 6 steps at 8 ipt
 write 0 bank1 66
@@ -613,17 +631,18 @@ set .text1 ""
 set :print true
 set .links @links
 set :initializeProcessors.1:i 0
-jump 621 greaterThanEq 0 .links
+jump 639 greaterThanEq 0 .links
 getlink :initializeProcessors.1:proc :initializeProcessors.1:i
 write display1 :initializeProcessors.1:proc ".display"
 write bank1 :initializeProcessors.1:proc ".memory"
 op add :initializeProcessors.1:i :initializeProcessors.1:i 1
-jump 616 lessThan :initializeProcessors.1:i .links
+jump 634 lessThan :initializeProcessors.1:i .links
 print "Links: {0}\nLoop time: "
 format .links
-op sub *tmp45 @time :start
-op round *tmp46 *tmp45 0
-print *tmp46
+op sub *tmp50 @time :start
+op round *tmp51 *tmp50 0
+print *tmp51
 printflush message4
 jump 180 always 0 0
-print "Compiled by Mindcode 3.16.3 - github.com/cardillan/mindcode"
+print "Compiled by Mindcode 3.17.0 - github.com/cardillan/mindcode"
+

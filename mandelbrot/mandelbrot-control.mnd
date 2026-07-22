@@ -6,6 +6,7 @@
 #set program-name = "Mandelbrot Mania!";
 #set program-version = "v3.1";
 
+require graphics;
 require "mandelbrot-common.mnd";
 
 // When set to true, all passes will color all pixels.
@@ -159,6 +160,7 @@ begin
                 color(86, 86, 102, 204);
                 rect(0, 0, 176, 176);
             end;
+            rotateDisplay();
             drawflush(display);
 
             // Signal next round of computing to processors
@@ -387,4 +389,15 @@ inline void bookmarkJulia(memory, in out position, x, y, zoom, julia_x, julia_y)
     memory[position++] = true;
     memory[position++] = julia_x;
     memory[position++] = julia_y;
+end;
+
+void rotateDisplay()
+    reset();
+    var dx = display.@x - @thisx;
+    var dy = display.@y - @thisy;
+    case round(angle(dx, dy) / 90)
+        when 2 then rotateLeftLarge();
+        when 3 then upsideDownLarge();
+        when 0 then rotateRightLarge();
+    end;
 end;
