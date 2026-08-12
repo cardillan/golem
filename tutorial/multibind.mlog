@@ -1,0 +1,108 @@
+# Unit Multibind Logic (Transport from container to core)
+#
+# Link to a storage block (container or vault)
+
+# What type of unit shall transport
+set UNIT @flare
+# How many units to use for transport
+set UNITCOUNT 4
+
+# Set this to the storage block linked
+set STORAGE vault1 
+
+# Get the coordinates of our storage
+sensor storeX STORAGE @x
+sensor storeY STORAGE @y
+
+# Make a processor-unique flag
+op shl flag @thisy 16
+op or flag flag @thisx
+
+# Fetch the core, to make this start faster since it requires a core reference to multibind properly.
+ubind UNIT # If it doesnt have one, it would just control all units.
+ulocate building core false 0 coreX coreY 0 core
+
+# We only need to run the previous code once, thus we jump back here instead of using end.
+mainLoop:
+
+    # We are going to count how many units this processor has flagged while going through them.
+    set found 0
+
+    # Sense how many flares we have.
+    # We will use this to determine how often we have to ubind
+    sensor loopCount core UNIT
+
+    # Run this once for every unit of type UNIT we have.
+    bindLoop:
+        # Decrement the counter
+        op sub loopCount loopCount 1
+
+        # Bind the unit and get its flag.
+        ubind UNIT
+        sensor unitFlag @unit @flag
+
+        # Check if the unit is unflagged
+        jump flagged notEqual unitFlag 0
+            # The unit is not flagged.
+            # Leave the unbound unit alone if we dont need more units.
+            jump continueBindLoop lessThanEq toBind 0
+            # Dont try to take units controlled by players or other processors.
+            sensor controller @unit @controller
+            jump continueBindLoop notEqual controller @unit
+            ucontrol flag flag
+            # This unit is now flagged, so we decrement the amount of units we need to obtain.
+            op sub toBind toBind 1
+            # Skip the next check, since the flag is going to be ours.
+            jump bound always 0 0
+        flagged:
+        # Skip this unit if another processor has already claimed it.
+        jump continueBindLoop notEqual unitFlag flag
+
+        bound:
+
+        # The unit is ours, so we increment the found counter.
+        op add found found 1
+
+        # If we request a negative amount of units to bind, release this unit.
+        jump noRelease greaterThanEq toBind 0
+            # Since the goal is to have toBind at 0, we increment it from a negative value.
+            op add toBind toBind 1
+            # Unflag the unit and resume its normal AI.
+            ucontrol flag 0
+            ucontrol unbind
+            # We continue with the next unit.
+        jump continueBindLoop always 0 0
+
+        noRelease:
+            # Here, we do the transport logic for our units.
+
+            # Sense how many items the current unit has to determine
+            # whether it has to go to the core to drop off its items
+            # or to the storage to pick up items.
+            sensor items @unit @totalItems
+            jump dropoff greaterThan items 0
+                # The unit has 0 items, so we approach the storage and try to take items.
+                ucontrol approach storeX storeY 5
+                # Sense which item to take, and try to take it.
+                sensor take STORAGE @firstItem
+                ucontrol itemTake STORAGE take 100000 # We just try to take more than the unit can carry to fill it.
+
+                # Continue with the next unit.
+            jump continueBindLoop always 0 0
+            dropoff:
+                # Locate the closest core to the current unit.
+                # The 0's are for unused arguments here.
+                ulocate building core false 0 coreX coreY 0 core
+                # The unit has some items, so we go to the core to unload.
+                ucontrol approach coreX coreY 5
+                # Try to drop the items off.
+                ucontrol itemDrop core items
+
+        # We repeat until we have gone through all units.
+        continueBindLoop:
+    jump bindLoop greaterThan loopCount 0
+
+    # Calculate how many units we have to bind/release next iteration.
+    op sub toBind UNITCOUNT found
+
+jump mainLoop always 0 0
