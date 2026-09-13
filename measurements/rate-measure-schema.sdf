@@ -1,0 +1,31 @@
+schematic
+    name = "Speed measurement test"
+
+    @micro-processor     at ( 0,  0) processor
+        links
+            p0-source1 as source1
+        end
+        mlog = """
+           op rand result 1 b
+           op greaterThanEq on result 0.8
+           control enabled source1 on 0 0 0
+           """
+
+    end
+    @micro-processor     at ( 5,  0) processor
+        links p1-* end
+        mindcode = file "rate-measure.mnd"
+    end
+
+p1-display1:
+    @tile-logic-display  at ( 6,  0)
+    @tile-logic-display  at ( 7,  0)
+
+p0-source1:
+    @item-source         at ( 0,  2) item @metaglass
+    @titanium-conveyor   at ( 1,  2) facing east
+p1-conveyor#:
+    @titanium-conveyor   at ( 2,  2) * (8, 1) facing east
+    @titanium-conveyor   at (10,  2) facing east
+    @item-void           at (11,  2)
+end

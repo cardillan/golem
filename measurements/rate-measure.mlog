@@ -1,0 +1,47 @@
+# Mlog code compiled with support for symbolic labels
+# You can safely add/remove instructions, in most parts of the program
+# Pay closer attention to sections of the program manipulating @counter
+    sensor *tmp0 display1 @displayWidth
+    op div .x *tmp0 2
+    sensor *tmp1 display1 @displayHeight
+    op div *tmp2 *tmp1 2
+    op add .y *tmp2 2
+    label_5:
+            wait 0.08334                            # 5.000 ticks for atomic execution of 10 steps at 2 ipt
+            sensor .items*0 conveyor1 @totalItems
+            sensor .items*1 conveyor2 @totalItems
+            sensor .items*2 conveyor3 @totalItems
+            sensor .items*3 conveyor4 @totalItems
+            sensor .items*4 conveyor5 @totalItems
+            sensor .items*5 conveyor6 @totalItems
+            sensor .items*6 conveyor7 @totalItems
+            sensor :total conveyor8 @totalItems
+            sensor :timescale conveyor1 @timescale  # The last atomic section instruction
+        op add :total :total .items*6
+        op add :total :total .items*5
+        op add :total :total .items*4
+        op add :total :total .items*3
+        op add :total :total .items*2
+        op add :total :total .items*1
+        op add :total :total .items*0
+        sensor *tmp4 conveyor1 @type
+        sensor *tmp11 *tmp4 @id
+        read *tmp12 "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0834\u12c6\u0fa0\u12c0" *tmp11
+        select *tmp3 strictEqual *tmp12 null 0 *tmp12
+        op div *tmp5 :total 8000
+        op mul *tmp6 *tmp5 *tmp3
+        op mul :speed *tmp6 :timescale
+        op floor *tmp7 :speed 0
+        print *tmp7
+        print "."
+        op mod *tmp8 :speed 1
+        op mul *tmp9 *tmp8 10
+        op round *tmp10 *tmp9 0
+        print *tmp10
+        draw clear 0 0 0 0 0 0
+        draw color 0 255 0 255 0 0
+        draw print .x .y @center 0 0 0
+        drawflush display1
+        jump label_5 always 0 0
+        print "Compiled by Mindcode 3.19.1 - github.com/cardillan/mindcode"
+

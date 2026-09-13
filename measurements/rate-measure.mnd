@@ -1,0 +1,50 @@
+#set syntax = strict;
+#set symbolic-labels = true;
+#set unicode-escapes = all;
+
+linked convs[] = (conveyor1 .. conveyor8);
+linked display1;
+
+var items[length(convs)];
+
+var x = display1.@displayWidth / 2;
+var y = display1.@displayHeight / 2 + 2;
+
+loop
+    var timescale;
+
+    // Measure them!
+    atomic
+        for var c in convs; var out i in items do
+            i = c.@totalItems;
+        end;
+        timescale = conveyor1.@timescale;
+    end;
+
+    // Sum it up
+    var total = 0;
+    for var i in items descending do total += i; end;
+
+    // Determine speed per second: from Mindustry source
+    // Multiply by 1000 to make them integers.
+    #setlocal goal = size;
+    var baseSpeed = case conveyor1.@type
+        when @conveyor              then 1000 * 60 * 0.035;
+        when @titanium-conveyor     then 1000 * 60 * 0.0801;       // No kidding!
+        when @plastanium-conveyor   then 1000 * 4;
+        when @armored-conveyor      then 1000 * 60 * 0.08;
+        else 0;
+    end;
+
+    // Divide by 1000 to restore the original value
+    var speed = total / length(convs) / 1000 * baseSpeed * timescale;
+
+    // Output on a display...
+    print(floor(speed));
+    print(".");
+    print(round((speed % 1) * 10));
+    clear(0, 0, 0);
+    color(0, 255, 0, 255);
+    drawPrint(x, y, @center);
+    drawflush(display1);
+end;
