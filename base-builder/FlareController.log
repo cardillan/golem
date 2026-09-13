@@ -1,22 +1,22 @@
    182 instructions before optimizations.
      5 instructions eliminated by Temp Variables Elimination (2 passes, 7 iterations).
     22 instructions eliminated by Dead Code Elimination (5 iterations).
-     1 instructions eliminated by Jump Normalization (6 iterations).
+     1 instruction eliminated by Jump Normalization (6 iterations).
     11 instructions eliminated by Condition Optimization (7 iterations).
     17 instructions eliminated by Single Step Elimination (2 passes, 8 iterations).
-     1 instructions modified by Expression Optimization (4 iterations).
-     1 instructions eliminated by Boolean Optimization (7 iterations).
-       1 fully-evaluated expressions optimized using selects.
+     1 instruction modified by Expression Optimization (4 iterations).
+     1 instruction eliminated by Boolean Optimization (7 iterations).
+       1 fully-evaluated expression optimized using 'select'.
      5 instructions eliminated by Data Flow Optimization (2 passes, 8 iterations).
    331 instructions added by Loop Unrolling (5 iterations).
-     1 loops unrolled by Loop Unrolling.
-     1 instructions eliminated by Array Optimization (5 iterations).
+     1 loop unrolled by Loop Unrolling.
+     1 instruction eliminated by Array Optimization (5 iterations).
     20 instructions eliminated by Jump Straightening (7 iterations).
     14 instructions eliminated by Unreachable Code Elimination (2 iterations).
    404 instructions after optimizations.
 
 Pass 1: speed optimization selection (cost limit 883):
-  * Unroll iteration loop at FlareController.mnd:66:9            size  +331, benefit     1475.0, efficiency      4.456 (+331 instructions)
+  * Unroll iteration loop at FlareController.mnd:65:9            size  +331, benefit     1475.0, efficiency      4.456 (+331 instructions)
 
 Modifications by Initial phase, Dead Code Elimination, iteration 1 (-15 instructions):
  
@@ -475,7 +475,7 @@ Modifications by Iterated phase, Boolean Optimization, pass 1, iteration 1 (-1 i
    109 ubind @flare
    110 label *label40
 
-Modifications by Unroll iteration loop at FlareController.mnd:66:9 (+331 instructions):
+Modifications by Unroll iteration loop at FlareController.mnd:65:9 (+331 instructions):
  
     21 label *label12
     22 label *label16
@@ -1368,12 +1368,13 @@ Modifications by Virtual Instruction Expansion:
    674 # "Function: export void addTitaniumDrill(in drill)"
    675 jump *label54 greaterThanEq .drills 9
 -    * writearr<lookup:liquid> :addTitaniumDrill:drill .titaniumDrills[] .drills
-+  676 lookup liquid *tmp69 .drills
-+  677 sensor .titaniumDrills*elem *tmp69 @name
-+  678 write :addTitaniumDrill:drill @this .titaniumDrills*elem
-   679 op add .drills .drills 1
-   680 label *label54
-   681 label *label55
++  676 assertbounds multiple 1 0 lessThanEq .drills lessThanEq 9 "FlareController.mnd:31:9: index out of bounds (0 to 9)"
++  677 lookup liquid *tmp69 .drills
++  678 sensor .titaniumDrills*elem *tmp69 @name
++  679 write :addTitaniumDrill:drill @this .titaniumDrills*elem
+   680 op add .drills .drills 1
+   681 label *label54
+   682 label *label55
 
 Modifications by Jumps phase, Unreachable Code Elimination, pass 5, iteration 1 (-14 instructions):
  
@@ -1902,13 +1903,13 @@ Modifications by Jumps phase, Unreachable Code Elimination, pass 5, iteration 1 
    575 # "Function: export void addTitaniumDrill(in drill)"
    576 jump *label54 greaterThanEq .drills 9
  
-   579 write :addTitaniumDrill:drill @this .titaniumDrills*elem
-   580 op add .drills .drills 1
-   581 label *label54
+   580 write :addTitaniumDrill:drill @this .titaniumDrills*elem
+   581 op add .drills .drills 1
+   582 label *label54
 -    * label *label55
 -    * label *label53
-   582 set :addTitaniumDrill*finished true
-   583 jump *label9 always
+   583 set :addTitaniumDrill*finished true
+   584 jump *label9 always
 -    * end
 
 Modifications by Jumps phase, Jump Straightening, pass 5, iteration 1 (-20 instructions):
@@ -2126,7 +2127,7 @@ Modifications by Final phase, Temp Variables Elimination, iteration 1:
 
 Final code before resolving virtual instructions:
 
-    0:  jump *label7 always 0 0                                      FlareController.mnd: #set target = 8;
+    0:  jump *label7 always 0 0                                      FlareController.mnd: #set syntax = strict;
     1:  jump *label0 always 0 0                                      ...
         label *label7                                                ...
     2:  set *id "id: Flare Controller"                               ...
@@ -2134,7 +2135,7 @@ Final code before resolving virtual instructions:
     3:  read *tmp0 processor1 "*signature"                           ...
     4:  jump *label8 notEqual *tmp0 "0:v1"                           ...
     5:  set .drills 0                                                FlareController.mnd: volatile var drills = 0;
-    6:  set *signature "880295ee1d8ade1d:v1"                         FlareController.mnd: #set target = 8;
+    6:  set *signature "880295ee1d8ade1d:v1"                         FlareController.mnd: #set syntax = strict;
         label *label9                                                ...
         # "Function: void backgroundProcess()"                       FlareController.mnd: void backgroundProcess()
     7:  jump *label11 notEqual .core null                            FlareController.mnd: if core == null then
@@ -2653,7 +2654,8 @@ Final code before resolving virtual instructions:
         label *label0                                                FlareController.mnd: export void addTitaniumDrill(drill)
         # "Function: export void addTitaniumDrill(in drill)"         ...
   396:  jump *label54 greaterThanEq .drills 9                        FlareController.mnd: if drills < length(titaniumDrills) - 1 then
-  397:  lookup liquid *tmp8 .drills                                  FlareController.mnd: titaniumDrills[drills] = drill;
+  397:  assertbounds multiple 1 0 lessThanEq .drills lessThanEq 9 "F FlareController.mnd: titaniumDrills[drills] = drill;
+  397:  lookup liquid *tmp8 .drills                                  ...
   398:  sensor .titaniumDrills*elem *tmp8 @name                      ...
   399:  write :addTitaniumDrill:drill @this .titaniumDrills*elem     ...
   400:  op add .drills .drills 1                                     FlareController.mnd: if drills < length(titaniumDrills) - 1 then
