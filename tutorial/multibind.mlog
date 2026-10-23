@@ -1,0 +1,121 @@
+# Unit Multibind Logic (Transport from container to core)
+#
+# Link to a storage block (container or vault)
+
+# What type of unit shall transport
+set UNIT @flare
+# How many units to use for transport
+set UNITCOUNT 4
+
+# Set this to the storage block linked
+set STORAGE vault1
+
+# Initialize a counter for how many units we need to bind (when greater than 0)
+# or how many we need to unbind (when less than 0)
+# We dont set it to UNITCOUNT because there might already be units bound to this processor from previous running.
+# So, setting it to 0 allows us to just count bound units without binding or unbinding any, and with the next
+# loop we will have a proper value for this.
+set toBind 0 # This is actually not needed, since variables are always set to null when the prcoessor starts.
+
+# Get the coordinates of our storage
+sensor storeX STORAGE @x
+sensor storeY STORAGE @y
+
+# Make a processor-unique flag
+op mul flag @thisx @maph
+op add flag flag @thisy
+
+# Fetch the core, to make this start faster since this method of multibinding requires a core reference to multibind properly.
+ubind UNIT # If there is no bound unit (for example, after a restart of the processor), the core reference would end up as null,
+# which then would cause the rest of the code to fall apart entirely, since sensing the unit count in null is going to return null.
+ulocate building core false 0 coreX coreY 0 core
+
+# We only need to run the previous code once, thus we jump back here instead of using end.
+mainLoop:
+
+    # We are going to count how many units this processor has flagged while going through them.
+    set found 0
+
+    # Sense how many units of type UNIT are on the map.
+    sensor loopCount core UNIT
+
+    # Run this once for every unit of type UNIT we have.
+    bindLoop:
+        # Decrement the counter
+        op sub loopCount loopCount 1
+
+        # Bind the unit and get its flag.
+        ubind UNIT
+        sensor unitFlag @unit @flag
+
+        # Check if the unit is unflagged
+        jump flagged notEqual unitFlag 0
+            # The unit is not flagged.
+            # Leave the unbound unit alone if we dont need more units.
+            jump continueBindLoop lessThanEq toBind 0
+            # Dont try to take units controlled by players or other processors.
+            sensor controller @unit @controller
+            jump continueBindLoop notEqual controller @unit
+            ucontrol flag flag
+            # This unit is now flagged, so we decrement the amount of units we need to obtain.
+            op sub toBind toBind 1
+            # Skip the next check, since the flag is going to be ours.
+            jump bound always 0 0
+        flagged:
+        # Skip this unit if another processor has already claimed it.
+        jump continueBindLoop notEqual unitFlag flag
+
+        bound:
+
+        # The unit is ours, so we increment the found counter.
+        op add found found 1
+
+        # If we request a negative amount of units to bind, release this unit.
+        # For example, this could happen due to lowering UNITCOUNT in the processor
+        # since changing the code of a processor doesnt unflag units it flagged,
+        # and the flag we generate is always the same if the processor doesnt move, previously bound units stay bound.
+        jump noRelease greaterThanEq toBind 0
+            # Since the goal is to have toBind at 0 (exactly UNITCOUNT units with our flag), we increment it from a negative value.
+            op add toBind toBind 1
+            # Unflag the unit and resume its normal AI.
+            ucontrol flag 0
+            ucontrol unbind
+            # We continue with the next unit.
+        jump continueBindLoop always 0 0
+
+        noRelease:
+            # Here, we do the transport logic for our units.
+
+            # Sense how many items the current unit has to determine
+            # whether it has to go to the core to drop off its items
+            # or to the storage to pick up items.
+            sensor items @unit @totalItems
+            jump dropoff greaterThan items 0
+                # The unit has 0 items, so we approach the storage and try to take items.
+                ucontrol approach storeX storeY 5
+                # Sense which item to take, and try to take it.
+                sensor take STORAGE @firstItem
+                # itemTake requires the unit to be within range of the block to succeed, which is the reason that we dont check if the unit is in range.
+                ucontrol itemTake STORAGE take 100000 # We just try to take more than the unit can carry to fill it.
+
+                # Continue with the next unit.
+            jump continueBindLoop always 0 0
+            dropoff:
+                # Locate the closest core to the current unit.
+                # The 0's are for unused arguments here.
+                ulocate building core false 0 coreX coreY 0 core
+                # The unit has some items, so we go to the core to unload.
+                ucontrol approach coreX coreY 5
+                # Try to drop the items off.
+                # Similar to itemTake, itemDrop also requires the unit to be in range of the dropoff location, so we dont need to check here either.
+                ucontrol itemDrop core items
+
+        # We repeat until we have gone through all units.
+        continueBindLoop:
+    jump bindLoop greaterThan loopCount 0
+
+    # Calculate how many units we have to bind/release next iteration.
+    # If we have too many, this will end up negative, if we have to few, it will end up positive and if we have the amount we want, it will be 0.
+    op sub toBind UNITCOUNT found
+
+jump mainLoop always 0 0
